@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE QDOCINDEX>
+<INDEX url="" title="Qt Solutions: Telnet Documentation" version="">
+    <namespace access="public" threadsafety="unspecified" status="commendable" name="" href="" location="" module="">
+        <class access="public" threadsafety="unspecified" status="commendable" name="QtTelnet" href="qttelnet.html" location="qttelnet.h" bases="QObject" module="">
+            <function access="public" threadsafety="unspecified" status="commendable" name="QtTelnet" fullname="QtTelnet::QtTelnet" href="qttelnet.html#QtTelnet" location="qttelnet.h" virtual="non" meta="constructor" const="false" static="false" overload="false" type="" signature="QtTelnet(QObject * parent)">
+                <parameter left="QObject *" right="" name="parent" default="0"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="~QtTelnet" fullname="QtTelnet::~QtTelnet" href="qttelnet.html#dtor.QtTelnet" location="qttelnet.h" virtual="non" meta="destructor" const="false" static="false" overload="false" type="" signature="~QtTelnet()"/>
+            <enum access="public" threadsafety="unspecified" status="commendable" name="Control" fullname="QtTelnet::Control" href="qttelnet.html#Control-enum" location="qttelnet.h">
+                <value name="GoAhead" value="0"/>
+                <value name="InterruptProcess" value="1"/>
+                <value name="AreYouThere" value="2"/>
+                <value name="AbortOutput" value="3"/>
+                <value name="EraseCharacter" value="4"/>
+                <value name="EraseLine" value="5"/>
+                <value name="Break" value="6"/>
+                <value name="EndOfFile" value="7"/>
+                <value name="Suspend" value="8"/>
+                <value name="Abort" value="9"/>
+            </enum>
+            <function access="public" threadsafety="unspecified" status="commendable" name="connectToHost" fullname="QtTelnet::connectToHost" href="qttelnet.html#connectToHost" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="connectToHost(const QString &amp; host, quint16 port)">
+                <parameter left="const QString &amp;" right="" name="host" default=""/>
+                <parameter left="quint16" right="" name="port" default="23"/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="login" fullname="QtTelnet::login" href="qttelnet.html#login" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="login(const QString &amp; username, const QString &amp; password)">
+                <parameter left="const QString &amp;" right="" name="username" default=""/>
+                <parameter left="const QString &amp;" right="" name="password" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setWindowSize" fullname="QtTelnet::setWindowSize" href="qttelnet.html#setWindowSize" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setWindowSize(const QSize &amp; size)">
+                <parameter left="const QSize &amp;" right="" name="size" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setWindowSize" fullname="QtTelnet::setWindowSize" href="qttelnet.html#setWindowSize-2" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="true" overload-number="2" type="void" signature="setWindowSize(int width, int height)">
+                <parameter left="int" right="" name="width" default=""/>
+                <parameter left="int" right="" name="height" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="windowSize" fullname="QtTelnet::windowSize" href="qttelnet.html#windowSize" location="qttelnet.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="QSize" signature="windowSize() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="isValidWindowSize" fullname="QtTelnet::isValidWindowSize" href="qttelnet.html#isValidWindowSize" location="qttelnet.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="bool" signature="isValidWindowSize() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setSocket" fullname="QtTelnet::setSocket" href="qttelnet.html#setSocket" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setSocket(QTcpSocket * socket)">
+                <parameter left="QTcpSocket *" right="" name="socket" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="socket" fullname="QtTelnet::socket" href="qttelnet.html#socket" location="qttelnet.h" virtual="non" meta="plain" const="true" static="false" overload="false" type="QTcpSocket *" signature="socket() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setPromptPattern" fullname="QtTelnet::setPromptPattern" href="qttelnet.html#setPromptPattern" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setPromptPattern(const QRegExp &amp; pattern)">
+                <parameter left="const QRegExp &amp;" right="" name="pattern" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setPromptString" fullname="QtTelnet::setPromptString" href="qttelnet.html#setPromptString" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setPromptString(const QString &amp; pattern)">
+                <parameter left="const QString &amp;" right="" name="pattern" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="close" fullname="QtTelnet::close" href="qttelnet.html#close" location="qttelnet.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="close()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="logout" fullname="QtTelnet::logout" href="qttelnet.html#logout" location="qttelnet.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="logout()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="sendControl" fullname="QtTelnet::sendControl" href="qttelnet.html#sendControl" location="qttelnet.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="sendControl(Control ctrl)">
+                <parameter left="Control" right="" name="ctrl" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="sendData" fullname="QtTelnet::sendData" href="qttelnet.html#sendData" location="qttelnet.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="sendData(const QString &amp; data)">
+                <parameter left="const QString &amp;" right="" name="data" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="sendSync" fullname="QtTelnet::sendSync" href="qttelnet.html#sendSync" location="qttelnet.h" virtual="non" meta="slot" const="false" static="false" overload="false" type="void" signature="sendSync()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="loginRequired" fullname="QtTelnet::loginRequired" href="qttelnet.html#loginRequired" location="qttelnet.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="loginRequired()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="loginFailed" fullname="QtTelnet::loginFailed" href="qttelnet.html#loginFailed" location="qttelnet.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="loginFailed()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="loggedIn" fullname="QtTelnet::loggedIn" href="qttelnet.html#loggedIn" location="qttelnet.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="loggedIn()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="loggedOut" fullname="QtTelnet::loggedOut" href="qttelnet.html#loggedOut" location="qttelnet.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="loggedOut()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="connectionError" fullname="QtTelnet::connectionError" href="qttelnet.html#connectionError" location="qttelnet.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="connectionError(QAbstractSocket::SocketError error)">
+                <parameter left="QAbstractSocket::SocketError" right="" name="error" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="message" fullname="QtTelnet::message" href="qttelnet.html#message" location="qttelnet.h" virtual="non" meta="signal" const="false" static="false" overload="false" type="void" signature="message(const QString &amp; data)">
+                <parameter left="const QString &amp;" right="" name="data" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setLoginPattern" fullname="QtTelnet::setLoginPattern" href="qttelnet.html#setLoginPattern" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setLoginPattern(const QRegExp &amp; pattern)">
+                <parameter left="const QRegExp &amp;" right="" name="pattern" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setLoginString" fullname="QtTelnet::setLoginString" href="qttelnet.html#setLoginString" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setLoginString(const QString &amp; login)">
+                <parameter left="const QString &amp;" right="" name="login" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setPasswordPattern" fullname="QtTelnet::setPasswordPattern" href="qttelnet.html#setPasswordPattern" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setPasswordPattern(const QRegExp &amp; pattern)">
+                <parameter left="const QRegExp &amp;" right="" name="pattern" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setPasswordString" fullname="QtTelnet::setPasswordString" href="qttelnet.html#setPasswordString" location="qttelnet.h" virtual="non" meta="plain" const="false" static="false" overload="false" type="void" signature="setPasswordString(const QString &amp; pattern)">
+                <parameter left="const QString &amp;" right="" name="pattern" default=""/>
+            </function>
+        </class>
+        <page access="public" status="commendable" name="index.html" href="index.html" subtype="page" title="Telnet" fulltitle="Telnet" subtitle="" location="index.qdoc">
+            <contents name="description" title="Description" level="1"/>
+            <contents name="classes" title="Classes" level="1"/>
+            <contents name="tested-platforms" title="Tested platforms" level="1"/>
+        </page>
+    </namespace>
+</INDEX>

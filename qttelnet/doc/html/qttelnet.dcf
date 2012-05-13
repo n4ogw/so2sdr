@@ -1,0 +1,50 @@
+<!DOCTYPE DCF>
+<DCF ref="index.html" icon="qttelnet.png" imagedir="../../gif" title="Qt Solutions: Telnet Documentation">
+<section ref="classes.html" title="Classes">
+    <section ref="qttelnet.html" title="QtTelnet Class Reference">
+        <keyword ref="qttelnet.html">QtTelnet</keyword>
+        <keyword ref="qttelnet.html#Control-enum">Control</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::GoAhead</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::Suspend</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::AreYouThere</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::AbortOutput</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::EraseCharacter</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::EraseLine</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::InterruptProcess</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::Break</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::EndOfFile</keyword>
+        <keyword ref="qttelnet.html#Control-enum">QtTelnet::Abort</keyword>
+        <keyword ref="qttelnet.html#close">close</keyword>
+        <keyword ref="qttelnet.html#connectToHost">connectToHost</keyword>
+        <keyword ref="qttelnet.html#connectionError">connectionError</keyword>
+        <keyword ref="qttelnet.html#isValidWindowSize">isValidWindowSize</keyword>
+        <keyword ref="qttelnet.html#loggedIn">loggedIn</keyword>
+        <keyword ref="qttelnet.html#loggedOut">loggedOut</keyword>
+        <keyword ref="qttelnet.html#login">login</keyword>
+        <keyword ref="qttelnet.html#loginFailed">loginFailed</keyword>
+        <keyword ref="qttelnet.html#loginRequired">loginRequired</keyword>
+        <keyword ref="qttelnet.html#logout">logout</keyword>
+        <keyword ref="qttelnet.html#message">message</keyword>
+        <keyword ref="qttelnet.html#sendControl">sendControl</keyword>
+        <keyword ref="qttelnet.html#sendData">sendData</keyword>
+        <keyword ref="qttelnet.html#sendSync">sendSync</keyword>
+        <keyword ref="qttelnet.html#setLoginPattern">setLoginPattern</keyword>
+        <keyword ref="qttelnet.html#setLoginString">setLoginString</keyword>
+        <keyword ref="qttelnet.html#setPasswordPattern">setPasswordPattern</keyword>
+        <keyword ref="qttelnet.html#setPasswordString">setPasswordString</keyword>
+        <keyword ref="qttelnet.html#setPromptPattern">setPromptPattern</keyword>
+        <keyword ref="qttelnet.html#setPromptString">setPromptString</keyword>
+        <keyword ref="qttelnet.html#setSocket">setSocket</keyword>
+        <keyword ref="qttelnet.html#setWindowSize">setWindowSize</keyword>
+        <keyword ref="qttelnet.html#socket">socket</keyword>
+        <keyword ref="qttelnet.html#windowSize">windowSize</keyword>
+        <section ref="qttelnet-members.html" title="List of all members"/>
+    </section>
+</section>
+<section ref="overviews.html" title="Overviews">
+    <section ref="index.html" title="Telnet">
+        <keyword ref="index.html">Telnet</keyword>
+    </section>
+</section>
+<section ref="examples.html" title="Tutorial &amp; Examples"/>
+</DCF>

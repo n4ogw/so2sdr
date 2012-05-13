@@ -1,0 +1,17 @@
+ARRL 10, arrl10.cfg
+ARRL 160 (DX), arrl160dx.cfg
+ARRL 160 (US/VE), arrl160.cfg
+ARRL DX (US/VE), arrldx.cfg
+ARRL DX (DX), arrldx-dx.cfg
+CQ 160, cq160.cfg
+CQ WPX, wpx.cfg
+CQ WW, cqww.cfg
+CW OPS CWT, cwops.cfg
+DXpedition/general logging, dxped.cfg
+ARRL Field Day,fd.cfg
+ARRL Sweepstakes,ss.cfg
+IARU, iaru.cfg
+North American QSO Party, naqp.cfg
+North American Sprint, nasprint.cfg
+NCCC Sprint, ns.cfg
+Stew Perry Topband, stew.cfg

@@ -1,0 +1,37 @@
+/*!
+	\page index.html
+	\title Telnet
+
+    	\section1 Description
+	
+            A client for the telnet protocol.
+        
+
+	
+            This class provides support for the Telnet protocol.
+            This is useful for communication with legacy,
+            terminal-based applications running on servers, devices,
+            or locally.
+        
+
+    	
+	\section1 Classes
+	    \list
+	 \i  QtTelnet\endlist
+	
+    
+
+    	
+
+    	
+    		\section1 Tested platforms
+		\list
+		\i Qt 4.4, 4.5 / Windows XP / MSVC.NET 2005
+		    \i Qt 4.4, 4.5 / Linux / gcc
+		    \i Qt 4.4, 4.5 / MacOS X 10.5 / gcc
+		    \endlist
+
+    	
+
+	
+	*/

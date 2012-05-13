@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CabrilloDialog</class>
+ <widget class="QDialog" name="CabrilloDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>510</width>
+    <height>742</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Cabrillo export</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>CONTEST: </string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="labelContest">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>CALL:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="labelCall">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>CLAIMED-SCORE:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="labelClaimedScore">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Sent Exchange:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="lineEditExch1"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEditExch2"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEditExch3"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEditExch4"/>
+       </item>
+      </layout>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>OPERATORS:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEditOperators"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>NAME:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="lineEditName"/>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>ADDRESS:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QTextEdit" name="textEditAddress">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>60</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="labelAddressCity">
+       <property name="text">
+        <string>ADDRESS-CITY:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLineEdit" name="lineEditAddressCity"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="labelAddressState">
+       <property name="text">
+        <string>ADDRESS-STATE-PROVINCE:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="lineEditAddressState"/>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="labelAddressPostalCode">
+       <property name="text">
+        <string>ADDRESS-POSTALCODE:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="lineEditAddressPostalCode"/>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="labelAddressCountry">
+       <property name="text">
+        <string>ADDRESS-COUNTRY:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLineEdit" name="lineEditAddressCountry"/>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>LOCATION:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QLineEdit" name="lineEditLocation"/>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>SOAPBOX:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QTextEdit" name="textEditSoapbox">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>80</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0">
+      <widget class="QLabel" name="labelCabrillo1">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo1"/>
+     </item>
+     <item row="15" column="0">
+      <widget class="QLabel" name="labelCabrillo2">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo2"/>
+     </item>
+     <item row="16" column="0">
+      <widget class="QLabel" name="labelCabrillo3">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo3"/>
+     </item>
+     <item row="17" column="0">
+      <widget class="QLabel" name="labelCabrillo4">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="17" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo4"/>
+     </item>
+     <item row="18" column="0">
+      <widget class="QLabel" name="labelCabrillo5">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo5"/>
+     </item>
+     <item row="19" column="0">
+      <widget class="QLabel" name="labelCabrillo6">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo6"/>
+     </item>
+     <item row="20" column="0">
+      <widget class="QLabel" name="labelCabrillo7">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="20" column="1">
+      <widget class="QComboBox" name="comboBoxCabrillo7"/>
+     </item>
+     <item row="12" column="1">
+      <widget class="QLineEdit" name="lineEditClub"/>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>CLUB:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>lineEditExch1</tabstop>
+  <tabstop>lineEditExch2</tabstop>
+  <tabstop>lineEditExch3</tabstop>
+  <tabstop>lineEditExch4</tabstop>
+  <tabstop>lineEditOperators</tabstop>
+  <tabstop>lineEditName</tabstop>
+  <tabstop>textEditAddress</tabstop>
+  <tabstop>lineEditAddressCity</tabstop>
+  <tabstop>lineEditAddressState</tabstop>
+  <tabstop>lineEditAddressPostalCode</tabstop>
+  <tabstop>lineEditAddressCountry</tabstop>
+  <tabstop>lineEditLocation</tabstop>
+  <tabstop>lineEditClub</tabstop>
+  <tabstop>textEditSoapbox</tabstop>
+  <tabstop>comboBoxCabrillo1</tabstop>
+  <tabstop>comboBoxCabrillo2</tabstop>
+  <tabstop>comboBoxCabrillo3</tabstop>
+  <tabstop>comboBoxCabrillo4</tabstop>
+  <tabstop>comboBoxCabrillo5</tabstop>
+  <tabstop>comboBoxCabrillo6</tabstop>
+  <tabstop>comboBoxCabrillo7</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>CabrilloDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>CabrilloDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

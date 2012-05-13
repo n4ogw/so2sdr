@@ -1,0 +1,668 @@
+<a name="top"><h2>SO2SDR help file v1.2.0</h2></a>
+<hr>
+
+<h3>Topics</h3>
+<ul>
+<li><a href="#building">installing/configuring so2sdr</a>
+<li><a href="#v121">current version notes</a> 
+<li><a href="#opnotes">operating notes</a>
+<li><a href="#keys">key reference</a>
+<li><a href="#cw">CW macros</a>
+</ul>
+
+<hr>
+
+<a name="building"><h3>Installing SO2SDR: Linux</h3></a> 
+
+Under Linux, so2sdr needs to be compiled from source.
+
+You will need the following libraries installed: Qt4, FFTW, hamlib,
+and PortAudio.
+These are available in most linux distributions.
+
+<ol>
+<li> Unpack source: tar xzvof so2sdr-xxx.tgz
+<li> By default, so2sdr will be installed in /usr/local/bin, and associated
+data files will be placed in /usr/local/share/so2sdr. If you want to
+change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri
+<li> qmake
+<li> make
+<li> (as superuser) make install 
+</ol>
+
+<h3>Windows</h3>
+
+<p>
+Run the msi installer. All program and data 
+files are in the chosen install directory,
+no registry changes are made.
+</p>
+
+<h3>Initial setup</h3>
+
+<ol>
+<li>
+<p>
+The first time the program is run it will create a directory to store
+user settings. The default location is ~/.so2sdr (Linux) or
+ C:/Documents and Settings/Username/so2sdr (Windows).
+</p>
+<li>
+<p>
+ Fill out the information in the Config menus for Station, Radios,
+Winkey, and Bandscope. 
+</p>
+<ul>
+<li>
+<p>
+ Station: callsign, location, etc. The grid square (4-character)
+is used to determine beam headings from your qth and the sunrise/sunset
+times for your qth.
+</p>
+<li>
+<p> Radios: radio and parallel port interface configuration. Under Linux
+serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
+You may have to add your username to a particular group to access
+these ports. Parallel port access requires the PPDEV kernel module. If this
+kernel module is installed and working you should have a /dev/parport0 or similar.
+You need to be in the group lp to use the port. Under Windows, use COM1, COM2, etc.
+</p>
+
+<p>
+The poll time determines how often the radio is polled for frequency
+and other information. I typically use 300 ms or so. 
+</p>
+
+<li> 
+<p>
+Winkey: if "CW output" is unchecked, the program will not output
+any CW, although all other functions are as usual. "Paddle sidetone"
+will enable the winkey sidetone only when CW is being sent using
+the paddles. "CT Space" uses slightly reduced spaces between words.
+</p>
+
+<p>
+After configuring winkey and pressing OK, the winkey version should
+appear.
+</p>
+<li>
+<p>
+ Once the bandscope is running,
+you will probably want to play with the IF offset to precisely center
+a signal when it is zero-beated.
+</p>
+
+<p>
+Spot timeout is the length of time (in minutes) before spotted calls are removed
+from the bandmap.
+</p>
+
+<p>
+Change radios on click: if checked, the program will switch radios
+and headphone audio whenever a new signal is clicked on. In most cases
+this should be unchecked; when turned on it can be
+used to do S&P across two band simultaneously. 
+</p>
+
+<p>
+CQ finder: this function tries to find the "best" clear frequency on
+the band to call CQ on. The algorithm is very simple: the program looks
+for the largest space between adjacent signals over a particular time
+interval. The integration time chosen will depend on the particular
+contest: shorter for the Sprint (5 seconds), or longer for contests
+with long exchanges (try 20-30 seconds for Sweepstakes). The frequency
+limits control the lowest and highest frequencies on each band.
+Note: this function doesn't always work perfectly, so listen carefully before
+transmitting- don't be a lid. To use this function, you will need to
+put the appropriate macro (see below) in one of the function key
+memories.
+</p>
+</ul>
+<li> 
+<p>
+Start a new contest from the file menu. After choosing where to
+save it, you can customize CW Messages and Contest Options. Be sure
+to fill in the sent exchange in the Contest Options dialog.
+</p>
+<ul>
+<li> CW Messages: the program allows separate messages to be programmed
+for the F1-F12 keys in CQ and S&P modes, as well as Ctrl and Shift modified
+function keys. 
+There are a number of special macros available, all of the form
+{COMMAND}. In most cases I have set up a set of function
+keys that works for my operating, although you might need
+to adjust the exchange. Some special considerations:
+<ul>
+<li> CQ Func F1: this will be sent in CQ mode when pressing enter
+<li> Exc Func F1: this should be your callsign ({CALL})
+<li> Exc Func F2: this should be the contest exchange
+<li> Other: several special messages for exchange sent while CQing,
+etc.
+</ul>
+<li> Contest options: these affect program behavior:
+<ul>
+<li> Mults by band: if checked, mults count on each band
+<li> Show mults: show multipliers in the large "Mults" box. In some
+case this is not wanted, for example when there are a large number
+of multipliers (CQ WPX for example).
+<li> Sprint mode: special program logic for the NA Sprint.
+<li> Supercheck partial: checking enables this
+<li> Dupe behavior: three possible settings
+<li> Sent exchange: this will go in the Cabrillo file. Note that
+these entry boxes do not currently use the same macro system
+used by the CW Messages, so entering {STATE} for example will
+not work. Use "#" for a sent serial number.
+</ul>
+</ul>
+<li> 
+<p>
+Once you start operating, you probably want to enable "Grab
+keyboard" from the "Windows" menu, which will prevent the call
+and exchange entry lines from losing keyboard focus. There are 
+some issues with keyboard grab and the configuration menus, so you
+will need to turn off keyboard grab in order to change the CW Messages or
+other settings.
+</p>
+
+
+<p>
+ A similar option available
+in Linux is "Borderless", which will also prevent clicks in the bandmap
+from taking focus from the main window.
+</p>
+</ol>
+
+
+
+<h3>Config files</h3>
+
+SO2SDR uses two separate configuration files. Both are ASCII and can
+be edited by any program. Options are usually of the form
+"command_name=option".
+
+<ol>
+<li> Station config file: so2sdr.ini; typically 
+located in either ~/.so2sdr (Linux)
+or C:/Documents and Settings/Username/so2sdr (Windows). 
+This file contains hardware setup information, as well
+as callsign, qth, and other basic information. 
+<li> Contest config file: *.cfg; can be located anywhere. 
+This file contains multiplier
+files, multiplier rules, contest  options, and CW message definitions. 
+</ol>
+
+<br>
+<a href="#top">Return to top</a> 
+
+
+<hr>
+
+
+<a name="keys"><h3>Key reference</h3></a>
+
+<ul>
+<li> Radio QSY: enter a number corresponding to a frequency in
+KHz in the callsign window. If the number is followed by a semicolon
+(like 14005;), the frequency change will apply to the inactive radio.
+<li> ctrl-Enter : logs qso with no dupe checking or exchange validation (be
+careful). The qso may not be scored correctly.
+<li> shift-Enter : logs qso without sending CW
+<li> Backslash : log qso and send Quick QSL message
+<li> alt-D : dupe check on 2nd radio
+<li> alt-M : switch mult display mode
+<li> ctrl-N : make a note
+<li> alt-R : Switch radios
+<li> alt-S : Set CW speed. Followed by two numeric digits.
+<li> PdDn : decrease CW speed
+<li> PgUp : increase CW speed 
+<li> ctrl+PdDn : decrease CW speed on inactive radio
+<li> ctrl+PgUp : increase CW speed  on inactive radio
+<li> up/down arrow : switch between call and exchange windows
+<li> ctrl+up : In S&P mode, tune to next higher detected signal on bandmap. 
+In CQ mode  tune to the next higher signal on the INACTIVE radio.
+<li> ctrl+down : In S&P mode, tune to next lower detected signal on bandmap. 
+In CQ mode  tune to the next lower signal on the INACTIVE radio.
+<li> ctrl+F : search log for callsign fragment. ESC clears search results. 
+<li> ctrl+Z (in call/exchange entry field) : undo
+<li> Tab : enter S&P mode
+<li> Esc : exit S&P mode; clear logging fields; reset Alt-D status
+<li> minus (-) : mark frequency on active radio as a dupe, or clear
+the current mark
+<li> equals (=) : mark frequency on inactive radio as a dupe, or clear
+the current mark
+</ul>
+
+
+<br>
+<a href="#top">Return to top</a> 
+
+<hr>
+
+
+<a name="cw"><h3>CW Message macros</h3></a>
+
+<ul>
+   <li> {CALL} :     callsign
+   <li> {#} :        qso number
+   <li> {UP} :       increase speed by 5 WPM
+   <li> {DN} :       decrease speed by 5 WPM
+   <li> {CANCEL} :   cancel any previous speed change
+   <li> {R2} :       send on other radio
+   <li> {R2CQ} :     send on other radio, marked as CQ. If a call is entered, program will switch to other radio to answer CQ. ESC or a F1 CQ will clear this state.
+   <li> {STATE} :    state
+   <li> {SECTION} :  ARRL section
+   <li> {NAME} :     name
+   <li> {CQZ} :      CQ zone
+   <li> {ITUZ} :     ITU zone
+   <li> {GRID} :     grid
+   <li> {CALL_ENTERED} :  contents of call entry window
+   <li> {TOGGLESTEREOPIN} :  toggle parallel port pin for audio control. This macro should be used alone and will not work with other CW macros
+   <li> {CQMODE} :   switch to CQ mode
+   <li> {SPMODE} :   switch to SP mode
+   <li> {SWAP_RADIOS} :  swap frequencies between radios
+   <li> {REPEAT_LAST} :  repeats previously sent message
+   <li> {REPEAT_NR} :  if the call entry line is not empty, send current qso #. If call entry line is empty, sends number sent for last logged qso.
+  <LI> {CLEAR_RIT} : clear the RIT
+<li> {RIG_FREQ} : send frequency of radio rounded to nearest KHz
+<li> {RIG2_FREQ} : send frequency of 2nd radio rounded to nearest KHz
+ <li> {BEST_CQ} qsy current radio to "best" CQ freq
+ <li> {BEST_CQ_R2} qsy 2nd radio to "best" CQ freq
+<li> | : insert 1/2 dit extra space
+</ul>
+
+<br>
+<a href="#top">Return to top</a> 
+
+<hr>
+
+<a name="opnotes"><h3>Operating notes</h3></a>
+
+
+<h3>Running stations</h3>
+
+
+SO2SDR uses the "Enter sends message" approach used by many other logging programs:
+<ol>
+<li> Enter callsign, press enter. The CQ exchange is sent
+<li> Enter exchange, press enter. The QSL message is sent
+<li> repeat
+</ol>
+
+<p>
+The program tries to be intelligent in interpreting the entered
+exchange. There needs to be a space between exchange elements in
+most cases (123a is acceptable in Sweepstakes for the number/prec).
+In most cases, you do not need to backspace to correct
+an exchange mistake- the program will take the last valid exchange
+on the line.
+</p>
+
+<p>
+That the exchange must be "validated", or enter will not log
+the qso. In case there is a problem, it is possible to "force log"
+the qso- press ctrl-Enter instead of just enter. Be careful with
+these cases, the number and position of exchange elements has to
+match exactly in this case. These qso's may also be scored
+incorrectly
+</p>
+
+<p>
+Shift-Enter instead of Enter will also log the qso without sending any CW.
+</p>
+
+<p>
+The Backslash key ("\") will log the qso and send the "Quick QSL"
+message instead of the usual QSL message.
+</p>
+
+<h3>S&P</h3>
+
+TAB enters S&P mode.
+
+<ol>
+<li> type callsign. When enter is pressed, your call is sent
+<li> enter exchange. When enter is pressed, you exchange is sent
+<li> press enter again to log the qso. I am planning on making
+this extra enter optional.
+</ol>
+
+
+<h3>Using the bandmap</h3>
+
+In the bandmap, the radio frequency is in the center at the red
+line. A right mouse click will bring up several options:
+
+<ul>
+<li> Zoom X1, Zoom X2: set scale of bandmap.
+<li> Delete call: use to remove a call from the bandmap. Note that
+the "-" and "=" keys can be used to remove a call.
+<li> IQ Balance: open the IQ balance dialog. The bandmap uses strong
+signals to correct gain and phase errors in the SDR hardware. 
+This correction will be saved when quitting the program.
+If the "IQ" box is checked, the correction is applied; if the "IQ Data"
+box is checked, new signals are used to improve the correction.
+</ul>
+
+Options at the bottom of the bandmap window:
+<ul>
+<li> Mark signals: this uses a peak detection algorithm to
+try to determine where signals are on the band. This does not decode
+any CW. Each detected peak is marked with a small black dot; clicking
+on it will tune the radio to that signal. Ctrl-up and Ctrl-down
+arrows can be used to tune the radio to the next signal up or down the 
+band. In S&P mode, they will tune the active radio; otherwise they apply to
+the inactive radio.
+<li> Signal level slider: adjusts sensitivity of peak detection 
+algorithm.
+<li> IQ: correct I-Q balance errors
+<li> IQ Data: collect data from received signals to improve I-Q balance
+<li> Click filter: removes key clicks. Not very effective at
+the moment
+</ul>
+
+<p>
+Left click: this will tune the radio to this frequency.
+</p>
+
+<p>
+Left Click+drag in frequency scale: moves center of the display
+</p>
+
+<p>
+When in S&P mode, pressing Space after typing a callsign will add
+it to the bandmap. If the call is a dupe, it will be highlighted
+in color on the bandmap. Using this trick, new signals become obvious
+on the bandmap. It is of course possible that a station can be
+replaced by another on exactly the same frequency. However, in practice
+this does not happen very often--it is a much more probable that
+unhighlighted signals are unworked stations. The Spot Timeout
+setting is also critical here.
+</p>
+
+
+<h3>Editing log information</h3>
+
+<p>
+Previous qso's can be edited in the log window by clicking on 
+a field, editing the information, and pressing enter. Pressing escape
+instead cancels the changes. The following fields
+are editable: time, callsign, sent exchange, and received exchange. The
+qso points (if displayed for that contest) will be recalculated 
+automatically. 
+</p>
+
+<p>
+To search for a call (or partial call) in the log, enter a call
+fragment in the callsign window and press ctrl-F. ESC clears the 
+search results.
+</p>
+
+<p>
+Marking qso's as invalid: there is no way to delete qso's from the
+log. However, for each qso there is a checkbox. If this is unchecked, the
+qso is marked as invalid and 
+completely removed from dupe checking and scoring, and will not
+appear in the final Cabrillo output.
+</p>
+
+<h3>SO2R</h3>
+
+<p>
+For working stations on a second band while CQing on a different
+band SO2SDR uses a system similar to TRLOG:
+</p>
+
+<p>
+<ol>
+<li> Tune in a station on the second radio. By clicking on a
+signal or using ctrl-up/down this is very easy to do.
+<li> Press alt-D ; enter the callsign- it will show in the
+2nd radio callsign window. The color is changed to indicate
+this will be a second radio qso.
+<li> When ready to call the station, hit Space. Now work
+the station as usual. You may want to define function
+keys to send messages on the other radio during the 2nd radio
+qso.
+<li> The program will return to the original radio when the
+2nd radio qso is logged.
+</ol>
+</p>
+
+<p>
+Note that if you tune by a station you are sure you have worked,
+you can use the "-" or "=" keys to mark that frequency as a dupe
+without having to enter the whole callsign. This can save a lot
+of typing and allow one to check a 2nd band for new stations
+very quickly.
+</p>
+
+<hr>
+
+<h3>Sprint/Sprint+SO2R</h3>
+
+<p>
+ For users of TRLOG the behavior of SO2SDR is very similar.
+</p>
+
+<br>
+<a href="#top">Return to top</a> 
+<hr>
+
+<a name="v121"><h3>Version 1.2.1</h3></a> 
+
+<ul>
+<li> Can now log qso's on non-contest and VHF/UHF bands. These
+will not show in the band breakdown however.
+<li> More accurate bearings and sunrise/set times. If the stations'
+zone is given in wl_cty.dat, the zone is used to estimate latitude
+and longitude rather than the default entry for that country.
+Depending on where the station is located in the zone and whether
+CQ or ITU zones are bring used, the accuracy in the location will
+vary. Note that entering your own call now gives your exact sunrise
+and sunset (determined from your grid square).
+<li> Fixed bug with sunrise/set and polar stations.
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
+<a name="v120"><h3>Version 1.2.0</h3></a> 
+
+<ul>
+<li> Major internal changes to log. Log (".log" file) is now
+stored using SQLITE database:
+<ul>
+<li> Logs from older versions are not compatable: if you need to
+open an older log, convert it to cabrillo first and then use 
+"import cabrillo"
+<li> Log is now editable during the contest. Time, callsign, and
+exchange fields may be edited by clicking/double clicking on the
+appropriate field; Enter accepts changes and pressing Escape reverts
+them.
+<li> QSO's can not be deleted once entered. However, unchecking the
+check box on a qso will remove it from the scoring and cabrillo output.
+<li> After a log edit the log is re-duped and the multiplier total and score
+ is recalculated.
+<li> To search for a call in the log enter a call (or partial call)
+in the callsign window and press "ctrl-F". Search results that appear
+can then be edited as above.
+</ul>
+<li> Bandmap spots are saved to disk (file ".dat") when exiting
+the program.
+<li> Other bug fixes
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+<a name="v1111"><h3>Version 1.1.11</h3></a> 
+
+<ul>
+<li> Fix problems with Windows build
+<li> Check to create user directory before checking hamlib backends
+<li> Updates to some default contests config files
+<li> change escape behavior during alt-D
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
+<a name="v1110"><h3>Version 1.1.10</h3></a> 
+
+<ul>
+<li> Fix (I think) bug causing crash when rig keyed with paddle
+and only 1 bandmap active
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
+<a name="v119"><h3>Version 1.1.9</h3></a> 
+
+<ul>
+<li> new feature in bandmap: dragging on frequency label field will
+move the central frequency
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
+<a name="v118"><h3>Version 1.1.8</h3></a> 
+
+<ul>
+<li>switch to Portaudio callback API. DSound API (and maybe others)
+should now work in Windows
+<li>each audio device marked with a check if it supports the
+required sample rate and format
+<li>simplify Portaudio error message popup windows
+<li>show ASIO control panel if an ASIO device is selected
+<li>{CLEAR_RIT} works at least with Elecraft radios
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
+<a name="v116"><h3>Version 1.1.6</h3></a> 
+
+<ul>
+<li>update MASTER.DTA and CTY files
+<li>add highlight showing bands in use to breakdown
+<li>fix bugs with exchange prefill
+<li>fix bugs in IARU contest
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+<a name="v112"><h3>Version 1.1.3</h3></a> 
+
+<p>
+More bug fixes: see CHANGES file.
+</p>
+
+<p>
+Note that you probably will not be able to use the {CLEAR_RIT} macro:
+in hamlib there is currently no way to clear the RIT without turning it
+off completely.
+</p>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+<a name="v112"><h3>Version 1.1.2</h3></a> 
+
+<p>
+Bugfix release.
+</p>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
+<a name="v110"><h3>Version 1.1.0</h3></a> 
+
+<p>Changes:</p>
+
+<ul>
+<li> Now uses hamlib for radio control, so any radio supported by hamlib should
+work. Note that for correct K3 support, a relatively recent (at least 1.2.xx)
+version is needed. Older versions do not support needed K3 features. I do not
+know how well other radios will work.
+<li> Under linux, parallel port support now uses the kernel module PPDEV and
+/dev/parport0, etc. The program no longer needs to be setuid root, but
+you must be in the lp group.
+<li> Major changes in the multi-threaded aspects of the program. Threads
+were not functioning correctly before.
+<li> Ok/Cancel should function correctly in setup dialogs.
+<li> Transmit status now determined from winkey rather than polling
+radio.
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+<a name="v100"><h3>Version 1.0.0</h3></a> 
+
+<p>Supported hardware:</p>
+
+<p>Radios:</p>
+<ul>
+<li>Elecraft K2
+<li>Elecraft K3
+</ul>
+
+<p>SDR bandscope:</p>
+<ul>
+<li>I/Q soundcard based (Softrock, LP-PAN, etc)
+</ul>
+
+<p>Miscellaneous:</p>
+<ul>
+<li> Winkey
+<li> headphone, radio switching: parallel port
+</ul>
+
+<p>
+Issues and limitations:
+</p>
+<ul>
+<li> log is not editable; make a note (Ctrl+N) if a qso is logged
+incorrectly and fix it in the cabrillo
+<li> After opening a contest config file, you must exit and
+restart so2sdr before opening another contest 
+<li> bandmap entries are not saved when quitting the program
+<li> key click filter is not very effective
+<li> Linux: the program is setuid root to enable parallel port
+access. Root access is dropped after the parallel port is opened,
+so the port choice can't be changed later.
+<li> Windows: only MME soundcard API is working
+<li> some issues with keyboard focus when opening menus; may need to
+disable keyboard grab when changing cw messages or other settings
+<li> support for SSB is limited
+<li> sunrise/sunset times shown are computed from the latitude
+and longitude listed in wl_cty.dat. They are not very accurate for
+large countries.
+<li> no multi-operator support
+<li> external packetclusters can be connected to; due to the limited
+frequency resolution in packetcluster spots 
+and frequency errors, this does not work very
+well for highlighting stations on the bandmap
+<li> probably lots of bugs...
+</ul>
+<a href="#top">Return to top</a> 
+
+

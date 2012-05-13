@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- qttelnet-2.1_1-opensource/src/qttelnet.cpp -->
+<head>
+  <title>QtTelnet Class Reference</title>
+  <link href="classic.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="left" valign="top" width="32"><img src="images/qt-logo.png" align="left" width="57" height="67" border="0" /></td>
+<td width="1">&nbsp;&nbsp;</td><td class="postheader" valign="center"><a href="index.html"><font color="#004faf">Home</font></a></td>
+</tr></table><h1 class="title">QtTelnet Class Reference</h1>
+<p>The QtTelnet class proveds an API to connect to Telnet servers, issue commands and receive replies. <a href="#details">More...</a></p>
+<pre> #include &lt;QtTelnet&gt;</pre><p>Inherits <a href="http://qt.nokia.com/doc/4.5/qobject.html">QObject</a>.</p>
+<ul>
+<li><a href="qttelnet-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h3>Public Types</h3>
+<ul>
+<li><div class="fn"></div>enum <b><a href="qttelnet.html#Control-enum">Control</a></b> { GoAhead, InterruptProcess, AreYouThere, AbortOutput, ..., Abort }</li>
+</ul>
+<a name="public-functions"></a>
+<h3>Public Functions</h3>
+<ul>
+<li><div class="fn"></div><b><a href="qttelnet.html#QtTelnet">QtTelnet</a></b> ( QObject * <i>parent</i> = 0 )</li>
+<li><div class="fn"></div><b><a href="qttelnet.html#dtor.QtTelnet">~QtTelnet</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#connectToHost">connectToHost</a></b> ( const QString &amp; <i>host</i>, quint16 <i>port</i> = 23 )</li>
+<li><div class="fn"></div>bool <b><a href="qttelnet.html#isValidWindowSize">isValidWindowSize</a></b> () const</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#login">login</a></b> ( const QString &amp; <i>username</i>, const QString &amp; <i>password</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setLoginPattern">setLoginPattern</a></b> ( const QRegExp &amp; <i>pattern</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setLoginString">setLoginString</a></b> ( const QString &amp; <i>login</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setPasswordPattern">setPasswordPattern</a></b> ( const QRegExp &amp; <i>pattern</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setPasswordString">setPasswordString</a></b> ( const QString &amp; <i>pattern</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setPromptPattern">setPromptPattern</a></b> ( const QRegExp &amp; <i>pattern</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setPromptString">setPromptString</a></b> ( const QString &amp; <i>pattern</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setSocket">setSocket</a></b> ( QTcpSocket * <i>socket</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setWindowSize">setWindowSize</a></b> ( const QSize &amp; <i>size</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#setWindowSize-2">setWindowSize</a></b> ( int <i>width</i>, int <i>height</i> )</li>
+<li><div class="fn"></div>QTcpSocket * <b><a href="qttelnet.html#socket">socket</a></b> () const</li>
+<li><div class="fn"></div>QSize <b><a href="qttelnet.html#windowSize">windowSize</a></b> () const</li>
+</ul>
+<ul>
+<li><div class="fn"></div>29 public functions inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#public-functions">QObject</a></li>
+</ul>
+<a name="public-slots"></a>
+<h3>Public Slots</h3>
+<ul>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#close">close</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#logout">logout</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#sendControl">sendControl</a></b> ( Control <i>ctrl</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#sendData">sendData</a></b> ( const QString &amp; <i>data</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#sendSync">sendSync</a></b> ()</li>
+</ul>
+<ul>
+<li><div class="fn"></div>1 public slot inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#public-slots">QObject</a></li>
+</ul>
+<a name="signals"></a>
+<h3>Signals</h3>
+<ul>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#connectionError">connectionError</a></b> ( QAbstractSocket::SocketError <i>error</i> )</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#loggedIn">loggedIn</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#loggedOut">loggedOut</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#loginFailed">loginFailed</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#loginRequired">loginRequired</a></b> ()</li>
+<li><div class="fn"></div>void <b><a href="qttelnet.html#message">message</a></b> ( const QString &amp; <i>data</i> )</li>
+</ul>
+<ul>
+<li><div class="fn"></div>1 signal inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#signals">QObject</a></li>
+</ul>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li><div class="fn"></div>1 property inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#properties">QObject</a></li>
+<li><div class="fn"></div>1 public type inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#public-variables">QObject</a></li>
+<li><div class="fn"></div>4 static public members inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#static-public-members">QObject</a></li>
+<li><div class="fn"></div>7 protected functions inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#protected-functions">QObject</a></li>
+<li><div class="fn"></div>2 protected variables inherited from <a href="http://qt.nokia.com/doc/4.5/qobject.html#protected-variables">QObject</a></li>
+</ul>
+<a name="details"></a>
+<hr />
+<h2>Detailed Description</h2>
+<p>The QtTelnet class proveds an API to connect to Telnet servers, issue commands and receive replies.</p>
+<p>When a QtTelnet object has been created, you need to call <a href="qttelnet.html#connectToHost">connectToHost</a>() to establish a connection with a Telnet server. When the connection is established the connected() signal is emitted. At this point you should call <a href="qttelnet.html#login">login</a>(). The QtTelnet object will emit <a href="qttelnet.html#connectionError">connectionError</a>() if the connection fails, and authenticationFailed() if the <a href="qttelnet.html#login">login</a>() failed.</p>
+<p>Once the connection has been successfully established and you've logged in you can send control messages using <a href="qttelnet.html#sendControl">sendControl</a>() and data using <a href="qttelnet.html#sendData">sendData</a>(). Connect to the <a href="qttelnet.html#message">message</a>() signal to receive data from the Telnet server. The connection is closed with <a href="qttelnet.html#close">close</a>().</p>
+<p>You can use your own socket if you call <a href="qttelnet.html#setSocket">setSocket</a>() before connecting. The socket used by QtTelnet is available from <a href="qttelnet.html#socket">socket</a>().</p>
+<hr />
+<h2>Member Type Documentation</h2>
+<h3 class="fn"><a name="Control-enum"></a>enum QtTelnet::Control</h3>
+<p>This enum specifies control messages you can send to the Telnet server using <a href="qttelnet.html#sendControl">sendControl</a>().</p>
+<p><table border="1" cellpadding="2" cellspacing="1" width="100%">
+<tr><th width="25%">Constant</th><th width="15%">Value</th><th width="60%">Description</th></tr>
+<tr><td valign="top"><tt>QtTelnet::GoAhead</tt></td><td align="center" valign="top"><tt>0</tt></td><td valign="top">Sends the <tt>GO</tt> <tt>AHEAD</tt> control message, meaning that the server can continue to send data.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::InterruptProcess</tt></td><td align="center" valign="top"><tt>1</tt></td><td valign="top">Interrupts the current running process on the server. This is the equivalent of pressing <b>Ctrl+C</b> in most terminal emulators.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::AreYouThere</tt></td><td align="center" valign="top"><tt>2</tt></td><td valign="top">Sends the <tt>ARE</tt> <tt>YOU</tt> <tt>THERE</tt> control message, to check if the connection is still alive.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::AbortOutput</tt></td><td align="center" valign="top"><tt>3</tt></td><td valign="top">Temporarily suspends the output from the server. The output will resume if you send this control message again.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::EraseCharacter</tt></td><td align="center" valign="top"><tt>4</tt></td><td valign="top">Erases the last entered character.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::EraseLine</tt></td><td align="center" valign="top"><tt>5</tt></td><td valign="top">Erases the last line.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::Break</tt></td><td align="center" valign="top"><tt>6</tt></td><td valign="top">Sends the <tt>BREAK</tt> control message.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::EndOfFile</tt></td><td align="center" valign="top"><tt>7</tt></td><td valign="top">Sends the <tt>END</tt> <tt>OF</tt> <tt>FILE</tt> control message.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::Suspend</tt></td><td align="center" valign="top"><tt>8</tt></td><td valign="top">Suspends the current running process on the server. Equivalent to pressing <b>Ctrl+Z</b> in most terminal emulators.</td></tr>
+<tr><td valign="top"><tt>QtTelnet::Abort</tt></td><td align="center" valign="top"><tt>9</tt></td><td valign="top">Sends the <tt>ABORT</tt> control message.</td></tr>
+</table></p>
+<p>See also <a href="qttelnet.html#sendControl">sendControl</a>().</p>
+<hr />
+<h2>Member Function Documentation</h2>
+<h3 class="fn"><a name="QtTelnet"></a>QtTelnet::QtTelnet ( <a href="http://qt.nokia.com/doc/4.5/qobject.html">QObject</a> * <i>parent</i> = 0 )</h3>
+<p>Constructs a <a href="qttelnet.html">QtTelnet</a> object.</p>
+<p>You must call <a href="qttelnet.html#connectToHost">connectToHost</a>() before calling any of the other member functions.</p>
+<p>The <i>parent</i> is sent to the <a href="http://qt.nokia.com/doc/4.5/qobject.html">QObject</a> constructor.</p>
+<p>See also <a href="qttelnet.html#connectToHost">connectToHost</a>().</p>
+<h3 class="fn"><a name="dtor.QtTelnet"></a>QtTelnet::~QtTelnet ()</h3>
+<p>Destroys the <a href="qttelnet.html">QtTelnet</a> object. This will also close the connection to the server.</p>
+<p>See also <a href="qttelnet.html#logout">logout</a>().</p>
+<h3 class="fn"><a name="close"></a>void QtTelnet::close ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Closes the connection to a Telnet server.</p>
+<p>See also <a href="qttelnet.html#connectToHost">connectToHost</a>() and <a href="qttelnet.html#login">login</a>().</p>
+<h3 class="fn"><a name="connectToHost"></a>void QtTelnet::connectToHost ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>host</i>, <a href="http://qt.nokia.com/doc/4.5/qtglobal.html#quint16-typedef">quint16</a> <i>port</i> = 23 )</h3>
+<p>Calling this function will make the <a href="qttelnet.html">QtTelnet</a> object attempt to connect to a Telnet server specified by the given <i>host</i> and <i>port</i>.</p>
+<p>The connected() signal is emitted if the connection succeeds, and the <a href="qttelnet.html#connectionError">connectionError</a>() signal is emitted if the connection fails. Once the connection is establishe you must call <a href="qttelnet.html#login">login</a>().</p>
+<p>See also <a href="qttelnet.html#close">close</a>().</p>
+<h3 class="fn"><a name="connectionError"></a>void QtTelnet::connectionError ( <a href="http://qt.nokia.com/doc/4.5/qabstractsocket.html#SocketError-enum">QAbstractSocket::SocketError</a> <i>error</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted if the underlying socket implementation receives an error. The <i>error</i> argument is the same as being used in QSocket::connectionError()</p>
+<h3 class="fn"><a name="isValidWindowSize"></a>bool QtTelnet::isValidWindowSize () const</h3>
+<p>Returns true if the window size is valid, i.e&#x2e; <a href="qttelnet.html#windowSize">windowSize</a>().isValid() returns true; otherwise returns false.</p>
+<p>See also <a href="qttelnet.html#setWindowSize">setWindowSize</a>().</p>
+<h3 class="fn"><a name="loggedIn"></a>void QtTelnet::loggedIn ()&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when you have been logged in to the server as a result of the <a href="qttelnet.html#login">login</a>() command being called. Do note that you might never see this signal even if you have been logged in, due to the Telnet specification not requiring Telnet servers to notify clients when users are logged in.</p>
+<p>See also <a href="qttelnet.html#login">login</a>() and <a href="qttelnet.html#setPromptPattern">setPromptPattern</a>().</p>
+<h3 class="fn"><a name="loggedOut"></a>void QtTelnet::loggedOut ()&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when you have called <a href="qttelnet.html#logout">logout</a>() and the Telnet server has actually logged you out.</p>
+<p>See also <a href="qttelnet.html#logout">logout</a>() and <a href="qttelnet.html#login">login</a>().</p>
+<h3 class="fn"><a name="login"></a>void QtTelnet::login ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>username</i>, const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>password</i> )</h3>
+<p>Sets the <i>username</i> and <i>password</i> to be used when logging in to the server.</p>
+<p>See also <a href="qttelnet.html#setLoginPattern">setLoginPattern</a>() and <a href="qttelnet.html#setPasswordPattern">setPasswordPattern</a>().</p>
+<h3 class="fn"><a name="loginFailed"></a>void QtTelnet::loginFailed ()&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the login has failed. Do note that you might in certain cases see several <a href="qttelnet.html#loginRequired">loginRequired</a>() signals being emitted but no loginFailed() signals. This is due to the Telnet specification not requiring the Telnet server to support reliable authentication methods.</p>
+<p>See also <a href="qttelnet.html#login">login</a>() and <a href="qttelnet.html#loginRequired">loginRequired</a>().</p>
+<h3 class="fn"><a name="loginRequired"></a>void QtTelnet::loginRequired ()&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the <a href="qttelnet.html">QtTelnet</a> class sees that the Telnet server expects authentication and you have not already called <a href="qttelnet.html#login">login</a>().</p>
+<p>As a reply to this signal you should either call <a href="qttelnet.html#login">login</a>() or <a href="qttelnet.html#logout">logout</a>()</p>
+<p>See also <a href="qttelnet.html#login">login</a>() and <a href="qttelnet.html#logout">logout</a>().</p>
+<h3 class="fn"><a name="logout"></a>void QtTelnet::logout ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>This function will log you out of the Telnet server. You cannot send any other data after sending this command.</p>
+<p>See also <a href="qttelnet.html#login">login</a>(), <a href="qttelnet.html#sendData">sendData</a>(), and <a href="qttelnet.html#sendControl">sendControl</a>().</p>
+<h3 class="fn"><a name="message"></a>void QtTelnet::message ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>data</i> )&nbsp;&nbsp;<tt> [signal]</tt></h3>
+<p>This signal is emitted when the <a href="qttelnet.html">QtTelnet</a> object receives more <i>data</i> from the Telnet server.</p>
+<p>See also <a href="qttelnet.html#sendData">sendData</a>().</p>
+<h3 class="fn"><a name="sendControl"></a>void QtTelnet::sendControl ( <a href="qttelnet.html#Control-enum">Control</a> <i>ctrl</i> )&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Sends the control message <i>ctrl</i> to the Telnet server the <a href="qttelnet.html">QtTelnet</a> object is connected to.</p>
+<p>See also <a href="qttelnet.html#Control-enum">Control</a>, <a href="qttelnet.html#sendData">sendData</a>(), and <a href="qttelnet.html#sendSync">sendSync</a>().</p>
+<h3 class="fn"><a name="sendData"></a>void QtTelnet::sendData ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>data</i> )&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Sends the string <i>data</i> to the Telnet server. This is often a command the Telnet server will execute.</p>
+<p>See also <a href="qttelnet.html#sendControl">sendControl</a>().</p>
+<h3 class="fn"><a name="sendSync"></a>void QtTelnet::sendSync ()&nbsp;&nbsp;<tt> [slot]</tt></h3>
+<p>Sends the Telnet <tt>SYNC</tt> sequence, meaning that the Telnet server should discard any data waiting to be processed once the <tt>SYNC</tt> sequence has been received. This is sent using a TCP urgent notification.</p>
+<p>See also <a href="qttelnet.html#sendControl">sendControl</a>().</p>
+<h3 class="fn"><a name="setLoginPattern"></a>void QtTelnet::setLoginPattern ( const <a href="http://qt.nokia.com/doc/4.5/qregexp.html">QRegExp</a> &amp; <i>pattern</i> )</h3>
+<p>Sets the expected login pattern.</p>
+<p>The <i>pattern</i> is used to automatically recognize when the server asks for a username. If no username has been set, the <a href="qttelnet.html#loginRequired">loginRequired</a>() signal will be emitted.</p>
+<p>See also <a href="qttelnet.html#login">login</a>().</p>
+<h3 class="fn"><a name="setLoginString"></a>void QtTelnet::setLoginString ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>login</i> )</h3>
+<p>Sets the expected login string to <i>login</i>.</p>
+<p>This is an overloaded function.</p>
+<h3 class="fn"><a name="setPasswordPattern"></a>void QtTelnet::setPasswordPattern ( const <a href="http://qt.nokia.com/doc/4.5/qregexp.html">QRegExp</a> &amp; <i>pattern</i> )</h3>
+<p>Sets the expected password prompt pattern.</p>
+<p>The <i>pattern</i> is used to automatically recognize when the server asks for a password. If no password has been set, the <a href="qttelnet.html#loginRequired">loginRequired</a>() signal will be emitted.</p>
+<p>See also <a href="qttelnet.html#login">login</a>().</p>
+<h3 class="fn"><a name="setPasswordString"></a>void QtTelnet::setPasswordString ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>pattern</i> )</h3>
+<p>Sets the expected password prompt to <i>pattern</i>.</p>
+<p>This is an overloaded function.</p>
+<h3 class="fn"><a name="setPromptPattern"></a>void QtTelnet::setPromptPattern ( const <a href="http://qt.nokia.com/doc/4.5/qregexp.html">QRegExp</a> &amp; <i>pattern</i> )</h3>
+<p>Sets the expected shell prompt pattern.</p>
+<p>The <i>pattern</i> is used to automatically recognize when the client has successfully logged in. When a line is read that matches the <i>pattern</i>, the <a href="qttelnet.html#loggedIn">loggedIn</a>() signal will be emitted.</p>
+<p>See also <a href="qttelnet.html#login">login</a>() and <a href="qttelnet.html#loggedIn">loggedIn</a>().</p>
+<h3 class="fn"><a name="setPromptString"></a>void QtTelnet::setPromptString ( const <a href="http://qt.nokia.com/doc/4.5/qstring.html">QString</a> &amp; <i>pattern</i> )</h3>
+<p>Sets the expected shell prompt to <i>pattern</i>.</p>
+<p>This is an overloaded function.</p>
+<h3 class="fn"><a name="setSocket"></a>void QtTelnet::setSocket ( <a href="http://qt.nokia.com/doc/4.5/qtcpsocket.html">QTcpSocket</a> * <i>socket</i> )</h3>
+<p>Set the <i>socket</i> to be used in the communication.</p>
+<p>This function allows you to use your own <a href="http://qt.nokia.com/doc/4.5/porting4.html">QSocket</a> subclass. You should call this function before calling <a href="qttelnet.html#connectToHost">connectToHost</a>(); if you call it after a connection has been established the connection will be closed, so in all cases you will need to call <a href="qttelnet.html#connectToHost">connectToHost</a>() after calling this function.</p>
+<p>See also <a href="qttelnet.html#socket">socket</a>(), <a href="qttelnet.html#connectToHost">connectToHost</a>(), and <a href="qttelnet.html#logout">logout</a>().</p>
+<h3 class="fn"><a name="setWindowSize"></a>void QtTelnet::setWindowSize ( const <a href="http://qt.nokia.com/doc/4.5/qsize.html">QSize</a> &amp; <i>size</i> )</h3>
+<p>Sets the client window size to <i>size</i>.</p>
+<p>The width and height are given in number of characters. Non-visible clients should pass an invalid size (i.e&#x2e; QSize()).</p>
+<p>See also <a href="qttelnet.html#windowSize">windowSize</a>() and <a href="qttelnet.html#isValidWindowSize">isValidWindowSize</a>().</p>
+<h3 class="fn"><a name="setWindowSize-2"></a>void QtTelnet::setWindowSize ( int <i>width</i>, int <i>height</i> )</h3>
+<p>Sets the client window size.</p>
+<p>The <i>width</i> and <i>height</i> are given in number of characters.</p>
+<p>This is an overloaded function.</p>
+<h3 class="fn"><a name="socket"></a><a href="http://qt.nokia.com/doc/4.5/qtcpsocket.html">QTcpSocket</a> * QtTelnet::socket () const</h3>
+<p>Returns the <a href="http://qt.nokia.com/doc/4.5/qtcpsocket.html">QTcpSocket</a> instance used by this telnet object.</p>
+<p>See also <a href="qttelnet.html#setSocket">setSocket</a>().</p>
+<h3 class="fn"><a name="windowSize"></a><a href="http://qt.nokia.com/doc/4.5/qsize.html">QSize</a> QtTelnet::windowSize () const</h3>
+<p>Returns the window's size. This will be an invalid size if the Telnet server is not using the NAWS option (RFC1073).</p>
+<p>See also <a href="qttelnet.html#setWindowSize">setWindowSize</a>() and <a href="qttelnet.html#isValidWindowSize">isValidWindowSize</a>().</p>
+<p /><address><hr /><div align="center">
+<table width="100%" cellspacing="0" border="0"><tr class="address">
+<td width="30%" align="left">Copyright &copy; 2009 Nokia Corporation and/or its subsidiary(-ies)</td>
+<td width="40%" align="center"><a href="http://qt.nokia.com/doc/trademarks.html">Trademarks</a></td>
+<td width="30%" align="right"><div align="right">Qt Solutions</div></td>
+</tr></table></div></address></body>
+</html>

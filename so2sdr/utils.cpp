@@ -1,0 +1,122 @@
+/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+
+   This file is part of so2sdr.
+
+    so2sdr is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    so2sdr is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
+
+ */
+#include "defines.h"
+#include "utils.h"
+
+/*!
+  input validator that converts all input to uppercase
+*/
+UpperValidator::UpperValidator(QObject *parent) : QValidator(parent)
+{
+}
+
+QValidator::State UpperValidator::validate(QString &input, int &pos) const
+{
+    Q_UNUSED(pos);
+    input = input.toUpper();
+    return(Acceptable);
+}
+
+/*!
+  input validator for entering 4-digit UTC times
+  */
+TimeValidator::TimeValidator(QObject *parent) : QValidator(parent)
+{
+}
+
+QValidator::State TimeValidator::validate(QString &input, int &pos) const
+{
+    Q_UNUSED(pos);
+    bool ok=false;
+    int t=input.toInt(&ok,10);
+    if (ok && t>=0 && t<=2359) {
+        if (input.size()!=4) {
+            return(Intermediate);
+        } else {
+            return(Acceptable);
+        }
+    }
+    return(Invalid);
+}
+
+void TimeValidator::fixup ( QString & input ) const
+{
+    // format as 4 digits with leading zeros
+    switch (input.size()) {
+    case 0:
+        input="0000";
+        break;
+    case 1:
+        input="000"+input;
+        break;
+    case 2:
+        input="00"+input;
+        break;
+    case 3:
+        input="0"+input;
+        break;
+    case 4:
+        break;
+    }
+}
+
+/*!
+   get band index from frequency
+ */
+int getBand(int f)
+{
+    switch (f / 1000000) {
+    case 1: case 2: return(BAND160);
+        break; // 160
+    case 3: return(BAND80);
+        break; // 80
+    case 5: return(BAND60);
+        break; // 60
+    case 6: case 7: return(BAND40);
+        break; // 40
+    case 10: return(BAND30);
+        break; // 30
+    case 13: case 14: return(BAND20);
+        break; // 20
+    case 18: return(BAND17);
+        break; // 17
+    case 21: return(BAND15);
+        break; // 15
+    case 24: return(BAND12);
+        break; // 12
+    case 27: case 28: case 29: case 30: return(BAND10);
+        break; // 10
+    case 50:case 51:case 52:case 53:case 54:return(BAND6);
+        break; // 6
+    case 144:case 145:case 146:case 147:case 148: return(BAND2);
+        break; // 2
+    case 219:case 220:case 221:case 222:case 223:case 224:case 225: return(BAND222);
+        break; // 220 MHz
+    }
+    // handle UHF
+    int fmhz=f/1000000;
+    if (fmhz>419 && fmhz<451) {
+        return(BAND420);
+    } else if (fmhz>901 && fmhz<929) {
+        return(BAND902);
+    } else if (fmhz>1239 && fmhz<1301) {
+        return(BAND1240);
+    }
+    return(-1);
+}

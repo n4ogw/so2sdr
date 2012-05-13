@@ -1,0 +1,1196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>N4OGW</author>
+ <class>CWMessageDialog</class>
+ <widget class="QDialog" name="CWMessageDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>442</width>
+    <height>555</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>442</width>
+    <height>555</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>442</width>
+    <height>555</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>CW Messages</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="cw_msg_tab">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>420</width>
+       <height>495</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>430</width>
+       <height>495</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="statusTip">
+      <string/>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="cq_func_tab">
+      <attribute name="title">
+       <string>CQ Func</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>CQ mode function keys</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>411</width>
+         <height>441</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string> F1 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="cq_f1_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string> F2 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="cq_f2_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string> F3 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="cq_f3_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string> F4 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="cq_f4_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string> F5 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="cq_f5_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string> F6 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="cq_f6_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string> F7 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="cq_f7_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string> F8 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="cq_f8_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string> F9 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLineEdit" name="cq_f9_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string> F10 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="cq_f10_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string> F11 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QLineEdit" name="cq_f11_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string> F12 </string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QLineEdit" name="cq_f12_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="other_func_tab">
+      <attribute name="title">
+       <string>Other</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>Other messages</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>9</y>
+         <width>408</width>
+         <height>443</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>CQ Exch</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="cq_exc_edit">
+          <property name="maximumSize">
+           <size>
+            <width>340</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Sent when running stations</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>QSL Msg</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="qsl_msg_edit">
+          <property name="maximumSize">
+           <size>
+            <width>340</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Sent to confirm a qso while running</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_27">
+          <property name="text">
+           <string>Dupe Msg</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="dupe_msg_edit">
+          <property name="maximumSize">
+           <size>
+            <width>340</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Sent if a call is a dupe </string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_28">
+          <property name="text">
+           <string>Quick QSL</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="quick_qsl_edit">
+          <property name="maximumSize">
+           <size>
+            <width>340</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Sent when logging a qso with \ key</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_53">
+          <property name="text">
+           <string>S&amp;P Exch</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="sp_exc_edit">
+          <property name="maximumSize">
+           <size>
+            <width>340</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Sent during search and pounce</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_54">
+          <property name="text">
+           <string>Call updated QSL</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="qsl_updated_edit">
+          <property name="toolTip">
+           <string>Sent when the logged call has been corrected</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="sp_func_tab">
+      <attribute name="title">
+       <string>Exc Func</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>Exchange mode function keys</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>401</width>
+         <height>431</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="formLayout_3">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string> F1(Call)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="exc_f1_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Must be callsign for correct enter behavior</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string> F2(Exchange)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="exc_f2_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Must be S&amp;P exchange for correct enter behavior</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_17">
+          <property name="text">
+           <string> F3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="exc_f3_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string> F4</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="exc_f4_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_19">
+          <property name="text">
+           <string> F5</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="exc_f5_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_20">
+          <property name="text">
+           <string> F6</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="exc_f6_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_21">
+          <property name="text">
+           <string> F7</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="exc_f7_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_22">
+          <property name="text">
+           <string> F8</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="exc_f8_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_23">
+          <property name="text">
+           <string> F9</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLineEdit" name="exc_f9_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_24">
+          <property name="text">
+           <string> F10</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="exc_f10_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_25">
+          <property name="text">
+           <string> F11</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QLineEdit" name="exc_f11_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label_26">
+          <property name="text">
+           <string> F12</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QLineEdit" name="exc_f12_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="ctrl_func_tab">
+      <attribute name="title">
+       <string>Ctrl+F</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>Control + function keys</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>401</width>
+         <height>441</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="formLayout_4">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_29">
+          <property name="text">
+           <string> F1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f1_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_32">
+          <property name="text">
+           <string> F2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f2_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_30">
+          <property name="text">
+           <string> F3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f3_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f4_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f5_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f6_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f7_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f8_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f9_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f10_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label_31">
+          <property name="text">
+           <string> F12</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f12_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QLineEdit" name="cq_ctrl_f11_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_33">
+          <property name="text">
+           <string> F11</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_34">
+          <property name="text">
+           <string> F10</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_35">
+          <property name="text">
+           <string> F9</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_36">
+          <property name="text">
+           <string> F8</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_37">
+          <property name="text">
+           <string> F7</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_38">
+          <property name="text">
+           <string> F6</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_39">
+          <property name="text">
+           <string> F5</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_40">
+          <property name="text">
+           <string> F4</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="alt_func_tab">
+      <attribute name="title">
+       <string>Shft+F</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>Shift + function keys</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>411</width>
+         <height>441</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="formLayout_5">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="cq_shift_f1_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="cq_shift_f2_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="cq_shift_f3_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="cq_shift_f4_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="cq_shift_f5_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="cq_shift_f6_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="cq_shift_f7_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="cq_shift_f8_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLineEdit" name="cq_shift_f9_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="cq_shift_f10_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label_41">
+          <property name="text">
+           <string> F12</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QLineEdit" name="cq_shift_f12_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QLineEdit" name="cq_shift_f11_edit">
+          <property name="maximumSize">
+           <size>
+            <width>370</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_42">
+          <property name="text">
+           <string> F11</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_43">
+          <property name="text">
+           <string> F10</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_44">
+          <property name="text">
+           <string> F9</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_45">
+          <property name="text">
+           <string> F8</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_46">
+          <property name="text">
+           <string> F7</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_47">
+          <property name="text">
+           <string> F6</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_48">
+          <property name="text">
+           <string> F5</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_49">
+          <property name="text">
+           <string> F4</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_50">
+          <property name="text">
+           <string> F3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_51">
+          <property name="text">
+           <string> F2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_52">
+          <property name="text">
+           <string> F1</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="cwmessage_buttons">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>cq_f1_edit</tabstop>
+  <tabstop>cq_f2_edit</tabstop>
+  <tabstop>cq_f3_edit</tabstop>
+  <tabstop>cq_f4_edit</tabstop>
+  <tabstop>cq_f5_edit</tabstop>
+  <tabstop>cq_f6_edit</tabstop>
+  <tabstop>cq_f7_edit</tabstop>
+  <tabstop>cq_f8_edit</tabstop>
+  <tabstop>cq_f9_edit</tabstop>
+  <tabstop>cq_f10_edit</tabstop>
+  <tabstop>cq_f11_edit</tabstop>
+  <tabstop>cq_f12_edit</tabstop>
+  <tabstop>exc_f1_edit</tabstop>
+  <tabstop>exc_f2_edit</tabstop>
+  <tabstop>exc_f3_edit</tabstop>
+  <tabstop>exc_f4_edit</tabstop>
+  <tabstop>exc_f5_edit</tabstop>
+  <tabstop>exc_f6_edit</tabstop>
+  <tabstop>exc_f7_edit</tabstop>
+  <tabstop>exc_f8_edit</tabstop>
+  <tabstop>exc_f9_edit</tabstop>
+  <tabstop>exc_f10_edit</tabstop>
+  <tabstop>exc_f11_edit</tabstop>
+  <tabstop>exc_f12_edit</tabstop>
+  <tabstop>cq_exc_edit</tabstop>
+  <tabstop>qsl_msg_edit</tabstop>
+  <tabstop>dupe_msg_edit</tabstop>
+  <tabstop>quick_qsl_edit</tabstop>
+  <tabstop>cq_ctrl_f1_edit</tabstop>
+  <tabstop>cq_ctrl_f2_edit</tabstop>
+  <tabstop>cq_ctrl_f3_edit</tabstop>
+  <tabstop>cq_ctrl_f4_edit</tabstop>
+  <tabstop>cq_ctrl_f5_edit</tabstop>
+  <tabstop>cq_ctrl_f6_edit</tabstop>
+  <tabstop>cq_ctrl_f7_edit</tabstop>
+  <tabstop>cq_ctrl_f8_edit</tabstop>
+  <tabstop>cq_ctrl_f9_edit</tabstop>
+  <tabstop>cq_ctrl_f10_edit</tabstop>
+  <tabstop>cq_ctrl_f11_edit</tabstop>
+  <tabstop>cq_ctrl_f12_edit</tabstop>
+  <tabstop>cq_shift_f1_edit</tabstop>
+  <tabstop>cq_shift_f2_edit</tabstop>
+  <tabstop>cq_shift_f3_edit</tabstop>
+  <tabstop>cq_shift_f4_edit</tabstop>
+  <tabstop>cq_shift_f5_edit</tabstop>
+  <tabstop>cq_shift_f6_edit</tabstop>
+  <tabstop>cq_shift_f7_edit</tabstop>
+  <tabstop>cq_shift_f8_edit</tabstop>
+  <tabstop>cq_shift_f9_edit</tabstop>
+  <tabstop>cq_shift_f10_edit</tabstop>
+  <tabstop>cq_shift_f11_edit</tabstop>
+  <tabstop>cq_shift_f12_edit</tabstop>
+  <tabstop>cwmessage_buttons</tabstop>
+  <tabstop>cw_msg_tab</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

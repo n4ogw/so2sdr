@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>com.nokia.qtsolutions.qttelnet_2.1</namespace>
+    <virtualFolder>qdoc</virtualFolder>
+    <customFilter name="Qt Solutions: Telnet">
+        <filterAttribute>qt</filterAttribute>
+        <filterAttribute>solutions</filterAttribute>
+        <filterAttribute>qttelnet</filterAttribute>
+    </customFilter>
+    <filterSection>
+        <filterAttribute>qt</filterAttribute>
+        <filterAttribute>solutions</filterAttribute>
+        <filterAttribute>qttelnet</filterAttribute>
+        <toc>
+            <section ref="index.html" title="Qt Solutions: Telnet Documentation">
+                <section ref="index.html" title="Telnet"/>
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="QtTelnet" id="QtTelnet" ref="qttelnet.html"/>
+            <keyword name="QtTelnet::Control" id="QtTelnet::Control" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::GoAhead" id="QtTelnet::GoAhead" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::InterruptProcess" id="QtTelnet::InterruptProcess" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::AreYouThere" id="QtTelnet::AreYouThere" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::AbortOutput" id="QtTelnet::AbortOutput" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::EraseCharacter" id="QtTelnet::EraseCharacter" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::EraseLine" id="QtTelnet::EraseLine" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::Break" id="QtTelnet::Break" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::EndOfFile" id="QtTelnet::EndOfFile" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::Suspend" id="QtTelnet::Suspend" ref="qttelnet.html#Control-enum"/>
+            <keyword name="QtTelnet::Abort" id="QtTelnet::Abort" ref="qttelnet.html#Control-enum"/>
+            <keyword name="close" id="QtTelnet::close" ref="qttelnet.html#close"/>
+            <keyword name="connectToHost" id="QtTelnet::connectToHost" ref="qttelnet.html#connectToHost"/>
+            <keyword name="connectionError" id="QtTelnet::connectionError" ref="qttelnet.html#connectionError"/>
+            <keyword name="isValidWindowSize" id="QtTelnet::isValidWindowSize" ref="qttelnet.html#isValidWindowSize"/>
+            <keyword name="loggedIn" id="QtTelnet::loggedIn" ref="qttelnet.html#loggedIn"/>
+            <keyword name="loggedOut" id="QtTelnet::loggedOut" ref="qttelnet.html#loggedOut"/>
+            <keyword name="login" id="QtTelnet::login" ref="qttelnet.html#login"/>
+            <keyword name="loginFailed" id="QtTelnet::loginFailed" ref="qttelnet.html#loginFailed"/>
+            <keyword name="loginRequired" id="QtTelnet::loginRequired" ref="qttelnet.html#loginRequired"/>
+            <keyword name="logout" id="QtTelnet::logout" ref="qttelnet.html#logout"/>
+            <keyword name="message" id="QtTelnet::message" ref="qttelnet.html#message"/>
+            <keyword name="sendControl" id="QtTelnet::sendControl" ref="qttelnet.html#sendControl"/>
+            <keyword name="sendData" id="QtTelnet::sendData" ref="qttelnet.html#sendData"/>
+            <keyword name="sendSync" id="QtTelnet::sendSync" ref="qttelnet.html#sendSync"/>
+            <keyword name="setLoginPattern" id="QtTelnet::setLoginPattern" ref="qttelnet.html#setLoginPattern"/>
+            <keyword name="setLoginString" id="QtTelnet::setLoginString" ref="qttelnet.html#setLoginString"/>
+            <keyword name="setPasswordPattern" id="QtTelnet::setPasswordPattern" ref="qttelnet.html#setPasswordPattern"/>
+            <keyword name="setPasswordString" id="QtTelnet::setPasswordString" ref="qttelnet.html#setPasswordString"/>
+            <keyword name="setPromptPattern" id="QtTelnet::setPromptPattern" ref="qttelnet.html#setPromptPattern"/>
+            <keyword name="setPromptString" id="QtTelnet::setPromptString" ref="qttelnet.html#setPromptString"/>
+            <keyword name="setSocket" id="QtTelnet::setSocket" ref="qttelnet.html#setSocket"/>
+            <keyword name="setWindowSize" id="QtTelnet::setWindowSize" ref="qttelnet.html#setWindowSize"/>
+            <keyword name="socket" id="QtTelnet::socket" ref="qttelnet.html#socket"/>
+            <keyword name="windowSize" id="QtTelnet::windowSize" ref="qttelnet.html#windowSize"/>
+            <keyword name="~QtTelnet" id="QtTelnet::~QtTelnet" ref="qttelnet.html#dtor.QtTelnet"/>
+            <keyword name="Telnet" id="Telnet" ref="index.html"/>
+        </keywords>
+        <files>
+            <file>index.html</file>
+            <file>qttelnet.html</file>
+            <file>classic.css</file>
+            <file>images/qt-logo.png</file>
+        </files>
+    </filterSection>
+</QtHelpProject>

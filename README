@@ -1,0 +1,15 @@
+A ham radio contest logging program incorporating software-defined
+radio (SDR) spectral displays. Runs under Linux and Windows.
+
+Copyright 2010-2012 R. Torsten Clay N4OGW
+
+
+
+This is the development source, for released versions see
+
+http://code.google.com/p/so2sdr/
+
+
+
+Torsten Clay
+so2sdr@gmail.com
