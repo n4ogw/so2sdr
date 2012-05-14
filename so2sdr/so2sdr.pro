@@ -25,8 +25,7 @@ DEPENDPATH += ../qextserialport/build \
     ../qttelnet/lib \
     ../portaudio-win32/lib
 INCLUDEPATH += ../qttelnet/src \
-    ../qextserialport \
-    /usr/include/hamlib
+    ../qextserialport
 HEADERS += cwmessagedialog.h \
     serial.h \
     so2sdr.h \
@@ -133,6 +132,9 @@ SOURCES += cwmessagedialog.cpp \
 unix { 
     include(../common.pri)
 
+    CONFIG += link_pkgconfig
+    PKGCONFIG += fftw3 hamlib portaudio-2.0
+
     QMAKE_CXXFLAGS += -O2 \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
     HEADERS += linux_pp.h \
@@ -147,10 +149,7 @@ unix {
     SOURCES += ../qextserialport/qextserialenumerator_unix.cpp \
         ../qextserialport/qextserialport.cpp \
         ../qextserialport/posix_qextserialport.cpp
-    LIBS += -lfftw3 \
-        -lportaudio
-    LIBS += -L"/usr/lib/hamlib" \
-        -lhamlib
+
     QMAKE_LFLAGS += -Wl,--as-needed
     install.target = install
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
