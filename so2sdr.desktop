@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=SO2SDR
+Comment=Amateur radio contest logging application
+Type=Application
+Exec=so2sdr
+Categories=Audio;Network;HamRadio;
+Terminal=false
+Icon=so2sdr
