@@ -10,6 +10,73 @@ This is the development source, for released versions see
 http://code.google.com/p/so2sdr/
 
 
+------------------------
+
+
+Developer instructions (Linux)
+==============================
+
+
+You will need the following development libraries installed: Qt4, FFTW, Hamlib,
+and PortAudio.
+
+Various development packages include g++, Git, and pkg-config. A complete Qt4
+development suite (including Qt Creator and Qt 4 Designer) is advised.
+
+1. Clone Tor's repository to your local machine (read only):
+
+    $ git clone git://github.com/n4ogw/so2sdr.git
+
+or, from your account on Git Hub create your own fork of Tor's repository and
+clone a read/write repository to your local machine.
+
+2. By default, so2sdr will be installed in /usr/local/bin, and associated
+data files will be placed in /usr/local/share/so2sdr. If you want to
+change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri
+
+3. qmake
+
+4. make
+
+N.B. Subdirectory Makefiles will be created from the top level Makefile.
+
+5. (as superuser) make install
+
+6. Test and contribute!
+
+
+-----------------------
+
+
+Building under Windows/Visual Studio
+====================================
+
+
+You will need Qt4, FFTW, Hamlib, and PortAudio libraries
+
+1. Clone the Git repository as above
+
+2. edit so2sdr/so2sdr.pro, select "vcapp" rather than "app" for TEMPLATE
+
+3. you may also want to adjust the directory for portaudio in the .pro file
+    TODO: Integrate Package Config
+
+4. open Qt command window. In top-level directory for so2sdr do
+
+qmake -tp vc -r
+
+4. now there should be .sln solution file for Windows
+
+
+------------------------
+
+
+Additional help is available in the file share/so2sdrhelp.html or via the
+Help menu in the program.
+
 
 Torsten Clay
 so2sdr@gmail.com
+
+Nate Bargmann
+n0nb@n0nb.us
