@@ -1,0 +1,28 @@
+# Ignore generated files.  These files will be ignored by Git's status, add,
+# commit, etc. commands.
+
+
+# Qt Creator generated project file
+so2sdr.pro.user
+
+
+# Build system generated files
+Makefile
+qextserialport/build/
+qextserialport/tmp/
+qttelnet/buildlib/moc_qttelnet.cpp
+qttelnet/buildlib/qttelnet.moc
+qttelnet/lib/
+so2sdr/moc_*.cpp
+so2sdr/qttelnet.moc
+so2sdr/so2sdr
+so2sdr/ui_*.h
+
+
+# Binary files
+*.o
+
+
+# Editor files
+*~
+

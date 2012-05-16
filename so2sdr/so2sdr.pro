@@ -25,8 +25,7 @@ DEPENDPATH += ../qextserialport/build \
     ../qttelnet/lib \
     ../portaudio-win32/lib
 INCLUDEPATH += ../qttelnet/src \
-    ../qextserialport \
-    /usr/include/hamlib
+    ../qextserialport
 HEADERS += cwmessagedialog.h \
     serial.h \
     so2sdr.h \
@@ -133,6 +132,9 @@ SOURCES += cwmessagedialog.cpp \
 unix { 
     include(../common.pri)
 
+    CONFIG += link_pkgconfig
+    PKGCONFIG += fftw3 hamlib portaudio-2.0
+
     QMAKE_CXXFLAGS += -O2 \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
     HEADERS += linux_pp.h \
@@ -147,16 +149,17 @@ unix {
     SOURCES += ../qextserialport/qextserialenumerator_unix.cpp \
         ../qextserialport/qextserialport.cpp \
         ../qextserialport/posix_qextserialport.cpp
-    LIBS += -lfftw3 \
-        -lportaudio
-    LIBS += -L"/usr/lib/hamlib" \
-        -lhamlib
+
     QMAKE_LFLAGS += -Wl,--as-needed
     install.target = install
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
+        install -d $$SO2SDR_INSTALL_DIR/share/applications; \
+        install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
         install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
-        install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr
+        install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
+        install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
+        install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png
     QMAKE_EXTRA_TARGETS += install
 }
 
