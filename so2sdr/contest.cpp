@@ -86,6 +86,42 @@ Contest::~Contest()
 }
 
 /*!
+  Determine mult index. Currently only implemented for Uniques, Special, and Prefix mults
+  */
+void Contest::multIndx(Qso *qso) const
+{
+    for (int ii = 0; ii < MMAX; ii++) {
+        // unique callsigns, special mults. Check to see if this is
+        // a completely new mult, and if so add it to the lists
+        if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix)) {
+            QByteArray tmp;
+            if (multType[ii] == Uniques) {
+                tmp = qso->call;
+            } else {
+                tmp = qso->mult_name;
+            }
+
+            // search for the mult
+            bool newmult = true;
+            int j;
+            for (j = 0; j < mults[ii].size(); j++) {
+                if (mults[ii][j]->name == tmp) {
+                    newmult = false;
+                    break;
+                }
+            }
+            if (newmult) {
+                qso->mult[ii]=-1;
+                qso->newmult[ii]=true;
+            } else {
+                qso->newmult[ii]=false;
+                qso->mult[ii]=j;
+            }
+        }
+    }
+}
+
+/*!
    Updates mult counters for added qso
     */
 void Contest::addQsoMult(Qso *qso)

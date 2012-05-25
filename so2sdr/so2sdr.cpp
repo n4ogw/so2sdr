@@ -1930,6 +1930,15 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         if (activeR2CQ) {
             nr = nr ^ 1;
         }
+
+        // WPX contest: check the callsign prefix
+        // @todo create a generic callsign "pre-check" for contest.cpp, have contest_wpx check the prefix there
+        if (csettings->value(c_contestname,c_contestname_def).toString().toUpper()=="WPX") {
+            ((WPX*) contest)->wpxPrefix(qso[nrig]->call, qso[nrig]->mult_name);
+            qso[nrig]->isamult[nrig]=true;
+            contest->multIndx(qso[nrig]);
+        }
+
         labelCountry[nr]->setText(qso[nrig]->country_name);
         if (pp != -1) {
             // prefix ID successful
