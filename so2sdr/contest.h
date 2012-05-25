@@ -75,6 +75,7 @@ public:
     QByteArray neededMultName(int ii, int band, int i, bool &needed_band, bool &needed) const;
     bool newCall(QByteArray &) const;
     int mult(int row, int ii) const;
+    void multIndx(Qso *qso) const;
     int newMult(int row, int ii) const;
     int nExchange() const;
     int nMults(int ii) const;
