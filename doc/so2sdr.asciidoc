@@ -1,0 +1,256 @@
+SO2SDR User Manual
+==================
+:author: Nate Bargmann, N0NB & Torsten Clay, N4OGW
+:email:  so2sdr@googlegroups.com
+:revnumber: 1.2.2git
+:toc:
+:numbered!:
+:website: http://code.google.com/p/so2sdr/
+
+[abstract]
+About this document
+-------------------
+
+A user reference manual for the 'SO2SDR' contest logging program by Torsten Clay,
+N4OGW, <so2sdr@gmail.com>.
+
+Introduction
+------------
+
+'SO2SDR' is a logging database and radio control application for amateur radio
+operators involved in amateur radio contesting, a.k.a.
+http://en.wikipedia.org/wiki/Radiosport[Radiosport].   SO2SDR is written in
+http://www.cplusplus.com/[C++] using the http://qt.nokia.com/[Qt] library.
+Using the Qt library eases cross-platform development.  As a result SO2SDR is
+available for both Unix (various Linux distributions tested) and Microsoft
+Windows platforms.
+
+Like other such contest loggers, SO2SDR provides real time duping (checking for
+stations already ``worked'' in the contest per various contest rules) and scoring
+for a variety of contests with more being added.  SO2SDR is of special interest
+to amateur radio operators interested in participating in the ``Single Operator
+2 Radio'' category of many contests.  Special features are provided to support
+two radio operation.  To view activity on the bands in real time, SO2SDR can
+display the output of a ``Software Defined Radio'' receiver onscreen with suitable
+RF hardware and soundcard support.
+
+Project resources
+~~~~~~~~~~~~~~~~~
+
+Released files for the SO2SDR project are hosted at:
+http://code.google.com/p/so2sdr/[http://code.google.com/p/so2sdr/]
+
+The development and user mailing list is at:
+http://groups.google.com/group/so2sdr[http://groups.google.com/group/so2sdr]
+
+A development Git repository is at:
+https://github.com/n4ogw/so2sdr[https://github.com/n4ogw/so2sdr]
+
+Installation
+------------
+
+At present 'SO2SDR' is distributed in a source code archive and a binary .msi
+archive for 'Microsoft Windows'.
+
+Binary installation on Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Download the latest SO2SDR +.msi+ file from the
+http://code.google.com/p/so2sdr/downloads/list[SO2SDR project download page]
+and install it in the usual way.
+
+Linux source release build and installation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will need development versions of the following libraries installed: Qt4,
+FFTW3, Hamlib 1.2.'x', and PortAudio 19.
+
+[NOTE]
+Some distributions have separate binary and development packages often
+having the binary package name suffixed with +dev+.  Others include
+everything in one package.  Check your distribution's documentation.
+
+1. Download the http://code.google.com/p/so2sdr/downloads/list[latest source
+release tarball].
+
+2. Unpack source: +tar xzvof so2sdr-x.x.x.tgz+
+
+3. By default, +so2sdr+ will be installed in +/usr/local/bin+, and associated
+data files will be placed in +/usr/local/share/so2sdr+. Desktop support files
+will be placed under the +/usr/local/share+ hierarchy.  If you want to change
+the location of the program, edit the +SO2SDR_INSTALL_DIR+ variable assignment
+in +common.pri+.
+
+4. +qmake+
+
+5. +make+
+
+6. (As superuser) +make install+
+
+Building under Windows/Visual Studio
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will need Qt4, FFTW, and PortAudio libraries
+
+1. Unpack source (need a Windows +tar+ equivalent)
+
+2. Edit +so2sdr/so2sdr.pro+, select ``vcapp'' rather than ``app'' for +TEMPLATE+
+
+3. You may also want to adjust the directory for portaudio in the +.pro+ file
+
+4. Open Qt command window. In top-level directory for so2sdr do: +qmake -tp vc -r+
+
+5. Now there should be +.sln+ solution file for Windows
+
+Git development repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A ``read-only'' clone of the Git development repository may be made by:
+
++git clone git://github.com/n4ogw/so2sdr.git+
+
+Once the clone is complete, SO2SDR may be built following the source release 
+steps above for your platform.
+
+To contribute to SO2SDR's development, the easiest way is to create a Git Hub
+account, from the Git Hub Web interface create a ``fork'' of the SO2SDR Git
+tree, and then create a ``read-write'' clone of Tor's tree (full documentation
+is on the Git Hub site).  You will be able to ``push'' your changes to your
+fork and create a ``pull request'' that Tor can consider for inclusion into
+SO2SDR.
+
+Hardware interfacing
+--------------------
+
+SO2SDR will become more useful as station equipment is connected to the computer
+allowing for control of transceiver frequency and mode, transceiver selection
+(when multiple radios are in use), SDR receiver(s) for bandscope(s), and Morse 
+Code keyer (CW).
+
+TODO:  Complete this section with examples.
+
+Getting started
+---------------
+
+Now that SO2SDR is installed, you should find it in your desktop menu (on Linux).
+
+[NOTE]
+An extra menu package may need to be installed on Linux systems to have the `Hamradio'
+menu appear.  On Debian and Ubuntu derived systems this package is named
++extra-xdg-menus+.
+
+[NOTE]
+The KDE desktop may require running +kbuildsycoca4+ to have SO2SDR show in its
+menus.  This can be done from the Run Command box or a Konsole terminal session.
+It seemed that I had to log out and back in to have the menu rebuilt.
+
+Create user data directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first time SO2SDR is run no station data will be set and an ``error'' box
+will appear.  Of course you'll want to create for persistent data storage so
+click `Yes'..
+
+.SO2SDR create user data directory
+image::images/so2sdr_user_data.png[caption="",link="images/so2sdr_user_data.png"]
+
+Opening screen
+~~~~~~~~~~~~~~
+
+The main SO2SDR window will appear. In this case the parallel port device is
+not available and an information box appears.  Select whether you want to be
+reminded of this message on future runs of SO2SDR and click `OK'.
+
+.SO2SDR opening screen
+image::images/so2sdr_open.png[caption="",link="images/so2sdr_open.png"]
+
+The SO2SDR main window is where the majority of the program's interaction takes place.
+
+Main Window
+~~~~~~~~~~~
+
+.SO2SDR main window
+image::images/so2sdr_main.png[caption="",link="images/so2sdr_main.png"]
+
+- The Mults box shows worked multipliers (depending on the contest event).  
+
+- The Calls box shows the possible callsign based on the character pattern
+(sourced from +MASTER.DTA+, +MASTERDX.DTA+, and +MASUSVE.DTA+ in
+$$SO2SDR_INSTALL_DIR/share/so2sdr (default /usr/local/share/so2sdr on Linux)
+
+- Summary shows the number of contacts per band for this event.
+
+- The unlabeled box to the right of the summary will show the previous logged
+entries.
+
+- The frequencies, mode, Morse sending speed, and entry boxes for each radio
+occupy the lower portion of the main window.  Radio 1 to the left and Radio 2
+to the right.
+
+- The lowest line shows the current date and time followed by the QSO (contact)
+rate.
+
+- The status area of the main window shows radio status.
+
+Station data
+~~~~~~~~~~~~
+
+From the menu in the main window, select Config|Station and then fill in your
+station data.
+
+.SO2SDR station data
+image::images/so2sdr_station_data.png[caption="",link="images/so2sdr_station_data.png"]
+
+Radio and ports
+~~~~~~~~~~~~~~~
+
+From the menu in the main window, select Config|Radios/Ports and then select
+your radio model(s) and parallel port for radio switching.
+
+.SO2SDR radio and ports setup
+image::images/so2sdr_radio_ports.png[caption="",link="images/so2sdr_radio_ports.png"]
+
+Winkey (K1EL) Morse keyer
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From the menu in the main window, select Config|Winkey and configure the K1EL
+(or compatible, such as the Ham Gadgets Master Keyer 1) keying device.  No
+other keying method (cwdaemon, direct port keying, etc.) is supported.
+
+.SO2SDR winkey
+image::images/so2sdr_winkey.png[caption="",link="images/so2sdr_winkey.png"]
+
+Bandscope
+~~~~~~~~~
+
+From the menu in the main window, select Config|Bandscope and enable the desired
+bandscope and configure the sound hardware.
+
+.SO2SDR bandscope
+image::images/so2sdr_bandscope.png[caption="",link="images/so2sdr_bandscope.png"]
+
+<<<
+[appendix]
+License
+-------
+SO2SDR--Amateur radio contest logging application.
+
+Copyright (C) 2010-2012 R. Torsten Clay, N4OGW, <so2sdr@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the 'GNU General Public License' as published by
+the 'Free Software Foundation', either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+// vim: set syntax=asciidoc:
+
+

@@ -25,4 +25,8 @@ so2sdr/ui_*.h
 
 # Editor files
 *~
+*swp
 
+# ASCII Doc generated files
+doc/*.html
+doc/*.pdf
