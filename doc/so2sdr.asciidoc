@@ -257,6 +257,13 @@ image::images/so2sdr_bandscope.png[caption="",link="images/so2sdr_bandscope.png"
 Simple udev rules
 -----------------
 
+'The following is entirely optional for users of SO2SDR on a Linux distribution
+with mutliple USB to RS-232 devices (including those built into various amateur
+radio devices such as Winkeyer, Master Keyer, microHAM, etc.).  This section
+assumes familiarity with the +sudo+ command or another method of obtaining
+superuser permissions and working at the command line in a terminal session
+(xterm, Gnome Terminal, Konsole, XFCE Terminal, etc.).'
+
 Controlling which port a USB device will appear as is a hopeless game as the
 system will occasionally swap the device names the physical names are assigned
 which means the radio no longer responds and the keyer mysteriously isn't
@@ -272,7 +279,7 @@ adpapter, Winkeyer, Master Keyer, etc. connected one at a time.
 
 From a terminal session enter the following command:
 
-+$ lsusb+
+ $ lsusb
 
 Several lines of output will be generated depending on the USB hardware
 connected to the system.  Shown are just lines of interest.
@@ -280,14 +287,14 @@ connected to the system.  Shown are just lines of interest.
 This is the output from an IO Gear USB to RS-232 adapter using the popular
 Prolific chipset:
 
-+Bus 006 Device 003: ID 0557:2008 ATEN International Co., Ltd UC-232A Serial Port [pl2303]+
+ Bus 006 Device 003: ID 0557:2008 ATEN International Co., Ltd UC-232A Serial Port [pl2303]
 
 This is the output from a
 http://www.hamgadgets.com/index.php?main_page=product_info&cPath=31&products_id=106['Ham
 Gadgets Master Keyer 1'] which uses the popular FTDI chipset (the MK1 offers
 http://www.k1el.com/['Winkeyer'] emulation):
 
-+Bus 008 Device 006: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC+
+ Bus 008 Device 006: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC
 
 In these two lines of output the data we need to configure is the ID field
 which consists of the colon separated digits.  These are broken down as the
@@ -303,7 +310,9 @@ distribution gives each file a leading pair of digits which dictate the order
 they are read by udev.  As udev only considers a rule the first time it is
 read, it's wise to ensure that our custom rule is read before any other rules
 that may affect these devices.  A name like +00-local-usb-serial.rules+ is a
-good choice.
+good choice:
+
+ $ sudo vim /etc/udev/rules.d/00-local-usb-serial.rules
 
 An example udev rules file:
 
@@ -321,16 +330,41 @@ When either or both of these devices are plugged into the system the symbolic li
 always point to the correct device.  Nice!
 
 [NOTE]
-If there are two devices with the same Vendor ID and Product ID values then the
-above example will fail to differentiate between the devices.  Some online information
-pointed to some devices having unique serial numbers for identifying separate devices,
-but neither my IO Gear nor MK1 have +iSerial+ set to a value other than +0+.  It is
-also possible to identify devices by the +Bus+ and +Device+ values shown by +lsusb+
-above, but if the devices are moved to another USB port the rule will fail.
+If there are two devices with the same Vendor ID and Product ID values plugged
+in then the above example will fail to differentiate between the devices.  Some
+online information pointed to some devices having unique serial numbers for
+identifying separate devices, but neither my IO Gear nor MK1 have +iSerial+ set
+to a value other than +0+ (the iSerial value is shown with the +lsusb -v+
+command).  It is also possible to identify devices by the +Bus+ and +Device+
+values shown by +lsusb+ above, but if the devices are moved to another USB port
+the rule will fail.
+
+It's now necessary to restart udev for it to read the new rules (Debian and
+related distributions):
+
+ $ sudo invoke-rc.d udev restart
+
+In some cases it may be necessary to simply shutdown and restart the system.
+
+If all went well, you should now see the symbolic links created by the custom udev
+rules when the USB to RS-232 devices are plugged in:
+
+ $ ls -l /dev/rig
+ lrwxrwxrwx 1 root root 7 May 24 20:28 /dev/rig -> ttyUSB0
+ $ ls -l /dev/iogear
+ lrwxrwxrwx 1 root root 7 May 24 20:28 /dev/iogear -> ttyUSB0
+ $ ls -l /dev/mk1
+ lrwxrwxrwx 1 root root 7 May 24 20:28 /dev/mk1 -> ttyUSB1
+
+It just so happens the devices were assigned their +ttyUSB+'x' names in the
+order that are preferred, but occasionally they are swapped.  The rules give
+the consistent names needed so there is no need to reconfigure the various
+programs after each system restart.
 
 [appendix]
-License
--------
+SO2SDR License
+--------------
+
 SO2SDR--Amateur radio contest logging application.
 
 Copyright (C) 2010-2012 R. Torsten Clay, N4OGW, <so2sdr@gmail.com>
