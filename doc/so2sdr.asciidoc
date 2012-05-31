@@ -190,7 +190,7 @@ to the right.
 - The lowest line shows the current date and time followed by the QSO (contact)
 rate.
 
-- The status area of the main window shows radio status.
+- The status area of the main window shows each radio and Winkeyer status.
 
 Station data
 ~~~~~~~~~~~~
@@ -210,6 +210,17 @@ your radio model(s) and parallel port for radio switching.
 .SO2SDR radio and ports setup
 image::images/so2sdr_radio_ports.png[caption="",link="images/so2sdr_radio_ports.png"]
 
+[NOTE]
+===============================================================================
+The serial port parameters are text entry boxes.  On Linux give the complete
+path to the serial device.  In the example is +/dev/rig+ which is a symbolic
+link to the real USB port device (see the <<X1,Simple udev Rules appendix>>).
+Built in serial devices are consistently named starting with +/dev/ttyS0+
+(corresponding to COM1 on MS Windows) and advancing upward.
+
+On MS Windows use the +COM1+ through +COM+'x' port names.
+===============================================================================
+
 Winkey (K1EL) Morse keyer
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -219,6 +230,17 @@ other keying method (cwdaemon, direct port keying, etc.) is supported.
 
 .SO2SDR winkey
 image::images/so2sdr_winkey.png[caption="",link="images/so2sdr_winkey.png"]
+
+[NOTE]
+===============================================================================
+The serial port parameter is a text entry box.  On Linux give the complete
+path to the serial device.  In the example is +/dev/mk1+ which is a symbolic
+link to the real USB port device (see the <<X1,Simple udev Rules appendix>>).
+Built in serial devices are consistently named starting with +/dev/ttyS0+
+(corresponding to COM1 on MS Windows) and advancing upward.
+
+On MS Windows use the +COM1+ through +COM+'x' port names.
+===============================================================================
 
 Bandscope
 ~~~~~~~~~
@@ -230,6 +252,82 @@ bandscope and configure the sound hardware.
 image::images/so2sdr_bandscope.png[caption="",link="images/so2sdr_bandscope.png"]
 
 <<<
+[[X1]]
+[appendix]
+Simple udev rules
+-----------------
+
+Controlling which port a USB device will appear as is a hopeless game as the
+system will occasionally swap the device names the physical names are assigned
+which means the radio no longer responds and the keyer mysteriously isn't
+sending CW (don't ask how I know!).  The same system responsible for naming the
+devices in the first place can be configured to always assign names that are
+meaningful to us by way of symbolic links.  On most Linux systems superuser
+(or root, a.k.a. system administrator) access is required to modify the 'udev'
+configuration file.
+
+The first step is to learn some things about the USB devices attached to the
+system.  With many USB devices it may well be easier to have the USB to serial
+adpapter, Winkeyer, Master Keyer, etc. connected one at a time.
+
+From a terminal session enter the following command:
+
++$ lsusb+
+
+Several lines of output will be generated depending on the USB hardware
+connected to the system.  Shown are just lines of interest.
+
+This is the output from an IO Gear USB to RS-232 adapter using the popular
+Prolific chipset:
+
++Bus 006 Device 003: ID 0557:2008 ATEN International Co., Ltd UC-232A Serial Port [pl2303]+
+
+This is the output from a
+http://www.hamgadgets.com/index.php?main_page=product_info&cPath=31&products_id=106['Ham
+Gadgets Master Keyer 1'] which uses the popular FTDI chipset (the MK1 offers
+http://www.k1el.com/['Winkeyer'] emulation):
+
++Bus 008 Device 006: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC+
+
+In these two lines of output the data we need to configure is the ID field
+which consists of the colon separated digits.  These are broken down as the
+Vendor ID and Product ID, respectively.  For the MK1 the Vendor ID is +0403+
+and the Product ID is +6001+.  These ID numbers will be used to construct
+the udev rules.
+
+As the superuser, create a local udev file.  On Debian and related systems
+(Ubuntu in its flavors, Mint, Mepis, etc.) this file will be placed in
++/etc/udev/rules.d/+ (examples from other distributions are welcome).  The
+files in this directory will be read by udev in alphabetical order.  The Debian
+distribution gives each file a leading pair of digits which dictate the order
+they are read by udev.  As udev only considers a rule the first time it is
+read, it's wise to ensure that our custom rule is read before any other rules
+that may affect these devices.  A name like +00-local-usb-serial.rules+ is a
+good choice.
+
+An example udev rules file:
+
+ # local rules file for USB to serial converters
+ SUBSYSTEM=="tty", ATTRS{idVendor}=="0557", ATTRS{idProduct}=="2008", SYMLINK+="iogear"
+ SUBSYSTEM=="tty", ATTRS{idVendor}=="0557", ATTRS{idProduct}=="2008", SYMLINK+="rig"
+ SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="mk1"
+
+The syntax should be rather self explanatory.  Replace the values of +idVendor+ and 
++idProduct+ with those of your specific devices Vendor ID and Product ID values.  The
++SYMLINK+ value should be a name that is meaningful to you.  As you can see there are
+two symbolic links created for the IO Gear USB to RS-232 adapter.
+
+When either or both of these devices are plugged into the system the symbolic links will
+always point to the correct device.  Nice!
+
+[NOTE]
+If there are two devices with the same Vendor ID and Product ID values then the
+above example will fail to differentiate between the devices.  Some online information
+pointed to some devices having unique serial numbers for identifying separate devices,
+but neither my IO Gear nor MK1 have +iSerial+ set to a value other than +0+.  It is
+also possible to identify devices by the +Bus+ and +Device+ values shown by +lsusb+
+above, but if the devices are moved to another USB port the rule will fail.
+
 [appendix]
 License
 -------
@@ -249,7 +347,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 
 // vim: set syntax=asciidoc:
 
