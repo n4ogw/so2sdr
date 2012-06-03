@@ -82,6 +82,7 @@ void Winkey::receive()
                 sending = false;
                 emit(markSignals(true, rigNum));
             }
+        // Pushbutton status only sent to host in WK2 mode by admin command, (0x00, 11)
         } else if ((wkbyte & 0xc0) == 0x80) {
             // speed pot setting in 6 lowest bits
             winkeySpeedPot = wkbyte & 0x3f;
@@ -206,7 +207,7 @@ void Winkey::openWinkey()
     }
 
     // Send three null commands to resync host to WK2
-    unsigned char buff[8];
+    unsigned char buff[64];
     buff[0] = 0x13;
     winkeyPort->write((char *) buff, 1);
     winkeyPort->write((char *) buff, 1);
@@ -226,9 +227,9 @@ void Winkey::openWinkey()
     // Echo Test to see if WK is really there
     // note: serial port events will not be emitted yet,
     // since event loop has not started (exec).
-    buff[0] = 0x00;
-    buff[1] = 4;
-    buff[2] = 0x55;
+    buff[0] = 0x00;     // WK admin command, next byte sets admin function
+    buff[1] = 4;        // Echo function, echoes next received character to host
+    buff[2] = 0x55;     // Send 'U' to WK
     winkeyPort->write((char *) buff, 3);
 #ifdef Q_OS_LINUX
     usleep(100000);
@@ -241,9 +242,10 @@ void Winkey::openWinkey()
     if (n > 64) n = 64;
     winkeyPort->read((char *) buff, n);
 
+    // Was the 'U' received?
     if (buff[0] == 0x55) {
-        buff[0] = 0x00;
-        buff[1] = 2;
+        buff[0] = 0x00;     // WK admin command
+        buff[1] = 2;        // Host open, WK will now receive commands and Morse characters
         winkeyPort->write((char *) buff, 2);
 #ifdef Q_OS_LINUX
         usleep(100000);
@@ -272,10 +274,16 @@ void Winkey::openWinkey()
         winkeyPort->setTimeout(100);
 
         // set sidetone config
-        buff[0] = 0x01;
+        buff[0] = 0x01;     // Sidetone control command, next byte sets sidetone parameters
         buff[1] = 0;
-        if (settings->value(s_winkey_sidetonepaddle,s_winkey_sidetonepaddle_def).toBool()) buff[1] += 128;
+
+        // Paddle sidetone only?  Set bit 7 (msb) of buff[1]
+        if (settings->value(s_winkey_sidetonepaddle,s_winkey_sidetonepaddle_def).toBool()) {
+            buff[1] += 128;
+        }
+        // Set sidetone frequency (chosen in GUI)
         buff[1] += settings->value(s_winkey_sidetone,s_winkey_sidetone_def).toInt();
+
         winkeyPort->write((char *) buff, 2);
 #ifdef Q_OS_LINUX
         usleep(100000);
@@ -285,15 +293,20 @@ void Winkey::openWinkey()
 #endif
 
         // set other winkey features
-        buff[0] = 0x0e;
+        buff[0] = 0x0e;     // Set WK options command, next byte sets WK options
         buff[1] = 0;
+        // CT spacing?  Set bit 0 (lsb) of buff[1]
         if (settings->value(s_winkey_ctspace,s_winkey_ctspace_def).toBool()) {
             buff[1] += 1;
         }
+        // Paddle swap?  Set bit 3 of buff[1]
         if (settings->value(s_winkey_paddle_swap,s_winkey_paddle_swap_def).toBool()) {
             buff[1] += 8;
         }
+        // Paddle mode, set bits 5,4 to bit mask, 00 = iambic B, 01 = iambic A,
+        // 10 = ultimatic, 11 = bug
         buff[1] += (settings->value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt()) << 4;
+
         winkeyPort->write((char *) buff, 2);
 #ifdef Q_OS_LINUX
         usleep(10000);
@@ -305,10 +318,10 @@ void Winkey::openWinkey()
         // Pot min/max
         // must set this up or paddle speed screwed up.
         // winkey bug/undocumented feature?
-        buff[0] = 0x05;
-        buff[1] = 10; // min wpm
-        buff[2] = 80; // wpm range
-        buff[3] = 0;
+        buff[0] = 0x05;     // Setup speed pot command, next three bytes setup the speed pot
+        buff[1] = 10;       // min wpm
+        buff[2] = 25;       // wpm range (min wpm + wpm range = wpm max)
+        buff[3] = 0;        // Used only on WK1 keyers (does 0 cause a problem on WK1?)
         winkeyPort->write((char *) buff, 4);
 #ifdef Q_OS_LINUX
         usleep(100000);
@@ -324,8 +337,8 @@ void Winkey::openWinkey()
 void Winkey::closeWinkey()
 {
     unsigned char buff[2];
-    buff[0] = 0x00;
-    buff[1] = 0x03;
+    buff[0] = 0x00;     // Admin command, next byte is function
+    buff[1] = 0x03;     // Host close
     winkeyPort->write((char *) &buff, 2);
     winkeyPort->close();
 }
