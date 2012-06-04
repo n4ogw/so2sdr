@@ -18,6 +18,11 @@
  */
 #include <math.h>
 #include "audioreader_portaudio.h"
+
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+#endif
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include "pa_asio.h"
