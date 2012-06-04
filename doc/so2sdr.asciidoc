@@ -11,8 +11,8 @@ SO2SDR User Manual
 About this document
 -------------------
 
-A user reference manual for the 'SO2SDR' contest logging program by Torsten Clay,
-N4OGW, <so2sdr@gmail.com>.
+A user reference manual for the 'SO2SDR' contest logging program by Torsten
+Clay, N4OGW, <so2sdr@gmail.com>.
 
 Introduction
 ------------
@@ -26,13 +26,13 @@ available for both Unix (various Linux distributions tested) and Microsoft
 Windows platforms.
 
 Like other such contest loggers, SO2SDR provides real time duping (checking for
-stations already ``worked'' in the contest per various contest rules) and scoring
-for a variety of contests with more being added.  SO2SDR is of special interest
-to amateur radio operators interested in participating in the ``Single Operator
-2 Radio'' category of many contests.  Special features are provided to support
-two radio operation.  To view activity on the bands in real time, SO2SDR can
-display the output of a ``Software Defined Radio'' receiver onscreen with suitable
-RF hardware and soundcard support.
+stations already ``worked'' in the contest per various contest rules) and
+scoring for a variety of contests with more being added.  SO2SDR is of special
+interest to amateur radio operators interested in participating in the ``Single
+Operator 2 Radio'' category of many contests.  Special features are provided to
+support two radio operation.  To view activity on the bands in real time,
+SO2SDR can display the output of a ``Software Defined Radio'' receiver onscreen
+with suitable RF hardware and soundcard support.
 
 Project resources
 ~~~~~~~~~~~~~~~~~
@@ -122,27 +122,28 @@ SO2SDR.
 Hardware interfacing
 --------------------
 
-SO2SDR will become more useful as station equipment is connected to the computer
-allowing for control of transceiver frequency and mode, transceiver selection
-(when multiple radios are in use), SDR receiver(s) for bandscope(s), and Morse 
-Code keyer (CW).
+SO2SDR will become more useful as station equipment is connected to the
+computer allowing for control of transceiver frequency and mode, transceiver
+selection (when multiple radios are in use), SDR receiver(s) for bandscope(s),
+and Morse Code keyer (CW).
 
 TODO:  Complete this section with examples.
 
 Getting started
 ---------------
 
-Now that SO2SDR is installed, you should find it in your desktop menu (on Linux).
+Now that SO2SDR is installed, you should find it in your desktop menu (on
+Linux).
 
 [NOTE]
-An extra menu package may need to be installed on Linux systems to have the `Hamradio'
-menu appear.  On Debian and Ubuntu derived systems this package is named
-+extra-xdg-menus+.
+An extra menu package may need to be installed on Linux systems to have the
+`Hamradio' menu appear.  On Debian and Ubuntu derived systems this package is
+named +extra-xdg-menus+.
 
 [NOTE]
 The KDE desktop may require running +kbuildsycoca4+ to have SO2SDR show in its
-menus.  This can be done from the Run Command box or a Konsole terminal session.
-It seemed that I had to log out and back in to have the menu rebuilt.
+menus.  This can be done from the Run Command box or a Konsole terminal
+session.  It seemed that I had to log out and back in to have the menu rebuilt.
 
 Create user data directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
