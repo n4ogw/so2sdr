@@ -1,0 +1,19 @@
+Building the HTML and PDF versions of this manual requires the
+asciidoc package which is dependent on docbook and tex packages.
+Needless to say, this is a large dependency, and the generation
+of the manual is not yet performed through the qmake build system.
+
+To generate the HTML manual:
+
+asciidoc -b html -o so2sdr.html so2sdr.asciidoc
+
+The resulting HTML file is dependent on the images directory for the
+screenshots so be certain to copy it along.
+
+To generate the PDF manual:
+
+a2x -f pdf -D . so2sdr.asciidoc
+
+TODO: Integrate the generated manual files into the source and binary
+distributions.
+

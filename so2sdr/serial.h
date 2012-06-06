@@ -29,13 +29,12 @@
 #include <QTimer>
 #include <QTimerEvent>
 #include <QMutex>
-#include <hamlib/rig.h>
-#include <hamlib/riglist.h>
 #include "defines.h"
 
 // using C rather than C++ bindings for hamlib because I don't
 // want to have to deal with exceptions
 #include <hamlib/rig.h>
+#include <hamlib/riglist.h>
 
 // how often to check for commands to be sent to radios
 const int RIG_SEND_TIMER=20;

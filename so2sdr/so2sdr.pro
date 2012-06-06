@@ -155,11 +155,13 @@ unix {
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
         install -d $$SO2SDR_INSTALL_DIR/share/applications; \
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps; \
+        install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
         install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
         install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
         install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
-        install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png
+        install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
+        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png
     QMAKE_EXTRA_TARGETS += install
 }
 

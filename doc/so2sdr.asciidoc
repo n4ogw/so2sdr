@@ -1,0 +1,388 @@
+SO2SDR User Manual
+==================
+:author: Nate Bargmann, N0NB & Torsten Clay, N4OGW
+:email:  so2sdr@googlegroups.com
+:revnumber: 1.2.2git
+:toc:
+:numbered!:
+:website: http://code.google.com/p/so2sdr/
+
+[abstract]
+About this document
+-------------------
+
+A user reference manual for the 'SO2SDR' contest logging program by Torsten
+Clay, N4OGW, <so2sdr@gmail.com>.
+
+Introduction
+------------
+
+'SO2SDR' is a logging database and radio control application for amateur radio
+operators involved in amateur radio contesting, a.k.a.
+http://en.wikipedia.org/wiki/Radiosport[Radiosport].   SO2SDR is written in
+http://www.cplusplus.com/[C++] using the http://qt.nokia.com/[Qt] library.
+Using the Qt library eases cross-platform development.  As a result SO2SDR is
+available for both Unix (various Linux distributions tested) and Microsoft
+Windows platforms.
+
+Like other such contest loggers, SO2SDR provides real time duping (checking for
+stations already ``worked'' in the contest per various contest rules) and
+scoring for a variety of contests with more being added.  SO2SDR is of special
+interest to amateur radio operators interested in participating in the ``Single
+Operator 2 Radio'' category of many contests.  Special features are provided to
+support two radio operation.  To view activity on the bands in real time,
+SO2SDR can display the output of a ``Software Defined Radio'' receiver onscreen
+with suitable RF hardware and soundcard support.
+
+Project resources
+~~~~~~~~~~~~~~~~~
+
+Released files for the SO2SDR project are hosted at:
+http://code.google.com/p/so2sdr/[http://code.google.com/p/so2sdr/]
+
+The development and user mailing list is at:
+http://groups.google.com/group/so2sdr[http://groups.google.com/group/so2sdr]
+
+A development Git repository is at:
+https://github.com/n4ogw/so2sdr[https://github.com/n4ogw/so2sdr]
+
+Installation
+------------
+
+At present 'SO2SDR' is distributed in a source code archive and a binary .msi
+archive for 'Microsoft Windows'.
+
+Binary installation on Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Download the latest SO2SDR +.msi+ file from the
+http://code.google.com/p/so2sdr/downloads/list[SO2SDR project download page]
+and install it in the usual way.
+
+Linux source release build and installation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will need development versions of the following libraries installed: Qt4,
+FFTW3, Hamlib 1.2.'x', and PortAudio 19.
+
+[NOTE]
+Some distributions have separate binary and development packages often
+having the binary package name suffixed with +dev+.  Others include
+everything in one package.  Check your distribution's documentation.
+
+1. Download the http://code.google.com/p/so2sdr/downloads/list[latest source
+release tarball].
+
+2. Unpack source: +tar xzvof so2sdr-x.x.x.tgz+
+
+3. By default, +so2sdr+ will be installed in +/usr/local/bin+, and associated
+data files will be placed in +/usr/local/share/so2sdr+. Desktop support files
+will be placed under the +/usr/local/share+ hierarchy.  If you want to change
+the location of the program, edit the +SO2SDR_INSTALL_DIR+ variable assignment
+in +common.pri+.
+
+4. +qmake+
+
+5. +make+
+
+6. (As superuser) +make install+
+
+Building under Windows/Visual Studio
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will need Qt4, FFTW, and PortAudio libraries
+
+1. Unpack source (need a Windows +tar+ equivalent)
+
+2. Edit +so2sdr/so2sdr.pro+, select ``vcapp'' rather than ``app'' for +TEMPLATE+
+
+3. You may also want to adjust the directory for portaudio in the +.pro+ file
+
+4. Open Qt command window. In top-level directory for so2sdr do: +qmake -tp vc -r+
+
+5. Now there should be +.sln+ solution file for Windows
+
+Git development repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A ``read-only'' clone of the Git development repository may be made by:
+
++git clone git://github.com/n4ogw/so2sdr.git+
+
+Once the clone is complete, SO2SDR may be built following the source release 
+steps above for your platform.
+
+To contribute to SO2SDR's development, the easiest way is to create a Git Hub
+account, from the Git Hub Web interface create a ``fork'' of the SO2SDR Git
+tree, and then create a ``read-write'' clone of Tor's tree (full documentation
+is on the Git Hub site).  You will be able to ``push'' your changes to your
+fork and create a ``pull request'' that Tor can consider for inclusion into
+SO2SDR.
+
+Hardware interfacing
+--------------------
+
+SO2SDR will become more useful as station equipment is connected to the
+computer allowing for control of transceiver frequency and mode, transceiver
+selection (when multiple radios are in use), SDR receiver(s) for bandscope(s),
+and Morse Code keyer (CW).
+
+TODO:  Complete this section with examples.
+
+Getting started
+---------------
+
+Now that SO2SDR is installed, you should find it in your desktop menu (on
+Linux).
+
+[NOTE]
+An extra menu package may need to be installed on Linux systems to have the
+`Hamradio' menu appear.  On Debian and Ubuntu derived systems this package is
+named +extra-xdg-menus+.
+
+[NOTE]
+The KDE desktop may require running +kbuildsycoca4+ to have SO2SDR show in its
+menus.  This can be done from the Run Command box or a Konsole terminal
+session.  It seemed that I had to log out and back in to have the menu rebuilt.
+
+Create user data directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first time SO2SDR is run no station data will be set and an ``error'' box
+will appear.  Of course you'll want to create for persistent data storage so
+click `Yes'..
+
+.SO2SDR create user data directory
+image::images/so2sdr_user_data.png[caption="",link="images/so2sdr_user_data.png"]
+
+Opening screen
+~~~~~~~~~~~~~~
+
+The main SO2SDR window will appear. In this case the parallel port device is
+not available and an information box appears.  Select whether you want to be
+reminded of this message on future runs of SO2SDR and click `OK'.
+
+.SO2SDR opening screen
+image::images/so2sdr_open.png[caption="",link="images/so2sdr_open.png"]
+
+The SO2SDR main window is where the majority of the program's interaction takes place.
+
+Main Window
+~~~~~~~~~~~
+
+.SO2SDR main window
+image::images/so2sdr_main.png[caption="",link="images/so2sdr_main.png"]
+
+- The Mults box shows worked multipliers (depending on the contest event).  
+
+- The Calls box shows the possible callsign based on the character pattern
+(sourced from +MASTER.DTA+, +MASTERDX.DTA+, and +MASUSVE.DTA+ in
+$$SO2SDR_INSTALL_DIR/share/so2sdr (default /usr/local/share/so2sdr on Linux)
+
+- Summary shows the number of contacts per band for this event.
+
+- The unlabeled box to the right of the summary will show the previous logged
+entries.
+
+- The frequencies, mode, Morse sending speed, and entry boxes for each radio
+occupy the lower portion of the main window.  Radio 1 to the left and Radio 2
+to the right.
+
+- The lowest line shows the current date and time followed by the QSO (contact)
+rate.
+
+- The status area of the main window shows each radio and Winkeyer status.
+
+Station data
+~~~~~~~~~~~~
+
+From the menu in the main window, select Config|Station and then fill in your
+station data.
+
+.SO2SDR station data
+image::images/so2sdr_station_data.png[caption="",link="images/so2sdr_station_data.png"]
+
+Radio and ports
+~~~~~~~~~~~~~~~
+
+From the menu in the main window, select Config|Radios/Ports and then select
+your radio model(s) and parallel port for radio switching.
+
+.SO2SDR radio and ports setup
+image::images/so2sdr_radio_ports.png[caption="",link="images/so2sdr_radio_ports.png"]
+
+[NOTE]
+===============================================================================
+The serial port parameters are text entry boxes.  On Linux give the complete
+path to the serial device.  In the example is +/dev/rig+ which is a symbolic
+link to the real USB port device (see the <<X1,Simple udev Rules appendix>>).
+Built in serial devices are consistently named starting with +/dev/ttyS0+
+(corresponding to COM1 on MS Windows) and advancing upward.
+
+On MS Windows use the +COM1+ through +COM+'x' port names.
+===============================================================================
+
+Winkey (K1EL) Morse keyer
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From the menu in the main window, select Config|Winkey and configure the K1EL
+(or compatible, such as the Ham Gadgets Master Keyer 1) keying device.  No
+other keying method (cwdaemon, direct port keying, etc.) is supported.
+
+.SO2SDR winkey
+image::images/so2sdr_winkey.png[caption="",link="images/so2sdr_winkey.png"]
+
+[NOTE]
+===============================================================================
+The serial port parameter is a text entry box.  On Linux give the complete
+path to the serial device.  In the example is +/dev/mk1+ which is a symbolic
+link to the real USB port device (see the <<X1,Simple udev Rules appendix>>).
+Built in serial devices are consistently named starting with +/dev/ttyS0+
+(corresponding to COM1 on MS Windows) and advancing upward.
+
+On MS Windows use the +COM1+ through +COM+'x' port names.
+===============================================================================
+
+Bandscope
+~~~~~~~~~
+
+From the menu in the main window, select Config|Bandscope and enable the desired
+bandscope and configure the sound hardware.
+
+.SO2SDR bandscope
+image::images/so2sdr_bandscope.png[caption="",link="images/so2sdr_bandscope.png"]
+
+<<<
+[[X1]]
+[appendix]
+Simple udev rules
+-----------------
+
+'The following is entirely optional for users of SO2SDR on a Linux distribution
+with mutliple USB to RS-232 devices (including those built into various amateur
+radio devices such as Winkeyer, Master Keyer, microHAM, etc.).  This section
+assumes familiarity with the +sudo+ command or another method of obtaining
+superuser permissions and working at the command line in a terminal session
+(xterm, Gnome Terminal, Konsole, XFCE Terminal, etc.).'
+
+Controlling which port a USB device will appear as is a hopeless game as the
+system will occasionally swap the device names the physical names are assigned
+which means the radio no longer responds and the keyer mysteriously isn't
+sending CW (don't ask how I know!).  The same system responsible for naming the
+devices in the first place can be configured to always assign names that are
+meaningful to us by way of symbolic links.  On most Linux systems superuser
+(or root, a.k.a. system administrator) access is required to modify the 'udev'
+configuration file.
+
+The first step is to learn some things about the USB devices attached to the
+system.  With many USB devices it may well be easier to have the USB to serial
+adpapter, Winkeyer, Master Keyer, etc. connected one at a time.
+
+From a terminal session enter the following command:
+
+ $ lsusb
+
+Several lines of output will be generated depending on the USB hardware
+connected to the system.  Shown are just lines of interest.
+
+This is the output from an IO Gear USB to RS-232 adapter using the popular
+Prolific chipset:
+
+ Bus 006 Device 003: ID 0557:2008 ATEN International Co., Ltd UC-232A Serial Port [pl2303]
+
+This is the output from a
+http://www.hamgadgets.com/index.php?main_page=product_info&cPath=31&products_id=106['Ham
+Gadgets Master Keyer 1'] which uses the popular FTDI chipset (the MK1 offers
+http://www.k1el.com/['Winkeyer'] emulation):
+
+ Bus 008 Device 006: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC
+
+In these two lines of output the data we need to configure is the ID field
+which consists of the colon separated digits.  These are broken down as the
+Vendor ID and Product ID, respectively.  For the MK1 the Vendor ID is +0403+
+and the Product ID is +6001+.  These ID numbers will be used to construct
+the udev rules.
+
+As the superuser, create a local udev file.  On Debian and related systems
+(Ubuntu in its flavors, Mint, Mepis, etc.) this file will be placed in
++/etc/udev/rules.d/+ (examples from other distributions are welcome).  The
+files in this directory will be read by udev in alphabetical order.  The Debian
+distribution gives each file a leading pair of digits which dictate the order
+they are read by udev.  As udev only considers a rule the first time it is
+read, it's wise to ensure that our custom rule is read before any other rules
+that may affect these devices.  A name like +00-local-usb-serial.rules+ is a
+good choice:
+
+ $ sudo vim /etc/udev/rules.d/00-local-usb-serial.rules
+
+An example udev rules file:
+
+ # local rules file for USB to serial converters
+ SUBSYSTEM=="tty", ATTRS{idVendor}=="0557", ATTRS{idProduct}=="2008", SYMLINK+="iogear"
+ SUBSYSTEM=="tty", ATTRS{idVendor}=="0557", ATTRS{idProduct}=="2008", SYMLINK+="rig"
+ SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="mk1"
+
+The syntax should be rather self explanatory.  Replace the values of +idVendor+ and 
++idProduct+ with those of your specific devices Vendor ID and Product ID values.  The
++SYMLINK+ value should be a name that is meaningful to you.  As you can see there are
+two symbolic links created for the IO Gear USB to RS-232 adapter.
+
+When either or both of these devices are plugged into the system the symbolic links will
+always point to the correct device.  Nice!
+
+[NOTE]
+If there are two devices with the same Vendor ID and Product ID values plugged
+in then the above example will fail to differentiate between the devices.  Some
+online information pointed to some devices having unique serial numbers for
+identifying separate devices, but neither my IO Gear nor MK1 have +iSerial+ set
+to a value other than +0+ (the iSerial value is shown with the +lsusb -v+
+command).  It is also possible to identify devices by the +Bus+ and +Device+
+values shown by +lsusb+ above, but if the devices are moved to another USB port
+the rule will fail.
+
+It's now necessary to restart udev for it to read the new rules (Debian and
+related distributions):
+
+ $ sudo invoke-rc.d udev restart
+
+In some cases it may be necessary to simply shutdown and restart the system.
+
+If all went well, you should now see the symbolic links created by the custom udev
+rules when the USB to RS-232 devices are plugged in:
+
+ $ ls -l /dev/rig
+ lrwxrwxrwx 1 root root 7 May 24 20:28 /dev/rig -> ttyUSB0
+ $ ls -l /dev/iogear
+ lrwxrwxrwx 1 root root 7 May 24 20:28 /dev/iogear -> ttyUSB0
+ $ ls -l /dev/mk1
+ lrwxrwxrwx 1 root root 7 May 24 20:28 /dev/mk1 -> ttyUSB1
+
+It just so happens the devices were assigned their +ttyUSB+'x' names in the
+order that are preferred, but occasionally they are swapped.  The rules give
+the consistent names needed so there is no need to reconfigure the various
+programs after each system restart.
+
+[appendix]
+SO2SDR License
+--------------
+
+SO2SDR--Amateur radio contest logging application.
+
+Copyright (C) 2010-2012 R. Torsten Clay, N4OGW, <so2sdr@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the 'GNU General Public License' as published by
+the 'Free Software Foundation', either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+// vim: set syntax=asciidoc:
+
+
