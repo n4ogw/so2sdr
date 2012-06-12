@@ -2094,15 +2094,20 @@ bool So2sdr::enterFreq()
         qso[activeRadio]->call.chop(1);
     }
 
-    // validate we have a positive integer
+
+    // Allow the UI to receive values in kHz down to the Hz
+    // i.e. "14250.340" will become 14250340 Hz
     bool ok = false;
-    int  f  = qso[activeRadio]->call.toInt(&ok, 10);
+    int  f  = (int)(double)(1000 * qso[activeRadio]->call.toDouble(&ok));
+
+    // validate we have a positive integer
     if (f <= 0 || ok == false) return(false);
 
     // qsy returns "corrected" rigFreq in event there is no radio CAT connection
     if (cat) {
-        qsy(nr, f, false);
+        qsy(nr, f, true);
     }
+
     int b;
     if ((b = getBand(f)) != -1) {
         band[nr] = b;
