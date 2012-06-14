@@ -4,7 +4,6 @@ SO2SDR User Manual
 :email:  so2sdr@googlegroups.com
 :revnumber: 1.2.2git
 :toc:
-:numbered!:
 :website: http://code.google.com/p/so2sdr/
 
 [abstract]
@@ -14,6 +13,7 @@ About this document
 A user reference manual for the 'SO2SDR' contest logging program by Torsten
 Clay, N4OGW, <so2sdr@gmail.com>.
 
+:numbered:
 Introduction
 ------------
 
@@ -253,6 +253,7 @@ bandscope and configure the sound hardware.
 image::images/so2sdr_bandscope.png[caption="",link="images/so2sdr_bandscope.png"]
 
 <<<
+:numbered!:
 [[X1]]
 [appendix]
 Simple udev rules
