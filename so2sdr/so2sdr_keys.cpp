@@ -889,11 +889,12 @@ void So2sdr::enter(int mod)
         first                  = false;
     }
 
-    // is it an entered frequency?
+    // is it an entered frequency or mode?
     if (!qso[activeRadio]->call.isEmpty()) {
         i1 = 1;
         if (qso[activeRadio]->country == -1) {
-            if (enterFreq()) {
+            // Depend on enterFreq() to return false to process mode entry
+            if (enterFreq() || enterMode()) {
                 // clear any garbage that showed up in supercheck partial
                 // from entering freq
                 if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {

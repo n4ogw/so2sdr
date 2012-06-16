@@ -29,8 +29,10 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
+#include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QMetaType>
 #include <QModelIndex>
 #include <QObject>
 #include <QPalette>
@@ -63,6 +65,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     setupUi(this);
     initPointers();
     initVariables();
+
+    // Register rmode_t, pbwidth_t for connect()
+    qRegisterMetaType<rmode_t>("rmode_t");
+    qRegisterMetaType<pbwidth_t>("pbwidth_t");
 
 #ifdef Q_OS_WIN
     // in Windows, keep data files in same directory as executable
@@ -547,7 +553,10 @@ void So2sdr::openRadios()
 
     cat->initialize(settings);
 
+    // Connect signals from functions in this class with slots in RigSerial class
     connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
+    connect(this, SIGNAL(setRigMode(int, rmode_t, pbwidth_t)), cat, SLOT(setRigMode(int, rmode_t, pbwidth_t)));
+
     cat->openRig();
     catThread.start();
     for (int i = 0; i < N_BANDS; i++) {
@@ -2137,6 +2146,87 @@ bool So2sdr::enterFreq()
     labelBearing[activeRadio]->clear();
     labelLPBearing[activeRadio]->clear();
     sunLabelPtr[activeRadio]->clear();
+    return(true);
+}
+
+/*!
+   take entered mode string and change mode
+
+   if : follows the entered mode, 2nd radio mode is changed
+ */
+bool So2sdr::enterMode()
+{
+    // check for 2nd radio flag ":"
+    int s  = qso[activeRadio]->call.size();
+    int nr = activeRadio;
+    if (s > 1 && qso[activeRadio]->call.at(s - 1) == ':') {
+        nr = nr ^ 1;    // XOR to alternate nr between 0 and 1
+        qso[activeRadio]->call.chop(1);
+    }
+
+    // Entered mode command string is noted by trailing ' character which also
+    // serves as a separator for passband width integer in Hz.
+    // e.g. "USB'" or "USB'1800"
+    if (qso[activeRadio]->call.contains("'")) {
+        QList<QByteArray> modeList;
+        pbwidth_t pb = RIG_PASSBAND_NORMAL;
+        bool b = false;
+
+        // Mode string should be in modeList[0] and passband in modeLine[1]
+        modeList = qso[activeRadio]->call.split('\'');
+
+        // At least 2 digits for passband width
+        if (modeList[1].size() > 1) {
+            pb = modeList[1].toLong(&b);
+
+            // 0 Hz not valid!  Hamlib backends should deal with negative values
+            if (!pb || !b)
+                pb = RIG_PASSBAND_NORMAL;
+        }
+
+        // NB:  Put shorter substrings later
+        if (modeList[0].contains("CWR")) {
+            emit setRigMode(nr, RIG_MODE_CWR, pb);
+        } else if (modeList[0].contains("CW")) {
+            emit setRigMode(nr, RIG_MODE_CW, pb);
+        } else if (modeList[0].contains("LSB")) {
+            emit setRigMode(nr, RIG_MODE_LSB, pb);
+        } else if (modeList[0].contains("USB")) {
+            emit setRigMode(nr, RIG_MODE_USB, pb);
+        } else {
+            return false;
+        }
+
+    } else {
+        // Incomplete mode command
+        return false;
+    }
+
+    // TODO:  Refactor the following code in some way with
+    // the same block in enterFreq() above.
+    qso[activeRadio]->call.clear();
+    lineEditCall[activeRadio]->clear();
+    lineEditCall[activeRadio]->setFocus();
+
+    if (grab) {
+        lineEditCall[activeRadio]->grabKeyboard();
+    }
+
+    grabWidget = lineEditCall[activeRadio];
+    lineEditCall[activeRadio]->setModified(false);
+    updateBreakdown();
+    updateMults(activeRadio);
+
+    if (nDupesheet) {
+        populateDupesheet();
+    }
+
+    clearWorked(activeRadio);
+    labelCountry[activeRadio]->clear();
+    labelBearing[activeRadio]->clear();
+    labelLPBearing[activeRadio]->clear();
+    sunLabelPtr[activeRadio]->clear();
+
     return(true);
 }
 

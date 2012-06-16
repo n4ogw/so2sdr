@@ -87,6 +87,7 @@ signals:
 public slots:
     void cancelHamlib();
     void qsyExact(int nrig, int f);
+    void setRigMode(int nrig, rmode_t m, pbwidth_t pb);
     void run();
 
 protected:
@@ -104,6 +105,8 @@ private:
     QList<hamlibmfg>        mfg;
     QList<QByteArray>       mfgName;
     int                     qsyFreq[NRIG];
+    rmode_t                 chgMode[NRIG];
+    pbwidth_t               passBW[NRIG];
     bool                    radioOK[NRIG];
     int                     rigFreq[NRIG];
     bool                    ritClear[NRIG];
