@@ -2093,7 +2093,7 @@ void So2sdr::updateWorkedMult(int nr)
 
    if ; follows the entered freq, 2nd radio is qsyed
  */
-bool So2sdr::enterFreq()
+bool So2sdr::enterFreqOrMode()
 {
     // check for 2nd radio flag ";"
     int s  = qso[activeRadio]->call.size();
@@ -2104,106 +2104,64 @@ bool So2sdr::enterFreq()
     }
 
 
+    // Entered mode command string is optionally followed by a
+    // passband width integer in Hz. e.g. "USB" or "USB1800".
+    // String must start at the beginning (index 0) of the string.
+    QRegExp rx("^(CWR|CW|LSB|USB)(\\d{2,5})?$");
+
     // Allow the UI to receive values in kHz down to the Hz
     // i.e. "14250.340" will become 14250340 Hz
     bool ok = false;
     int  f  = (int)(double)(1000 * qso[activeRadio]->call.toDouble(&ok));
 
     // validate we have a positive integer
-    if (f <= 0 || ok == false) return(false);
-
-    // qsy returns "corrected" rigFreq in event there is no radio CAT connection
-    if (cat) {
-        qsy(nr, f, true);
-    }
-
-    int b;
-    if ((b = getBand(f)) != -1) {
-        band[nr] = b;
-    }
-    qso[activeRadio]->call.clear();
-    lineEditCall[activeRadio]->clear();
-    lineEditCall[activeRadio]->setFocus();
-    if (grab) {
-        lineEditCall[activeRadio]->grabKeyboard();
-    }
-    grabWidget = lineEditCall[activeRadio];
-    lineEditCall[activeRadio]->setModified(false);
-    updateBreakdown();
-    updateMults(activeRadio);
-    if (nDupesheet) {
-        populateDupesheet();
-    }
-    if (bandmapOn[nr]) {
-        bandmap[nr]->setFreq(f, band[nr], spotList[band[nr]]);
-        bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]]);
-
-        // invert spectrum if needed
-        bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
-    }
-    clearWorked(activeRadio);
-    labelCountry[activeRadio]->clear();
-    labelBearing[activeRadio]->clear();
-    labelLPBearing[activeRadio]->clear();
-    sunLabelPtr[activeRadio]->clear();
-    return(true);
-}
-
-/*!
-   take entered mode string and change mode
-
-   if : follows the entered mode, 2nd radio mode is changed
- */
-bool So2sdr::enterMode()
-{
-    // check for 2nd radio flag ":"
-    int s  = qso[activeRadio]->call.size();
-    int nr = activeRadio;
-    if (s > 1 && qso[activeRadio]->call.at(s - 1) == ':') {
-        nr = nr ^ 1;    // XOR to alternate nr between 0 and 1
-        qso[activeRadio]->call.chop(1);
-    }
-
-    // Entered mode command string is noted by trailing ' character which also
-    // serves as a separator for passband width integer in Hz.
-    // e.g. "USB'" or "USB'1800"
-    if (qso[activeRadio]->call.contains("'")) {
-        QList<QByteArray> modeList;
-        pbwidth_t pb = RIG_PASSBAND_NORMAL;
-        bool b = false;
-
-        // Mode string should be in modeList[0] and passband in modeLine[1]
-        modeList = qso[activeRadio]->call.split('\'');
-
-        // At least 2 digits for passband width
-        if (modeList[1].size() > 1) {
-            pb = modeList[1].toLong(&b);
-
-            // 0 Hz not valid!  Hamlib backends should deal with negative values
-            if (!pb || !b)
-                pb = RIG_PASSBAND_NORMAL;
+    if (f > 0 && ok) {
+        // qsy returns "corrected" rigFreq in event there is no radio CAT connection
+        if (cat) {
+            qsy(nr, f, true);
         }
 
-        // NB:  Put shorter substrings later
-        if (modeList[0].contains("CWR")) {
+        int b;
+        if ((b = getBand(f)) != -1) {
+            band[nr] = b;
+        }
+
+        if (bandmapOn[nr]) {
+            bandmap[nr]->setFreq(f, band[nr], spotList[band[nr]]);
+            bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]]);
+
+            // invert spectrum if needed
+            bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
+        }
+
+    } else if (rx.indexIn(qso[activeRadio]->call) == 0) {
+        pbwidth_t pb = RIG_PASSBAND_NORMAL;
+        QString pass = rx.cap(2);
+
+        if (pass.length() > 1) {
+            pb = pass.toLong();
+        }
+
+        // 0 Hz not valid!  Hamlib backends should deal with negative values
+        if (!pb)
+            pb = RIG_PASSBAND_NORMAL;
+
+        if (rx.cap(1) == "CWR") {
             emit setRigMode(nr, RIG_MODE_CWR, pb);
-        } else if (modeList[0].contains("CW")) {
+        } else if (rx.cap(1) == "CW") {
             emit setRigMode(nr, RIG_MODE_CW, pb);
-        } else if (modeList[0].contains("LSB")) {
+        } else if (rx.cap(1) == "LSB") {
             emit setRigMode(nr, RIG_MODE_LSB, pb);
-        } else if (modeList[0].contains("USB")) {
+        } else if (rx.cap(1) == "USB") {
             emit setRigMode(nr, RIG_MODE_USB, pb);
-        } else {
-            return false;
         }
 
     } else {
-        // Incomplete mode command
+        // Incomplete frequency or mode entered
         return false;
     }
 
-    // TODO:  Refactor the following code in some way with
-    // the same block in enterFreq() above.
+
     qso[activeRadio]->call.clear();
     lineEditCall[activeRadio]->clear();
     lineEditCall[activeRadio]->setFocus();
@@ -2229,6 +2187,7 @@ bool So2sdr::enterMode()
 
     return(true);
 }
+
 
 /*!
    update display of qsos/score

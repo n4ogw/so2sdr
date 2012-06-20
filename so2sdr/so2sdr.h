@@ -308,8 +308,7 @@ private:
     void down();
     void enableUI();
     void enter(int);
-    bool enterFreq();
-    bool enterMode();
+    bool enterFreqOrMode();
     void esc();
     void expandMacro(QByteArray msg);
     void fillSentExch(int nr);

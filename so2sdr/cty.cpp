@@ -149,6 +149,11 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
     // check for "*DUPE*"
     if (qso->call == "*DUPE*") return(-1);
 
+    // Check for mode strings with mode names e.g. "USB"
+    // This will optionally be followed by an integer for
+    // passband width in Hz of 2-5 digits.
+    QRegExp rx("^(CWR|CW|LSB|USB)(\\d{2,5})?(;)?$");
+
     // is this a qsy frequency?
     bool ok = false;
     // Allow the UI to receive values in kHz down to the Hz i.e. "14250.340"
@@ -156,32 +161,13 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
     int  n  = (int)(double)(1000 * qso->call.toDouble(&ok));
 
     // semicolon indicates 2nd-radio qsy
-    if (n || ok == true || qso->call.contains(";")) {
+    if (n || ok == true || qso->call.contains(";") || (rx.indexIn(qso->call) == 0)) {
         qso->country = -1;
         qso->country_name.clear();
         qso->PfxName.clear();
         qso->mult[0] = -1;
         qso->mult[1] = -1;
         qsy          = true;
-        return(-1);
-    }
-
-    // Check for mode strings with single quote (') terminator e.g. "USB'"
-    // This will optionally be followed by an integer for passband width in Hz
-    // but we don't need to know that here.
-    if (((qso->call.startsWith("CW")
-        || qso->call.startsWith("CWR")
-        || qso->call.startsWith("LSB")
-        || qso->call.startsWith("USB"))
-        && qso->call.contains("'")) || qso->call.contains(":")) {
-
-        // TODO: refactor away this duplication of code
-        qso->country = -1;
-        qso->country_name.clear();
-        qso->PfxName.clear();
-        qso->mult[0] = -1;
-        qso->mult[1] = -1;
-        qsy          = true;    // Overloading the meaning of "qsy" to signal a rig change in progess.
         return(-1);
     }
 
