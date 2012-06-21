@@ -1402,8 +1402,9 @@ void So2sdr::initLogView()
     }
     LogTableView->setModel(model);
     LogTableView->setColumnWidth(SQL_COL_NR, 42); // NR
-    LogTableView->setColumnWidth(SQL_COL_TIME, 40); // UTC
-    LogTableView->setColumnWidth(SQL_COL_FREQ, 47); // FREQ
+    LogTableView->setColumnWidth(SQL_COL_TIME, 43); // UTC
+    LogTableView->setColumnWidth(SQL_COL_FREQ, 52); // FREQ
+    LogTableView->setColumnWidth(SQL_COL_MODE, 40); // MODE
     LogTableView->setColumnWidth(SQL_COL_CALL, 67); // CALL
     LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
     LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
@@ -1412,14 +1413,15 @@ void So2sdr::initLogView()
     }
     LogTableView->setDragEnabled(false);
 
-    // 5 columns shown for all contests: qso #, time, call, freq, valid flag
+    // 6 columns shown for all contests: qso #, time, call, freq, mode, valid flag
     LogTableView->setColumnHidden(SQL_COL_NR, false);
     LogTableView->setColumnHidden(SQL_COL_TIME, false);
     LogTableView->setColumnHidden(SQL_COL_CALL, false);
     LogTableView->setColumnHidden(SQL_COL_FREQ, false);
+    LogTableView->setColumnHidden(SQL_COL_MODE, false);
     LogTableView->setColumnHidden(SQL_COL_VALID, false);
 
-    // columns 5+ are contest-specific
+    // columns 6+ are contest-specific
     // first are sent data fields
     unsigned f   = contest->sntFieldShown();
     int      cnt = 0;
@@ -1613,6 +1615,27 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
         int f_khz=index.model()->data(index).toInt();
         f_khz = qRound(f_khz / 1000.0);
         s = QString::number(f_khz, 10);
+    }
+
+    if (index.column() == SQL_COL_MODE) {
+        rmode_t m = (rmode_t)index.model()->data(index).toInt();
+
+        switch(m) {
+        case RIG_MODE_CW:
+            s = "CW";
+            break;
+        case RIG_MODE_CWR:
+            s = "CWR";
+            break;
+        case RIG_MODE_LSB:
+            s = "LSB";
+            break;
+        case RIG_MODE_USB:
+            s = "USB";
+            break;
+        default:
+            break;  // Just show the mode number otherwise--fix later, ha!
+        }
     }
 
     // 0 = regular text

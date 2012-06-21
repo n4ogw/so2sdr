@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>560</height>
+    <width>720</width>
+    <height>565</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,13 +18,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>700</width>
+    <width>720</width>
     <height>450</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>700</width>
+    <width>720</width>
     <height>1024</height>
    </size>
   </property>
@@ -2142,7 +2142,7 @@
             <height>20</height>
            </size>
           </property>
-	  <property name="font">
+          <property name="font">
            <font>
             <pointsize>10</pointsize>
            </font>
@@ -2172,8 +2172,8 @@
             <height>20</height>
            </size>
           </property>
-	  <property name="font">
-	    <font>
+          <property name="font">
+           <font>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2193,8 +2193,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>700</width>
-     <height>22</height>
+     <width>720</width>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
