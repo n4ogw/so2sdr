@@ -2425,12 +2425,12 @@ void So2sdr::launch_speedDn(int mod)
 /*!
    Speed up (page_up)
 
-   increases WPM by 3
+   increases WPM by 2
  */
 void So2sdr::speedUp(int nrig)
 {
     QByteArray out = "";
-    wpm[nrig] += 3;
+    wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
         // don't actually change speed if we are sending on other radio
@@ -2442,12 +2442,12 @@ void So2sdr::speedUp(int nrig)
 /*!
    Speed down (page_down)
 
-   decreases WPM by 3
+   decreases WPM by 2
  */
 void So2sdr::speedDn(int nrig)
 {
     QByteArray out = "";
-    wpm[nrig] -= 3;
+    wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
         // don't actually change speed if we are sending on other radio
