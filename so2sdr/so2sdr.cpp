@@ -1633,6 +1633,12 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
         case RIG_MODE_USB:
             s = "USB";
             break;
+        case RIG_MODE_FM:
+            s = "FM";
+            break;
+        case RIG_MODE_AM:
+            s = "AM";
+            break;
         default:
             break;  // Just show the mode number otherwise--fix later, ha!
         }
@@ -2130,7 +2136,7 @@ bool So2sdr::enterFreqOrMode()
     // Entered mode command string is optionally followed by a
     // passband width integer in Hz. e.g. "USB" or "USB1800".
     // String must start at the beginning (index 0) of the string.
-    QRegExp rx("^(CWR|CW|LSB|USB)(\\d{2,5})?$");
+    QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?$");
 
     // Allow the UI to receive values in kHz down to the Hz
     // i.e. "14250.340" will become 14250340 Hz
@@ -2177,6 +2183,10 @@ bool So2sdr::enterFreqOrMode()
             emit setRigMode(nr, RIG_MODE_LSB, pb);
         } else if (rx.cap(1) == "USB") {
             emit setRigMode(nr, RIG_MODE_USB, pb);
+        } else if (rx.cap(1) == "FM") {
+            emit setRigMode(nr, RIG_MODE_FM, pb);
+        } else if (rx.cap(1) == "AM") {
+            emit setRigMode(nr, RIG_MODE_AM, pb);
         }
 
     } else {

@@ -511,15 +511,15 @@ Basic radio control from SO2SDR.
   callsign window (decimal places to the Hz are allowed as of +1.2.2git+.  e.g.
 28523.450). If the number is followed by a semicolon (like 14005;), the
 frequency change will apply to the inactive radio.
-- *Radio change mode*: Enter a mode string, +CW+, +CWR+, +LSB+, or
-  +USB+ optionally followed by two to five digits to set the radio's
+- *Radio change mode*: Enter a mode string, +CW+, +CWR+, +LSB+, +USB+, +FM+, or
+  +AM+ optionally followed by two to five digits to set the radio's
 passbandwidth.  Similar to setting the frequency, a trailing +;+ will set the
-mode on the inactive radio.  e.g. Set mode on active radio, +USB+.  Set mode
-on inactive radio, +CWR;+.  Set mode and passband width on active radio,
-+LSB2400+.  Set mode and passband width on inactive radio, +USB2700;+.  Not
-all Hamlib rig backends support setting a specifc bandwidth.  All backends
-should support setting the mode without a specific passband width.  If not,
-file a bug against Hamlib.  - N0NB
+mode on the inactive radio.  e.g. Set mode on active radio, +USB+.  Set mode on
+inactive radio, +CWR;+.  Set mode and passband width on active radio,
++LSB2400+.  Set mode and passband width on inactive radio, +USB2700;+.  Not all
+Hamlib rig backends support setting a specifc bandwidth.  All backends should
+support setting the mode without a specific passband width.  If not, file a bug
+against Hamlib.  - N0NB
 
 CW Messages
 -----------

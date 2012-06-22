@@ -152,7 +152,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
     // Check for mode strings with mode names e.g. "USB"
     // This will optionally be followed by an integer for
     // passband width in Hz of 2-5 digits.
-    QRegExp rx("^(CWR|CW|LSB|USB)(\\d{2,5})?(;)?$");
+    QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?(;)?$");
 
     // is this a qsy frequency?
     bool ok = false;
