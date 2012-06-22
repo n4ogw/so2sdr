@@ -13,6 +13,24 @@ About this document
 A user reference manual for the 'SO2SDR' contest logging program by Torsten
 Clay, N4OGW, <so2sdr@gmail.com>.
 
+Conventions
+~~~~~~~~~~~
+
+Conventions used in this manual.
+
+- Important terms and proper names are 'emphasized' the first time they are
+  introduced.
+- Amateur radio jargon and other such terms are ``double quoted'' the first
+  time they are introduced.
+- Typed commands and screen output are +mono-spaced+.
+- Named keys are enclosed in angle brackets, e.g. <Enter>.
+- Key combinations have individual key names separated by a hyphen, e.g. <Alt>-H.
+
+Every effort is made to keep this manual up to date with SO2SDR development.
+As SO2SDR is receiving near constant development, some things may be changed
+in development versions before this manual is updated.  Anyone interested in
+following ongoing development should consult the <<X4,Project resources>>.
+
 :numbered:
 Introduction
 ------------
@@ -34,6 +52,7 @@ support two radio operation.  To view activity on the bands in real time,
 SO2SDR can display the output of a ``Software Defined Radio'' receiver onscreen
 with suitable RF hardware and soundcard support.
 
+[[X4]]
 Project resources
 ~~~~~~~~~~~~~~~~~
 
@@ -165,6 +184,7 @@ reminded of this message again during this run of SO2SDR and click `OK'.
 .SO2SDR opening screen
 image::images/so2sdr_open.png[caption="",link="images/so2sdr_open.png"]
 
+[[X3]]
 [NOTE]
 ===============================================================================
 On Linux this message likely appears because either your computer has no
@@ -241,6 +261,12 @@ Built in serial devices are consistently named starting with +/dev/ttyS0+
 On MS Windows use the +COM1+ through +COM+'x' port names.
 ===============================================================================
 
+[NOTE]
+On Linux systems, as with the parallel port, your username must be a member of
+the same group as the device in order to access it, see the <<X3,Note on
+parallel ports>>.  On Debian and derivatives, your username will need to be a
+member of the +dialout+ group.
+
 Winkey (K1EL) Morse keyer
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -261,6 +287,13 @@ Built in serial devices are consistently named starting with +/dev/ttyS0+
 
 On MS Windows use the +COM1+ through +COM+'x' port names.
 ===============================================================================
+
+[NOTE]
+On Linux systems, as with the parallel port, your username must be a member of
+the same group as the device in order to access it, see the <<X3,Note on
+parallel ports>>.  On Debian and derivatives, your username will need to be a
+member of the +dialout+ group.
+
 
 Bandscope
 ~~~~~~~~~
@@ -293,7 +326,7 @@ Running stations
 SO2SDR uses the ``Enter Sends Message'' approach used by many other logging
 programs.
 
-1. Enter the callsign and press <Enter>.
+1. Enter the callsign and press <Enter.>
 a. The other station's callsign and your exchange are sent (CW).
 b. The Exchange box appears and the cursor is placed into the Exchange box.
 2. Enter the other station's exchange information and press <Enter>.
@@ -303,7 +336,7 @@ b. The QSO is logged to the database.
 c. The Call and Exchange boxes are cleared of text.
 d. The Exchange box disappears.
 e. The cursor is placed into the Call field for the next QSO.
-3. Repeat
+3. Repeat.
 
 The program tries to be intelligent in interpreting the entered exchange. There
 needs to be a space between exchange elements in most cases (123a is acceptable
@@ -327,10 +360,9 @@ S&P
 
 TAB enters S&P mode.
 
-1. Type callsign. When <Enter> is pressed, your call is sent
-2. Enter exchange. When <Enter> is pressed, your exchange is sent
-3. press <Enter> again to log the qso. I (N4OGW) am planning on making this
-   extra <Enter> optional.
+1. Type callsign. When <Enter> is pressed, your call is sent.
+2. Enter exchange. When <Enter> is pressed, your exchange is sent.
+3. press <Enter> again to log the qso.
 
 Using the bandmap
 ~~~~~~~~~~~~~~~~~
@@ -338,10 +370,10 @@ Using the bandmap
 In the bandmap, the radio frequency is in the center at the red line. A right
 mouse click will bring up several options:
 
-- *Zoom X1, Zoom X2*: set scale of bandmap.
-- *Delete call*: use to remove a call from the bandmap. Note that the ``-'' and
-  ``='' keys can be used to remove a call.
-- *IQ Balance*: open the IQ balance dialog. The bandmap uses strong signals to
+- *Zoom X1, Zoom X2*: Set scale of bandmap.
+- *Delete call*: Use to remove a call from the bandmap. Note that the +-+ and
+  +=+ keys can be used to remove a call.
+- *IQ Balance*: Open the IQ balance dialog. The bandmap uses strong signals to
   correct gain and phase errors in the SDR hardware. This correction will be
 saved when quitting the program. If the ``IQ'' box is checked, the correction is
 applied; if the ``IQ Data'' box is checked, new signals are used to improve the
@@ -349,20 +381,20 @@ correction.
 
 Options at the bottom of the bandmap window:
 
-- *Mark signals*: this uses a peak detection algorithm to try to determine where
+- *Mark signals*: This uses a peak detection algorithm to try to determine where
   signals are on the band. This does not decode any CW. Each detected peak is
 marked with a small black dot; clicking on it will tune the radio to that
 signal. <Ctrl>-<Up> and <Ctrl>-<Down> arrows can be used to tune the radio to
 the next signal up or down the band. In S&P mode, they will tune the active
 radio; otherwise they apply to the inactive radio.
-- *Signal level slider*: adjusts sensitivity of peak detection algorithm.
-- *IQ*: correct I-Q balance errors
-- *IQ Data*: collect data from received signals to improve I-Q balance
-- *Click filter*: removes key clicks. Not very effective at the moment
+- *Signal level slider*: Adjusts sensitivity of peak detection algorithm.
+- *IQ*: Correct I-Q balance errors.
+- *IQ Data*: Collect data from received signals to improve I-Q balance.
+- *Click filter*: Removes key clicks. Not very effective at the moment.
 
-*Left click*: this will tune the radio to this frequency.
+*Left click*: This will tune the radio to this frequency.
 
-*Left Click+drag in frequency scale*: moves center of the display
+*Left Click+drag in frequency scale*: Moves center of the display.
 
 When in S&P mode, pressing <Space> after typing a callsign will add it to the
 bandmap. If the call is a dupe, it will be highlighted in color on the bandmap.
@@ -384,7 +416,7 @@ contest) will be recalculated automatically.
 To search for a call (or partial call) in the log, enter a call fragment in the
 callsign window and press <Ctrl>-F. <Escape> clears the search results.
 
-*Marking qso's as invalid*: there is no way to delete QSO's from the log.
+*Marking qso's as invalid*: There is no way to delete QSO's from the log.
 However, for each QSO there is a checkbox. If this is unchecked, the QSO is
 marked as invalid and completely removed from dupe checking and scoring, and
 will not appear in the final Cabrillo output.
@@ -418,50 +450,68 @@ For users of TRLOG the behavior of SO2SDR is very similar.
 Key reference
 -------------
 
-A summary of key functions in SO2SDR.
+A summary of keystroke functions in SO2SDR.
 
-- *<Escape>*: cancel CW sending (does not clear fields when CW is in progress);
-  exit S&P mode; clear logging fields; reset <Alt>-D status
-- *<Enter>*: in an empty Call field sends CQ; in CQ mode enters other station's
-  call and sends other station's call and your exchange (CW); accepts other
-station's exchange and logs the QSO and sends the QSL message (CW).  In S&P
-mode enters the other station's call and sends your call (CW); accepts other
-station's exchange and sends your exchange (CW); logs QSO (may become
-optional).
-- *<Ctrl>-<Enter>*: logs qso with no dupe checking or exchange validation (be
+Operating keystrokes
+~~~~~~~~~~~~~~~~~~~~
+
+- *<Escape>*: Cancel CW sending (does not clear fields when CW is in progress).
+ * Clear logging fields (when not sending CW).
+ * Exit S&P mode.
+ * Reset <Alt>-D status.
+- *<Enter>*: In an empty Call field sends CQ.
+ * CQ mode.
+ ** Enters other station's call and sends other station's call and your exchange (CW).
+ ** Accepts other station's exchange and logs the QSO and sends the QSL message (CW).
+ * S&P mode.
+ ** Enters the other station's call and sends your call (CW).
+ ** Accepts other station's exchange and sends your exchange (CW).
+ ** Logs QSO (may become optional).
+- *<Shift>-<Enter>*: Logs qso without sending CW.
+- *<Ctrl>-<Enter>*: Logs qso with no dupe checking or exchange validation (be
   careful). The qso may not be scored correctly.
-- *<Shift>-<Enter>*: logs qso without sending CW
-- *\*: log qso and send Quick QSL message
-- *<Alt>-D*: dupe check on 2nd radio
-- *<Alt>-M*: switch mult display mode
-- *<Ctrl>-N*: make a note
-- *<Alt>-R*: Switch radios
+- *\*: Log qso and send Quick QSL message.
+- *<Alt>-D*: Dupe check on 2nd radio.
+- *<Alt>-M*: Switch mult display mode.
+- *<Alt>-R*: Switch radios.
 - *<Alt>-S*: Set CW speed. Followed by two numeric digits.
-- *<PgDn>* : decrease CW speed
-- *<PgUp>*: increase CW speed
-- *<Ctrl>-<PgDn>*: decrease CW speed on inactive radio
-- *<Ctrl>-<PgUp>* : increase CW speed on inactive radio
-- *<Up>/<Down> arrow*: switch between call and exchange windows
+- *<Ctrl>-F*: Search log for callsign fragment. <Escape> clears search results.
+- *<Ctrl>-N*: Make a note.
+- *<Ctrl>-Z* (in call/exchange entry field): Undo.
+- *<PgDn>* : Decrease CW speed.
+- *<PgUp>*: Increase CW speed.
+- *<Ctrl>-<PgDn>*: Decrease CW speed on inactive radio.
+- *<Ctrl>-<PgUp>* : Increase CW speed on inactive radio.
+- *<Up>/<Down> arrow*: Switch between call and exchange windows.
 - *<Ctrl>-<Up>*: In S&P mode, tune to next higher detected signal on bandmap.
   In CQ mode tune to the next higher signal on the INACTIVE radio.
 - *<Ctrl>-<Down>*: In S&P mode, tune to next lower detected signal on bandmap.
   In CQ mode tune to the next lower signal on the INACTIVE radio.
-- *<Ctrl>-F*: search log for callsign fragment. <Escape> clears search results.
-- *<Ctrl>-Z* (in call/exchange entry field): undo
-- *<Tab>*: enter S&P mode
-- *-* or *=*: mark frequency on inactive radio as a dupe, or clear the current
-  mark
+- *<Tab>*: Enter S&P mode.
+- *-* (hyphen): Mark frequency on active radio as a dupe, or clear the current mark.
+- *=*: Mark frequency on inactive radio as a dupe, or clear the current mark.
+
+Program control
+~~~~~~~~~~~~~~~
+
+User Interface control.
+
+- *<Alt>-F*: Open the File menu.
+- *<Alt>-C*: Open the Config menu.
+- *<Alt>-W*: Open the Windows menu.
+- *<Alt>-H*: Open the Help menu.
+- *<Escape>*: Dismiss menus and dialogs.
 
 Radio control
 ~~~~~~~~~~~~~
 
 Basic radio control from SO2SDR.
 
-- *Radio QSY*: enter a number corresponding to a frequency in kHz in the
+- *Radio QSY*: Enter a number corresponding to a frequency in kHz in the
   callsign window (decimal places to the Hz are allowed as of +1.2.2git+.  e.g.
 28523.450). If the number is followed by a semicolon (like 14005;), the
 frequency change will apply to the inactive radio.
-- *Radio change mode*: enter a mode string, +CW+, +CWR+, +LSB+, or
+- *Radio change mode*: Enter a mode string, +CW+, +CWR+, +LSB+, or
   +USB+ optionally followed by two to five digits to set the radio's
 passbandwidth.  Similar to setting the frequency, a trailing +;+ will set the
 mode on the inactive radio.  e.g. Set mode on active radio, +USB+.  Set mode
@@ -471,42 +521,125 @@ all Hamlib rig backends support setting a specifc bandwidth.  All backends
 should support setting the mode without a specific passband width.  If not,
 file a bug against Hamlib.  - N0NB
 
-CW Message macros
------------------
+CW Messages
+-----------
 
-- *\{CALL\}*: callsign
-- *\{#\}*: QSO number
-- *\{UP\}*: increase speed by 5 WPM
-- *\{DN\}*: decrease speed by 5 WPM
-- *\{CANCEL\}*: cancel any previous speed change
-- *\{R2\}*: send on other radio
-- *\{R2CQ\}*: send on other radio, marked as CQ. If a call is entered, program
+The function keys, F1-F12, are used to send CW messages via the attached keyer
+that supports the K1EL protocol (Winkeyer, Master Keyer 1, etc.) and certain
+SO2R control functions.  Message assigments can be changed in the CW Messages
+dialog, see <<X2,CW Message macros>>.
+
+[NOTE]
+F key assignments will change depending on whether CQ or S&P modes are in effect
+and whether the cursor is in the call or exchange fields.  This sounds more
+complicated that it really is as the program will do the "right thing" when you
+want it.  Assignments may also change slightly from contest to contest and whether
+the associated config is setup for domestic (US/VE) or DX sides of an event.
+
+CQ Functions
+~~~~~~~~~~~~
+
+Unless noted, messages will be sent on the active radio.
+
+- *F1*: Normal CQ message on (also by <Enter> in empty Call field).
+- *F2*: Short CQ message on.
+- *F3*: My callsign.
+- *F4*: Unassigned.
+- *F5*: Unassigned.
+- *F6*: Unassigned.
+- *F7*: Short CQ message on inactive radio.
+- *F8*: Normal CQ message on inactive radio.
+- *F9*: ? (query).
+- *F10*: Swap frequencies between radios.
+- *F11*: Best CQ (QSY current radio to "best" CQ freq).
+- *F12*: Toggle parallel port pin for audio control.
+
+Exchange Functions
+~~~~~~~~~~~~~~~~~~
+
+Messages sent only when cursor is in the Exchange field.
+
+[NOTE]
+Exchange length will vary by event.  F3-F6 are assigned elements of the
+exchange by default ranging from the section to all elements of a November
+Sweepstakes exchange.
+
+- *F1*: Callsign.
+- *F2*: Complete sent exchange.
+- *F3*: Sent exchange part 1.
+- *F4*: Sent exchange part 2.
+- *F5*: Sent exchange part 3.
+- *F6*: Sent exchange part 4.
+- *F7*: Short CQ message on inactive radio.
+- *F8*: Normal CQ message on inactive radio.
+- *F9*: ? (query).
+- *F10*: Swap frequencies between radios.
+- *F11*: Best CQ (QSY current radio to "best" CQ freq).
+- *F12*: Toggle parallel port pin for audio control.
+
+Control Functions
+~~~~~~~~~~~~~~~~~
+
+Unassigned by default.  Most desktop environments in Linux will assign
+<Ctl>-F? keys to switch desktop workspaces.  To use messages you assign
+to these keys check the Grab Keyboard option in the Windows menu
+(<Alt>-W).
+
+Shift Functions
+~~~~~~~~~~~~~~~
+
+Messages sent whether the cursor is in the Call or Exchange fields.
+
+- *F1*: CALL?
+- *F2*: AGN?
+- *F3*: SECT?
+- *F4*: Unassigned
+- *F5*: Unassigned
+- *F6*: Unassigned
+- *F7*: Unassigned
+- *F8*: Unassigned
+- *F9*: Unassigned
+- *F10*: Unassigned
+- *F11*: Unassigned
+- *F12*: Unassigned
+
+[[X2]]
+CW Message macros
+~~~~~~~~~~~~~~~~~
+
+These macros can be assigned to F keys.  The macro assignments may be modified
+in the 'CW Messages' dialog after a contest has been selected.
+
+- *\{CALL\}*: Callsign.
+- *\{#\}*: QSO number.
+- *\{UP\}*: Increase speed by 5 WPM.
+- *\{DN\}*: Decrease speed by 5 WPM.
+- *\{CANCEL\}*: Cancel any previous speed change.
+- *\{R2\}*: Send on other radio.
+- *\{R2CQ\}*: Send on other radio, marked as CQ. If a call is entered, program
   will switch to other radio to answer CQ. <Escape> or a F1 CQ will clear this
 state.
-- *\{STATE\}*: state
-- *\{SECTION\}*: ARRL section
-- *\{NAME\}*: name
-- *\{CQZ\}*: CQ zone
-- *\{ITUZ\}*: ITU zone
-- *\{GRID\}*: grid
-- *\{CALL_ENTERED\}*: contents of call entry window
-- *\{TOGGLESTEREOPIN\}*: toggle parallel port pin for audio control. This macro
-  should be used alone and will not work with other CW macros
-- *\{CQMODE\}*: switch to CQ mode
-- *\{SPMODE\}*: switch to SP mode
-- *\{SWAP_RADIOS\}*: swap frequencies between radios
-- *\{REPEAT_LAST\}*: repeats previously sent message
-- *\{REPEAT_NR\}*: if the call entry line is not empty, send current QSO #. If
+- *\{STATE\}*: State.
+- *\{SECTION\}*: ARRL section.
+- *\{NAME\}*: Name.
+- *\{CQZ\}*: CQ zone.
+- *\{ITUZ\}*: ITU zone.
+- *\{GRID\}*: Grid.
+- *\{CALL_ENTERED\}*: Contents of call entry window.
+- *\{TOGGLESTEREOPIN\}*: Toggle parallel port pin for audio control. This macro
+  should be used alone and will not work with other CW macros.
+- *\{CQMODE\}*: Switch to CQ mode.
+- *\{SPMODE\}*: Switch to SP mode.
+- *\{SWAP_RADIOS\}*: Swap frequencies between radios.
+- *\{REPEAT_LAST\}*: Repeats previously sent message.
+- *\{REPEAT_NR\}*: If the call entry line is not empty, send current QSO #. If
   call entry line is empty, sends number sent for last logged QSO.
-- *\{CLEAR_RIT\}*: clear the RIT
-- *\{RIG_FREQ\}*: send frequency of radio rounded to nearest kHz
-- *\{RIG2_FREQ\}*: send frequency of 2^nd^ radio rounded to nearest kHz
-- *\{BEST_CQ\}*: QSY current radio to "best" CQ freq
-- *\{BEST_CQ_R2\}*: QSY 2^nd^ radio to "best" CQ freq
-- *|*: insert 1/2 dit extra space (CT space)
-
-The macro assignments may be modified in the 'CW Messages' dialog after a
-contest has been selected.
+- *\{CLEAR_RIT\}*: Clear the RIT.
+- *\{RIG_FREQ\}*: Send frequency of radio rounded to nearest kHz.
+- *\{RIG2_FREQ\}*: Send frequency of 2^nd^ radio rounded to nearest kHz.
+- *\{BEST_CQ\}*: QSY current radio to "best" CQ freq.
+- *\{BEST_CQ_R2\}*: QSY 2^nd^ radio to "best" CQ freq.
+- *|*: Insert 1/2 dit extra space (CT space).
 
 <<<
 :numbered!:
