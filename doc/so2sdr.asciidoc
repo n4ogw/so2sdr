@@ -1,36 +1,21 @@
 SO2SDR User Manual
 ==================
 :author: Nate Bargmann, N0NB & Torsten Clay, N4OGW
+:Author Initials: NB
 :email:  so2sdr@googlegroups.com
 :revnumber: 1.2.2git
+:revdate: 22 June 2012
 :toc:
 :website: http://code.google.com/p/so2sdr/
-
-[abstract]
-About this document
--------------------
 
 A user reference manual for the 'SO2SDR' contest logging program by Torsten
 Clay, N4OGW, <so2sdr@gmail.com>.
 
-Conventions
-~~~~~~~~~~~
+Primary author of this manual is Nate Bargmann, N0NB <n0nb@n0nb.us> including
+portions from the SO2SDR help file by Torsten Clay, N4OGW 
+<so2sdr@googlegroups.com>.
 
-Conventions used in this manual.
-
-- Important terms and proper names are 'emphasized' the first time they are
-  introduced.
-- Amateur radio jargon and other such terms are ``double quoted'' the first
-  time they are introduced.
-- Typed commands and screen output are +mono-spaced+.
-- Named keys are enclosed in angle brackets, e.g. <Enter>.
-- Key combinations have individual key names separated by a hyphen, e.g. <Alt>-H.
-
-Every effort is made to keep this manual up to date with SO2SDR development.
-As SO2SDR is receiving near constant development, some things may be changed
-in development versions before this manual is updated.  Anyone interested in
-following ongoing development should consult the <<X4,Project resources>>.
-
+<<<
 :numbered:
 Introduction
 ------------
@@ -52,6 +37,25 @@ support two radio operation.  To view activity on the bands in real time,
 SO2SDR can display the output of a ``Software Defined Radio'' receiver onscreen
 with suitable RF hardware and soundcard support.
 
+Conventions
+~~~~~~~~~~~
+
+Conventions used in this manual.
+
+- Important terms and proper names are 'emphasized' the first time they are
+  introduced.
+- Amateur radio jargon and other such terms are ``double quoted'' the first
+  time they are introduced.
+- Typed commands and screen output are +mono-spaced+.
+- Named keys are enclosed in angle brackets, e.g. <Enter>.
+- Key combinations have individual key names separated by a hyphen, e.g. <Alt>-H.
+- Character keys stand for themselves, e.g. H.
+
+Every effort is made to keep this manual up to date with SO2SDR development.
+As SO2SDR is receiving near constant development, some things may be changed
+in development versions before this manual is updated.  Anyone interested in
+following ongoing development should consult the <<X4,Project resources>>.
+
 [[X4]]
 Project resources
 ~~~~~~~~~~~~~~~~~
@@ -65,6 +69,7 @@ http://groups.google.com/group/so2sdr[http://groups.google.com/group/so2sdr]
 A development Git repository is at:
 https://github.com/n4ogw/so2sdr[https://github.com/n4ogw/so2sdr]
 
+<<<
 Installation
 ------------
 
@@ -138,6 +143,7 @@ is on the Git Hub site).  You will be able to ``push'' your changes to your
 fork and create a ``pull request'' that Tor can consider for inclusion into
 SO2SDR.
 
+<<<
 Hardware interfacing
 --------------------
 
@@ -148,13 +154,14 @@ and Morse Code keyer (CW).
 
 TODO:  Complete this section with examples.
 
+<<<
 Getting started
 ---------------
 
 Now that SO2SDR is installed, you should find it in your desktop menu (on
 Linux).
 
-[NOTE]
+[TIP]
 An extra menu package may need to be installed on Linux systems to have the
 `Hamradio' menu appear.  On Debian and Ubuntu derived systems this package is
 named +extra-xdg-menus+.
@@ -169,7 +176,7 @@ Create user data directory
 
 The first time SO2SDR is run no station data will be set and an ``error'' box
 will appear.  Of course you'll want to create for persistent data storage so
-click `Yes'..
+click `Yes'.
 
 .SO2SDR create user data directory
 image::images/so2sdr_user_data.png[caption="",link="images/so2sdr_user_data.png"]
@@ -198,7 +205,7 @@ likely see output like:
 To access the port, you must be a member of the +lp+ group.  You can do this
 with the +usermod+ command:
 
-+sudo usermod -G lp -a 'username'+
++sudo usermod -G lp -a username+
 
 After issuing this command, you will need to logout and log back into your
 account for the group membership to take effect.
@@ -304,6 +311,7 @@ bandscope and configure the sound hardware.
 .SO2SDR bandscope
 image::images/so2sdr_bandscope.png[caption="",link="images/so2sdr_bandscope.png"]
 
+<<<
 Operation
 ---------
 
@@ -326,7 +334,7 @@ Running stations
 SO2SDR uses the ``Enter Sends Message'' approach used by many other logging
 programs.
 
-1. Enter the callsign and press <Enter.>
+1. Enter the callsign and press <Enter>.
 a. The other station's callsign and your exchange are sent (CW).
 b. The Exchange box appears and the cursor is placed into the Exchange box.
 2. Enter the other station's exchange information and press <Enter>.
@@ -447,6 +455,7 @@ Sprint/Sprint+SO2R
 
 For users of TRLOG the behavior of SO2SDR is very similar.
 
+<<<
 Key reference
 -------------
 
@@ -521,6 +530,7 @@ Hamlib rig backends support setting a specifc bandwidth.  All backends should
 support setting the mode without a specific passband width.  If not, file a bug
 against Hamlib.  - N0NB
 
+<<<
 CW Messages
 -----------
 
@@ -752,6 +762,7 @@ order that are preferred, but occasionally they are swapped.  The rules give
 the consistent names needed so there is no need to reconfigure the various
 programs after each system restart.
 
+<<<
 [appendix]
 SO2SDR License
 --------------
