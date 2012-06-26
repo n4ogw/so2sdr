@@ -254,6 +254,7 @@
               <widget class="QLabel" name="label_160">
                <property name="font">
                 <font>
+                 <family>Monospace</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -269,6 +270,7 @@
               <widget class="QLabel" name="label_80">
                <property name="font">
                 <font>
+                 <family>Monospace</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -284,6 +286,7 @@
               <widget class="QLabel" name="label_40">
                <property name="font">
                 <font>
+                 <family>Monospace</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -299,6 +302,7 @@
               <widget class="QLabel" name="label_20">
                <property name="font">
                 <font>
+                 <family>Monospace</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -332,6 +336,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Monospace</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -365,6 +370,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Monospace</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -398,7 +404,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -432,7 +438,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -466,7 +472,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -500,7 +506,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -534,7 +540,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -568,7 +574,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -635,7 +641,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -669,7 +675,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -703,7 +709,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -737,7 +743,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -771,7 +777,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -805,7 +811,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -839,7 +845,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -873,7 +879,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -889,7 +895,7 @@
               <widget class="QLabel" name="mult160Label2">
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -905,7 +911,7 @@
               <widget class="QLabel" name="mult80Label2">
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -921,7 +927,7 @@
               <widget class="QLabel" name="mult40Label2">
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -937,7 +943,7 @@
               <widget class="QLabel" name="mult20Label2">
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -953,7 +959,7 @@
               <widget class="QLabel" name="mult15Label2">
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -969,7 +975,7 @@
               <widget class="QLabel" name="mult10Label2">
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -1003,7 +1009,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Sans Serif</family>
+                 <family>Monospace</family>
                  <pointsize>9</pointsize>
                 </font>
                </property>
@@ -1365,6 +1371,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Monospace</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -1554,6 +1561,7 @@
          <widget class="QLabel" name="ScoreLabel">
           <property name="font">
            <font>
+            <family>Monospace</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -1674,6 +1682,7 @@
             </property>
             <property name="font">
              <font>
+              <family>Monospace</family>
               <pointsize>10</pointsize>
              </font>
             </property>
@@ -1793,6 +1802,7 @@
             </property>
             <property name="font">
              <font>
+              <family>Monospace</family>
               <pointsize>10</pointsize>
              </font>
             </property>
@@ -1830,6 +1840,7 @@
             </property>
             <property name="font">
              <font>
+              <family>Monospace</family>
               <pointsize>11</pointsize>
              </font>
             </property>
@@ -1894,6 +1905,7 @@
             </property>
             <property name="font">
              <font>
+              <family>Monospace</family>
               <pointsize>11</pointsize>
              </font>
             </property>
@@ -2142,7 +2154,7 @@
             <height>20</height>
            </size>
           </property>
-	  <property name="font">
+          <property name="font">
            <font>
             <pointsize>10</pointsize>
            </font>
@@ -2172,8 +2184,8 @@
             <height>20</height>
            </size>
           </property>
-	  <property name="font">
-	    <font>
+          <property name="font">
+           <font>
             <pointsize>10</pointsize>
            </font>
           </property>
