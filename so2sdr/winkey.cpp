@@ -320,7 +320,7 @@ void Winkey::openWinkey()
         // winkey bug/undocumented feature?
         buff[0] = 0x05;     // Setup speed pot command, next three bytes setup the speed pot
         buff[1] = 10;       // min wpm
-        buff[2] = 25;       // wpm range (min wpm + wpm range = wpm max)
+        buff[2] = 80;       // wpm range (min wpm + wpm range = wpm max)
         buff[3] = 0;        // Used only on WK1 keyers (does 0 cause a problem on WK1?)
         winkeyPort->write((char *) buff, 4);
 #ifdef Q_OS_LINUX
