@@ -1402,8 +1402,9 @@ void So2sdr::initLogView()
     }
     LogTableView->setModel(model);
     LogTableView->setColumnWidth(SQL_COL_NR, 42); // NR
-    LogTableView->setColumnWidth(SQL_COL_TIME, 40); // UTC
-    LogTableView->setColumnWidth(SQL_COL_FREQ, 47); // FREQ
+    LogTableView->setColumnWidth(SQL_COL_TIME, 43); // UTC
+    LogTableView->setColumnWidth(SQL_COL_FREQ, 52); // FREQ
+    LogTableView->setColumnWidth(SQL_COL_MODE, 40); // MODE
     LogTableView->setColumnWidth(SQL_COL_CALL, 67); // CALL
     LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
     LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
@@ -1412,14 +1413,15 @@ void So2sdr::initLogView()
     }
     LogTableView->setDragEnabled(false);
 
-    // 5 columns shown for all contests: qso #, time, call, freq, valid flag
+    // 6 columns shown for all contests: qso #, time, call, freq, mode, valid flag
     LogTableView->setColumnHidden(SQL_COL_NR, false);
     LogTableView->setColumnHidden(SQL_COL_TIME, false);
     LogTableView->setColumnHidden(SQL_COL_CALL, false);
     LogTableView->setColumnHidden(SQL_COL_FREQ, false);
+    LogTableView->setColumnHidden(SQL_COL_MODE, false);
     LogTableView->setColumnHidden(SQL_COL_VALID, false);
 
-    // columns 5+ are contest-specific
+    // columns 6+ are contest-specific
     // first are sent data fields
     unsigned f   = contest->sntFieldShown();
     int      cnt = 0;
@@ -1613,6 +1615,33 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
         int f_khz=index.model()->data(index).toInt();
         f_khz = qRound(f_khz / 1000.0);
         s = QString::number(f_khz, 10);
+    }
+
+    if (index.column() == SQL_COL_MODE) {
+        rmode_t m = (rmode_t)index.model()->data(index).toInt();
+
+        switch(m) {
+        case RIG_MODE_CW:
+            s = "CW";
+            break;
+        case RIG_MODE_CWR:
+            s = "CWR";
+            break;
+        case RIG_MODE_LSB:
+            s = "LSB";
+            break;
+        case RIG_MODE_USB:
+            s = "USB";
+            break;
+        case RIG_MODE_FM:
+            s = "FM";
+            break;
+        case RIG_MODE_AM:
+            s = "AM";
+            break;
+        default:
+            break;  // Just show the mode number otherwise--fix later, ha!
+        }
     }
 
     // 0 = regular text
@@ -2107,7 +2136,7 @@ bool So2sdr::enterFreqOrMode()
     // Entered mode command string is optionally followed by a
     // passband width integer in Hz. e.g. "USB" or "USB1800".
     // String must start at the beginning (index 0) of the string.
-    QRegExp rx("^(CWR|CW|LSB|USB)(\\d{2,5})?$");
+    QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?$");
 
     // Allow the UI to receive values in kHz down to the Hz
     // i.e. "14250.340" will become 14250340 Hz
@@ -2154,6 +2183,10 @@ bool So2sdr::enterFreqOrMode()
             emit setRigMode(nr, RIG_MODE_LSB, pb);
         } else if (rx.cap(1) == "USB") {
             emit setRigMode(nr, RIG_MODE_USB, pb);
+        } else if (rx.cap(1) == "FM") {
+            emit setRigMode(nr, RIG_MODE_FM, pb);
+        } else if (rx.cap(1) == "AM") {
+            emit setRigMode(nr, RIG_MODE_AM, pb);
         }
 
     } else {
@@ -2402,12 +2435,12 @@ void So2sdr::launch_speedDn(int mod)
 /*!
    Speed up (page_up)
 
-   increases WPM by 3
+   increases WPM by 2
  */
 void So2sdr::speedUp(int nrig)
 {
     QByteArray out = "";
-    wpm[nrig] += 3;
+    wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
         // don't actually change speed if we are sending on other radio
@@ -2419,12 +2452,12 @@ void So2sdr::speedUp(int nrig)
 /*!
    Speed down (page_down)
 
-   decreases WPM by 3
+   decreases WPM by 2
  */
 void So2sdr::speedDn(int nrig)
 {
     QByteArray out = "";
-    wpm[nrig] -= 3;
+    wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
         // don't actually change speed if we are sending on other radio
