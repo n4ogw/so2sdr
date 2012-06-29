@@ -592,6 +592,9 @@ const QString c_masterfile_def="MASTER.DTA";
 const QString c_sprintmode="contest/sprintmode";
 const bool c_sprintmode_def=false;
 
+const QString c_showmode="contest/showmode";
+const bool c_showmode_def=false;
+
 const QString c_showmults="contest/showmults";
 const bool c_showmults_def=true;
 

@@ -23,8 +23,8 @@
 ContestOptionsDialog::ContestOptionsDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateOptions()));
+    connect(this, SIGNAL(rejected()), this, SLOT(rejectChanges()));
+    connect(this, SIGNAL(accepted()), this, SLOT(updateOptions()));
     sent[0]=lineEditExch1;
     sent[1]=lineEditExch2;
     sent[2]=lineEditExch3;
@@ -44,6 +44,7 @@ void ContestOptionsDialog::setOptions()
 {
     MasterLineEdit->setText(settings->value(c_masterfile,c_masterfile_def).toString());
     MasterCheckBox->setChecked(settings->value(c_mastermode,c_mastermode_def).toBool());
+    ShowModeCheckBox->setChecked(settings->value(c_showmode,c_showmode_def).toBool());
     ShowMultsCheckBox->setChecked(settings->value(c_showmults,c_showmults_def).toBool());
     SprintCheckBox->setChecked(settings->value(c_sprintmode,c_sprintmode_def).toBool());
     MultsByBandCheckBox->setChecked(settings->value(c_multsband,c_multsband_def).toBool());
@@ -61,6 +62,7 @@ void ContestOptionsDialog::updateOptions()
     settings->setValue(c_masterfile,MasterLineEdit->text());
     settings->setValue(c_mastermode,MasterCheckBox->isChecked());
     settings->setValue(c_sprintmode,SprintCheckBox->isChecked());
+    settings->setValue(c_showmode,ShowModeCheckBox->isChecked());
 
     // need to rescore log if dupe mode or mults view change
     int oldDupeMode=settings->value(c_dupemode,c_dupemode_def).toInt();

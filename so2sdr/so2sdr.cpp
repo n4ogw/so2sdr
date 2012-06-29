@@ -717,6 +717,11 @@ void So2sdr::setupNewContest(int result)
  */
 void So2sdr::updateOptions()
 {
+    if (csettings->value(c_showmode,c_showmode_def).toBool()) {
+        LogTableView->setColumnHidden(SQL_COL_MODE, false);
+    } else {
+        LogTableView->setColumnHidden(SQL_COL_MODE, true);
+    }
     updateBreakdown();
     updateMults(activeRadio);
     if (callFocus[activeRadio]) {
@@ -1382,6 +1387,7 @@ void So2sdr::logEdited(const QModelIndex & topLeft, const QModelIndex & bottomRi
     LogTableView->scrollToBottom();
 }
 
+
 /*!
    initialize log view
  */
@@ -1404,7 +1410,7 @@ void So2sdr::initLogView()
     LogTableView->setColumnWidth(SQL_COL_NR, 42); // NR
     LogTableView->setColumnWidth(SQL_COL_TIME, 43); // UTC
     LogTableView->setColumnWidth(SQL_COL_FREQ, 52); // FREQ
-    LogTableView->setColumnWidth(SQL_COL_MODE, 40); // MODE
+    LogTableView->setColumnWidth(SQL_COL_MODE, 35); // MODE
     LogTableView->setColumnWidth(SQL_COL_CALL, 67); // CALL
     LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
     LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
@@ -1418,7 +1424,9 @@ void So2sdr::initLogView()
     LogTableView->setColumnHidden(SQL_COL_TIME, false);
     LogTableView->setColumnHidden(SQL_COL_CALL, false);
     LogTableView->setColumnHidden(SQL_COL_FREQ, false);
-    LogTableView->setColumnHidden(SQL_COL_MODE, false);
+    if (csettings->value(c_showmode,c_showmode_def).toBool()) {
+        LogTableView->setColumnHidden(SQL_COL_MODE, false);
+    }
     LogTableView->setColumnHidden(SQL_COL_VALID, false);
 
     // columns 6+ are contest-specific
