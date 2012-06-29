@@ -311,6 +311,7 @@ void RigSerial::initialize(QSettings *s)
     for (int i = 0; i < NRIG; i++) {
         clearRitFlag[i] = 0;
         qsyFreq[i]      = 0;
+        chgMode[i]      = RIG_MODE_NONE;
         radioOK[i]      = false;
         ifFreq_[i]      = 0;
         model[i]=settings->value(s_radios_rig[i],RIG_MODEL_DUMMY).toInt();
@@ -387,6 +388,19 @@ void RigSerial::timerEvent(QTimerEvent *event)
                 }
                 qsyFreq[i] = 0;
             }
+
+            mutex[i].unlock();
+
+            // change mode on radio
+            mutex[i].lock();
+            if ((chgMode[i] > RIG_MODE_NONE) && (chgMode[i] < RIG_MODE_TESTS_MAX)) {
+                int status = rig_set_mode(rig[i], RIG_VFO_CURR, chgMode[i], passBW[i]);
+                if (status == RIG_OK) {
+                    Mode[i] = chgMode[i];
+                }
+                chgMode[i] = RIG_MODE_NONE; // reset for next change
+            }
+
             mutex[i].unlock();
         }
 
@@ -578,6 +592,19 @@ void RigSerial::qsyExact(int nrig, int f)
 {
     mutex[nrig].lock();
     qsyFreq[nrig] = f;
+    mutex[nrig].unlock();
+}
+
+/*! Set radio mode
+ *
+ * m = Hamlib mode, no checking is done
+ * pb = Passband width in Hz
+ */
+void RigSerial::setRigMode(int nrig, rmode_t m, pbwidth_t pb)
+{
+    mutex[nrig].lock();
+    chgMode[nrig] = m;
+    passBW[nrig] = pb;
     mutex[nrig].unlock();
 }
 
