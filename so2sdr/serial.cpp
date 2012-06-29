@@ -468,16 +468,16 @@ int RigSerial::ifFreq(int nrig)
 
    rmode_t defined in hamlib
  */
-rmode_t RigSerial::mode(int nrig)
+rmode_t RigSerial::mode(int nrig) const
 {
     return Mode[nrig];
 }
 
-QString RigSerial::modeStr(int nrig)
+/*! return string describing the current mode for
+ radio nrig
+ */
+QString RigSerial::modeStr(int nrig) const
 {
-    // this has to match the modes defined in hamlib
-    const QString modes[21] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
-                                "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
     switch (Mode[nrig]) {
     case RIG_MODE_NONE: return modes[0];
     case RIG_MODE_AM: return modes[1];
@@ -502,6 +502,44 @@ QString RigSerial::modeStr(int nrig)
     case RIG_MODE_DSB: return modes[20];
     default:return modes[0];
     }
+}
+
+/*! convert mode to ModeType
+*/
+ModeTypes RigSerial::getModeType(rmode_t mode) const
+{
+    switch (mode) {
+    case RIG_MODE_NONE: return CWType;
+    case RIG_MODE_AM: return PhoneType;
+    case RIG_MODE_CW: return CWType;
+    case RIG_MODE_USB: return PhoneType;
+    case RIG_MODE_LSB: return PhoneType;
+    case RIG_MODE_RTTY: return DigiType;
+    case RIG_MODE_FM: return PhoneType;
+    case RIG_MODE_WFM: return PhoneType;
+    case RIG_MODE_CWR: return CWType;
+    case RIG_MODE_RTTYR: return DigiType;
+    case RIG_MODE_AMS: return PhoneType;
+    case RIG_MODE_PKTLSB: return DigiType;
+    case RIG_MODE_PKTUSB: return DigiType;
+    case RIG_MODE_PKTFM: return DigiType;
+    case RIG_MODE_ECSSUSB: return PhoneType;
+    case RIG_MODE_ECSSLSB: return PhoneType;
+    case RIG_MODE_FAX: return DigiType;
+    case RIG_MODE_SAM: return PhoneType;
+    case RIG_MODE_SAL: return PhoneType;
+    case RIG_MODE_SAH: return PhoneType;
+    case RIG_MODE_DSB: return PhoneType;
+    default:return CWType;
+    }
+}
+
+
+/*! return current type of mode: CW, PHONE, DIGI
+ */
+ModeTypes RigSerial::modeType(int nrig) const
+{
+    return getModeType(Mode[nrig]);
 }
 
 /*! initialize radio

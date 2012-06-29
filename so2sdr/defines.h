@@ -380,6 +380,13 @@ const int BAND222= 13; // 222 MHz
 const int BAND902 = 14; // 902 MHz
 const int BAND1240 = 15; // 1240 MHz
 
+// mode types
+typedef enum {
+    CWType = 0,
+    PhoneType = 1,
+    DigiType = 2
+} ModeTypes;
+
 const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
                                     "70cm","1.25M","33cm","23cm"};
 

@@ -51,6 +51,10 @@ typedef struct hamlibmfg {
     QList<hamlibModel> models;
 } hamlibType;
 
+// this has to match the modes defined in hamlib
+const QString modes[21] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
+                            "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
+
 /*!
    Radio serial communications for one radio using Hamlib library.
 
@@ -64,6 +68,7 @@ public:
     RigSerial(QObject *parent = 0);
     ~RigSerial();
     void clearRIT(int nrig);
+    ModeTypes getModeType(rmode_t mode) const;
     int getRigFreq(int nrig);
     QString hamlibModelName(int i, int indx) const;
     int hamlibNMfg() const;
@@ -74,8 +79,9 @@ public:
     int ifFreq(int nrig);
     void initialize(QSettings *s);
     bool initializeHamlib(QString dir);
-    rmode_t mode(int nrig);
-    QString modeStr(int nrig);
+    rmode_t mode(int nrig) const;
+    QString modeStr(int nrig) const;
+    ModeTypes modeType(int nrig) const;
     void openRig();
     bool radioOpen(int nrig);
     void stopSerial();
