@@ -29,8 +29,10 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
+#include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QMetaType>
 #include <QModelIndex>
 #include <QObject>
 #include <QPalette>
@@ -63,6 +65,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     setupUi(this);
     initPointers();
     initVariables();
+
+    // Register rmode_t, pbwidth_t for connect()
+    qRegisterMetaType<rmode_t>("rmode_t");
+    qRegisterMetaType<pbwidth_t>("pbwidth_t");
 
 #ifdef Q_OS_WIN
     // in Windows, keep data files in same directory as executable
@@ -547,7 +553,10 @@ void So2sdr::openRadios()
 
     cat->initialize(settings);
 
+    // Connect signals from functions in this class with slots in RigSerial class
     connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
+    connect(this, SIGNAL(setRigMode(int, rmode_t, pbwidth_t)), cat, SLOT(setRigMode(int, rmode_t, pbwidth_t)));
+
     cat->openRig();
     catThread.start();
     for (int i = 0; i < N_BANDS; i++) {
@@ -1393,8 +1402,9 @@ void So2sdr::initLogView()
     }
     LogTableView->setModel(model);
     LogTableView->setColumnWidth(SQL_COL_NR, 42); // NR
-    LogTableView->setColumnWidth(SQL_COL_TIME, 40); // UTC
-    LogTableView->setColumnWidth(SQL_COL_FREQ, 47); // FREQ
+    LogTableView->setColumnWidth(SQL_COL_TIME, 43); // UTC
+    LogTableView->setColumnWidth(SQL_COL_FREQ, 52); // FREQ
+    LogTableView->setColumnWidth(SQL_COL_MODE, 40); // MODE
     LogTableView->setColumnWidth(SQL_COL_CALL, 67); // CALL
     LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
     LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
@@ -1403,14 +1413,15 @@ void So2sdr::initLogView()
     }
     LogTableView->setDragEnabled(false);
 
-    // 5 columns shown for all contests: qso #, time, call, freq, valid flag
+    // 6 columns shown for all contests: qso #, time, call, freq, mode, valid flag
     LogTableView->setColumnHidden(SQL_COL_NR, false);
     LogTableView->setColumnHidden(SQL_COL_TIME, false);
     LogTableView->setColumnHidden(SQL_COL_CALL, false);
     LogTableView->setColumnHidden(SQL_COL_FREQ, false);
+    LogTableView->setColumnHidden(SQL_COL_MODE, false);
     LogTableView->setColumnHidden(SQL_COL_VALID, false);
 
-    // columns 5+ are contest-specific
+    // columns 6+ are contest-specific
     // first are sent data fields
     unsigned f   = contest->sntFieldShown();
     int      cnt = 0;
@@ -1604,6 +1615,33 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
         int f_khz=index.model()->data(index).toInt();
         f_khz = qRound(f_khz / 1000.0);
         s = QString::number(f_khz, 10);
+    }
+
+    if (index.column() == SQL_COL_MODE) {
+        rmode_t m = (rmode_t)index.model()->data(index).toInt();
+
+        switch(m) {
+        case RIG_MODE_CW:
+            s = "CW";
+            break;
+        case RIG_MODE_CWR:
+            s = "CWR";
+            break;
+        case RIG_MODE_LSB:
+            s = "LSB";
+            break;
+        case RIG_MODE_USB:
+            s = "USB";
+            break;
+        case RIG_MODE_FM:
+            s = "FM";
+            break;
+        case RIG_MODE_AM:
+            s = "AM";
+            break;
+        default:
+            break;  // Just show the mode number otherwise--fix later, ha!
+        }
     }
 
     // 0 = regular text
@@ -2084,7 +2122,7 @@ void So2sdr::updateWorkedMult(int nr)
 
    if ; follows the entered freq, 2nd radio is qsyed
  */
-bool So2sdr::enterFreq()
+bool So2sdr::enterFreqOrMode()
 {
     // check for 2nd radio flag ";"
     int s  = qso[activeRadio]->call.size();
@@ -2094,46 +2132,95 @@ bool So2sdr::enterFreq()
         qso[activeRadio]->call.chop(1);
     }
 
-    // validate we have a positive integer
-    bool ok = false;
-    int  f  = qso[activeRadio]->call.toInt(&ok, 10);
-    if (f <= 0 || ok == false) return(false);
 
-    // qsy returns "corrected" rigFreq in event there is no radio CAT connection
-    if (cat) {
-        qsy(nr, f, false);
+    // Entered mode command string is optionally followed by a
+    // passband width integer in Hz. e.g. "USB" or "USB1800".
+    // String must start at the beginning (index 0) of the string.
+    QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?$");
+
+    // Allow the UI to receive values in kHz down to the Hz
+    // i.e. "14250.340" will become 14250340 Hz
+    bool ok = false;
+    int  f  = (int)(double)(1000 * qso[activeRadio]->call.toDouble(&ok));
+
+    // validate we have a positive integer
+    if (f > 0 && ok) {
+        // qsy returns "corrected" rigFreq in event there is no radio CAT connection
+        if (cat) {
+            qsy(nr, f, true);
+        }
+
+        int b;
+        if ((b = getBand(f)) != -1) {
+            band[nr] = b;
+        }
+
+        if (bandmapOn[nr]) {
+            bandmap[nr]->setFreq(f, band[nr], spotList[band[nr]]);
+            bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]]);
+
+            // invert spectrum if needed
+            bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
+        }
+
+    } else if (rx.indexIn(qso[activeRadio]->call) == 0) {
+        pbwidth_t pb = RIG_PASSBAND_NORMAL;
+        QString pass = rx.cap(2);
+
+        if (pass.length() > 1) {
+            pb = pass.toLong();
+        }
+
+        // 0 Hz not valid!  Hamlib backends should deal with negative values
+        if (!pb)
+            pb = RIG_PASSBAND_NORMAL;
+
+        if (rx.cap(1) == "CWR") {
+            emit setRigMode(nr, RIG_MODE_CWR, pb);
+        } else if (rx.cap(1) == "CW") {
+            emit setRigMode(nr, RIG_MODE_CW, pb);
+        } else if (rx.cap(1) == "LSB") {
+            emit setRigMode(nr, RIG_MODE_LSB, pb);
+        } else if (rx.cap(1) == "USB") {
+            emit setRigMode(nr, RIG_MODE_USB, pb);
+        } else if (rx.cap(1) == "FM") {
+            emit setRigMode(nr, RIG_MODE_FM, pb);
+        } else if (rx.cap(1) == "AM") {
+            emit setRigMode(nr, RIG_MODE_AM, pb);
+        }
+
+    } else {
+        // Incomplete frequency or mode entered
+        return false;
     }
-    int b;
-    if ((b = getBand(f)) != -1) {
-        band[nr] = b;
-    }
+
+
     qso[activeRadio]->call.clear();
     lineEditCall[activeRadio]->clear();
     lineEditCall[activeRadio]->setFocus();
+
     if (grab) {
         lineEditCall[activeRadio]->grabKeyboard();
     }
+
     grabWidget = lineEditCall[activeRadio];
     lineEditCall[activeRadio]->setModified(false);
     updateBreakdown();
     updateMults(activeRadio);
+
     if (nDupesheet) {
         populateDupesheet();
     }
-    if (bandmapOn[nr]) {
-        bandmap[nr]->setFreq(f, band[nr], spotList[band[nr]]);
-        bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]]);
 
-        // invert spectrum if needed
-        bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
-    }
     clearWorked(activeRadio);
     labelCountry[activeRadio]->clear();
     labelBearing[activeRadio]->clear();
     labelLPBearing[activeRadio]->clear();
     sunLabelPtr[activeRadio]->clear();
+
     return(true);
 }
+
 
 /*!
    update display of qsos/score
@@ -2348,12 +2435,12 @@ void So2sdr::launch_speedDn(int mod)
 /*!
    Speed up (page_up)
 
-   increases WPM by 3
+   increases WPM by 2
  */
 void So2sdr::speedUp(int nrig)
 {
     QByteArray out = "";
-    wpm[nrig] += 3;
+    wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
         // don't actually change speed if we are sending on other radio
@@ -2365,12 +2452,12 @@ void So2sdr::speedUp(int nrig)
 /*!
    Speed down (page_down)
 
-   decreases WPM by 3
+   decreases WPM by 2
  */
 void So2sdr::speedDn(int nrig)
 {
     QByteArray out = "";
-    wpm[nrig] -= 3;
+    wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
         // don't actually change speed if we are sending on other radio

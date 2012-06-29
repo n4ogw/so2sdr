@@ -140,6 +140,7 @@ public slots:
 
 signals:
     void qsyExact(int, int);
+    void setRigMode(int, rmode_t, pbwidth_t);
 
 private slots:
     void about();
@@ -307,7 +308,7 @@ private:
     void down();
     void enableUI();
     void enter(int);
-    bool enterFreq();
+    bool enterFreqOrMode();
     void esc();
     void expandMacro(QByteArray msg);
     void fillSentExch(int nr);

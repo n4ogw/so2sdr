@@ -149,12 +149,19 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
     // check for "*DUPE*"
     if (qso->call == "*DUPE*") return(-1);
 
+    // Check for mode strings with mode names e.g. "USB"
+    // This will optionally be followed by an integer for
+    // passband width in Hz of 2-5 digits.
+    QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?(;)?$");
+
     // is this a qsy frequency?
     bool ok = false;
-    int  n  = qso->call.toInt(&ok, 10);
+    // Allow the UI to receive values in kHz down to the Hz i.e. "14250.340"
+    // will become 14250340 Hz.  Tested with K3 and Dummy rig models.
+    int  n  = (int)(double)(1000 * qso->call.toDouble(&ok));
 
     // semicolon indicates 2nd-radio qsy
-    if (n || ok == true || qso->call.contains(";")) {
+    if (n || ok == true || qso->call.contains(";") || (rx.indexIn(qso->call) == 0)) {
         qso->country = -1;
         qso->country_name.clear();
         qso->PfxName.clear();
