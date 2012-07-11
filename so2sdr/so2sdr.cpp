@@ -1265,6 +1265,7 @@ void So2sdr::importCabrillo()
             m = RIG_MODE_CW;
         }
         qso->mode = (rmode_t) m;
+        qso->modeType=cat->getModeType(qso->mode);
         newqso.setValue(SQL_COL_MODE, QVariant(m));
         cnt++;
         newqso.setValue(SQL_COL_NR, QVariant(cnt));
@@ -1957,6 +1958,7 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         qso[nrig]->prefill.clear();
         qso[nrig]->dupe = false;
         qso[nrig]->mode = cat->mode(nrig);
+        qso[nrig]->modeType = cat->modeType(nrig);
         qso[nrig]->freq = rigFreq[nrig];
         qso[nrig]->band = band[nrig];
         qso[nrig]->time = QDateTime::currentDateTimeUtc();
@@ -2953,6 +2955,7 @@ void So2sdr::rescore()
             tmpqso->exch = tmpqso->exch + tmp[j] + " ";
         }
         tmpqso->mode = (rmode_t) m.record(i).value("mode").toInt();
+        tmpqso->modeType = cat->getModeType(tmpqso->mode);
         tmpqso->band = m.record(i).value("band").toInt();
         tmpqso->pts  = m.record(i).value("pts").toInt();
 

@@ -231,6 +231,7 @@ private:
     int                  wpm[NRIG];
     log                  *mylog;
     Master               *master;
+    ModeTypes             modeTypeShown;
     NewDialog            *newContest;
     NoteDialog           *notes;
     ParallelPort         *pport;

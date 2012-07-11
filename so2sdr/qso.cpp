@@ -39,6 +39,7 @@ Qso::Qso(int n)
         newmult[ii] = -1;
     }
     mode = RIG_MODE_CW;
+    modeType = CWType;
     band = 0;
     freq = 0;
     n_exchange    = n;

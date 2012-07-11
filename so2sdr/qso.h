@@ -45,6 +45,7 @@ public:
     QByteArray *snt_exch;
     QDateTime  time;
     rmode_t    mode;
+    ModeTypes  modeType;
 
     bool         isamult[MMAX];
     Cont         continent;

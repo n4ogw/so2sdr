@@ -193,10 +193,27 @@ bool So2sdr::eventFilter(QObject*, QEvent* e)
                 r = true;
             }
             break;
-        case Qt::Key_N:     // ctrl-N
+        case Qt::Key_N:     // ctrl-N, alt-N
             if (mod == 1) {
                 writeNote();
                 r = true;
+            } else if (mod ==3) {
+                // switch to next modeType
+                switch (modeTypeShown) {
+                case CWType:
+                    modeTypeShown=PhoneType;
+                    groupBox->setTitle("Summary:PHONE");
+                    break;
+                case PhoneType:
+                    modeTypeShown=DigiType;
+                    groupBox->setTitle("Summary:DIGITAL");
+                    break;
+                case DigiType:
+                    modeTypeShown=CWType;
+                    groupBox->setTitle("Summary:CW");
+                    break;
+                }
+                r=true;
             }
             break;
         case Qt::Key_R:     // alt-R
