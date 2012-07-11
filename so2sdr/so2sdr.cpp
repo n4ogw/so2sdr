@@ -105,6 +105,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     rLabelPtr[0]      = new QLabel("<font color=#FF0000>R1:OFF /font>");
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
     winkeyLabel       = new QLabel("<font color=#FF0000>WK:OFF </font>");
+    grabLabel         = new QLabel("Grab");
+    So2sdrStatusBar->addPermanentWidget(grabLabel);
+    grabLabel->hide();
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[0]);
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[1]);
     So2sdrStatusBar->addPermanentWidget(winkeyLabel);
@@ -189,16 +192,20 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(actionSDR, SIGNAL(triggered()), sdr, SLOT(show()));
     connect(actionSDR, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-    connect(actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+    //RTC 07/11/2012 disabled About Qt unless a solution is found
+    // instead added Qt version number to So2sdr About dialog
+    //connect(actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     /* @todo problem here: with the aboutQt() dialog, there is no way to connect
      to its accepted or rejected signals, so no way to reset the keyboard grab */
-    // connect(actionAbout_Qt,SIGNAL(triggered()),this,SLOT(ungrab()));
+
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(showHelp()));
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(lineEditCall1, SIGNAL(textEdited(const QString &)), this, SLOT(prefixCheck1(const QString &)));
     connect(lineEditCall2, SIGNAL(textEdited(const QString &)), this, SLOT(prefixCheck2(const QString &)));
     connect(options, SIGNAL(accepted()), this, SLOT(updateOptions()));
     connect(actionCW_Messages, SIGNAL(triggered()), cwMessage, SLOT(show()));
+    connect(actionCW_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
     initDupeSheet();
     menuWindows->addSeparator();
     bandmapCheckBox[0] = new QCheckBox("Bandmap 1", menuWindows);
@@ -230,6 +237,17 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     telnetCheckAction->setDefaultWidget(telnetCheckBox);
     menuWindows->addSeparator();
     menuWindows->addAction(telnetCheckAction);
+
+    // ungrab keyboard when menubar menus are open
+    connect(SetupMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
+    connect(SetupMenu,SIGNAL(aboutToHide()),this,SLOT(regrab()));
+    connect(FileMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
+    connect(FileMenu,SIGNAL(aboutToHide()),this,SLOT(regrab()));
+    connect(menuWindows,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
+    connect(menuWindows,SIGNAL(aboutToHide()),this,SLOT(regrab()));
+    connect(HelpMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
+    connect(HelpMenu,SIGNAL(aboutToHide()),this,SLOT(regrab()));
+
     connect(telnetCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showTelnet(int)));
     lineEditCall[0]->installEventFilter(this);
     lineEditCall[1]->installEventFilter(this);
@@ -328,6 +346,7 @@ So2sdr::~So2sdr()
     delete rLabelPtr[0];
     delete rLabelPtr[1];
     delete winkeyLabel;
+    delete grabLabel;
     delete master;
     delete contest;
     delete dupesheetCheckBox[0];
@@ -506,6 +525,7 @@ void So2sdr::regrab()
     if (grab) {
         grabWidget->setFocus();
         grabWidget->grabKeyboard();
+        grabLabel->show();
     }
 }
 
@@ -517,9 +537,11 @@ void So2sdr::setGrab(bool s)
         grab = true;
         grabWidget->setFocus();
         grabWidget->grabKeyboard();
+        grabLabel->show();
     } else {
         grab = false;
         grabWidget->releaseKeyboard();
+        grabLabel->hide();
     }
 }
 
@@ -527,6 +549,7 @@ void So2sdr::ungrab()
 {
     if (grab) {
         grabWidget->releaseKeyboard();
+        grabLabel->hide();
     }
 }
 
@@ -1710,6 +1733,7 @@ void So2sdr::about()
 {
     ungrab();
     QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2012 R.T. Clay N4OGW</p>"
+                       +"  Qt library version: "+qVersion()+
                        + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
 #ifdef Q_OS_WIN
                        + "<li>hamlib http://www.hamlib.org " + so2sdr_hamlib_version

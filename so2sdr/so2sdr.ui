@@ -2251,7 +2251,6 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
-    <addaction name="actionAbout_Qt"/>
     <addaction name="actionHelp"/>
    </widget>
    <widget class="QMenu" name="menuWindows">

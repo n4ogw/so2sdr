@@ -245,6 +245,7 @@ private:
     QDir                 *directory;
     QErrorMessage        *errorBox;
     QLabel               *freqDisplayPtr[NRIG];
+    QLabel               *grabLabel;
     QLabel               *labelBearing[NRIG];
     QLabel               *labelLPBearing[NRIG];
     QLabel               *labelCountry[NRIG];
