@@ -26,8 +26,8 @@ CWMessageDialog::CWMessageDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     upperValidate = new UpperValidator(this);
-    connect(cwmessage_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
-    connect(cwmessage_buttons, SIGNAL(accepted()), this, SLOT(updateCWMsg()));
+    connect(this,SIGNAL(rejected()),this,SLOT(rejectChanges()));
+    connect(this,SIGNAL(accepted()),this,SLOT(updateCWMsg()));
 
     funcEditPtr[0]  = cq_f1_edit;
     funcEditPtr[1]  = cq_f2_edit;
@@ -158,7 +158,6 @@ void CWMessageDialog::rejectChanges()
     sp_exc_edit->setText(settings->value(c_sp_exc,c_sp_exc_def).toString());
     dupe_msg_edit->setText(settings->value(c_dupe_msg,c_dupe_msg_def).toString());
     quick_qsl_edit->setText(settings->value(c_qqsl_msg,c_qqsl_msg_def).toString());
-    reject();
 }
 
 CWMessageDialog::~CWMessageDialog()
@@ -210,5 +209,4 @@ void CWMessageDialog::updateCWMsg()
     settings->setValue(c_qqsl_msg,quick_qsl_edit->text());
     settings->setValue(c_dupe_msg,dupe_msg_edit->text());
     settings->sync();
-    accept();
 }
