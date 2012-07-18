@@ -85,11 +85,12 @@ Q_OBJECT
 
 public:
     logDelegate(QObject *parent, const Contest *c, bool *e, QList<int> *l);
-
+signals:
+    void startLogEdit();
 protected:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual QWidget *	createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-
+    bool editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index );
 private:
     const Contest *contest;
     bool *logSearchFlag;
@@ -113,6 +114,19 @@ protected:
     virtual bool setData( const QModelIndex& index, const QVariant&value, int role );
 };
 
+
+/*!
+ event filter for log editing window
+ */
+class LogEventFilter : public QObject
+{
+    Q_OBJECT
+
+signals:
+    void editingDone();
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+};
 
 /*!
    Main window
@@ -230,6 +244,8 @@ private:
     int                  usveIndx[MMAX];
     int                  wpm[NRIG];
     log                  *mylog;
+    logDelegate          *logdel;
+    LogEventFilter       *logEvent;
     Master               *master;
     ModeTypes             modeTypeShown;
     NewDialog            *newContest;

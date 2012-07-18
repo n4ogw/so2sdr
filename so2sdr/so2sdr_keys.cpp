@@ -23,6 +23,21 @@
 
 // /// Key handling routines
 
+/*! event filter for log editing window. This gets installed on LogTableView
+ */
+bool LogEventFilter::eventFilter(QObject *obj, QEvent *event)
+{
+    // emit a signal so we know when editing is aborted with ESC
+    // needed so keyboard grab can resume
+    if (event->type()==QEvent::KeyPress) {
+        QKeyEvent* kev = static_cast<QKeyEvent*>(event);
+        if (kev->key()==Qt::Key_Escape) {
+            emit editingDone();
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}
+
 /*! event filter handling key presses. This gets installed in
    -main window
    -both call entry windows
@@ -30,9 +45,21 @@
    -bandmap
    -dupesheet
  */
-bool So2sdr::eventFilter(QObject*, QEvent* e)
+bool So2sdr::eventFilter(QObject* o, QEvent* e)
 {
-    if (!uiEnabled) return(false);
+    if (!uiEnabled) {
+        return QObject::eventFilter(o,e);
+    }
+
+    // block going-out-of-focus event, if event is from window losing active focus. This is to
+    // prevent losing the cursor in the call and exchange line edits. Not sure yet if there are
+    // unintended consequences.
+    if (e->type()==QEvent::FocusOut) {
+        QFocusEvent* ev = static_cast<QFocusEvent*>(e);
+        if (ev->reason()==Qt::ActiveWindowFocusReason) {
+            return true;
+        }
+    }
 
     // set r true if this completely handles the key. Otherwise
     // it will be passed on to other widgets
@@ -97,7 +124,6 @@ bool So2sdr::eventFilter(QObject*, QEvent* e)
         }
         switch (kev->key()) {
         case Qt::Key_Escape:
-
             // notes window is active, prevent main window from getting esc
             if (notes) {
                 if (notes->isActiveWindow()) {
@@ -385,7 +411,7 @@ bool So2sdr::eventFilter(QObject*, QEvent* e)
             break;
         }
     }
-    break;
+        break;
     default:
         break;
     }
@@ -912,8 +938,6 @@ void So2sdr::enter(int mod)
         if (qso[activeRadio]->country == -1) {
             if (enterFreqOrMode()) {
                 // clear any garbage that showed up in supercheck partial
-                // from entering freq
-                // TODO Do this for mode?
                 if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
                     MasterTextEdit->clear();
                 }
@@ -973,7 +997,7 @@ void So2sdr::enter(int mod)
 
     // change radios
     /*!
-       @todo made actions below separate functions; some are duplicated elsewhere (backslash,...)
+       @todo make actions below separate functions; some are duplicated elsewhere (backslash,...)
      */
     if (enterState[i1][i2][i3][i4] & 16384) {
         if (activeR2CQ) {
@@ -1034,9 +1058,14 @@ void So2sdr::enter(int mod)
         cqQsoInProgress[activeRadio] = true;
     }
 
+    // set exc mode
+    if (enterState[i1][i2][i3][i4] & 1024) {
+        excMode[activeRadio] = true;
+        lineEditExchange[activeRadio]->show();
+    }
+
     // focus exchange
-    if ((enterState[i1][i2][i3][i4] & 4) &&
-        !qso[activeRadio]->dupe) {
+    if ((enterState[i1][i2][i3][i4] & 4) && !qso[activeRadio]->dupe) {
         lineEditExchange[activeRadio]->setFocus();
         if (grab) {
             lineEditExchange[activeRadio]->grabKeyboard();
@@ -1155,13 +1184,7 @@ void So2sdr::enter(int mod)
         callSent[activeRadio] = false;
     }
 
-    // set exc mode
-    if (enterState[i1][i2][i3][i4] & 1024) {
-        excMode[activeRadio] = true;
-        lineEditExchange[activeRadio]->show();
-    }
-
-    // exit exc mode
+       // exit exc mode
     if (enterState[i1][i2][i3][i4] & 2048) {
         excMode[activeRadio] = false;
         if (cqMode[activeRadio]) {
@@ -1194,15 +1217,16 @@ void So2sdr::prefillExch(int nr)
 {
     if (!qso[nr]->prefill.isEmpty()) {
         // prefill from log
-        lineEditExchange[nr]->setText(qso[nr]->prefill);
+        lineEditExchange[nr]->setText(qso[nr]->prefill.trimmed());
     } else if (contest->hasPrefill() && !contest->prefillExchange(qso[nr]).isEmpty()) {
         lineEditExchange[nr]->setText(contest->prefillExchange(qso[nr]));
-    }  else {
+    }
+    //else {
         // no initial exchange, just clear everything
         // lineEditExchange[nr]->clear();
         // qso[nr]->exch.clear();
         // lineEditExchange[nr]->setModified(false);
-    }
+  //  }
 }
 
 /*!
@@ -1277,7 +1301,7 @@ void So2sdr::esc()
     if (winkey->isSending()) {
         // if sending cw, stop
         winkey->cancelcw();
-		keyInProgress=false;
+        keyInProgress=false;
         return;
     }
 
@@ -1437,7 +1461,7 @@ void So2sdr::esc()
     if (x & 2048) {
         clearLogSearch();
     }
-	keyInProgress=false;
+    keyInProgress=false;
 }
 
 /*!

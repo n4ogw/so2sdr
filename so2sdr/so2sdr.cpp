@@ -311,6 +311,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 
 So2sdr::~So2sdr()
 {
+    delete logEvent;
     if (model) {
         model->clear();
         delete model;
@@ -1409,6 +1410,7 @@ void So2sdr::logEdited(const QModelIndex & topLeft, const QModelIndex & bottomRi
         model->fetchMore();
     }
     LogTableView->scrollToBottom();
+    regrab();
 }
 
 
@@ -1421,6 +1423,9 @@ void So2sdr::initLogView()
     LogTableView->horizontalHeader()->hide();
     LogTableView->verticalHeader()->hide();
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
+    logEvent=new LogEventFilter();
+    connect(logEvent,SIGNAL(editingDone()),this,SLOT(regrab()));
+    LogTableView->installEventFilter(logEvent);
 
     model = new tableModel(this,*mylog->db);
     model->setTable("log");
@@ -1437,7 +1442,11 @@ void So2sdr::initLogView()
     LogTableView->setColumnWidth(SQL_COL_MODE, 35); // MODE
     LogTableView->setColumnWidth(SQL_COL_CALL, 67); // CALL
     LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
-    LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
+    logdel=new logDelegate(this,contest,&logSearchFlag,&searchList);
+    connect(logdel,SIGNAL(startLogEdit()),this,SLOT(ungrab()));
+    LogTableView->setItemDelegate(logdel);
+    //###
+    //LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
     for (int i = 0; i < SQL_N_COL; i++) {
         LogTableView->setColumnHidden(i, true);
     }
@@ -1590,6 +1599,21 @@ logDelegate::logDelegate(QObject *parent, const Contest *c, bool *e, QList<int> 
     contest = c;
     logSearchFlag = e;
     searchList = l;
+}
+
+/*!
+  called when a log item is edited. When this happens, emit a signal.
+ */
+bool logDelegate::editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index )
+{
+    Q_UNUSED(m)
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+
+    if (e->type()==QEvent::MouseButtonDblClick) {
+        emit(startLogEdit());
+    }
+    return false;
 }
 
 /*!
