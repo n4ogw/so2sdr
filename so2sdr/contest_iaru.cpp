@@ -75,8 +75,14 @@ int IARU::fieldWidth(int col) const
 // width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(65); break; // rcv zone/HQ
-    default: return(35);
+    case 0:
+        return 35; // RST
+        break;
+    case 1:
+        return 65; //  zone/HQ
+        break;
+    default:
+        return 35;
     }
 }
 
@@ -95,7 +101,7 @@ QByteArray IARU::prefillExchange(int cntry, int zone)
 
 unsigned int IARU::rcvFieldShown() const
 {
-    return(2);  // show second field
+    return(1+2);  // show first and second fields
 }
 
 void IARU::setupContest(QByteArray MultFile[MMAX], const Cty *cty)

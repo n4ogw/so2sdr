@@ -21,22 +21,7 @@
 #include <QSqlTableModel>
 #include "so2sdr.h"
 
-// /// Key handling routines
 
-/*! event filter for log editing window. This gets installed on LogTableView
- */
-bool LogEventFilter::eventFilter(QObject *obj, QEvent *event)
-{
-    // emit a signal so we know when editing is aborted with ESC
-    // needed so keyboard grab can resume
-    if (event->type()==QEvent::KeyPress) {
-        QKeyEvent* kev = static_cast<QKeyEvent*>(event);
-        if (kev->key()==Qt::Key_Escape) {
-            emit editingDone();
-        }
-    }
-    return QObject::eventFilter(obj, event);
-}
 
 /*! event filter handling key presses. This gets installed in
    -main window
@@ -194,6 +179,12 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (mod == 3) {
                 altd();
                 r = true;
+            }
+            break;
+        case Qt::Key_E:    // control-E : edit log
+            if (mod == 1) {
+                controlE();
+                r=true;
             }
             break;
         case Qt::Key_F:
@@ -418,6 +409,17 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     return(r);
 }
 
+/*!
+Control-E : starts detailed qso edit if a log cell has been selected
+*/
+void So2sdr::controlE()
+{
+    QModelIndexList indices=LogTableView->selectionModel()->selectedIndexes();
+    if (indices.size()) {
+        logdel->startDetailedEdit();
+    }
+}
+
 /*! Toggles current freq on bandmap as a dupe, placing "*" as callsign
 
    radio2=true : marks on inactive radio bandmap
@@ -617,7 +619,6 @@ void So2sdr::backSlash()
         qso[activeRadio]->time = QDateTime::currentDateTimeUtc(); // update time just before logging qso
         addQso(qso[activeRadio]);
         updateDupesheet(qso[activeRadio]->call);
-
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;
@@ -1460,6 +1461,7 @@ void So2sdr::esc()
     // clear log search
     if (x & 2048) {
         clearLogSearch();
+        LogTableView->clearSelection();
     }
     keyInProgress=false;
 }

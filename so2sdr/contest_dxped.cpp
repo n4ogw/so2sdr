@@ -61,9 +61,14 @@ int Dxped::fieldWidth(int col) const
 // width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(30); break;  // RST
-    case 1: return(120); break; // comment
-    default: return(35);
+    case 0:
+        return 35;  // RST
+        break;
+    case 1:
+        return 120; // comment
+        break;
+    default:
+        return 35;
     }
 }
 

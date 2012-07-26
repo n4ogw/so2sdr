@@ -81,8 +81,14 @@ int CQWW::fieldWidth(int col) const
 // width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(45); break;
-    default: return(35);
+    case 0:
+        return 35; //RST
+        break;
+    case 1:
+        return 45; // zone
+        break;
+    default:
+        return 35;
     }
 }
 
@@ -93,7 +99,7 @@ int CQWW::numberField() const
 
 unsigned int CQWW::rcvFieldShown() const
 {
-    return(2);  // shown second field
+    return(1+2);  // show first and second fields
 }
 
 void CQWW::setupContest(QByteArray MultFile[2], const Cty *cty)

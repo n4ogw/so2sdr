@@ -67,7 +67,10 @@ HEADERS += cwmessagedialog.h \
     contest_arrl160.h \
     contest_arrl10.h \
     contest_arrldx.h \
-    contest_dxped.h
+    contest_dxped.h \
+    logedit.h \
+    detailededit.h \
+    mytableview.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -82,7 +85,8 @@ FORMS += cwmessagedialog.ui \
     telnet.ui \
     helpdialog.ui \
     cabrillo.ui \
-    iqbalance.ui
+    iqbalance.ui \
+    detailededit.ui
 SOURCES += cwmessagedialog.cpp \
     main.cpp \
     serial.cpp \
@@ -128,14 +132,17 @@ SOURCES += cwmessagedialog.cpp \
     contest_arrl10.cpp \
     contest_arrldx.cpp \
     utils.cpp \
-    contest_dxped.cpp
+    contest_dxped.cpp \
+    logedit.cpp \
+    detailededit.cpp \
+    mytableview.cpp
 unix { 
     include(../common.pri)
 
     CONFIG += link_pkgconfig
     PKGCONFIG += fftw3 hamlib portaudio-2.0
 
-    QMAKE_CXXFLAGS += -O2 \
+    QMAKE_CXXFLAGS += -O2 -g \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
     HEADERS += linux_pp.h \
          glbandmap.h \

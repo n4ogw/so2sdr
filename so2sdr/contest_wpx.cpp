@@ -97,9 +97,17 @@ int WPX::fieldWidth(int col) const
 // width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(45); break; // sent #
-    case 1: return(45); break; // rcv #
-    default: return(35);
+    case 0:
+        return 45; // sent #
+        break;
+    case 1:
+        return 35; // RST
+        break;
+    case 2:
+        return 45;  // rcv #
+        break;
+    default:
+        return 35;
     }
 }
 
@@ -109,11 +117,8 @@ int WPX::numberField() const
 }
 
 unsigned int WPX::rcvFieldShown() const
-
-// 0 1=RST
-// 1 2=qso # --> show
 {
-    return(2);  // shown second field
+    return(1+2);  // show first and second fields
 }
 
 void WPX::setupContest(QByteArray MultFile[MMAX], const Cty *cty)

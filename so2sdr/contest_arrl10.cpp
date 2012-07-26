@@ -95,8 +95,14 @@ void ARRL10::addQso(Qso *qso)
 int ARRL10::fieldWidth(int col) const
 {
     switch (col) {
-    case 0: return(45); break; // rcv qth/zone
-    default: return(35);
+    case 0:
+        return 35; // RST
+        break;
+    case 1:
+        return 45;
+        break; // qth/zone
+    default:
+        return 35;
     }
 }
 
@@ -110,7 +116,7 @@ int ARRL10::numberField() const
 
 unsigned int ARRL10::rcvFieldShown() const
 {
-    return(2);  // shown second field
+    return(1+2);  // show first and second fields
 }
 
 int ARRL10::Score() const

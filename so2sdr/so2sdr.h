@@ -32,6 +32,7 @@
 #include "dupesheet.h"
 #include "bandmap.h"
 #include "log.h"
+#include "logedit.h"
 #include "cty.h"
 #include "helpdialog.h"
 #include "serial.h"
@@ -55,6 +56,8 @@
 #include "telnet.h"
 #include "utils.h"
 #include "winkey.h"
+#include "detailededit.h"
+#include "mytableview.h"
 #ifdef Q_OS_WIN
 #include "win_pp.h"
 #endif
@@ -72,61 +75,6 @@ class QProgessDialog;
 class QSettings;
 class QWidgetAction;
 class QErrorMessage;
-
-#include <QStyledItemDelegate>
-#include <QSqlTableModel>
-
-/*!
-  subclass of delegate for displaying log in main window
-  */
-class logDelegate : public QStyledItemDelegate
-{
-Q_OBJECT
-
-public:
-    logDelegate(QObject *parent, const Contest *c, bool *e, QList<int> *l);
-signals:
-    void startLogEdit();
-protected:
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual QWidget *	createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-    bool editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index );
-private:
-    const Contest *contest;
-    bool *logSearchFlag;
-    QList<int> *searchList;
-};
-
-/*!
-  subclass of QSqlTableModel needed to specify flags separately for
-  each column, and specify checkbox for qso valid column
-  */
-class tableModel : public QSqlTableModel
-{
-    Q_OBJECT
-
-public:
-    tableModel(QObject * parent = 0, QSqlDatabase db = QSqlDatabase());
-
-protected:
-    virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
-    virtual QVariant data( const QModelIndex& index, int role ) const;
-    virtual bool setData( const QModelIndex& index, const QVariant&value, int role );
-};
-
-
-/*!
- event filter for log editing window
- */
-class LogEventFilter : public QObject
-{
-    Q_OBJECT
-
-signals:
-    void editingDone();
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-};
 
 /*!
    Main window
@@ -151,6 +99,7 @@ public slots:
     void showMessage(QString);
     void stationUpdate();
     void startWinkey();
+    void updateRecord(QSqlRecord);
 
 signals:
     void qsyExact(int, int);
@@ -159,6 +108,9 @@ signals:
 private slots:
     void about();
     void cleanup();
+    void clearEditSelection(QWidget *);
+    void detailEditDone();
+    void editLogDetail(QModelIndex);
     void enterCWSpeed(int nrig, const QString & text);
     void exportADIF();
     void exportCabrillo();
@@ -185,6 +137,7 @@ private slots:
     void showTelnet(int checkboxState);
     void speedDn(int nrig);
     void speedUp(int nrig);
+    void startLogEdit();
     void startMaster();
     void switchMultMode();
     void switchRadios(bool switchcw = true);
@@ -225,6 +178,7 @@ private:
     ContestOptionsDialog *options;
     Cty                  *cty;
     CWMessageDialog      *cwMessage;
+    DetailedEdit         *detail;
     DupeSheet            *dupesheet[NRIG];
     HelpDialog           *help;
     int                  activeRadio;
@@ -245,7 +199,6 @@ private:
     int                  wpm[NRIG];
     log                  *mylog;
     logDelegate          *logdel;
-    LogEventFilter       *logEvent;
     Master               *master;
     ModeTypes             modeTypeShown;
     NewDialog            *newContest;
@@ -320,6 +273,7 @@ private:
     void clearLogSearch();
     void clearWorked(int i);
     void clearR2CQ(int nr);
+    void controlE();
     void setCqMode(int i);
     void decaySpots();
     void disableUI();

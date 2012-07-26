@@ -141,6 +141,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(options,SIGNAL(rescore()),this,SLOT(rescore()));
     options->hide();
+    detail=new DetailedEdit();
+    connect(detail,SIGNAL(editedRecord(QSqlRecord)),this,SLOT(updateRecord(QSqlRecord)));
+    connect(detail,SIGNAL(accepted()),this,SLOT(detailEditDone()));
+    connect(detail,SIGNAL(rejected()),this,SLOT(detailEditDone()));
+    detail->hide();
     cabrillo = new CabrilloDialog(this);
     cabrillo->hide();
     station = new StationDialog(settings,this);
@@ -311,7 +316,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 
 So2sdr::~So2sdr()
 {
-    delete logEvent;
     if (model) {
         model->clear();
         delete model;
@@ -335,6 +339,7 @@ So2sdr::~So2sdr()
     delete bandmap[0];
     delete bandmap[1];
     delete cabrillo;
+    delete detail;
     delete radios;
     delete cwMessage;
     delete errorBox;
@@ -524,9 +529,9 @@ void So2sdr::startWinkey()
 void So2sdr::regrab()
 {
     if (grab) {
+        grabLabel->show();
         grabWidget->setFocus();
         grabWidget->grabKeyboard();
-        grabLabel->show();
     }
 }
 
@@ -536,9 +541,9 @@ void So2sdr::setGrab(bool s)
 {
     if (s) {
         grab = true;
-        grabWidget->setFocus();
-        grabWidget->grabKeyboard();
         grabLabel->show();
+        grabWidget->grabKeyboard();
+        grabWidget->setFocus();
     } else {
         grab = false;
         grabWidget->releaseKeyboard();
@@ -1413,6 +1418,64 @@ void So2sdr::logEdited(const QModelIndex & topLeft, const QModelIndex & bottomRi
     regrab();
 }
 
+/*!
+Clear any selected cells in log and remove log editing message from status bar
+*/
+void So2sdr::clearEditSelection(QWidget *editor)
+{
+    Q_UNUSED(editor);
+    So2sdrStatusBar->clearMessage();
+    LogTableView->clearSelection();
+}
+
+/*!
+Show status bar message when log edit starts
+ */
+void So2sdr::startLogEdit()
+{
+    So2sdrStatusBar->showMessage("EDITING LOG: PRESS ESC to abort");
+}
+
+/*!
+ start detail qso editor. Connected to signal from LogDelegate
+ */
+void So2sdr::editLogDetail(QModelIndex index)
+{
+    QSqlRecord rec = model->record(index.row());
+    detail->loadRecord(rec,contest->nExchange());
+    detail->show();
+    detail->callLineEdit->setFocus();
+    detail->callLineEdit->deselect();
+    if (grab) {
+        ungrab();
+    }
+}
+
+/*!
+Clean up after detailed qso edit
+*/
+void So2sdr::detailEditDone()
+{
+    LogTableView->clearSelection();
+    if (grab) {
+        regrab();
+    }
+}
+
+/*!
+ update a qso from detailed qso edit
+ */
+void So2sdr::updateRecord(QSqlRecord r)
+{
+    if (!model->setRecord(r.value(SQL_COL_NR).toInt()-1,r)) {
+        qDebug("setRecord failed"); /*! @todo how should this be handled? */
+    }
+    model->submitAll();
+    rescore();
+    while (model->canFetchMore()) {
+        model->fetchMore();
+    }
+}
 
 /*!
    initialize log view
@@ -1423,9 +1486,6 @@ void So2sdr::initLogView()
     LogTableView->horizontalHeader()->hide();
     LogTableView->verticalHeader()->hide();
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
-    logEvent=new LogEventFilter();
-    connect(logEvent,SIGNAL(editingDone()),this,SLOT(regrab()));
-    LogTableView->installEventFilter(logEvent);
 
     model = new tableModel(this,*mylog->db);
     model->setTable("log");
@@ -1444,9 +1504,15 @@ void So2sdr::initLogView()
     LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
     logdel=new logDelegate(this,contest,&logSearchFlag,&searchList);
     connect(logdel,SIGNAL(startLogEdit()),this,SLOT(ungrab()));
+    connect(logdel,SIGNAL(startLogEdit()),this,SLOT(startLogEdit()));
+    connect(logdel,SIGNAL(closeEditor(QWidget*)),this,SLOT(clearEditSelection(QWidget*)));
+    connect(logdel,SIGNAL(editLogRow(QModelIndex)),this,SLOT(editLogDetail(QModelIndex)));
+    connect(LogTableView,SIGNAL(startDetailedEdit()),logdel,SLOT(startDetailedEdit()));
     LogTableView->setItemDelegate(logdel);
-    //###
-    //LogTableView->setItemDelegate(new logDelegate(this,contest,&logSearchFlag,&searchList));
+    LogTableView->setEditTriggers(QAbstractItemView::DoubleClicked);
+  //  LogTableView->setSelectionMode(QAbstractItemView::NoSelection);
+    LogTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    LogTableView->setSortingEnabled(false);
     for (int i = 0; i < SQL_N_COL; i++) {
         LogTableView->setColumnHidden(i, true);
     }
@@ -1516,242 +1582,7 @@ void So2sdr::initLogView()
     LogTableView->show();
 }
 
-/*!
-  subclass of QSqlTableModel for log data
-  */
-tableModel::tableModel(QObject * parent, QSqlDatabase db) : QSqlTableModel(parent,db)
-{
 
-}
-
-/*!
-  returns appropriate flags for each log column
-  */
-Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
-{
-    Qt::ItemFlags f;
-    f=Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-    // set flags appropriate for each column
-    // this defines which columns are editable
-    switch (index.column()) {
-    case SQL_COL_CALL:
-    case SQL_COL_TIME:
-    case SQL_COL_SNT1:
-    case SQL_COL_SNT2:
-    case SQL_COL_SNT3:
-    case SQL_COL_SNT4:
-    case SQL_COL_RCV1:
-    case SQL_COL_RCV2:
-    case SQL_COL_RCV3:
-    case SQL_COL_RCV4:
-        f=f | Qt::ItemIsEditable;
-        break;
-    case SQL_COL_VALID:
-        f=f | Qt::ItemIsUserCheckable;
-        break;
-    }
-    return f;
-}
-
-/*!
-  only SQL_COL_VALID needs a special value here: return a Qt::CheckState
-  */
-QVariant tableModel::data( const QModelIndex& index, int role ) const
-{
-    if (index.column()==SQL_COL_VALID && role==Qt::CheckStateRole) {
-        Qt::CheckState state;
-        if (index.data().toBool()) {
-            state=Qt::Checked;
-        } else {
-            state=Qt::Unchecked;
-        }
-        return(QVariant(state));
-    }
-    return QSqlTableModel::data(index,role);
-}
-
-/*!
-  only SQL_COL_VALID is a special case: translate CheckState into integer 0/1
-  */
-bool tableModel::setData( const QModelIndex& index, const QVariant&value, int role )
-{
-    if (index.column()==SQL_COL_VALID && role == Qt::CheckStateRole ) {
-        QVariant newValue;
-        if (value.toBool()) {
-            newValue=QVariant(true);
-        } else {
-            newValue=QVariant(false);
-        }
-        return QSqlTableModel::setData(index,newValue,Qt::EditRole);
-    }
-    return QSqlTableModel::setData(index,value,role);
-}
-
-/*! logDelegate:
-
-   Controls display of sent exchange, received exchange, and callsign in displayed log. Changes color
-   of entries that are new multipliers
-
-   needs pointer to contest object to get score/multiplier information
- */
-logDelegate::logDelegate(QObject *parent, const Contest *c, bool *e, QList<int> *l) : QStyledItemDelegate(parent)
-{
-    contest = c;
-    logSearchFlag = e;
-    searchList = l;
-}
-
-/*!
-  called when a log item is edited. When this happens, emit a signal.
- */
-bool logDelegate::editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index )
-{
-    Q_UNUSED(m)
-    Q_UNUSED(option)
-    Q_UNUSED(index)
-
-    if (e->type()==QEvent::MouseButtonDblClick) {
-        emit(startLogEdit());
-    }
-    return false;
-}
-
-/*!
-  creates editors for each column.
-
-  certain columns (id #, freq, qso pts) are not editable, return NULL in these cases
-  other columns use a QLineEdit restricted to upper case
-  */
-QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-{
-    Q_UNUSED(option)
-    Q_UNUSED(index)
-
-
-    QLineEdit *le=new QLineEdit(parent);
-    le->setFocusPolicy(Qt::StrongFocus);
-    if (index.column()==SQL_COL_TIME) {
-        // validator for time column
-        le->setValidator(new TimeValidator(le));
-    } else {
-        // edit in upper case
-        le->setValidator(new UpperValidator(le));
-    }
-    return(le);
-}
-
-/*! paints data from log into exchange columns on screen.
-
-   Columns that are a new multiplier are highlighted in red.
-   Use the points from contest->score rather than in the SQL log
- */
-void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    // for qso valid column, use default implementation
-    if (index.column()==SQL_COL_VALID) {
-        return QStyledItemDelegate::paint(painter,option,index);
-    }
-    // get the real row for this qso. When a log search is performed, index.row() gives the
-    // row within the restricted filter, and not the true row. The true row is needed to
-    // display newmult and valid status
-    int realRow;
-    if (*logSearchFlag) {
-        realRow=(*searchList).at(index.row());
-    } else {
-        realRow=index.row();
-    }
-
-    QStyleOptionViewItemV4 opt = option;
-    initStyleOption(&opt, index);
-    QString s         = index.model()->data(index).toString();
-
-    // display frequency in KHz
-    // (this is the reason editing the frequency column is a problem)
-    if (index.column()==SQL_COL_FREQ) {
-        int f_khz=index.model()->data(index).toInt();
-        f_khz = qRound(f_khz / 1000.0);
-        s = QString::number(f_khz, 10);
-    }
-
-    if (index.column() == SQL_COL_MODE) {
-        rmode_t m = (rmode_t)index.model()->data(index).toInt();
-
-        switch(m) {
-        case RIG_MODE_CW:
-            s = "CW";
-            break;
-        case RIG_MODE_CWR:
-            s = "CWR";
-            break;
-        case RIG_MODE_LSB:
-            s = "LSB";
-            break;
-        case RIG_MODE_USB:
-            s = "USB";
-            break;
-        case RIG_MODE_FM:
-            s = "FM";
-            break;
-        case RIG_MODE_AM:
-            s = "AM";
-            break;
-        default:
-            break;  // Just show the mode number otherwise--fix later, ha!
-        }
-    }
-
-    // 0 = regular text
-    // 1 = red (new multiplier)
-    // 2 = grey (dupe)
-    int    highlight = 0;
-
-    // get qso points from contest object instead of sql database
-    if (index.column() == SQL_COL_PTS) {
-        s = QString::number(contest->points(realRow));
-    }
-
-    // check to see if a column is a new multiplier and needs highlighting
-    if ((contest->newMult(realRow, 0)) == index.column()) {
-        highlight = 1;
-    }
-    if ((contest->newMult(realRow, 1)) == index.column()) {
-        highlight = 1;
-    }
-
-    // dupes are grayed out
-    if (contest->dupe(realRow) || !contest->valid(realRow)) highlight = 2;
-
-    // draw correct background
-    opt.text = "";
-    QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
-    style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
-
-    QRect                rect = opt.rect;
-    QPalette::ColorGroup cg   = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
-        cg = QPalette::Inactive;
-    }
-
-    // set pen color
-    if (opt.state & QStyle::State_Selected) {
-        painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
-    } else {
-        switch (highlight) {
-        case 1:
-            painter->setPen(Qt::red); // new multiplier: red
-            break;
-        case 2:
-            painter->setPen(Qt::lightGray); // dupes and invalids: light grey
-            break;
-        default:
-            painter->setPen(opt.palette.color(cg, QPalette::Text)); // regular text: black
-            break;
-        }
-    }
-
-    // draw text
-    painter->drawText(QRect(rect.left(), rect.top(), rect.width(), rect.height()), opt.displayAlignment, s);
-}
 
 void So2sdr::about()
 {

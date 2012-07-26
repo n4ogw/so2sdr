@@ -52,7 +52,8 @@ typedef struct hamlibmfg {
 } hamlibType;
 
 // this has to match the modes defined in hamlib
-const QString modes[21] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
+const int nModes=21;
+const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
                             "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
 
 /*!

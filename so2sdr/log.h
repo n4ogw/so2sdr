@@ -24,6 +24,7 @@
 #include <QSqlDatabase>
 #include "defines.h"
 #include "qso.h"
+#include "serial.h"
 
 // column numbers in SQL log
 const int SQL_COL_NR    =  0;    // ID number (SQL primary key)

@@ -85,8 +85,14 @@ int CQ160::fieldWidth(int col) const
 // width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(45); break; // rcv qth/zone
-    default: return(35);
+    case 0:
+        return 35; // RST
+        break;
+    case 1:
+        return 45; //  qth/zone
+        break;
+    default:
+        return 35;
     }
 }
 
@@ -110,7 +116,7 @@ QByteArray CQ160::prefillExchange(Qso *qso)
 
 unsigned int CQ160::rcvFieldShown() const
 {
-    return(2);  // shown second field
+    return(1+2);  // show first and second fields
 }
 
 /*!
