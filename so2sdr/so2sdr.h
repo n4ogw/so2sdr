@@ -71,6 +71,7 @@ class QByteArray;
 class QThread;
 class QTimer;
 class QCheckBox;
+class QPixmap;
 class QProgessDialog;
 class QSettings;
 class QWidgetAction;
@@ -112,6 +113,8 @@ private slots:
     void detailEditDone();
     void editLogDetail(QModelIndex);
     void enterCWSpeed(int nrig, const QString & text);
+    void exchCheck1(const QString &exch);
+    void exchCheck2(const QString &exch);
     void exportADIF();
     void exportCabrillo();
     void importCabrillo();
@@ -213,6 +216,7 @@ private:
     QCheckBox            *windowBorderCheckBox;
     QDir                 *directory;
     QErrorMessage        *errorBox;
+    QPixmap              *iconValid;
     QLabel               *freqDisplayPtr[NRIG];
     QLabel               *grabLabel;
     QLabel               *labelBearing[NRIG];
@@ -228,6 +232,7 @@ private:
     QLabel               *qsoWorkedLabel[NRIG];
     QLabel               *rLabelPtr[NRIG];
     QLabel               *sunLabelPtr[NRIG];
+    QLabel               *validLabel[NRIG];
     QLabel               *winkeyLabel;
     QLineEdit            *lineEditCall[NRIG];
     QLineEdit            *lineEditExchange[NRIG];
@@ -282,6 +287,7 @@ private:
     void enter(int);
     bool enterFreqOrMode();
     void esc();
+    void exchCheck(int nr,const QString &exch);
     void expandMacro(QByteArray msg);
     void fillSentExch(int nr);
     void initDupeSheet();

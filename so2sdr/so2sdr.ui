@@ -1138,6 +1138,52 @@
         <property name="spacing">
          <number>0</number>
         </property>
+        <item row="4" column="8">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>50</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLineEdit" name="lineEditExchange1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="maxLength">
+           <number>32</number>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="1">
          <spacer name="horizontalSpacer">
           <property name="orientation">
@@ -1184,7 +1230,7 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="3">
+        <item row="3" column="4">
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -1200,7 +1246,7 @@
           </property>
          </spacer>
         </item>
-        <item row="4" column="3">
+        <item row="4" column="4">
          <spacer name="horizontalSpacer_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -1216,7 +1262,7 @@
           </property>
          </spacer>
         </item>
-        <item row="3" column="5">
+        <item row="3" column="6">
          <widget class="QLineEdit" name="lineEditCall2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1243,7 +1289,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="5">
+        <item row="4" column="6">
          <widget class="QLineEdit" name="lineEditExchange2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1270,26 +1316,10 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="5">
+        <item row="6" column="6">
          <layout class="QHBoxLayout" name="horizontalLayout"/>
         </item>
-        <item row="4" column="6">
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>50</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="3">
+        <item row="5" column="4">
          <widget class="QLabel" name="labelBearing1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1319,7 +1349,7 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="6">
+        <item row="5" column="8">
          <widget class="QLabel" name="labelBearing2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1411,7 +1441,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="5">
+        <item row="1" column="6">
          <widget class="QLabel" name="Mult2Label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1473,7 +1503,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="5">
+        <item row="0" column="6">
          <widget class="QLabel" name="Qso2Label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1696,7 +1726,7 @@
           </item>
          </layout>
         </item>
-        <item row="4" column="4">
+        <item row="4" column="5">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <property name="spacing">
            <number>1</number>
@@ -1881,7 +1911,7 @@
           </item>
          </layout>
         </item>
-        <item row="3" column="4">
+        <item row="3" column="5">
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
            <widget class="QLabel" name="FreqDisplay2">
@@ -1946,7 +1976,7 @@
           </item>
          </layout>
         </item>
-        <item row="5" column="4">
+        <item row="5" column="5">
          <widget class="QLabel" name="Sun2Label">
           <property name="font">
            <font>
@@ -2013,7 +2043,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="5">
+        <item row="2" column="6">
          <widget class="QLabel" name="Mult2Label2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2074,7 +2104,7 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="5">
+        <item row="5" column="6">
          <widget class="QLabel" name="labelCountry2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2104,37 +2134,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEditExchange1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="maxLength">
-           <number>32</number>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
+        <item row="6" column="4">
          <widget class="QLabel" name="labelLPBearing1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2164,7 +2164,7 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="6">
+        <item row="6" column="8">
          <widget class="QLabel" name="labelLPBearing2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2188,6 +2188,44 @@
            <font>
             <pointsize>10</pointsize>
            </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="3">
+         <widget class="QLabel" name="validLabel1">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="7">
+         <widget class="QLabel" name="validLabel2">
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>32</height>
+           </size>
           </property>
           <property name="text">
            <string/>

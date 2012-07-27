@@ -1152,6 +1152,7 @@ void So2sdr::enter(int mod)
         lineEditExchange[activeRadio]->setModified(false);
         qso[activeRadio]->exch.clear();
         qso[activeRadio]->prefill.clear();
+        validLabel[activeRadio]->clear();
     }
 
     // send F1 message
@@ -1185,7 +1186,7 @@ void So2sdr::enter(int mod)
         callSent[activeRadio] = false;
     }
 
-       // exit exc mode
+    // exit exc mode
     if (enterState[i1][i2][i3][i4] & 2048) {
         excMode[activeRadio] = false;
         if (cqMode[activeRadio]) {
@@ -1378,6 +1379,7 @@ void So2sdr::esc()
         qso[activeRadio]->prefill.clear();
         qso[activeRadio]->exch.clear();
         nrReserved[activeRadio] = 0;
+        validLabel[activeRadio]->clear();
     }
 
     // exit S&P, set CQ

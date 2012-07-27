@@ -35,6 +35,7 @@
 #include <QMetaType>
 #include <QModelIndex>
 #include <QObject>
+#include <QPixmap>
 #include <QPalette>
 #include <QProgressDialog>
 #include <QRect>
@@ -95,6 +96,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     setFocusPolicy(Qt::StrongFocus);
     errorBox           = new QErrorMessage(this);
     setWindowIcon(QIcon(dataDirectory + "/icon24x24.png"));
+    iconValid=new QPixmap(dataDirectory + "/check.png");
 
     // pointers for each radio
     for (int i=0;i<NRIG;i++) {
@@ -208,6 +210,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(lineEditCall1, SIGNAL(textEdited(const QString &)), this, SLOT(prefixCheck1(const QString &)));
     connect(lineEditCall2, SIGNAL(textEdited(const QString &)), this, SLOT(prefixCheck2(const QString &)));
+    connect(lineEditExchange1, SIGNAL(textEdited(const QString &)), this, SLOT(exchCheck1(const QString &)));
+    connect(lineEditExchange2, SIGNAL(textEdited(const QString &)), this, SLOT(exchCheck2(const QString &)));
     connect(options, SIGNAL(accepted()), this, SLOT(updateOptions()));
     connect(actionCW_Messages, SIGNAL(triggered()), cwMessage, SLOT(show()));
     connect(actionCW_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
@@ -320,6 +324,7 @@ So2sdr::~So2sdr()
         model->clear();
         delete model;
     }
+    delete iconValid;
     delete mylog;
     if (model) {
         QSqlDatabase::removeDatabase("QSQLITE");
@@ -1745,6 +1750,40 @@ void So2sdr::prefixCheck1(const QString &call)
 void So2sdr::prefixCheck2(const QString &call)
 {
     prefixCheck(1, call);
+}
+
+/*!
+   Start exchange check on radio 1
+ */
+void So2sdr::exchCheck1(const QString &exch)
+{
+    exchCheck(0,exch);
+}
+
+/*!
+   Start exchange check on radio 2
+ */
+void So2sdr::exchCheck2(const QString &exch)
+{
+    exchCheck(1,exch);
+}
+
+/*!
+ Check exchange of radio nr, show multiplier status
+ */
+void So2sdr::exchCheck(int nr,const QString &exch)
+{
+
+    if (qso[nr]->call.isEmpty()) return; // do nothing unless we have a callsign
+
+    qso[nr]->exch=exch.toAscii();
+    qso[nr]->valid=contest->validateExchange(qso[nr]);
+    if (qso[nr]->valid) {
+        updateWorkedMult(nr);
+        validLabel[nr]->setPixmap(*iconValid);
+    } else {
+        validLabel[nr]->clear();
+    }
 }
 
 /*!
@@ -3348,6 +3387,8 @@ void So2sdr::initPointers()
     sunLabelPtr[1]  = Sun2Label;
     numLabelPtr[0] = NumLabel;
     numLabelPtr[1] = NumLabel2;
+    validLabel[0]  = validLabel1;
+    validLabel[1]  = validLabel2;
 }
 
 void So2sdr::initVariables()
