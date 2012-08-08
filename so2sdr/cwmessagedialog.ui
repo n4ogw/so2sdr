@@ -1192,5 +1192,38 @@
   <tabstop>cw_msg_tab</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>cwmessage_buttons</sender>
+   <signal>accepted()</signal>
+   <receiver>CWMessageDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>327</x>
+     <y>527</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>220</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cwmessage_buttons</sender>
+   <signal>rejected()</signal>
+   <receiver>CWMessageDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>327</x>
+     <y>527</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>220</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

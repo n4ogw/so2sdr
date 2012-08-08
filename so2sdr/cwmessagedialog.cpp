@@ -26,8 +26,8 @@ CWMessageDialog::CWMessageDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     upperValidate = new UpperValidator(this);
-    connect(this,SIGNAL(rejected()),this,SLOT(rejectChanges()));
-    connect(this,SIGNAL(accepted()),this,SLOT(updateCWMsg()));
+    connect(cwmessage_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
+    connect(cwmessage_buttons, SIGNAL(accepted()), this, SLOT(updateCWMsg()));
 
     funcEditPtr[0]  = cq_f1_edit;
     funcEditPtr[1]  = cq_f2_edit;
