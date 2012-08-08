@@ -560,7 +560,7 @@ const QString s_radios_port[NRIG]={"radios/port1","radios/port2"};
 const QString s_radios_port_def[NRIG]={"",""};
 
 const QString s_radios_baud[NRIG]={"radios/baud1","radios/baud2"};
-const int s_radios_baud_def[NRIG]={1200,1200};
+const int s_radios_baud_def[NRIG]={4800,4800};
 
 const QString s_radios_poll[NRIG]={"radios/poll1","radios/poll2"};
 const int s_radios_poll_def[NRIG]={500,500};

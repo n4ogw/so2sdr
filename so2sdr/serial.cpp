@@ -318,6 +318,9 @@ void RigSerial::initialize(QSettings *s)
         rig[i] = rig_init(model[i]);
         token_t t = rig_token_lookup(rig[i], "rig_pathname");
         rig_set_conf(rig[i],t,settings->value(s_radios_port[i],defaultSerialPort[i]).toString().toAscii().data());
+        // set baud rate
+        //qDebug("set radio %d baud to %d",i,s_radios_baud[i].toInt());
+        rig[i]->state.rigport.parm.serial.rate=settings->value(s_radios_baud[i],s_radios_baud_def[i]).toInt();
     }
 
     // default starting freq/mode if communications to rigs
