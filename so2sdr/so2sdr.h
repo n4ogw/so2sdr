@@ -40,6 +40,7 @@
 #include "contest_arrldx.h"
 #include "contest_arrl10.h"
 #include "contest_arrl160.h"
+#include "contest_cqp.h"
 #include "contest_cq160.h"
 #include "contest_cqww.h"
 #include "contest_cwops.h"

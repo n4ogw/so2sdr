@@ -70,7 +70,8 @@ HEADERS += cwmessagedialog.h \
     contest_dxped.h \
     logedit.h \
     detailededit.h \
-    mytableview.h
+    mytableview.h \
+    contest_cqp.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -135,7 +136,8 @@ SOURCES += cwmessagedialog.cpp \
     contest_dxped.cpp \
     logedit.cpp \
     detailededit.cpp \
-    mytableview.cpp
+    mytableview.cpp \
+    contest_cqp.cpp
 unix { 
     include(../common.pri)
 

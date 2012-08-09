@@ -3,6 +3,8 @@ ARRL 160 (DX), arrl160dx.cfg
 ARRL 160 (US/VE), arrl160.cfg
 ARRL DX (US/VE), arrldx.cfg
 ARRL DX (DX), arrldx-dx.cfg
+California QSO (CA), cqp_ca.cfg
+California QSO (outside CA), cqp.cfg
 CQ 160, cq160.cfg
 CQ WPX, wpx.cfg
 CQ WW, cqww.cfg

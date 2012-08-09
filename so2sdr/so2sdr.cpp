@@ -872,6 +872,14 @@ void So2sdr::selectContest(QByteArray name)
     if (name == "ARRL160-DX") {
         contest = new ARRL160(false);
     }
+    if (name == "CQP-CA") {
+        contest = new CQP();
+        static_cast<CQP*>(contest)->setCA(true);
+    }
+    if (name == "CQP") {
+        contest = new CQP();
+        static_cast<CQP*>(contest)->setCA(false);
+    }
     if (name == "CQ160") {
         contest = new CQ160();
     }
@@ -997,6 +1005,15 @@ void So2sdr::selectContest2()
     if (name == "SWEEPSTAKES") {
         snt_exch[0]="#";
         snt_exch[3]=settings->value(s_section,s_section_def).toString();
+    }
+    if (name == "CQP") {
+        mylog->setQsoPtsField(true);
+        snt_exch[0]="#";
+        snt_exch[1]=settings->value(s_state,s_state_def).toString();
+    }
+    if (name == "CQP-CA") {
+        mylog->setQsoPtsField(true);
+        snt_exch[0]="#";
     }
     if (name == "CQ160") {
         mylog->setQsoPtsField(true);
@@ -1581,6 +1598,21 @@ void So2sdr::initLogView()
         LogTableView->setColumnHidden(SQL_COL_PTS, false);
         LogTableView->setColumnWidth(SQL_COL_PTS, 30);
     }
+    /*
+    int t=0;
+    for (int i=0;i<SQL_N_COL;i++) {
+        if (!LogTableView->isColumnHidden(i)) {
+            t=t+LogTableView->columnWidth(i);
+        }
+    }
+    qDebug("total of widths=%d widget width=%d",t,LogTableView->width());
+    qDebug("valid column width=%d",LogTableView->columnWidth(SQL_COL_VALID));
+    int w=LogTableView->scr
+    if (t<LogTableView->viewport()->width()) {
+        int s=LogTableView->columnWidth(SQL_COL_CALL);
+        LogTableView->setColumnWidth(SQL_COL_CALL,s+LogTableView->viewport()->width()-t);
+    }
+    */
     LogTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     LogTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     LogTableView->scrollToBottom();
@@ -1783,6 +1815,10 @@ void So2sdr::exchCheck(int nr,const QString &exch)
         validLabel[nr]->setPixmap(*iconValid);
     } else {
         validLabel[nr]->clear();
+        // clear just mult status display
+        for (int ii=0;ii<MMAX;ii++) {
+            multWorkedLabel[nr][ii]->setText(multNameLabel[ii]->text());
+        }
     }
 }
 
