@@ -874,11 +874,11 @@ void So2sdr::selectContest(QByteArray name)
     }
     if (name == "CQP-CA") {
         contest = new CQP();
-        static_cast<CQP*>(contest)->setCA(true);
+        static_cast<CQP*>(contest)->setWithinState(true);
     }
     if (name == "CQP") {
         contest = new CQP();
-        static_cast<CQP*>(contest)->setCA(false);
+        static_cast<CQP*>(contest)->setWithinState(false);
     }
     if (name == "CQ160") {
         contest = new CQ160();
@@ -899,6 +899,14 @@ void So2sdr::selectContest(QByteArray name)
     }
     if (name == "IARU") {
         contest = new IARU;
+    }
+    if (name == "KQP-KS") {
+        contest = new KQP;
+        static_cast<KQP*>(contest)->setWithinState(true);
+    }
+    if (name == "KQP") {
+        contest = new KQP;
+        static_cast<KQP*>(contest)->setWithinState(false);
     }
     if (name == "NAQP") {
         contest = new Naqp;
@@ -1043,6 +1051,15 @@ void So2sdr::selectContest2()
         mylog->setQsoPtsField(true);
         snt_exch[0] = "599";
         snt_exch[1]=settings->value(s_ituzone,s_ituzone_def).toString();
+    }
+    if (name == "KQP") {
+        mylog->setQsoPtsField(true);
+        snt_exch[0]="599";
+        snt_exch[1]=settings->value(s_state,s_state_def).toString();
+    }
+    if (name == "KQP-KS") {
+        mylog->setQsoPtsField(true);
+        snt_exch[0]="599";
     }
     if (name == "NAQP") {
         snt_exch[0]=settings->value(s_name,s_name_def).toString();

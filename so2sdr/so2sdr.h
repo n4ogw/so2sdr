@@ -47,6 +47,7 @@
 #include "contest_fd.h"
 #include "contest_dxped.h"
 #include "contest_iaru.h"
+#include "contest_kqp.h"
 #include "contest_naqp.h"
 #include "contest_sprint.h"
 #include "contest_stew.h"

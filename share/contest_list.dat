@@ -3,8 +3,8 @@ ARRL 160 (DX), arrl160dx.cfg
 ARRL 160 (US/VE), arrl160.cfg
 ARRL DX (US/VE), arrldx.cfg
 ARRL DX (DX), arrldx-dx.cfg
-California QSO (CA), cqp_ca.cfg
-California QSO (outside CA), cqp.cfg
+California QSO Party (CA), cqp_ca.cfg
+California QSO Party (outside CA), cqp.cfg
 CQ 160, cq160.cfg
 CQ WPX, wpx.cfg
 CQ WW, cqww.cfg
@@ -13,6 +13,8 @@ DXpedition/general logging, dxped.cfg
 ARRL Field Day,fd.cfg
 ARRL Sweepstakes,ss.cfg
 IARU, iaru.cfg
+Kansas QSO Party (KS), kqp_ks.cfg
+Kansas QSO Party (outside KS), kqp.cfg
 North American QSO Party, naqp.cfg
 North American Sprint, nasprint.cfg
 NCCC Sprint, ns.cfg

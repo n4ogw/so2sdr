@@ -16,18 +16,18 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#ifndef CONTEST_CQP_H
-#define CONTEST_CQP_H
+#ifndef CONTEST_KQP_H
+#define CONTEST_KQP_H
 
 #include "contest.h"
 
-class CQP : public Contest {
+class KQP : public Contest {
 public:
-    CQP();
-    ~CQP();
+    KQP();
+    ~KQP();
     QString cabrilloName() const
     {
-        return("NCCC-CQP");
+        return("KQP");
     }
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
