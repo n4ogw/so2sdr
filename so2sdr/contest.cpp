@@ -1027,6 +1027,16 @@ int Contest::Score() const
     if (settings->value(c_multsband,c_multsband_def).toBool()) {
         int n = 0;
         for (int ii = 0; ii < MMAX; ii++) {
+            switch (ii) {
+            case 0:
+                if (settings->value(c_mult1_displayonly,c_mult1_displayonly_def).toBool())
+                    continue;
+                break;
+            case 1:
+                if (settings->value(c_mult2_displayonly,c_mult2_displayonly_def).toBool())
+                    continue;
+                break;
+            }
             for (int i = 0; i < N_BANDS_SCORED; i++) {
                 n += multsWorked[ii][i];
             }
@@ -1034,7 +1044,13 @@ int Contest::Score() const
         return(qsoPts * n);
     } else {
         // all-band mults
-        int n = (multsWorked[0][N_BANDS] + multsWorked[1][N_BANDS]);
+        int n=0;
+        if (!settings->value(c_mult1_displayonly,c_mult1_displayonly_def).toBool()) {
+            n = multsWorked[0][N_BANDS];
+        }
+        if (!settings->value(c_mult2_displayonly,c_mult2_displayonly_def).toBool()) {
+            n += multsWorked[1][N_BANDS];
+        }
         return(qsoPts * n);
     }
 }

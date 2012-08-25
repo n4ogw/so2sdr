@@ -34,11 +34,13 @@ public:
 
     bool       dupe;
     bool       isMM;
+    bool       isMobile;
     bool       valid;
     int        band;
     int        freq;
     int        mult[MMAX];
     int        newmult[MMAX];
+    int        nr;
     int        pts;
     QByteArray call;
     QByteArray *rcv_exch;

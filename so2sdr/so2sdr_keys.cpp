@@ -949,10 +949,7 @@ void So2sdr::enter(int mod)
     } else {
         i1 = 0;
     }
-    qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toAscii();
-    qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
 
-    qso[activeRadio]->valid=contest->validateExchange(qso[activeRadio]);
     if (cqMode[activeRadio]) {
         // CQ mode
         i3 = 0;
@@ -1120,6 +1117,7 @@ void So2sdr::enter(int mod)
             altDActive = 0;
         }
         qso[activeRadio]->dupe = false;
+        qso[activeRadio]->valid = false;
         callSent[activeRadio]  = false;
     }
 
@@ -1223,12 +1221,7 @@ void So2sdr::prefillExch(int nr)
     } else if (contest->hasPrefill() && !contest->prefillExchange(qso[nr]).isEmpty()) {
         lineEditExchange[nr]->setText(contest->prefillExchange(qso[nr]));
     }
-    //else {
-        // no initial exchange, just clear everything
-        // lineEditExchange[nr]->clear();
-        // qso[nr]->exch.clear();
-        // lineEditExchange[nr]->setModified(false);
-  //  }
+    exchCheck(nr,lineEditExchange[nr]->text());
 }
 
 /*!

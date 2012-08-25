@@ -126,7 +126,6 @@ bool IARU::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
     bool ok = false;
-
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     determineMultType(qso);

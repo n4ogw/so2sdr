@@ -30,8 +30,9 @@ Qso::Qso(int n)
         snt_exch[i].clear();
     }
     isMM = false;
+    isMobile = false;
     dupe = false;
-    valid = true;
+    valid = false;
     pts  = 0;
     call.clear();
     for (int ii = 0; ii < MMAX; ii++) {
@@ -42,6 +43,7 @@ Qso::Qso(int n)
     modeType = CWType;
     band = 0;
     freq = 0;
+    nr=0;
     n_exchange    = n;
     exchange_type = new FieldTypes[n_exchange];
     for (int i = 0; i < n_exchange; i++) exchange_type[i] = General;

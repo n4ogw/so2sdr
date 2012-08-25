@@ -158,43 +158,48 @@ bool KQP::validateExchange(Qso *qso)
         // special case: KS stations get the "KS" mult for any KS county worked
         if (withinState) {
             if (ok_part[1]) {
+                qso->isamult[1]=true;
+               // qso->isamult[0]=false;
                 qso->mult[1]=0;
-                qso->mult[0]=-1; // don't count as a county mult
+               // qso->mult[0]=-1; // don't count as a county mult
                 qso->newmult[0]=false;
             }
         }
     }
     // non-KS only works KS
-    if (!withinState) {
-        if (!ok_part[1]) return(false);
-    }
+    if (withinState) {
+        // KS station mults
+        // check first for DX:
+        for (int i=exchElement.size()-1;i>=0;i--) {
+            // ignore any 'KS' entered here
+            if (exchElement.at(i)=="KS") continue;
 
-    // KS station mults
+            m=isAMult(exchElement.at(i),1);
+            if (m!=-1) {
+                ok_part[1]=true;
+                qso->mult[1]=m;
+                multField=i;
+                break;
+            }
+        }
+        if (ok_part[1]) {
+            finalExch[1]=exchElement.at(multField);
+        }
 
-    // check first for DX:
-    for (int i=exchElement.size()-1;i>=0;i--) {
-        // ignore any 'KS' entered here
-        if (exchElement.at(i)=="KS") continue;
-
-        m=isAMult(exchElement.at(i),1);
-        if (m!=-1) {
-            ok_part[1]=true;
-            qso->mult[1]=m;
-            multField=i;
-            break;
+        // only copy into log if exchange is validated
+        if (ok_part[0] & ok_part[1]) {
+            for (int i = 0; i < nExch; i++) {
+                qso->rcv_exch[i] = finalExch[i];
+            }
         }
     }
-    if (ok_part[1]) {
-        finalExch[1]=exchElement.at(multField);
-    }
-
-    // only copy into log if exchange is validated
-    if (ok_part[0] & ok_part[1]) {
-        for (int i = 0; i < nExch; i++) {
-            qso->rcv_exch[i] = finalExch[i];
+    // if exchange is ok and a mobile, we need a mobile dupe check
+    if (qso->isMobile & ok_part[0] & ok_part[1]) {
+        emit(mobileDupeCheck(qso));
+        if (!qso->dupe) {
+            emit(clearDupe());
         }
     }
-
     return(ok_part[0] & ok_part[1]);
 }
 

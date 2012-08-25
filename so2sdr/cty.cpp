@@ -36,6 +36,10 @@ Cty::Cty()
     // portable ids for aero/maritime stations, ie qth is R1, R2, or R3
     portIdMM.clear();
     portIdMM << "MM" << "AM";
+
+    // portable ids for mobiles
+    portIdMobile.clear();
+    portIdMobile << "M";
 }
 
 Cty::~Cty()
@@ -173,6 +177,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
 
     // check for portable prefix; there could be more than one / in a call!
     qso->isMM = false;
+    qso->isMobile = false;
     if (qso->call.contains('/')) {
         // nothing to do, need at least three chars
         if (sz < 3) return(-1);
@@ -205,6 +210,10 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
             // flag MM stations
             if (portIdMM.contains(tmp[i].call)) {
                 qso->isMM = true;
+            }
+            // flag mobile stations
+            if (portIdMobile.contains(tmp[i].call)) {
+                qso->isMobile = true;
             }
         }
 

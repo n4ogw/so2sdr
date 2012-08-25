@@ -105,6 +105,9 @@ unsigned int CQP::sntFieldShown() const
 
 /*!
    CQP exchange validator
+
+   mult 0: CA counties
+   mult 1: states/prov
  */
 bool CQP::validateExchange(Qso *qso)
 {
@@ -190,7 +193,13 @@ bool CQP::validateExchange(Qso *qso)
             qso->rcv_exch[i] = finalExch[i];
         }
     }
-
+    // if exchange is ok and a mobile, we need a mobile dupe check
+    if (qso->isMobile & ok_part[0] & ok_part[1]) {
+        emit(mobileDupeCheck(qso));
+        if (!qso->dupe) {
+            emit(clearDupe());
+        }
+    }
     return(ok_part[0] & ok_part[1]);
 }
 

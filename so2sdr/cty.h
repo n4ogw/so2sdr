@@ -57,6 +57,7 @@ private:
     QList<Pfx *>      pfxList;
     QList<QByteArray> portId;
     QList<QByteArray> portIdMM;
+    QList<QByteArray> portIdMobile;
     QSettings *settings;
     QString           mySun;
     QList<int>        zoneBearing;

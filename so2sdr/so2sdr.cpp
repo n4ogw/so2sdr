@@ -393,6 +393,8 @@ So2sdr::~So2sdr()
 
 /*!
    add a new qso to the log
+
+   @todo Fix bytearray/string conversion correctly
  */
 void So2sdr::addQso(const Qso *qso)
 {
@@ -416,7 +418,7 @@ void So2sdr::addQso(const Qso *qso)
     newqso.append(QSqlField("valid", QVariant::Int));
     for (int i = 0; i < SQL_N_COL; i++) newqso.setGenerated(i, true);
     newqso.setValue(SQL_COL_NR, QVariant(model->rowCount() + 1));
-    newqso.setValue(SQL_COL_CALL, QVariant(qso->call));
+    newqso.setValue(SQL_COL_CALL, QVariant(qso->call).toString());
     newqso.setValue(SQL_COL_PTS, QVariant(qso->pts));
     newqso.setValue(SQL_COL_FREQ, QVariant(qso->freq));
     newqso.setValue(SQL_COL_BAND, QVariant(qso->band));
@@ -425,20 +427,20 @@ void So2sdr::addQso(const Qso *qso)
         if (i < contest->nExchange()) {
             switch (i) {
             case 0:
-                newqso.setValue(SQL_COL_SNT1, QVariant(qso->snt_exch[0]));
-                newqso.setValue(SQL_COL_RCV1, QVariant(qso->rcv_exch[0]));
+                newqso.setValue(SQL_COL_SNT1, QVariant(qso->snt_exch[0]).toString());
+                newqso.setValue(SQL_COL_RCV1, QVariant(qso->rcv_exch[0]).toString());
                 break;
             case 1:
-                newqso.setValue(SQL_COL_SNT2, QVariant(qso->snt_exch[1]));
-                newqso.setValue(SQL_COL_RCV2, QVariant(qso->rcv_exch[1]));
+                newqso.setValue(SQL_COL_SNT2, QVariant(qso->snt_exch[1]).toString());
+                newqso.setValue(SQL_COL_RCV2, QVariant(qso->rcv_exch[1]).toString());
                 break;
             case 2:
-                newqso.setValue(SQL_COL_SNT3, QVariant(qso->snt_exch[2]));
-                newqso.setValue(SQL_COL_RCV3, QVariant(qso->rcv_exch[2]));
+                newqso.setValue(SQL_COL_SNT3, QVariant(qso->snt_exch[2]).toString());
+                newqso.setValue(SQL_COL_RCV3, QVariant(qso->rcv_exch[2]).toString());
                 break;
             case 3:
-                newqso.setValue(SQL_COL_SNT4, QVariant(qso->snt_exch[3]));
-                newqso.setValue(SQL_COL_RCV4, QVariant(qso->rcv_exch[3]));
+                newqso.setValue(SQL_COL_SNT4, QVariant(qso->snt_exch[3]).toString());
+                newqso.setValue(SQL_COL_RCV4, QVariant(qso->rcv_exch[3]).toString());
                 break;
             }
         } else {
@@ -820,6 +822,8 @@ bool So2sdr::setupContest()
     connect(master, SIGNAL(masterError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     startMaster();
     mylog = new log(contest->nExchange(), this);
+    connect(contest,SIGNAL(mobileDupeCheck(Qso*)),mylog,SLOT(mobileDupeCheck(Qso*)));
+    connect(contest,SIGNAL(clearDupe()),So2sdrStatusBar,SLOT(clearMessage()));
     mylog->setRstField(contest->rstField());
     mylog->setupQsoNumbers(contest->numberField());
     mylog->setFieldsShown(contest->sntFieldShown(), contest->rcvFieldShown());
@@ -830,7 +834,7 @@ bool So2sdr::setupContest()
 
     for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
     directory->setCurrent(contestDirectory);
-    mylog->openLogFile(fileName,false);
+    mylog->openLogFile(fileName,false,csettings);
     initLogView();
     loadSpots();
     rescore();
@@ -1615,21 +1619,7 @@ void So2sdr::initLogView()
         LogTableView->setColumnHidden(SQL_COL_PTS, false);
         LogTableView->setColumnWidth(SQL_COL_PTS, 30);
     }
-    /*
-    int t=0;
-    for (int i=0;i<SQL_N_COL;i++) {
-        if (!LogTableView->isColumnHidden(i)) {
-            t=t+LogTableView->columnWidth(i);
-        }
-    }
-    qDebug("total of widths=%d widget width=%d",t,LogTableView->width());
-    qDebug("valid column width=%d",LogTableView->columnWidth(SQL_COL_VALID));
-    int w=LogTableView->scr
-    if (t<LogTableView->viewport()->width()) {
-        int s=LogTableView->columnWidth(SQL_COL_CALL);
-        LogTableView->setColumnWidth(SQL_COL_CALL,s+LogTableView->viewport()->width()-t);
-    }
-    */
+
     LogTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     LogTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     LogTableView->scrollToBottom();
@@ -1822,7 +1812,6 @@ void So2sdr::exchCheck2(const QString &exch)
  */
 void So2sdr::exchCheck(int nr,const QString &exch)
 {
-
     if (qso[nr]->call.isEmpty()) return; // do nothing unless we have a callsign
 
     qso[nr]->exch=exch.toAscii();
@@ -1928,6 +1917,7 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
     if (qso[nrig]->call.size() > 1) {
         qso[nrig]->prefill.clear();
         qso[nrig]->dupe = false;
+        qso[nrig]->valid = false;
         qso[nrig]->mode = cat->mode(nrig);
         qso[nrig]->modeType = cat->modeType(nrig);
         qso[nrig]->freq = rigFreq[nrig];
@@ -2029,6 +2019,7 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         sunLabelPtr[nr]->clear();
         clearWorked(nr);
     }
+
 }
 
 /*!
@@ -2912,7 +2903,6 @@ void So2sdr::rescore()
     }
     for (int i = 0; i < m.rowCount(); i++) {
         tmpqso->call    = m.record(i).value("call").toString().toAscii();
-
         // run prefix check on call: need to check for /MM, etc
         tmpqso->country = cty->idPfx(tmpqso, b);
         tmpqso->exch.clear();
@@ -2921,6 +2911,7 @@ void So2sdr::rescore()
         tmp[1] = m.record(i).value("rcv2").toString().toAscii();
         tmp[2] = m.record(i).value("rcv3").toString().toAscii();
         tmp[3] = m.record(i).value("rcv4").toString().toAscii();
+        tmpqso->nr=m.record(i).value("nr").toInt();
 
         for (int j = 0; j < contest->nExchange(); j++) {
             tmpqso->exch = tmpqso->exch + tmp[j] + " ";
@@ -2936,10 +2927,7 @@ void So2sdr::rescore()
         //
         // first check for user changing check status
         bool userValid=m.record(i).value("valid").toBool();
-
-        // next check exchange
-        bool exchValid=contest->validateExchange(tmpqso);
-        tmpqso->valid=userValid & exchValid;
+        tmpqso->valid=userValid;
 
         // dupe check
         // qsos marked invalid are excluded from log and dupe check
@@ -2961,8 +2949,21 @@ void So2sdr::rescore()
                 }
                 dupes[tmpqso->band].append(tmpqso->call);
             }
-            if (!tmpqso->dupe) nqso[tmpqso->band]++;
+     //       if (!tmpqso->dupe) nqso[tmpqso->band]++;
         } else {
+            tmpqso->pts=0;
+            tmpqso->mult[0]=-1;
+            tmpqso->mult[1]=-1;
+            tmpqso->newmult[0]=-1;
+            tmpqso->newmult[1]=-1;
+        }
+        // next check exchange
+        // in the case of mobiles, this might change dupe status!
+        bool exchValid=contest->validateExchange(tmpqso);
+        tmpqso->valid=userValid & exchValid;
+
+        if (!tmpqso->dupe) nqso[tmpqso->band]++;
+        if (!tmpqso->valid || tmpqso->dupe) {
             tmpqso->pts=0;
             tmpqso->mult[0]=-1;
             tmpqso->mult[1]=-1;

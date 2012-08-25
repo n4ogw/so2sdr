@@ -106,6 +106,9 @@ public:
     void zeroScore();
     int zoneMax() const;
     int zoneType() const;
+signals:
+    void mobileDupeCheck(Qso *qso);
+    void clearDupe();
 
 protected:
     bool                 dupeCheckingEveryBand;

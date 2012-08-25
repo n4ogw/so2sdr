@@ -359,9 +359,6 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 {
     bool dupe = false;
     qso->worked = 0;
-
-    for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
-
     qso->prefill.clear();
     QSqlQueryModel m;
 
@@ -379,12 +376,47 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             }
         }
     } else {
-        m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "' AND BAND=" + QString::number(qso->band), *db);
+        // if mobile station, check for mobile dupe option. In this
+        // case, count dupe only if exchange is identical
+        QString query="SELECT * FROM log WHERE call='" + qso->call + "' AND band=" + QString::number(qso->band);
+
+        if (qso->isMobile && csettings->value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
+            QString exch=qso->rcv_exch[csettings->value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
+            // if exchange not entered, can't determine dupe status yet
+            if (exch.isEmpty()) {
+                return(false);
+            }
+            // if qso already has an assigned number in log (which is SQL primary key), only check
+            // qso's BEFORE this one
+            if (qso->nr) {
+                query=query+" AND (nr < "+QString::number(qso->nr)+") ";
+            }
+
+            query=query+ " AND ";
+            switch (csettings->value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
+            case 1:
+                query=query+"rcv1='"+exch+"'";
+                break;
+            case 2:
+                query=query+"rcv2='"+exch+"'";
+                break;
+            case 3:
+                query=query+"rcv3='"+exch+"'";
+                break;
+            case 4:
+                query=query+"rcv4='"+exch+"'";
+                break;
+            default:
+                return(false);
+            }
+        }
+        m.setQuery(query, *db);
+        m.query().exec();
         while (m.canFetchMore()) {
             m.fetchMore();
         }
         if (m.rowCount()) {
-            dupe = true;
+            dupe=true;
         }
         if (FillWorked) {
             m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", *db);
@@ -393,7 +425,6 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             }
         }
     }
-
     // if a dupe, set zero pts
     if (dupe) qso->pts = 0;
     return(dupe);
@@ -426,14 +457,27 @@ int log::lastNr() const
 }
 
 /*!
+slot for mobile dupe checking. Gets called by exchange validator if
+exchange if ok. In this case, modify qso dupes status based on whether this
+is a new mult or not
+*/
+void log::mobileDupeCheck(Qso *qso)
+{
+    qso->dupe=isDupe(qso,true,false);
+}
+
+/*!
    open log file on disk. If already exists, open as append.
+
+   s is pointer to contest settings file
  */
-bool log::openLogFile(QString fname,bool clear)
+bool log::openLogFile(QString fname,bool clear,QSettings *s)
 {
     Q_UNUSED(clear);
     if (fname.isEmpty())
         return(false);
 
+    csettings=s;
     logFileName = fname.remove(".cfg") + ".log";
     db->setDatabaseName(logFileName);
     if (!db->open()) {

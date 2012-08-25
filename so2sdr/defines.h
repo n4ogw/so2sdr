@@ -678,4 +678,17 @@ const QString c_dupe_msg_def="";
 
 const QString c_cty="contest/cty";
 const QString c_cty_def="wl_cty.dat";
+
+const QString c_mobile_dupes="contest/mobile_dupes";
+const bool c_mobile_dupes_def=false;
+
+const QString c_mobile_dupes_col="contest/mobile_dupes_column";
+const int c_mobile_dupes_col_def=1;
+
+const QString c_mult1_displayonly="contest/mult1_displayonly";
+const bool c_mult1_displayonly_def=false;
+
+const QString c_mult2_displayonly="contest/mult2_displayonly";
+const bool c_mult2_displayonly_def=false;
+
 #endif // DEFINES_H
