@@ -3421,6 +3421,14 @@ void So2sdr::initPointers()
     multWorkedLabel[0][1] = Mult1Label2;
     multWorkedLabel[1][0] = Mult2Label;
     multWorkedLabel[1][1] = Mult2Label2;
+	// the following is needed to get a monospace font under Windows
+	for (int i=0;i<2;i++) {
+		QFont font("Monospace");
+		font.setStyleHint(QFont::TypeWriter);
+		qsoWorkedLabel[i]->setFont(font);
+		multWorkedLabel[i][0]->setFont(font);
+		multWorkedLabel[i][1]->setFont(font);
+	}
     multNameLabel[0] = multName;
     multNameLabel[1] = multName2;
     multLabel[0][0] = mult160Label;

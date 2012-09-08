@@ -1135,6 +1135,9 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
+        <property name="margin">
+         <number>1</number>
+        </property>
         <property name="spacing">
          <number>0</number>
         </property>
@@ -1870,8 +1873,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Monospace</family>
-              <pointsize>11</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1935,8 +1937,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Monospace</family>
-              <pointsize>11</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -2244,7 +2245,7 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

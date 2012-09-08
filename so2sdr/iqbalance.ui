@@ -203,7 +203,7 @@
         <widget class="QCheckBox" name="balanceCheckBox">
          <property name="font">
           <font>
-           <pointsize>8</pointsize>
+           <pointsize>10</pointsize>
           </font>
          </property>
          <property name="toolTip">
@@ -234,7 +234,7 @@
         <widget class="QCheckBox" name="dataCheckBox">
          <property name="font">
           <font>
-           <pointsize>8</pointsize>
+           <pointsize>10</pointsize>
           </font>
          </property>
          <property name="toolTip">
@@ -265,7 +265,7 @@
         <widget class="QPushButton" name="pushButtonRestart">
          <property name="font">
           <font>
-           <pointsize>8</pointsize>
+           <pointsize>10</pointsize>
           </font>
          </property>
          <property name="toolTip">

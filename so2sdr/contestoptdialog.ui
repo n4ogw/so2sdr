@@ -41,7 +41,7 @@
       <widget class="QCheckBox" name="MultsByBandCheckBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -56,7 +56,7 @@
       <widget class="QCheckBox" name="ShowMultsCheckBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -71,7 +71,7 @@
       <widget class="QCheckBox" name="SprintCheckBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -86,7 +86,7 @@
       <widget class="QCheckBox" name="MasterCheckBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -96,6 +96,11 @@
      </item>
      <item row="5" column="1">
       <widget class="QLineEdit" name="MasterLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Filename of master call database. File must be in 
 share/so2sdr in linux or in program directory in Windows.</string>
@@ -106,8 +111,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -117,6 +121,11 @@ share/so2sdr in linux or in program directory in Windows.</string>
      </item>
      <item row="6" column="1">
       <widget class="QComboBox" name="dupesComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <item>
         <property name="text">
          <string>CQ: no dupes; S&amp;P: no dupes</string>
@@ -143,8 +152,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -155,16 +163,40 @@ share/so2sdr in linux or in program directory in Windows.</string>
      <item row="7" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLineEdit" name="lineEditExch1"/>
+        <widget class="QLineEdit" name="lineEditExch1">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEditExch2"/>
+        <widget class="QLineEdit" name="lineEditExch2">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEditExch3"/>
+        <widget class="QLineEdit" name="lineEditExch3">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEditExch4"/>
+        <widget class="QLineEdit" name="lineEditExch4">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -172,7 +204,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
       <widget class="QCheckBox" name="ShowModeCheckBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -184,6 +216,11 @@ share/so2sdr in linux or in program directory in Windows.</string>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

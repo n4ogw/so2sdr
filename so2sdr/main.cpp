@@ -26,10 +26,13 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QStringList args=app.arguments();
-    QFont f("Bitstream Vera Sans Mono",11);
+	// set this on Linux to get a dotted zero. Does not work on default Windows 7, so
+	// just keep standard font there
+#ifdef Q_OS_LINUX 
+	QFont f("Bitstream Vera Sans Mono",11);
     f.setStyleHint(QFont::TypeWriter);
     app.setFont(f);
-
+#endif
     So2sdr *main = new So2sdr(args);
     QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
 

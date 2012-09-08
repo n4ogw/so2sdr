@@ -38,7 +38,6 @@
       <widget class="QCheckBox" name="CWCheckBox">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -65,6 +64,12 @@
      </item>
      <item>
       <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>

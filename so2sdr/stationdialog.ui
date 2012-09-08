@@ -462,6 +462,11 @@ the exchange</string>
    </item>
    <item>
     <widget class="QLabel" name="label_11">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Cabrillo Data</string>
      </property>
@@ -471,18 +476,34 @@ the exchange</string>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
       <widget class="QLabel" name="label_9">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Name</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="CabrilloNameLineEdit"/>
+      <widget class="QLineEdit" name="CabrilloNameLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
     <widget class="QLabel" name="label_10">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>Address (4 lines maximum)</string>
      </property>
@@ -496,19 +517,35 @@ the exchange</string>
        <height>60</height>
       </size>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
       <widget class="QLabel" name="label_12">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>City:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="CityLineEdit"/>
+      <widget class="QLineEdit" name="CityLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -516,13 +553,24 @@ the exchange</string>
     <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
       <widget class="QLabel" name="label_13">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>State/Province:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="StateLineEdit_2"/>
+      <widget class="QLineEdit" name="StateLineEdit_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -530,13 +578,24 @@ the exchange</string>
     <layout class="QHBoxLayout" name="horizontalLayout_9">
      <item>
       <widget class="QLabel" name="label_14">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Postalcode:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="PostalCodeLineEdit"/>
+      <widget class="QLineEdit" name="PostalCodeLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -544,13 +603,24 @@ the exchange</string>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
       <widget class="QLabel" name="label_15">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Country:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="CountryLineEdit"/>
+      <widget class="QLineEdit" name="CountryLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

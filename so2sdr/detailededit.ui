@@ -42,6 +42,11 @@
      </property>
      <item row="0" column="2">
       <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Mode</string>
        </property>
@@ -49,6 +54,11 @@
      </item>
      <item row="1" column="1">
       <widget class="QDateTimeEdit" name="dateTimeEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>M/d/yy hh:mm</string>
        </property>
@@ -59,16 +69,32 @@
      </item>
      <item row="1" column="2">
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Freq (Hz)</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="callLineEdit"/>
+      <widget class="QLineEdit" name="callLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Call</string>
        </property>
@@ -76,6 +102,11 @@
      </item>
      <item row="3" column="4">
       <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -85,10 +116,21 @@
       </widget>
      </item>
      <item row="1" column="4">
-      <widget class="QLineEdit" name="freqLineEdit"/>
+      <widget class="QLineEdit" name="freqLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>UTC</string>
        </property>
@@ -96,6 +138,11 @@
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_5">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Sent</string>
        </property>
@@ -106,6 +153,11 @@
      </item>
      <item row="2" column="2">
       <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Received</string>
        </property>
@@ -117,37 +169,91 @@
      <item row="2" column="1">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLineEdit" name="sentExch1LineEdit"/>
+        <widget class="QLineEdit" name="sentExch1LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="sentExch2LineEdit"/>
+        <widget class="QLineEdit" name="sentExch2LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="sentExch3LineEdit"/>
+        <widget class="QLineEdit" name="sentExch3LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="sentExch4LineEdit"/>
+        <widget class="QLineEdit" name="sentExch4LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
      <item row="2" column="4">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QLineEdit" name="rcvExch1LineEdit"/>
+        <widget class="QLineEdit" name="rcvExch1LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="rcvExch2LineEdit"/>
+        <widget class="QLineEdit" name="rcvExch2LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="rcvExch3LineEdit"/>
+        <widget class="QLineEdit" name="rcvExch3LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="rcvExch4LineEdit"/>
+        <widget class="QLineEdit" name="rcvExch4LineEdit">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
      <item row="0" column="4">
-      <widget class="QComboBox" name="modeComboBox"/>
+      <widget class="QComboBox" name="modeComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

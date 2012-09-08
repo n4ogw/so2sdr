@@ -21,6 +21,11 @@
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>CONTEST: </string>
        </property>
@@ -28,6 +33,11 @@
      </item>
      <item row="0" column="1">
       <widget class="QLabel" name="labelContest">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -35,6 +45,11 @@
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>CALL:</string>
        </property>
@@ -42,6 +57,11 @@
      </item>
      <item row="1" column="1">
       <widget class="QLabel" name="labelCall">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -49,6 +69,11 @@
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_9">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>CLAIMED-SCORE:</string>
        </property>
@@ -56,6 +81,11 @@
      </item>
      <item row="2" column="1">
       <widget class="QLabel" name="labelClaimedScore">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -63,6 +93,11 @@
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_7">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Sent Exchange:</string>
        </property>
@@ -71,41 +106,92 @@
      <item row="3" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLineEdit" name="lineEditExch1"/>
+        <widget class="QLineEdit" name="lineEditExch1">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEditExch2"/>
+        <widget class="QLineEdit" name="lineEditExch2">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEditExch3"/>
+        <widget class="QLineEdit" name="lineEditExch3">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEditExch4"/>
+        <widget class="QLineEdit" name="lineEditExch4">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>OPERATORS:</string>
        </property>
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLineEdit" name="lineEditOperators"/>
+      <widget class="QLineEdit" name="lineEditOperators">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>NAME:</string>
        </property>
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QLineEdit" name="lineEditName"/>
+      <widget class="QLineEdit" name="lineEditName">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="label_5">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>ADDRESS:</string>
        </property>
@@ -119,60 +205,125 @@
          <height>60</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="labelAddressCity">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>ADDRESS-CITY:</string>
        </property>
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QLineEdit" name="lineEditAddressCity"/>
+      <widget class="QLineEdit" name="lineEditAddressCity">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="8" column="0">
       <widget class="QLabel" name="labelAddressState">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>ADDRESS-STATE-PROVINCE:</string>
        </property>
       </widget>
      </item>
      <item row="8" column="1">
-      <widget class="QLineEdit" name="lineEditAddressState"/>
+      <widget class="QLineEdit" name="lineEditAddressState">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="9" column="0">
       <widget class="QLabel" name="labelAddressPostalCode">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>ADDRESS-POSTALCODE:</string>
        </property>
       </widget>
      </item>
      <item row="9" column="1">
-      <widget class="QLineEdit" name="lineEditAddressPostalCode"/>
+      <widget class="QLineEdit" name="lineEditAddressPostalCode">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="10" column="0">
       <widget class="QLabel" name="labelAddressCountry">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>ADDRESS-COUNTRY:</string>
        </property>
       </widget>
      </item>
      <item row="10" column="1">
-      <widget class="QLineEdit" name="lineEditAddressCountry"/>
+      <widget class="QLineEdit" name="lineEditAddressCountry">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="11" column="0">
       <widget class="QLabel" name="label_8">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>LOCATION:</string>
        </property>
       </widget>
      </item>
      <item row="11" column="1">
-      <widget class="QLineEdit" name="lineEditLocation"/>
+      <widget class="QLineEdit" name="lineEditLocation">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="13" column="0">
       <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>SOAPBOX:</string>
        </property>
@@ -186,6 +337,11 @@
          <height>80</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item row="14" column="0">
@@ -196,7 +352,13 @@
       </widget>
      </item>
      <item row="14" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo1"/>
+      <widget class="QComboBox" name="comboBoxCabrillo1">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="15" column="0">
       <widget class="QLabel" name="labelCabrillo2">
@@ -206,7 +368,13 @@
       </widget>
      </item>
      <item row="15" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo2"/>
+      <widget class="QComboBox" name="comboBoxCabrillo2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="16" column="0">
       <widget class="QLabel" name="labelCabrillo3">
@@ -216,7 +384,13 @@
       </widget>
      </item>
      <item row="16" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo3"/>
+      <widget class="QComboBox" name="comboBoxCabrillo3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="17" column="0">
       <widget class="QLabel" name="labelCabrillo4">
@@ -226,7 +400,13 @@
       </widget>
      </item>
      <item row="17" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo4"/>
+      <widget class="QComboBox" name="comboBoxCabrillo4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="18" column="0">
       <widget class="QLabel" name="labelCabrillo5">
@@ -236,7 +416,13 @@
       </widget>
      </item>
      <item row="18" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo5"/>
+      <widget class="QComboBox" name="comboBoxCabrillo5">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="19" column="0">
       <widget class="QLabel" name="labelCabrillo6">
@@ -246,7 +432,13 @@
       </widget>
      </item>
      <item row="19" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo6"/>
+      <widget class="QComboBox" name="comboBoxCabrillo6">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="20" column="0">
       <widget class="QLabel" name="labelCabrillo7">
@@ -256,13 +448,30 @@
       </widget>
      </item>
      <item row="20" column="1">
-      <widget class="QComboBox" name="comboBoxCabrillo7"/>
+      <widget class="QComboBox" name="comboBoxCabrillo7">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="12" column="1">
-      <widget class="QLineEdit" name="lineEditClub"/>
+      <widget class="QLineEdit" name="lineEditClub">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="12" column="0">
       <widget class="QLabel" name="label_10">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>CLUB:</string>
        </property>

@@ -47,7 +47,7 @@
       <widget class="QCheckBox" name="checkBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -59,8 +59,7 @@
       <widget class="QLabel" name="label_12">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -70,6 +69,11 @@
      </item>
      <item row="1" column="1">
       <widget class="QComboBox" name="API1ComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string/>
        </property>
@@ -79,7 +83,7 @@
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -92,14 +96,18 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_8">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -108,14 +116,19 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QComboBox" name="SampleRate1ComboBox"/>
+      <widget class="QComboBox" name="SampleRate1ComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_6">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -124,13 +137,19 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QComboBox" name="Bits1ComboBox"/>
+      <widget class="QComboBox" name="Bits1ComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -140,6 +159,11 @@
      </item>
      <item row="5" column="1">
       <widget class="QLineEdit" name="OffsetLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>difference between radio IF frequency and LO frequency</string>
        </property>
@@ -149,7 +173,7 @@
       <widget class="QCheckBox" name="checkBox_2">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -161,8 +185,7 @@
       <widget class="QLabel" name="label_13">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -171,13 +194,19 @@
       </widget>
      </item>
      <item row="8" column="1">
-      <widget class="QComboBox" name="API2ComboBox"/>
+      <widget class="QComboBox" name="API2ComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="9" column="0">
       <widget class="QLabel" name="label_3">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -190,14 +219,18 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item row="10" column="0">
       <widget class="QLabel" name="label_9">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -206,14 +239,19 @@
       </widget>
      </item>
      <item row="10" column="1">
-      <widget class="QComboBox" name="SampleRate2ComboBox"/>
+      <widget class="QComboBox" name="SampleRate2ComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="11" column="0">
       <widget class="QLabel" name="label_7">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -222,13 +260,19 @@
       </widget>
      </item>
      <item row="11" column="1">
-      <widget class="QComboBox" name="Bits2ComboBox"/>
+      <widget class="QComboBox" name="Bits2ComboBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item row="12" column="0">
       <widget class="QLabel" name="label_4">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -238,6 +282,11 @@
      </item>
      <item row="12" column="1">
       <widget class="QLineEdit" name="Offset2LineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>difference between radio IF frequency and LO frequency</string>
        </property>
@@ -285,7 +334,7 @@
       <widget class="QLabel" name="label_5">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -295,6 +344,11 @@
      </item>
      <item row="14" column="1">
       <widget class="QLineEdit" name="SpotTimeoutLineEdit">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Calls are removed from the bandmap after this amount of time</string>
        </property>
@@ -306,8 +360,7 @@
         <widget class="QCheckBox" name="SpotCallsCheckBox">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
-           <pointsize>11</pointsize>
+           <pointsize>10</pointsize>
           </font>
          </property>
          <property name="toolTip">
@@ -323,8 +376,7 @@ Typically turned off only during the Sprint.</string>
         <widget class="QCheckBox" name="ChangeRadioClickCheckBox">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
-           <pointsize>11</pointsize>
+           <pointsize>10</pointsize>
           </font>
          </property>
          <property name="toolTip">
@@ -349,8 +401,7 @@ make that radio active</string>
       <widget class="QLabel" name="label_11">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -360,6 +411,11 @@ make that radio active</string>
      </item>
      <item row="18" column="1">
       <widget class="QLineEdit" name="lineEditIntegTime">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Amount of time between each CQ Finder update. Typical settings 5
 seconds in Sprints, 15-30 seconds in other contests.</string>
@@ -379,6 +435,11 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
            <height>0</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>10</string>
          </property>
@@ -389,6 +450,11 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_15">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>15</string>
          </property>
@@ -399,6 +465,11 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_16">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>20</string>
          </property>
@@ -409,6 +480,11 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_17">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>40</string>
          </property>
@@ -425,6 +501,11 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
            <height>0</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>80</string>
          </property>
@@ -435,6 +516,11 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_19">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>160</string>
          </property>
@@ -451,40 +537,112 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
         <number>3</number>
        </property>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit160high"/>
+        <widget class="QLineEdit" name="lineEdit160high">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLineEdit" name="lineEdit160low"/>
+        <widget class="QLineEdit" name="lineEdit160low">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLineEdit" name="lineEdit40low"/>
+        <widget class="QLineEdit" name="lineEdit40low">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit40high"/>
+        <widget class="QLineEdit" name="lineEdit40high">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLineEdit" name="lineEdit80low"/>
+        <widget class="QLineEdit" name="lineEdit80low">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit80high"/>
+        <widget class="QLineEdit" name="lineEdit80high">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLineEdit" name="lineEdit20low"/>
+        <widget class="QLineEdit" name="lineEdit20low">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="lineEdit20high"/>
+        <widget class="QLineEdit" name="lineEdit20high">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLineEdit" name="lineEdit15low"/>
+        <widget class="QLineEdit" name="lineEdit15low">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="lineEdit15high"/>
+        <widget class="QLineEdit" name="lineEdit15high">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="5" column="0">
-        <widget class="QLineEdit" name="lineEdit10low"/>
+        <widget class="QLineEdit" name="lineEdit10low">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QLineEdit" name="lineEdit10high"/>
+        <widget class="QLineEdit" name="lineEdit10high">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
