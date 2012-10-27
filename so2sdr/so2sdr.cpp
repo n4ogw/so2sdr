@@ -2483,11 +2483,13 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
 {
     bool ok = false;
 
+    // try to convert to a digit. Ok=false for non-digits
+    int w = text.toInt(&ok);
+
     // must enter exactly 2 digits
     if (text.size() < 2) {
-        return;
+        if (ok) return;
     } else {
-        int w = text.toInt(&ok);
         if (ok) {
             wpm[nrig] = w;
             if (!(sendingOtherRadio && winkey->isSending())) {
