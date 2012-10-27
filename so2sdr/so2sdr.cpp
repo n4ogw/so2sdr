@@ -1815,6 +1815,9 @@ void So2sdr::exchCheck(int nr,const QString &exch)
 {
     if (qso[nr]->call.isEmpty()) return; // do nothing unless we have a callsign
 
+    // recopy call; needed incase call was changed by a previous
+    // exchange edit
+    qso[nr]->call=lineEditCall[nr]->text().toAscii();
     qso[nr]->exch=exch.toAscii();
     qso[nr]->valid=contest->validateExchange(qso[nr]);
     if (qso[nr]->valid) {
@@ -2004,6 +2007,10 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             So2sdrStatusBar->clearMessage();
             statusBarDupe = false;
         }
+        // if exchange isn't empty, should recheck it now
+        if (!lineEditExchange[nr]->text().isEmpty()) {
+            exchCheck(nr,lineEditExchange[nr]->text());
+        }
     } else {
         if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
             MasterTextEdit->clear();
@@ -2071,10 +2078,18 @@ void So2sdr::updateWorkedMult(int nr)
         if (!csettings->value(c_multsband,c_multsband_def).toBool()) {
             if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
                 // mult already worked
-                tmp = tmp + "<font color=#000000>160 80 40 20 15 10</font>";
+                //tmp = tmp + "<font color=#000000>160 80 40 20 15 10</font>";
+                if (qso[nr]->isamult[nr])
+                    tmp = tmp + "<font color=#000000>      WORKED      </font>";
+                else
+                    tmp.clear();
             } else {
                 // needed
-                tmp = tmp + "<font color=#CCCCCC>160 80 40 20 15 10</font>";
+                if (qso[nr]->isamult[nr])
+                    tmp = tmp + "<font color=#CC0000>      NEEDED      </font>";
+                else
+                    tmp.clear();
+                //tmp = tmp + "<font color=#CCCCCC>160 80 40 20 15 10</font>";
             }
         } else {
             for (int i = 0; i < N_BANDS; i++) {

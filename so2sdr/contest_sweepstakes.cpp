@@ -119,37 +119,18 @@ bool Sweepstakes::validateExchange(Qso *qso)
     // check prefix
     determineMultType(qso);
 
-    // look for precedence attached to qso number (eq 213A). If so,
-    // move precedence to a separate array element in exchElement
-
-    // start search from end of entered data
-    for (int i = exchElement.size() - 1; i >= 0; i--) {
-        QByteArray last = exchElement.at(i);
-        last = last.right(1);
-        if (last == "Q" || last == "A" || last == "B" ||
-            last == "U" || last == "M" || last == "S") {
-            QByteArray tmp = exchElement.at(i);
-            tmp.chop(1);
-            if (!tmp.isEmpty()) {
-                bool ok = false;
-                if (tmp.toInt(&ok, 10)) {
-                    exchElement.append(last); // add prec to end
-                    exchElement[i] = tmp;     // update qso number field
-                    break;
-                }
-            }
-        }
-    }
-
     bool ok_part[4];
     ok_part[0]   = false; // qso #
     ok_part[1]   = false; // prec
     ok_part[2]   = false; // check
     ok_part[3]   = false; // section
+
     qso->mult[1] = -1;
+    // don't check non-US/VE calls
     if (qso->isamult[0]) {
         // # PREC CK SECTION; 4 elements minimum
-        if (exchElement.size() < 4) return(false);
+        // could have #PREC  together; 3 elements minimum
+        if (exchElement.size() < 3) return(false);
 
         bool *used = new bool[exchElement.size()];
         for (int i = 0; i < exchElement.size(); i++) used[i] = false;
@@ -169,14 +150,65 @@ bool Sweepstakes::validateExchange(Qso *qso)
             }
         }
 
-        // take last entered 2-digit number as check
+        // look for precedence attached to qso number (eq 213A). If so,
+        // move precedence to a separate array element in exchElement
+
+        // start search from end of entered data
+        for (int i = exchElement.size() - 1; i >= 0; i--) {
+            QByteArray last = exchElement.at(i);
+            last = last.right(1);
+            if (last == "Q" || last == "A" || last == "B" ||
+                last == "U" || last == "M" || last == "S") {
+                QByteArray tmp = exchElement.at(i);
+                tmp.chop(1);
+                if (!tmp.isEmpty()) {
+                    bool ok = false;
+                    int nr=tmp.toInt(&ok, 10);
+                    Q_UNUSED(nr);
+                    if (ok) {
+                        used[i]=true;
+                        if (!ok_part[0]) {
+                            finalExch[0]=tmp;
+                            ok_part[0]=true;
+                        }
+                        if (!ok_part[1]) {
+                            ok_part[1]=true;
+                            finalExch[1]=last;
+                        }
+                    }
+                } else if (exchElement.at(i).size()==1) {
+                    // matched just prec
+                    used[i]=true;
+                    if (!ok_part[1]) {
+                        ok_part[1]=true;
+                        finalExch[1]=last;
+                    }
+                }
+            }
+        }
+
+        // qso number/check: take last number which is not 2 digits or first number
+        // check for last !=2 digit number
         for (int i = exchElement.size() - 1; i >= 0; i--) {
             if (used[i]) continue;
 
             bool nrok = false;
             int  nr   = exchElement.at(i).toInt(&nrok, 10);
-
-            if (nrok && nr >= 00 && nr <= 99) {
+            if (nrok && nr > 99) {
+                // >99: QSO number
+                finalExch[0] = exchElement.at(i);
+                used[i]      = true;
+                ok_part[0]   = true;
+                break;
+            } else if (nrok && nr<10 && (exchElement.at(i).size()==1)) {
+                // single digit: must also be qso number
+                finalExch[0] = exchElement.at(i);
+                used[i]      = true;
+                ok_part[0]   = true;
+                break;
+            } else if (nrok && (exchElement.at(i).size()==2)) {
+                // any other number must be a check if it
+                // is exactly two characters
                 ok_part[2]   = true;
                 used[i]      = true;
                 finalExch[2] = exchElement.at(i);
@@ -184,52 +216,21 @@ bool Sweepstakes::validateExchange(Qso *qso)
             }
         }
 
-        // match precedences
-        for (int i = exchElement.size() - 1; i >= 0; i--) {
-            if (used[i]) continue;
-
-            if (exchElement.at(i) == "Q" || exchElement.at(i) == "A" || exchElement.at(i) == "B" ||
-                exchElement.at(i) == "U" || exchElement.at(i) == "M" || exchElement.at(i) == "S") {
-                if (!ok_part[1]) {
-                    finalExch[1] = exchElement.at(i);
-                    ok_part[1]   = true;
-                    used[i]      = true;
-                } else {
-                    used[i] = true;
-                }
-            }
-        }
-
-        // qso number: take last >2 digit number or first number
-        // check for last >2 digit number
-        for (int i = exchElement.size() - 1; i >= 0; i--) {
-            if (used[i]) continue;
-
-            bool nrok = false;
-            int  nr   = exchElement.at(i).toInt(&nrok, 10);
-            if (nrok && nr > 99) {
-                finalExch[0] = exchElement.at(i);
-                used[i]      = true;
-                ok_part[0]   = true;
-                break;
-            }
-        }
-
         // otherwise take first number
-        if (!ok_part[0]) {
-            for (int i = 0; i < exchElement.size(); i++) {
-                if (used[i]) continue;
+        // mark all numbers as 'used'
+        for (int i = 0; i < exchElement.size(); i++) {
+            if (used[i]) continue;
 
-                int nr = exchElement.at(i).toInt(&ok_part[0], 10);
-                Q_UNUSED(nr);
-                if (ok_part[0]) {
-                    finalExch[0] = exchElement.at(i);
-                    used[i]      = true;
-                    break;
-                }
+            bool ok;
+            int nr = exchElement.at(i).toInt(&ok, 10);
+            Q_UNUSED(nr);
+            if (ok && !ok_part[0]) {
+                finalExch[0] = exchElement.at(i);
+                ok_part[0]=true;
+            } else if (ok) {
+                used[i]      = true;
             }
         }
-
         // try to update callsign
         if (ok_part[0] & ok_part[1] & ok_part[2] & ok_part[3]) {
             for (int i = exchElement.size() - 1; i >= 0; i--) {
