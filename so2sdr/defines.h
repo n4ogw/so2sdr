@@ -691,4 +691,7 @@ const bool c_mult1_displayonly_def=false;
 const QString c_mult2_displayonly="contest/mult2_displayonly";
 const bool c_mult2_displayonly_def=false;
 
+const QString c_multimode="contest/multimode";
+const bool c_multimode_def=false;
+
 #endif // DEFINES_H

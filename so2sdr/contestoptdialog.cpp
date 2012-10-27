@@ -43,6 +43,7 @@ void ContestOptionsDialog::initialize(QSettings *s)
 void ContestOptionsDialog::setOptions()
 {
     MasterLineEdit->setText(settings->value(c_masterfile,c_masterfile_def).toString());
+    MultiModeCheckBox->setChecked(settings->value(c_multimode,c_multimode_def).toBool());
     MasterCheckBox->setChecked(settings->value(c_mastermode,c_mastermode_def).toBool());
     ShowModeCheckBox->setChecked(settings->value(c_showmode,c_showmode_def).toBool());
     ShowMultsCheckBox->setChecked(settings->value(c_showmults,c_showmults_def).toBool());
@@ -59,12 +60,18 @@ void ContestOptionsDialog::setOptions()
  */
 void ContestOptionsDialog::updateOptions()
 {
+    // need to rescore log if dupe mode, multimode, or mults view change
     settings->setValue(c_masterfile,MasterLineEdit->text());
+
+    bool oldMultiMode=settings->value(c_multimode,c_multimode_def).toBool();
+    bool newMultiMode=MultiModeCheckBox->isChecked();
+    settings->setValue(c_multimode,newMultiMode);
+    if (oldMultiMode!=newMultiMode) emit(multiModeChanged());
+
     settings->setValue(c_mastermode,MasterCheckBox->isChecked());
     settings->setValue(c_sprintmode,SprintCheckBox->isChecked());
     settings->setValue(c_showmode,ShowModeCheckBox->isChecked());
 
-    // need to rescore log if dupe mode or mults view change
     int oldDupeMode=settings->value(c_dupemode,c_dupemode_def).toInt();
     int newDupeMode=dupesComboBox->currentIndex();
     settings->setValue(c_dupemode,newDupeMode);
@@ -78,7 +85,7 @@ void ContestOptionsDialog::updateOptions()
     settings->setValue(c_multsband,MultsByBandCheckBox->isChecked());
 
     if ((newDupeMode!=oldDupeMode && (oldDupeMode==NO_DUPE_CHECKING || newDupeMode==NO_DUPE_CHECKING))
-            || oldShowMults!=newShowMults
+            || oldShowMults!=newShowMults || oldMultiMode!=newMultiMode
             || oldMultsBand!=newMultsBand) emit(rescore());
 
     settings->setValue(c_sentexch1,lineEditExch1->text());

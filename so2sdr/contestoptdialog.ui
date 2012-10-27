@@ -52,7 +52,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QCheckBox" name="ShowMultsCheckBox">
        <property name="font">
         <font>
@@ -67,7 +67,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QCheckBox" name="SprintCheckBox">
        <property name="font">
         <font>
@@ -82,7 +82,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QCheckBox" name="MasterCheckBox">
        <property name="font">
         <font>
@@ -94,7 +94,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="MasterLineEdit">
        <property name="font">
         <font>
@@ -107,7 +107,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
@@ -119,7 +119,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QComboBox" name="dupesComboBox">
        <property name="font">
         <font>
@@ -148,7 +148,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
        </item>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
@@ -160,7 +160,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLineEdit" name="lineEditExch1">
@@ -200,7 +200,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
        </item>
       </layout>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QCheckBox" name="ShowModeCheckBox">
        <property name="font">
         <font>
@@ -209,6 +209,13 @@ share/so2sdr in linux or in program directory in Windows.</string>
        </property>
        <property name="text">
         <string>Show mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="MultiModeCheckBox">
+       <property name="text">
+        <string>Multimode</string>
        </property>
       </widget>
      </item>

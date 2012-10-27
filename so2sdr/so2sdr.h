@@ -132,6 +132,7 @@ private slots:
     void regrab();
     void send(QByteArray text);
     void setGrab(bool);
+    void setSummaryGroupBoxTitle();
     void setupNewContest(int result);
     void showBandmap1(int checkboxState);
     void showBandmap2(int checkboxState);

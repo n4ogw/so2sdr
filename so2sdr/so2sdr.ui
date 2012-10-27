@@ -1423,13 +1423,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
@@ -1454,13 +1454,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
@@ -1485,13 +1485,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
@@ -1516,13 +1516,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
@@ -2023,13 +2023,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
@@ -2054,13 +2054,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>170</width>
             <height>13</height>
            </size>
           </property>
@@ -2245,7 +2245,7 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

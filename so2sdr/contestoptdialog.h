@@ -42,6 +42,7 @@ public slots:
     void rejectChanges();
 signals:
     void rescore();
+    void multiModeChanged();
 
 private:
     void setOptions();

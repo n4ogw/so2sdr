@@ -214,21 +214,21 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (mod == 1) {
                 writeNote();
                 r = true;
-            } else if (mod ==3) {
-                // switch to next modeType
-                switch (modeTypeShown) {
-                case CWType:
-                    modeTypeShown=PhoneType;
-                    groupBox->setTitle("Summary:PHONE");
-                    break;
-                case PhoneType:
-                    modeTypeShown=DigiType;
-                    groupBox->setTitle("Summary:DIGITAL");
-                    break;
-                case DigiType:
-                    modeTypeShown=CWType;
-                    groupBox->setTitle("Summary:CW");
-                    break;
+            } else if (mod == 3) {
+                if (csettings->value(c_multimode,c_multimode_def).toBool()) {
+                    // switch to next modeType
+                    switch (modeTypeShown) {
+                    case CWType:
+                        modeTypeShown=PhoneType;
+                        break;
+                    case PhoneType:
+                        modeTypeShown=DigiType;
+                        break;
+                    case DigiType:
+                        modeTypeShown=CWType;
+                        break;
+                    }
+                    setSummaryGroupBoxTitle();
                 }
                 r=true;
             }
@@ -407,6 +407,29 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
         break;
     }
     return(r);
+}
+
+/*!
+ set title of group box surrounding qso totals
+ */
+void So2sdr::setSummaryGroupBoxTitle()
+{
+    if (csettings->value(c_multimode,c_multimode_def).toBool()) {
+        switch (modeTypeShown) {
+        case CWType:
+            groupBox->setTitle("Summary:CW");
+            break;
+        case PhoneType:
+            groupBox->setTitle("Summary:PHONE");
+            break;
+        case DigiType:
+            groupBox->setTitle("Summary:DIGITAL");
+            break;
+        }
+    } else {
+        groupBox->setTitle("Summary:");
+    }
+
 }
 
 /*!

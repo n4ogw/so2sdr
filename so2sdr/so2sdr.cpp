@@ -142,6 +142,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(options,SIGNAL(rescore()),this,SLOT(rescore()));
+    connect(options,SIGNAL(multiModeChanged()),this,SLOT(setSummaryGroupBoxTitle()));
     options->hide();
     detail=new DetailedEdit();
     connect(detail,SIGNAL(editedRecord(QSqlRecord)),this,SLOT(updateRecord(QSqlRecord)));
@@ -851,6 +852,7 @@ bool So2sdr::setupContest()
     clearWorked(1);
     enableUI();
     So2sdrStatusBar->showMessage("Read " + fileName, 3000);
+    setSummaryGroupBoxTitle();
     return(true);
 }
 
@@ -2935,19 +2937,24 @@ void So2sdr::rescore()
         if (tmpqso->valid) {
             if (csettings->value(c_dupemode,c_dupemode_def).toInt()!=NO_DUPE_CHECKING) {
                 // can work station on other bands, just check this one
+                QByteArray check=tmpqso->call;
+                // multi-mode contest: append a mode index to the call
+                if (csettings->value(c_multimode,c_multimode_def).toBool()) {
+                    check=check+QByteArray::number((int)tmpqso->modeType);
+                }
                 if (contest->dupeCheckingByBand()) {
-                    if (dupes[tmpqso->band].contains(tmpqso->call)) {
+                    if (dupes[tmpqso->band].contains(check)) {
                         tmpqso->dupe = true;
                     }
                 } else {
                     // qsos count only once on any band
                     for (int j = 0; j < N_BANDS; j++) {
-                        if (dupes[j].contains(tmpqso->call)) {
+                        if (dupes[j].contains(check)) {
                             tmpqso->dupe = true;
                         }
                     }
                 }
-                dupes[tmpqso->band].append(tmpqso->call);
+                dupes[tmpqso->band].append(check);
             }
      //       if (!tmpqso->dupe) nqso[tmpqso->band]++;
         } else {
@@ -3192,16 +3199,23 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
         m.fetchMore();
     }
     for (int i = 0; i < m.rowCount(); i++) {
+        // if multi-mode contest, check for matching mode
+        if (csettings->value(c_multimode).toBool(),c_multimode_def) {
+            if (cat->getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
+                continue;
+            }
+        }
         QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toAscii();
         //
         /* @todo  the following could probably be simplified  using SQL commands... */
         //
         // see if this call is already in list
-        int j;
-        if ((j = calls.indexOf(tmp)) != -1) {
+        int j=calls.indexOf(tmp);
+        if (j != -1) {
             // add this band
             worked[j] = worked[j] | bits[m.record(i).value(SQL_COL_BAND).toInt()];
         } else {
+            // new call fragment, or same call and different mode
             // insert call so list is sorted
             int isrt = 0;
             for (int k = 0; k < calls.size(); k++) {
