@@ -3542,3 +3542,25 @@ void So2sdr::initVariables()
     grab               = false;
     keyInProgress=false;
 }
+
+/*!
+ * \brief So2sdr::screenShot
+ * Take a screenshot of the bandmap windows
+ */
+void So2sdr::screenShot()
+{
+    bool done=false;
+    for (int i=0;i<2;i++) {
+        if (bandmapOn[i]) {
+            QPixmap p=QPixmap::grabWindow(bandmap[i]->winId());
+            QString format = "png";
+            directory->setCurrent(contestDirectory);
+            QString filename="screenshot-"+QString::number(i)+" "+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
+            p.save(filename,format.toAscii());
+            done=true;
+        }
+    }
+    if (done) {
+        So2sdrStatusBar->showMessage("Saved screenshot", 3000);
+    }
+}

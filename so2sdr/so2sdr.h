@@ -130,6 +130,7 @@ private slots:
     void prefixCheck2(const QString &call);
     void quit();
     void regrab();
+    void screenShot();
     void send(QByteArray text);
     void setGrab(bool);
     void setSummaryGroupBoxTitle();

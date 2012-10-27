@@ -230,9 +230,14 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 r = true;
             }
             break;
-        case Qt::Key_S:     // alt-S
+        case Qt::Key_S:
+            // alt-S
             if (mod == Qt::AltModifier) {
                 launch_WPMDialog();
+                r = true;
+            }
+            if ((mod & Qt::AltModifier) && (mod & Qt::ControlModifier)) {
+                screenShot();
                 r = true;
             }
             break;
