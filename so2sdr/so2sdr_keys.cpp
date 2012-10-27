@@ -1484,14 +1484,14 @@ void So2sdr::esc()
 /*!
    Function keys: choose either regular or Exchange/S&P
  */
-void So2sdr::sendFunc(int i, int mod)
+void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
 {
     // clear dupe message if present
     if (statusBarDupe) {
         So2sdrStatusBar->clearMessage();
     }
     switch (mod) {
-    case 0:
+    case Qt::NoModifier:
         if (i == 1 && csettings->value(c_sprintmode,c_sprintmode_def).toBool() && cqQsoInProgress[activeRadio]) {
             /*!
                sprint: if CQ qso is in progress, continue to send CQ Exch when F2
@@ -1527,10 +1527,10 @@ void So2sdr::sendFunc(int i, int mod)
             expandMacro(cwMessage->excF[i].toUpper());
         }
         break;
-    case 1:
+    case Qt::ControlModifier:
         expandMacro(cwMessage->cqCtrlF[i].toUpper());
         break;
-    case 2:
+    case Qt::ShiftModifier:
         expandMacro(cwMessage->cqShiftF[i].toUpper());
         break;
     }

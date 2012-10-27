@@ -316,7 +316,7 @@ private:
     void searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QList<unsigned int>& worked, QList<int>& mult1, QList<int>& mult2);
     void selectContest(QByteArray name);
     void selectContest2();
-    void sendFunc(int i, int mode);
+    void sendFunc(int i, Qt::KeyboardModifiers mode);
     bool setupContest();
     void setDefaultFreq(int nrig);
     void showBandmap(int nr, int checkboxState);
