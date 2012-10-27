@@ -272,7 +272,7 @@ private:
 
     void addQso(const Qso *qso);
     void altd();
-    void altDEnter(int level, int mod);
+    void altDEnter(int level, Qt::KeyboardModifiers mod);
     void backSlash();
     void keyCtrlDn();
     void keyCtrlUp();
@@ -287,7 +287,7 @@ private:
     void disableUI();
     void down();
     void enableUI();
-    void enter(int);
+    void enter(Qt::KeyboardModifiers);
     bool enterFreqOrMode();
     void esc();
     void exchCheck(int nr,const QString &exch);

@@ -49,7 +49,6 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     // set r true if this completely handles the key. Otherwise
     // it will be passed on to other widgets
     bool r   = false;
-    int  mod = 0;
 
     switch (e->type()) {
     case QEvent::MouseButtonPress:
@@ -98,15 +97,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     case QEvent::KeyPress:
     {
         QKeyEvent* kev = static_cast<QKeyEvent*>(e);
-
-        int      m = kev->modifiers();
-        if (m == Qt::ControlModifier) {
-            mod = 1;
-        } else if (m == Qt::ShiftModifier) {
-            mod = 2;
-        } else if (m == Qt::AltModifier) {
-            mod = 3;
-        }
+        Qt::KeyboardModifiers mod = kev->modifiers();
         switch (kev->key()) {
         case Qt::Key_Escape:
             // notes window is active, prevent main window from getting esc
@@ -170,51 +161,51 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_C:     // alt-C : bring up config menu
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 menubar->setActiveAction(menubar->actions()[1]);
                 return(true);
             }
             break;
         case Qt::Key_D:     // alt-D
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 altd();
                 r = true;
             }
             break;
         case Qt::Key_E:    // control-E : edit log
-            if (mod == 1) {
+            if (mod == Qt::ControlModifier) {
                 controlE();
                 r=true;
             }
             break;
         case Qt::Key_F:
             // alt-F : bring up file menu
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 menubar->setActiveAction(menubar->actions()[0]);
                 return(true);
-            } else if (mod == 1) {
+            } else if (mod == Qt::ControlModifier) {
                 // ctrl-F : log search
                 logSearch();
                 return(true);
             }
             break;
         case Qt::Key_H:     // alt-H : bring up Help menu
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 menubar->setActiveAction(menubar->actions()[3]);
                 return(true);
             }
             break;
         case Qt::Key_M:     // alt-M
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 switchMultMode();
                 r = true;
             }
             break;
         case Qt::Key_N:     // ctrl-N, alt-N
-            if (mod == 1) {
+            if (mod == Qt::ControlModifier) {
                 writeNote();
                 r = true;
-            } else if (mod == 3) {
+            } else if (mod == Qt::AltModifier) {
                 if (csettings->value(c_multimode,c_multimode_def).toBool()) {
                     // switch to next modeType
                     switch (modeTypeShown) {
@@ -234,19 +225,19 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             }
             break;
         case Qt::Key_R:     // alt-R
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 switchRadios();
                 r = true;
             }
             break;
         case Qt::Key_S:     // alt-S
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 launch_WPMDialog();
                 r = true;
             }
             break;
         case Qt::Key_W:     // alt-W : bring up Windows menu
-            if (mod == 3) {
+            if (mod == Qt::AltModifier) {
                 menubar->setActiveAction(menubar->actions()[2]);
                 return(true);
             }
@@ -266,7 +257,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_Up:
-            if (mod == 1) {   // ctrl-up
+            if (mod == Qt::ControlModifier) {   // ctrl-up
                 keyCtrlUp();
             } else {
                 up();
@@ -274,7 +265,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_Down:
-            if (mod == 1) {   // ctrl-down
+            if (mod == Qt::ControlModifier) {   // ctrl-down
                 keyCtrlDn();
             } else {
                 down();
@@ -816,7 +807,7 @@ void So2sdr::spaceAltD()
    Enter key - 2nd radio dupecheck
 
  */
-void So2sdr::altDEnter(int level, int mod)
+void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
 /*!
    - level==1  : call entered on 2nd radio; do dupecheck
    - level==2  : nothing; state when working qso on radio 2
@@ -922,11 +913,11 @@ void So2sdr::altDEnter(int level, int mod)
    unsigned int enterState[2][2][2][2];
 
    mods:
-   mod=1 (control) : logs without dupecheck
-   mod=2 (shift)   : same except no cw
+   mod=Qt::ControlModifier : logs without dupecheck
+   mod=Qt::ShiftModifier   : same except no cw
 
  */
-void So2sdr::enter(int mod)
+void So2sdr::enter(Qt::KeyboardModifiers mod)
 {
     keyInProgress=true;
     int                 i1;
@@ -1007,7 +998,7 @@ void So2sdr::enter(int mod)
     }
 
     // ctrl+Enter logs without dupecheck or exchange validation
-    if (mod == 1) {
+    if (mod == Qt::ControlModifier) {
         i2 = 1;
         // so only one enter press will log
         exchangeSent[activeRadio] = true;
@@ -1050,7 +1041,7 @@ void So2sdr::enter(int mod)
 
     // send callsign
     if (enterState[i1][i2][i3][i4] & 1) {
-        if (mod != 2 &&
+        if (mod != Qt::ShiftModifier &&
             !qso[activeRadio]->dupe) {
             expandMacro(settings->value(s_call,s_call_def).toByteArray());
             callSent[activeRadio] = true;
@@ -1065,7 +1056,7 @@ void So2sdr::enter(int mod)
         } else {
             nrReserved[activeRadio] = nrSent;
         }
-        if (mod != 2) {
+        if (mod != Qt::ShiftModifier) {
             if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
                 expandMacro(csettings->value(c_dupe_msg,c_dupe_msg_def).toByteArray());
             } else {
@@ -1153,7 +1144,7 @@ void So2sdr::enter(int mod)
             nrReserved[activeRadio] = nrSent;
         }
         updateNrDisplay();
-        if (mod != 2) expandMacro(csettings->value(c_sp_exc,c_sp_exc_def).toByteArray());
+        if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_sp_exc,c_sp_exc_def).toByteArray());
         exchangeSent[activeRadio] = true;
     }
 
@@ -1178,7 +1169,7 @@ void So2sdr::enter(int mod)
 
     // send F1 message
     if (enterState[i1][i2][i3][i4] & 256) {
-        if (mod != 2) expandMacro(cwMessage->cqF[0]);
+        if (mod != Qt::ShiftModifier) expandMacro(cwMessage->cqF[0]);
         exchangeSent[activeRadio] = false;
     }
 
@@ -1187,9 +1178,9 @@ void So2sdr::enter(int mod)
         // see if call was corrected
         // if control+Enter, do not send any CW here.
         if (qso[activeRadio]->call != origCallEntered[activeRadio]) {
-            if (mod != 2) expandMacro(csettings->value(c_qsl_msg_updated,c_qsl_msg_updated_def).toByteArray());
+            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated,c_qsl_msg_updated_def).toByteArray());
         } else {
-            if (mod != 2) expandMacro(csettings->value(c_qsl_msg,c_qsl_msg_def).toByteArray());
+            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg,c_qsl_msg_def).toByteArray());
         }
         exchangeSent[activeRadio] = false;
     }
