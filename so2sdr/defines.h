@@ -386,6 +386,7 @@ typedef enum {
     PhoneType = 1,
     DigiType = 2
 } ModeTypes;
+const int NModeTypes=3;
 
 const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
                                     "70cm","1.25M","33cm","23cm"};
@@ -693,5 +694,16 @@ const bool c_mult2_displayonly_def=false;
 
 const QString c_multimode="contest/multimode";
 const bool c_multimode_def=false;
+
+const QString c_multimode_cw="contest/multimode_cw";
+const bool c_multimode_cw_def=true;
+
+const QString c_multimode_phone="contest/multimode_phone";
+const bool c_multimode_phone_def=true;
+
+const QString c_multimode_digital="contest/multimode_digital";
+const bool c_multimode_digital_def=false;
+
+
 
 #endif // DEFINES_H

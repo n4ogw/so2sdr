@@ -54,6 +54,9 @@ void Contest::initialize(QSettings *ss,QSettings *cs,const Cty *cty)
     QByteArray tmp[MMAX];
     tmp[0]=settings->value(c_multfile1,c_multfile1_def).toString().toAscii();
     tmp[1]=settings->value(c_multfile2,c_multfile2_def).toString().toAscii();
+    availableModeTypes[0]=settings->value(c_multimode_cw,c_multimode_cw_def).toBool();
+    availableModeTypes[1]=settings->value(c_multimode_phone,c_multimode_phone_def).toBool();
+    availableModeTypes[2]=settings->value(c_multimode_digital,c_multimode_digital_def).toBool();
     readMultFile(tmp, cty);
     zeroScore();
 }
@@ -1598,4 +1601,24 @@ void Contest::zeroScore()
         delete (score[i]);
     }
     score.clear();
+}
+
+/*!
+ *For multimode contests, returns the next mode type
+ *allowed in current contest
+ */
+ModeTypes Contest::nextModeType(ModeTypes m) const
+{
+    if (settings->value(c_multimode,c_multimode_def).toBool()) {
+        int i=(int)m;
+        i=(i+1) % NModeTypes;
+        while (i!=m) {
+            if (availableModeTypes[i]) {
+                return((ModeTypes)i);
+            } else {
+                i=(i+1)% NModeTypes;
+            }
+        }
+    }
+    return m;
 }

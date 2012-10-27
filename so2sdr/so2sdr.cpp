@@ -1555,7 +1555,6 @@ void So2sdr::initLogView()
     connect(LogTableView,SIGNAL(startDetailedEdit()),logdel,SLOT(startDetailedEdit()));
     LogTableView->setItemDelegate(logdel);
     LogTableView->setEditTriggers(QAbstractItemView::DoubleClicked);
-  //  LogTableView->setSelectionMode(QAbstractItemView::NoSelection);
     LogTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     LogTableView->setSortingEnabled(false);
     for (int i = 0; i < SQL_N_COL; i++) {
@@ -2149,19 +2148,28 @@ bool So2sdr::enterFreqOrMode()
         if (!pb)
             pb = RIG_PASSBAND_NORMAL;
 
+        /*! @todo RTC: this will have to handle digital modes eventually as well
+         */
         if (rx.cap(1) == "CWR") {
+            modeTypeShown=CWType;
             emit setRigMode(nr, RIG_MODE_CWR, pb);
         } else if (rx.cap(1) == "CW") {
+            modeTypeShown=CWType;
             emit setRigMode(nr, RIG_MODE_CW, pb);
         } else if (rx.cap(1) == "LSB") {
+            modeTypeShown=PhoneType;
             emit setRigMode(nr, RIG_MODE_LSB, pb);
         } else if (rx.cap(1) == "USB") {
+            modeTypeShown=PhoneType;
             emit setRigMode(nr, RIG_MODE_USB, pb);
         } else if (rx.cap(1) == "FM") {
+            modeTypeShown=PhoneType;
             emit setRigMode(nr, RIG_MODE_FM, pb);
         } else if (rx.cap(1) == "AM") {
+            modeTypeShown=PhoneType;
             emit setRigMode(nr, RIG_MODE_AM, pb);
         }
+        setSummaryGroupBoxTitle();
 
     } else {
         // Incomplete frequency or mode entered

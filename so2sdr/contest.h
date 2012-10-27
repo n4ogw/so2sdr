@@ -78,6 +78,7 @@ public:
     void multIndx(Qso *qso) const;
     int newMult(int row, int ii) const;
     int nExchange() const;
+    ModeTypes nextModeType(ModeTypes m) const;
     int nMults(int ii) const;
     int nMultsWorked() const;
     int nMultsBWorked(int ii, int band) const;
@@ -111,6 +112,7 @@ signals:
     void clearDupe();
 
 protected:
+    bool                 availableModeTypes[NModeTypes];
     bool                 dupeCheckingEveryBand;
     bool                 *logFieldPrefill;
     bool                 prefill;

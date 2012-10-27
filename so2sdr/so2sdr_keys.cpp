@@ -207,8 +207,9 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 r = true;
             } else if (mod == Qt::AltModifier) {
                 if (csettings->value(c_multimode,c_multimode_def).toBool()) {
-                    // switch to next modeType
-                    switch (modeTypeShown) {
+                    // switch to next modeType if it is allowed
+                    modeTypeShown=contest->nextModeType(modeTypeShown);
+                    /*switch (modeTypeShown) {
                     case CWType:
                         modeTypeShown=PhoneType;
                         break;
@@ -218,7 +219,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     case DigiType:
                         modeTypeShown=CWType;
                         break;
-                    }
+                    }*/
                     setSummaryGroupBoxTitle();
                 }
                 r=true;
