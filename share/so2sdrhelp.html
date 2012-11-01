@@ -1,10 +1,10 @@
-<a name="top"><h2>SO2SDR help file v1.2.2</h2></a>
+<a name="top"><h2>SO2SDR help file v1.2.4</h2></a>
 <hr>
 
 <h3>Topics</h3>
 <ul>
 <li><a href="#building">installing/configuring so2sdr</a>
-<li><a href="#v122">current version notes</a> 
+<li><a href="#v124">current version notes</a> 
 <li><a href="#opnotes">operating notes</a>
 <li><a href="#keys">key reference</a>
 <li><a href="#cw">CW macros</a>
@@ -204,15 +204,17 @@ files, multiplier rules, contest  options, and CW message definitions.
 <li> Radio QSY: enter a number corresponding to a frequency in
 KHz in the callsign window. If the number is followed by a semicolon
 (like 14005;), the frequency change will apply to the inactive radio.
-<li> ctrl-Enter : logs qso with no dupe checking or exchange validation (be
+<li> ctrl+Enter : logs qso with no dupe checking or exchange validation (be
 careful). The qso may not be scored correctly.
-<li> shift-Enter : logs qso without sending CW
+<li> shift+Enter : logs qso without sending CW
 <li> Backslash : log qso and send Quick QSL message
-<li> alt-D : dupe check on 2nd radio
-<li> alt-M : switch mult display mode
-<li> ctrl-N : make a note
-<li> alt-R : Switch radios
-<li> alt-S : Set CW speed. Followed by two numeric digits.
+<li> alt+D : dupe check on 2nd radio
+<li> alt+M : switch mult display mode
+<li> ctrl+N : make a note
+<li> alt+R : Switch radios
+<li> alt+S : Set CW speed. Followed by two numeric digits.
+<li> ctrl+alt+S : take screenshot of main and bandmap windows.
+Screenshot files are placed in the same directory as the log file.
 <li> PdDn : decrease CW speed
 <li> PgUp : increase CW speed 
 <li> ctrl+PdDn : decrease CW speed on inactive radio
@@ -449,6 +451,26 @@ very quickly.
 <br>
 <a href="#top">Return to top</a> 
 <hr>
+
+<a name="v124"><h3>Version 1.2.4</h3></a> 
+
+Merge version 1.2.3git:
+
+<ul>
+<li> Ctrl+Alt+S takes a screen shot of the main and bandmap windows
+<li> Intial code to support multi-mode contests (not complete)
+<li> Clean up some font inconsistencies
+<li> Update CTY files, supercheck partial files
+<li> Fix bug in alt-S setting of CW speed
+<li> Fix Sweepstakes exchange parser
+<li> change worked/needed mult display for contests where mults
+count once (like Sweepstakes).
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
 
 <a name="v122"><h3>Version 1.2.2</h3></a> 
 
