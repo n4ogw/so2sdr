@@ -37,6 +37,7 @@
 #include <QObject>
 #include <QPixmap>
 #include <QPalette>
+#include <QPointer>
 #include <QProgressDialog>
 #include <QRect>
 #include <QSettings>
@@ -1248,17 +1249,25 @@ void So2sdr::exportCabrillo()
 
    note: the number of exchange fields must be correct for this contest, otherwise
    bad things happen. @todo check for this and abort if wrong number of fields
+
+   @todo investigate qprogressdialog more. I could not get it to show if the event
+   duration was less than the default (4 seconds). Adding qApp->processEvents() causes
+   crash.
+   @todo give option to delete previous qso's or append to them
  */
 void So2sdr::importCabrillo()
 {
-    // if currently have qsos logged, ask whether to delete them or not
     int n=0;
     for (int i=0;i<N_BANDS;i++) n+=nqso[i];
+    if (n) {
+         errorBox->showMessage("ERROR: log must be empty to import cabrillo");
+         return;
+    }
     // search for files in directory set by contestDirectory
     directory->setCurrent(contestDirectory);
 
     // get filename
-    QString CabFile = QFileDialog::getOpenFileName(this, tr("Import Cabrillo log"), contestDirectory, tr("Cabrillo Files (*.*)"));
+    QString CabFile = QFileDialog::getOpenFileName(this, tr("Import Cabrillo log"), contestDirectory, tr("Cabrillo Files (*.cbr)"));
     if (CabFile.isEmpty()) return;
 
     // open the file
@@ -1277,13 +1286,13 @@ void So2sdr::importCabrillo()
 
     QProgressDialog progress("Importing cabrillo", "Cancel", 0, maxLines, this);
     progress.setWindowModality(Qt::WindowModal);
-
     QDataStream s(&file);
     int         cnt = 0;
     progress.setValue(0);
     for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
     Qso *qso;
     qso = new Qso(contest->nExchange());
+    model->database().transaction();
     while (!file.atEnd() && !progress.wasCanceled()) {
         QString buffer;
         buffer = file.readLine();
@@ -1418,33 +1427,20 @@ void So2sdr::importCabrillo()
                 break;
             }
         }
-        qso->dupe = mylog->isDupe(qso, contest->dupeCheckingByBand(), false);
-        if (contest->validateExchange(qso)) {
-            contest->addQso(qso);
-            if (!qso->dupe) nqso[qso->band]++;
-        } else {
-            // validate failed: flag as a dupe with zero points
-            qso->dupe=true;
-            qso->pts=0;
-            qso->mult[0]=-1;
-            qso->mult[1]=-1;
-            qso->newmult[0]=-1;
-            qso->newmult[1]=-1;
-            contest->addQso(qso);
-        }
         newqso.setValue(SQL_COL_PTS, QVariant(qso->pts));
         newqso.setValue(SQL_COL_VALID, QVariant(true)); // set to valid
         model->insertRecord(-1, newqso);
-        model->submitAll();
         progress.setValue(cnt);
     }
+    model->submitAll();
+    model->database().commit();
+    rescore();
+
     while (model->canFetchMore()) {
         model->fetchMore();
     }
     LogTableView->scrollToBottom();
-
-    updateBreakdown();
-    updateMults(activeRadio);
+    nrSent = model->rowCount() + 1;
     progress.setValue(maxLines);
 }
 
