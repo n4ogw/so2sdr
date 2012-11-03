@@ -1939,7 +1939,6 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         if (activeR2CQ) {
             nr = nr ^ 1;
         }
-
         // WPX contest: check the callsign prefix
         // @todo create a generic callsign "pre-check" for contest.cpp, have contest_wpx check the prefix there
         if (csettings->value(c_contestname,c_contestname_def).toString().toUpper()=="WPX") {
@@ -1947,7 +1946,6 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             qso[nrig]->isamult[nrig]=true;
             contest->multIndx(qso[nrig]);
         }
-
         labelCountry[nr]->setText(qso[nrig]->country_name);
         if (pp != -1) {
             // prefix ID successful
@@ -1972,21 +1970,18 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             labelLPBearing[nr]->clear();
             sunLabelPtr[nr]->clear();
         }
-
         // if dupe option is 2 (no dupe checking), dupes will not be recorded and will
         // be scored
         qso[nrig]->dupe = logPartial(nrig, qso[nrig]->call) && (csettings->value(c_dupemode,c_dupemode_def).toInt() < NO_DUPE_CHECKING);
         if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
             superPartial(qso[nrig]->call);
         }
-
         // prefill previous or guessed exchange if exchange has not
         // been edited by user
         // only S&P mode handled here; CQ mode prefill handled in enter()
         if (!cqMode[nr] && !qsy) {
             prefillExch(nr);
         }
-
         // show/clear dupe messages
         if (qso[nrig]->dupe) {
             // show information from most recent previous qso with dupe message

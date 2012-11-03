@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+ /*! Copyright 2010-2012 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -769,14 +769,12 @@ void So2sdr::spaceSP(int nrig)
         qso[nrig]->dupe = mylog->isDupe(qso[nrig], contest->dupeCheckingByBand(), true) &&
                           csettings->value(c_dupemode,c_dupemode_def).toInt() < NO_DUPE_CHECKING;
     }
-
     // update displays
     updateWorkedDisplay(nrig,qso[nrig]->worked);
 
     // put call on bandmap
     qso[nrig]->freq = rigFreq[nrig];
     addSpot(qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
-
     // if dupe, clear call field
     if (qso[nrig]->dupe) {
         lineEditCall[nrig]->clear();

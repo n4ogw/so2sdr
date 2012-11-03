@@ -29,7 +29,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "1.2.5git";
+const QByteArray Version = "1.2.5";
 
 // directory where station config, hamlib cache, iqdata, etc are stored
 #ifdef Q_OS_WIN

@@ -227,6 +227,7 @@ bool Sweepstakes::validateExchange(Qso *qso)
             if (ok && !ok_part[0]) {
                 finalExch[0] = exchElement.at(i);
                 ok_part[0]=true;
+                used[i]=true;
             } else if (ok) {
                 used[i]      = true;
             }
