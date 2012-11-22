@@ -1548,8 +1548,10 @@ void So2sdr::initLogView()
     connect(logdel,SIGNAL(startLogEdit()),this,SLOT(startLogEdit()));
     connect(logdel,SIGNAL(closeEditor(QWidget*)),this,SLOT(clearEditSelection(QWidget*)));
     connect(logdel,SIGNAL(editLogRow(QModelIndex)),this,SLOT(editLogDetail(QModelIndex)));
-    connect(LogTableView,SIGNAL(startDetailedEdit()),logdel,SLOT(startDetailedEdit()));
-    LogTableView->setItemDelegate(logdel);
+    // set item delegate for all columns except checkbox column
+    for (int i=0;i<SQL_COL_VALID;i++) {
+        LogTableView->setItemDelegateForColumn(i,logdel);
+    }
     LogTableView->setEditTriggers(QAbstractItemView::DoubleClicked);
     LogTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     LogTableView->setSortingEnabled(false);
