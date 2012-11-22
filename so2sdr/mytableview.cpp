@@ -34,12 +34,6 @@ bool MyTableView::eventFilter(QObject *obj, QEvent *event)
         if (kev->key()==Qt::Key_Escape) {
             return false;
         }
-        /*
-        if (kev->key()==Qt::Key_E) {
-            if (kev->modifiers()==Qt::ControlModifier) {
-                emit(startDetailedEdit());
-            }
-        }*/
     }
     return QTableView::eventFilter(obj, event);
 }

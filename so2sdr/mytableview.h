@@ -32,8 +32,6 @@ class MyTableView : public QTableView
 
 public:
     MyTableView(QWidget *);
-signals:
-    void startDetailedEdit();
 protected:
     bool eventFilter(QObject *, QEvent *);
 };
