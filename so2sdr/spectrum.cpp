@@ -906,7 +906,7 @@ void Spectrum::setInvert(bool b)
  */
 void Spectrum::measureIQError(double bg, double spec[])
 {
-    if (settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()==false) return;
+  // if (settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()==false) return;
 
     double a1[2];
     double a2[2];
@@ -943,10 +943,10 @@ void Spectrum::measureIQError(double bg, double spec[])
  */
 void Spectrum::calcError(bool force)
 {
+    if (!force && !settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()) return;
     double t;
     double phase, phaseDeg;
     double gain;
-    if (!force && !settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()) return;
     double minPhase = 1000.0;
     double minGain  = 10.0;
     double maxPhase = 0.;
@@ -1022,7 +1022,6 @@ bool Spectrum::readError()
         calibSigList[i].zsum[0] = 0.;
         calibSigList[i].zsum[1] = 0.;
     }
-
     while (!in.atEnd()) {
         int       i;
         long long n;
@@ -1039,7 +1038,6 @@ bool Spectrum::readError()
         }
     }
     file.close();
-
     return(true);
 }
 

@@ -555,9 +555,11 @@ void Bandmap::setInvert(bool t)
  */
 void Bandmap::showIQData()
 {
-    spectrumProcessor->setCalcError();
     iqDialog->show();
+    iqDialog->clearPlots();
     spectrumProcessor->setPlotPoints(true);
+    // force recalculation of IQ fit
+    spectrumProcessor->calcError(true);
 }
 
 /*! set default vfo position in center of display */
