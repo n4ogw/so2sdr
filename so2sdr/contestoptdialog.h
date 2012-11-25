@@ -21,6 +21,7 @@
 
 #include "defines.h"
 #include "ui_contestoptdialog.h"
+#include <QIntValidator>
 #include <QLineEdit>
 #include <QSettings>
 #include <QString>
@@ -35,6 +36,7 @@ Q_OBJECT
 public:
     friend class So2sdr;
     ContestOptionsDialog(QWidget *parent = 0);
+    ~ContestOptionsDialog();
     void initialize(QSettings *s);
 
 public slots:
@@ -43,9 +45,11 @@ public slots:
 signals:
     void rescore();
     void multiModeChanged();
+    void updateOffTime();
 
 private:
     void setOptions();
+    QIntValidator *offValidator;
     QSettings *settings;
     QLineEdit *sent[MAX_EXCH_FIELDS];
 };

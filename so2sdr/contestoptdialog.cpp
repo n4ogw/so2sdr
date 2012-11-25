@@ -16,6 +16,7 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QDateTime>
 #include <QSettings>
 #include <QString>
 #include "contestoptdialog.h"
@@ -29,6 +30,14 @@ ContestOptionsDialog::ContestOptionsDialog(QWidget *parent) : QDialog(parent)
     sent[1]=lineEditExch2;
     sent[2]=lineEditExch3;
     sent[3]=lineEditExch4;
+    offValidator=new QIntValidator(this);
+    offValidator->setBottom(1);
+    offMinimumLineEdit->setValidator(offValidator);
+}
+
+ContestOptionsDialog::~ContestOptionsDialog()
+{
+    delete offValidator;
 }
 
 /*!
@@ -54,6 +63,10 @@ void ContestOptionsDialog::setOptions()
     lineEditExch2->setText(settings->value(c_sentexch2,c_sentexch2_def).toString());
     lineEditExch3->setText(settings->value(c_sentexch3,c_sentexch3_def).toString());
     lineEditExch4->setText(settings->value(c_sentexch4,c_sentexch4_def).toString());
+    offMinimumLineEdit->setText(settings->value(c_off_time_min,c_off_time_min_def).toString());
+    startDateTimeEdit->setDateTime(settings->value(c_off_time_start,c_off_time_start_def).toDateTime());
+    endDateTimeEdit->setDateTime(settings->value(c_off_time_end,c_off_time_end_def).toDateTime());
+    OffTimeCheckBox->setChecked(settings->value(c_off_time_enable,c_off_time_enable_def).toBool());
 }
 
 /*! update options when dialog accepted
@@ -78,11 +91,11 @@ void ContestOptionsDialog::updateOptions()
 
     bool oldShowMults=settings->value(c_showmults,c_showmults_def).toBool();
     bool newShowMults=ShowMultsCheckBox->isChecked();
-    settings->setValue(c_showmults,ShowMultsCheckBox->isChecked());
+    settings->setValue(c_showmults,newShowMults);
 
     bool oldMultsBand=settings->value(c_multsband,c_multsband_def).toBool();
     bool newMultsBand=MultsByBandCheckBox->isChecked();
-    settings->setValue(c_multsband,MultsByBandCheckBox->isChecked());
+    settings->setValue(c_multsband,newMultsBand);
 
     if ((newDupeMode!=oldDupeMode && (oldDupeMode==NO_DUPE_CHECKING || newDupeMode==NO_DUPE_CHECKING))
             || oldShowMults!=newShowMults || oldMultiMode!=newMultiMode
@@ -92,6 +105,27 @@ void ContestOptionsDialog::updateOptions()
     settings->setValue(c_sentexch2,lineEditExch2->text());
     settings->setValue(c_sentexch3,lineEditExch3->text());
     settings->setValue(c_sentexch4,lineEditExch4->text());
+
+    // off time calculation
+    bool oldOffTimeEnabled=settings->value(c_off_time_enable,c_off_time_enable_def).toBool();
+    bool newOffTimeEnabled=OffTimeCheckBox->isChecked();
+    settings->setValue(c_off_time_enable,newOffTimeEnabled);
+
+    int oldMin=settings->value(c_off_time_min,c_off_time_min_def).toInt();
+    int newMin=offMinimumLineEdit->text().toInt();
+    settings->setValue(c_off_time_min,newMin);
+
+    QDateTime oldStartDate=settings->value(c_off_time_start,c_off_time_start_def).toDateTime();
+    QDateTime newStartDate=startDateTimeEdit->dateTime();
+    settings->setValue(c_off_time_start,newStartDate);
+
+    QDateTime oldEndDate=settings->value(c_off_time_end,c_off_time_end_def).toDateTime();
+    QDateTime newEndDate=endDateTimeEdit->dateTime();
+    settings->setValue(c_off_time_end,newEndDate);
+
+    if (oldOffTimeEnabled!=newOffTimeEnabled ||
+            oldMin!=newMin || oldStartDate!=newStartDate || oldEndDate!=newEndDate) emit(updateOffTime());
+
     settings->sync();
   }
 

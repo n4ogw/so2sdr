@@ -102,6 +102,7 @@ public slots:
     void showMessage(QString);
     void stationUpdate();
     void startWinkey();
+    void updateOffTime();
     void updateRecord(QSqlRecord);
 
 signals:
@@ -232,6 +233,7 @@ private:
     QLabel               *multTotal[2];
     QLabel               *multWorkedLabel[2][MMAX];
     QLabel               *numLabelPtr[NRIG];
+    QLabel               *offPtr;
     QLabel               *qsoLabel[N_BANDS];
     QLabel               *qsoWorkedLabel[NRIG];
     QLabel               *rLabelPtr[NRIG];

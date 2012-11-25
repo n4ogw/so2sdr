@@ -30,3 +30,5 @@ so2sdr/ui_*.h
 # ASCII Doc generated files
 doc/*.html
 doc/*.pdf
+doc/so2sdr.xml
+so2sdr/doc/*

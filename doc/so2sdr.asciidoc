@@ -3,8 +3,8 @@ SO2SDR User Manual
 :author: Nate Bargmann, N0NB & Torsten Clay, N4OGW
 :Author Initials: NB
 :email:  so2sdr@googlegroups.com
-:revnumber: 1.2.2git
-:revdate: 22 June 2012
+:revnumber: 1.2.6git
+:revdate: 24 November 2012
 :toc:
 :website: http://code.google.com/p/so2sdr/
 

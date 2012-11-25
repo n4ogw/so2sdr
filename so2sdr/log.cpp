@@ -558,3 +558,67 @@ void log::setupQsoNumbers(const int n)
 {
     nrField = n;
 }
+
+/*!
+ * \brief offTime Calculates the number of minutes of off-time taken between start and end.
+ * \param str returns string with off time
+ * \param minOffTime Minimum offtime length in minutes.
+ * \param start Start of contest. QSO's must be after this time to be valid.
+ * \param end End of contest. QSO's must be before this time to be valid.
+ * \return
+ */
+void log::offTime(QString &str,int minOffTime,QDateTime start,QDateTime end)
+{
+    str="Off 00:00";
+    QSqlQueryModel m;
+    m.setQuery("SELECT * FROM log", *db);
+    while (m.canFetchMore()) {
+        m.fetchMore();
+    }
+    if (m.rowCount() == 0) {
+        return;  // nothing to do
+    }
+
+    int totOffTime=0;
+    int lastYr=0;
+    int lastMon=0;
+    int lastD=0;
+    int lastHr=0;
+    int lastMin=0;
+    for (int i = 0; i < m.rowCount(); i++) {
+        if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
+
+        int yr=m.record(i).value(SQL_COL_DATE).toByteArray().right(4).toInt();
+        int mon=m.record(i).value(SQL_COL_DATE).toByteArray().left(2).toInt();
+        int d=m.record(i).value(SQL_COL_DATE).toByteArray().mid(2,2).toInt();
+        int hr=m.record(i).value(SQL_COL_TIME).toByteArray().left(2).toInt();
+        int min=m.record(i).value(SQL_COL_TIME).toByteArray().right(2).toInt();
+        QDateTime qsoTime=QDateTime(QDate(yr,mon,d),QTime(hr,min),Qt::UTC);
+
+        if (i>0 && (qsoTime>start) && (qsoTime<end)) {
+            // calculate time difference from last qso
+            if (lastYr!=yr || lastMon!=mon) {  // too large to worry about
+                return;
+            }
+            int tmp1=lastHr*60+lastMin;
+            int tmp2=hr*60+24*60*(d-lastD)+min;
+            int diff=(tmp2-tmp1-1);
+            if (diff>minOffTime) {
+                totOffTime+=diff;
+            }
+        }
+
+        lastYr=yr;
+        lastMon=mon;
+        lastD=d;
+        lastHr=hr;
+        lastMin=min;
+    }
+    if (totOffTime>=6039) {
+        str="Off 99:99";
+    } else {
+        int hr=totOffTime/60;
+        int min=totOffTime-hr*60;
+        str="Off "+QString::number(hr)+":"+QString("%1").arg(QString::number(min), 2, QChar('0'));
+    }
+}

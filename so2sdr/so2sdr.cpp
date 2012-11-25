@@ -109,6 +109,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
     winkeyLabel       = new QLabel("<font color=#FF0000>WK:OFF </font>");
     grabLabel         = new QLabel("Grab");
+    offPtr            = new QLabel("Off 00:00");
+    So2sdrStatusBar->addPermanentWidget(offPtr);
     So2sdrStatusBar->addPermanentWidget(grabLabel);
     grabLabel->hide();
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[0]);
@@ -144,6 +146,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(options,SIGNAL(rescore()),this,SLOT(rescore()));
     connect(options,SIGNAL(multiModeChanged()),this,SLOT(setSummaryGroupBoxTitle()));
+    connect(options,SIGNAL(updateOffTime()),this,SLOT(updateOffTime()));
     options->hide();
     detail=new DetailedEdit();
     connect(detail,SIGNAL(editedRecord(QSqlRecord)),this,SLOT(updateRecord(QSqlRecord)));
@@ -356,6 +359,7 @@ So2sdr::~So2sdr()
     delete options;
     delete notes;
     delete newContest;
+    delete offPtr;
     delete rLabelPtr[0];
     delete rLabelPtr[1];
     delete winkeyLabel;
@@ -854,6 +858,9 @@ bool So2sdr::setupContest()
     enableUI();
     So2sdrStatusBar->showMessage("Read " + fileName, 3000);
     setSummaryGroupBoxTitle();
+    if (options->OffTimeCheckBox->isChecked()) {
+        updateOffTime();
+    }
     return(true);
 }
 
@@ -1677,6 +1684,22 @@ void So2sdr::updateRate()
     // zero out next bin
     rateCount[ratePtr] = 0;
     RateLabel->setText("Rate=" + QString::number(qRound(sum * 60.0 / RATE_AVG_MINUTES)));
+
+    updateOffTime();
+}
+
+/*!
+ * \brief So2sdr::updateOffTime calculate and update off-time display
+ */
+void So2sdr::updateOffTime() {
+    if (options->OffTimeCheckBox->isChecked()) {
+        QString tmp;
+        mylog->offTime(tmp,options->offMinimumLineEdit->text().toInt(),options->startDateTimeEdit->dateTime(),
+                       options->endDateTimeEdit->dateTime());
+        offPtr->setText(tmp);
+    } else {
+        offPtr->clear();
+    }
 }
 
 /*!

@@ -704,6 +704,16 @@ const bool c_multimode_phone_def=true;
 const QString c_multimode_digital="contest/multimode_digital";
 const bool c_multimode_digital_def=false;
 
+const QString c_off_time_start="contest/offtime_start";
+const QDateTime c_off_time_start_def=QDateTime::currentDateTimeUtc();
 
+const QString c_off_time_end="contest/offtime_end";
+const QDateTime c_off_time_end_def=QDateTime::currentDateTimeUtc();
+
+const QString c_off_time_min="contest/offtime_min";
+const int c_off_time_min_def=30;
+
+const QString c_off_time_enable="contest/offtime_enable";
+const bool c_off_time_enable_def=false;
 
 #endif // DEFINES_H

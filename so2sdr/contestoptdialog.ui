@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>270</height>
+    <width>401</width>
+    <height>420</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>270</height>
+    <height>420</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>401</width>
-    <height>270</height>
+    <height>420</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -216,6 +216,80 @@ share/so2sdr in linux or in program directory in Windows.</string>
       <widget class="QCheckBox" name="MultiModeCheckBox">
        <property name="text">
         <string>Multimode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Off times</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QCheckBox" name="OffTimeCheckBox">
+       <property name="text">
+        <string>enable</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Contest Start</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QDateTimeEdit" name="startDateTimeEdit">
+       <property name="toolTip">
+        <string>Start date/time of contest</string>
+       </property>
+       <property name="displayFormat">
+        <string>M/d/yy hh:mm </string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::UTC</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Contest End</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QDateTimeEdit" name="endDateTimeEdit">
+       <property name="toolTip">
+        <string>Last possible qso time.</string>
+       </property>
+       <property name="displayFormat">
+        <string>M/d/yy hh:mm</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::UTC</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QLineEdit" name="offMinimumLineEdit">
+       <property name="toolTip">
+        <string>Minimum length of off time in minutes</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Minimum duration</string>
        </property>
       </widget>
      </item>
