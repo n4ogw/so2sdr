@@ -23,10 +23,10 @@ Introduction
 'SO2SDR' is a logging database and radio control application for amateur radio
 operators involved in amateur radio contesting, a.k.a.
 http://en.wikipedia.org/wiki/Radiosport[Radiosport].   SO2SDR is written in
-http://www.cplusplus.com/[C++] using the http://qt.nokia.com/[Qt] library.
+http://www.cplusplus.com/[C++] using the http://qt.digia.com/[Qt] library.
 Using the Qt library eases cross-platform development.  As a result SO2SDR is
-available for both Unix (various Linux distributions tested) and Microsoft
-Windows platforms.
+available for both Unix (various Linux distributions have been tested) 
+and Microsoft Windows platforms.
 
 Like other such contest loggers, SO2SDR provides real time duping (checking for
 stations already ``worked'' in the contest per various contest rules) and
@@ -87,7 +87,8 @@ Linux source release build and installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You will need development versions of the following libraries installed: Qt4,
-FFTW3, Hamlib 1.2.'x', and PortAudio 19.
+FFTW3, Hamlib 1.2.'x', and PortAudio 19. SO2SDR also uses the qextserialport
+and QtTelnet libraries; these are distributed with the SO2SDR source code.
 
 [NOTE]
 Some distributions have separate binary and development packages often
@@ -114,13 +115,13 @@ in +common.pri+.
 Building under Windows/Visual Studio
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You will need Qt4, FFTW, and PortAudio libraries
+You will need Qt4, FFTW, Hamlib, and PortAudio libraries
 
 1. Unpack source (need a Windows +tar+ equivalent)
 
 2. Edit +so2sdr/so2sdr.pro+, select ``vcapp'' rather than ``app'' for +TEMPLATE+
 
-3. You may also want to adjust the directory for portaudio in the +.pro+ file
+3. You may also want to adjust the directory for portaudio and hamlib in the +.pro+ file
 
 4. Open Qt command window. In top-level directory for so2sdr do: +qmake -tp vc -r+
 
@@ -150,9 +151,54 @@ Hardware interfacing
 SO2SDR will become more useful as station equipment is connected to the
 computer allowing for control of transceiver frequency and mode, transceiver
 selection (when multiple radios are in use), SDR receiver(s) for bandscope(s),
-and Morse Code keyer (CW).
+Morse Code keyer (CW), and headphone audio switching.
 
-TODO:  Complete this section with examples.
+N4OGW setup
+~~~~~~~~~~~
+
+Here is a short description of the hardware setup currently used at
+N4OGW with SO2SDR.
+
+Radios
+~~~~~~
+
+Two Elecraft K3's are interfaced using serial connections on a dual-port
+PCI serial card. These are /dev/ttyS1 and /dev/ttyS2.
+
+Audio
+~~~~~
+
+I use a homebrew audio switch driven by the parallel port pins 4 and 5.
+One pin selects audio from either radio 1 or radio 2, and the second 
+pin switches between having a single radio in both ears or  one radio
+in each ear. The stereo mode is controlled by placing the TOGGLESTEREOPIN
+macro in a function key. An improved switch would allow stereo audio from
+each K3 when selected individually.
+
+Winkey
+~~~~~~
+
+A Winkey version 2 is controlled with a third serial port
+(/dev/ttyS0).  This interface runs at 1200 baud. The Winkey chip has
+two separate key and PTT outputs, which are wired directly to the two
+radios. Switching of keying between the two radios is controlled
+completely by Winkey commands; parallel port pins are not used.
+
+Bandscope
+~~~~~~~~~
+
+SO2SDR is designed to used SDR bandscopes attached to the IF of the
+two interfaced radios. With this setup, even very weak signals can be
+clearly seen because one is using the main station antennas. The K3
+includes an IF output port. It is also often possible to easily add an
+IF tap--I used this approach with my Elecraft K2.
+
+SO2SDR can currently use soundcard-derived I/Q type SDR hardware. This
+includes for example the LP-PAN and Softrock hardware. N4OGW currently
+uses two LP-PAN's. SO2SDR uses only 96 KHz sampling so nearly any
+recent soundcard should work; N4OGW uses two bGears b-Enspirer PCI
+sound cards.
+
 
 <<<
 Getting started
@@ -220,15 +266,21 @@ The SO2SDR main window is where the majority of the program's interaction takes 
 image::images/so2sdr_main.png[caption="",link="images/so2sdr_main.png"]
 
 - The Mults box shows worked multipliers (depending on the contest event).  
+Some contests may have more than one type of mults (countries and zones
+for example). Only one type is show at a time, to switch between types
+press <Alt>-M.
 
-- The Calls box shows the possible callsign based on the character pattern
-(sourced from +MASTER.DTA+, +MASTERDX.DTA+, and +MASUSVE.DTA+ in
-$$SO2SDR_INSTALL_DIR/share/so2sdr (default /usr/local/share/so2sdr on Linux)
+- The Calls box shows the possible callsign based on the character pattern,
+sourced from previous contacts in the current contest and the 
+"Supercheck partial" database files 
++MASTER.DTA+, +MASTERDX.DTA+, and +MASUSVE.DTA+ in
+$$SO2SDR_INSTALL_DIR/share/so2sdr (default /usr/local/share/so2sdr on Linux).
+Updated files can be found at http://www.supercheckpartial.com/.
 
 - Summary shows the number of contacts per band for this event.
 
 - The unlabeled box to the right of the summary will show the previous logged
-entries.
+contacts.
 
 - The frequencies, mode, Morse sending speed, and entry boxes for each radio
 occupy the lower portion of the main window.  Radio 1 to the left and Radio 2
@@ -242,8 +294,14 @@ rate.
 Station data
 ~~~~~~~~~~~~
 
-From the menu in the main window, select Config|Station and then fill in your
-station data.
+From the menu in the main window, select Config|Station and then fill
+in your station data. Name, zone, etc defined here can be sent with
+the appropriate macros in CW messages. The grid square is used to
+calculated beam headings and sunrise/sunset times for your station.
+Note that sunrise and sunset times will be calculated once the dialog
+is closed and a contest loaded. You can also recall the sunrise and
+sunset times by typing your callsign in the callsign entry box in the
+main window.
 
 .SO2SDR station data
 image::images/so2sdr_station_data.png[caption="",link="images/so2sdr_station_data.png"]
@@ -279,7 +337,7 @@ Winkey (K1EL) Morse keyer
 
 From the menu in the main window, select Config|Winkey and configure the K1EL
 (or compatible, such as the Ham Gadgets Master Keyer 1) keying device.  No
-other keying method (cwdaemon, direct port keying, etc.) is supported.
+other keying method (cwdaemon, direct port keying, etc.) is currently supported.
 
 .SO2SDR winkey
 image::images/so2sdr_winkey.png[caption="",link="images/so2sdr_winkey.png"]
@@ -380,7 +438,8 @@ mouse click will bring up several options:
 
 - *Zoom X1, Zoom X2*: Set scale of bandmap.
 - *Delete call*: Use to remove a call from the bandmap. Note that the +-+ and
-  +=+ keys can be used to remove a call.
+  +=+ keys can be used to remove a call from the active and inactive radio 
+respectively.
 - *IQ Balance*: Open the IQ balance dialog. The bandmap uses strong signals to
   correct gain and phase errors in the SDR hardware. This correction will be
 saved when quitting the program. If the ``IQ'' box is checked, the correction is
@@ -412,14 +471,31 @@ frequency. However, in practice this does not happen very often--it is a much
 more probable that unhighlighted signals are unworked stations. The Spot
 Timeout setting is also critical here.
 
+When using the bandmap you will also probably want 'Grab keyboard' mode.
+This is accessed from the Windows menu on the main window. With grab enabled,
+all keyboard input will go to the main window, regardless of the mouse
+position. This enables one to click on signals in the bandmap and not
+lose keyboard focus for logging.
+
 Editing log information
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+Note that the log information displayed in the on-screen log depends
+on the contest. In general, only information that is 'useful' is
+displayed in order to make the log easier to read.  For example, in
+contests where a RST is part of the exchange, the RST is not shown on
+screen, since it is 599 for nearly all qso's. Similarly, there is no
+need in most contests to display the mode (CW/SSB) for all qso's.  The
+first column in the log is always the qso number in the log, which
+cannot be changed.
 
 Previous QSO's can be edited in the log window by clicking on a field, editing
 the information, and pressing <Enter>. Pressing <Escape> instead cancels the
 changes. The following fields are editable: 'time', 'callsign', 'sent
 exchange', and 'received exchange'. The qso points (if displayed for that
-contest) will be recalculated automatically.
+contest) will be recalculated automatically. Double-clicking on a row
+in the log brings up a detail qso editing dialog. This will also allow
+you to edit log elements that are not displayed.
 
 To search for a call (or partial call) in the log, enter a call fragment in the
 callsign window and press <Ctrl>-F. <Escape> clears the search results.
@@ -435,8 +511,10 @@ SO2R
 For working stations on a second band while CQing on a different band SO2SDR
 uses a system similar to TRLOG:
 
-1. Tune in a station on the second radio. By clicking on a signal or using
-   <Ctrl>-<Up>/<Down> this is very easy to do.
+1. Tune in a station on the second radio. By clicking on a signal 
+in the bandmap or using
+   <Ctrl>-<Up>/<Down> to move to a new marked signal this is very easy to do
+without even listening to the station.
 2. Press <Alt>-D; enter the callsign--it will show in the 2^nd^ radio callsign
    window. The color is changed to indicate this will be a second radio qso.
 3. When ready to call the station, hit <Space>. Now work the station as usual.
@@ -545,7 +623,8 @@ in effect and whether the cursor is in the call or exchange fields.  This
 sounds more complicated that it really is as the program will do the "right
 thing" when you want it.  Assignments may also change slightly from contest to
 contest and whether the associated config is setup for domestic (US/VE) or DX
-sides of an event.
+sides of an event. While there is a 'default' configuration for each
+type of contest, you will want to customize it to your preferences.
 
 CQ Functions
 ~~~~~~~~~~~~
@@ -600,12 +679,14 @@ Shift Functions
 ~~~~~~~~~~~~~~~
 
 Messages sent whether the cursor is in the Call or Exchange fields.
+In general, the Shift variant of an exchange key asks the other
+station for that piece of information
 
 - *F1*: CALL?
-- *F2*: AGN?
-- *F3*: SECT?
-- *F4*: Unassigned
-- *F5*: Unassigned
+- *F2*: Ask for complete exchange again
+- *F3*: Ask for exchange part 1.
+- *F4*: Ask for exchange part 2.
+- *F5*: Ask for exchange part 3.
 - *F6*: Unassigned
 - *F7*: Unassigned
 - *F8*: Unassigned
