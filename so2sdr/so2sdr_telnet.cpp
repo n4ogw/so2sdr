@@ -267,6 +267,7 @@ void So2sdr::checkSpot(int nr)
             labelCountry[nr]->clear();
             labelBearing[nr]->clear();
             sunLabelPtr[nr]->clear();
+            validLabel[nr]->clear();
             statusBarDupe = false;
             So2sdrStatusBar->clearMessage();
             clearWorked(nr);
@@ -308,6 +309,7 @@ void So2sdr::checkSpot(int nr)
         labelCountry[nr]->clear();
         labelBearing[nr]->clear();
         sunLabelPtr[nr]->clear();
+        validLabel[nr]->clear();
         spotListPopUp[nr] = false;
         statusBarDupe     = false;
         So2sdrStatusBar->clearMessage();
