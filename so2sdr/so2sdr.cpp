@@ -109,7 +109,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
     winkeyLabel       = new QLabel("<font color=#FF0000>WK:OFF </font>");
     grabLabel         = new QLabel("Grab");
-    offPtr            = new QLabel("Off 00:00");
+    offPtr            = new QLabel("");
     So2sdrStatusBar->addPermanentWidget(offPtr);
     So2sdrStatusBar->addPermanentWidget(grabLabel);
     grabLabel->hide();
