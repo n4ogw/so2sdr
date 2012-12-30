@@ -2361,7 +2361,7 @@
   </action>
   <action name="actionSDR">
    <property name="text">
-    <string>&amp;Bandscope</string>
+    <string>&amp;Bandscope/DVK</string>
    </property>
   </action>
   <action name="actionContestOptions">

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+/*! Copyright 2010-2013 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -29,7 +29,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "1.2.6git";
+const QByteArray Version = "1.3.0";
 
 // directory where station config, hamlib cache, iqdata, etc are stored
 #ifdef Q_OS_WIN
@@ -503,6 +503,9 @@ const bool s_sdr_changeclick_def=false;
 const QString s_sdr_enabled[NRIG]={"sdr/enabled1","sdr/enabled2"};
 const bool s_sdr_enabled_def[NRIG]={false,false};
 
+const QString s_dvk_enabled="dvk/enabled";
+const bool s_dvk_enabled_def=false;
+
 const QString s_sdr_spotcalls="sdr/spotcalls";
 const bool s_sdr_spotcalls_def=true;
 
@@ -512,8 +515,17 @@ const int s_sdr_bits_def[NRIG]={24,24};
 const QString s_sdr_api[NRIG]={"sdr/api1","sdr/api2"};
 const int s_sdr_api_def[NRIG]={0,0};
 
+const QString s_dvk_api="dvk/api";
+const int s_dvk_api_def=0;
+
 const QString s_sdr_device[NRIG]={"sdr/device1","sdr/device2"};
 const int s_sdr_device_def[NRIG]={0,0};
+
+const QString s_dvk_device="dvk/device";
+const int s_dvk_device_def=0;
+
+const QString s_dvk_rec_device="dvk/recdevice";
+const int s_dvk_rec_device_def=0;
 
 const QString s_sdr_offset[NRIG]={"sdr/offset1","sdr/offset2"};
 const int s_sdr_offset_def[NRIG]={0,0};

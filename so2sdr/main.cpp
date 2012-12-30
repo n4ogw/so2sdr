@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+/*! Copyright 2010-2013 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QStringList args=app.arguments();
-	// set this on Linux to get a dotted zero. Does not work on default Windows 7, so
-	// just keep standard font there
+    // set this on Linux to get a dotted zero. Does not work on default Windows 7, so
+    // just keep standard font there
 #ifdef Q_OS_LINUX 
-	QFont f("Bitstream Vera Sans Mono",11);
+    QFont f("Bitstream Vera Sans Mono",11);
     f.setStyleHint(QFont::TypeWriter);
     app.setFont(f);
 #endif

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+/*! Copyright 2010-2013 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -29,30 +29,45 @@ SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
     settings=s;
     DeviceCombo[0]       = SoundCard1ComboBox;
     DeviceCombo[1]       = SoundCard2ComboBox;
+    DeviceCombo[2]       = SoundCardDVKComboBox;
+
     APICombo[0]          = API1ComboBox;
     APICombo[1]          = API2ComboBox;
+    APICombo[2]          = APIDVKComboBox;
     Checkbox[0]          = checkBox;
     Checkbox[1]          = checkBox_2;
+    Checkbox[2]          = checkBox_3;
+    for (int i=0;i<3;i++) {
+        DeviceCombo[i]->setEnabled(false);
+        APICombo[i]->setEnabled(false);
+    }
+    DVKRecordingComboBox->setEnabled(false);
+
     OffsetLineEditPtr[0] = OffsetLineEdit;
     OffsetLineEditPtr[1] = Offset2LineEdit;
+    OffsetLineEditPtr[0]->setEnabled(false);
+    OffsetLineEditPtr[1]->setEnabled(false);
+
     iconOK               = QIcon("check.png");
     iconNOK              = QIcon("x.png");
 
     // sample rate currently fixed 96 KHz
-    SampleRate1ComboBox->insertItem(0, "96 KHz");
-    SampleRate1ComboBox->setEnabled(false);
-    SampleRate2ComboBox->insertItem(0, "96 KHz");
-    SampleRate2ComboBox->setEnabled(false);
+    //SampleRate1ComboBox->insertItem(0, "96 KHz");
+    //SampleRate1ComboBox->setEnabled(false);
+    //SampleRate2ComboBox->insertItem(0, "96 KHz");
+    //SampleRate2ComboBox->setEnabled(false);
 
     // bit sizes
     BitsCombo[0] = Bits1ComboBox;
     BitsCombo[1] = Bits2ComboBox;
+    BitsCombo[0]->setEnabled(false);
+    BitsCombo[1]->setEnabled(false);
+
     for (int i = 0; i < NRIG; i++) {
         BitsCombo[i]->insertItem(0, "16");
         BitsCombo[i]->insertItem(1, "24");
         BitsCombo[i]->insertItem(2, "32");
     }
-
     // find audio devices
     // have to start Portaudio to get the device list
     Pa_Initialize();
@@ -66,9 +81,11 @@ SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
         nApiDeviceNames[i].clear();
         APICombo[0]->insertItem(i, Pa_GetHostApiInfo(i)->name);
         APICombo[1]->insertItem(i, Pa_GetHostApiInfo(i)->name);
+        APICombo[2]->insertItem(i, Pa_GetHostApiInfo(i)->name);
     }
     connect(APICombo[0], SIGNAL(currentIndexChanged(int)), this, SLOT(launchUpdateDeviceList0(int)));
     connect(APICombo[1], SIGNAL(currentIndexChanged(int)), this, SLOT(launchUpdateDeviceList1(int)));
+    connect(APICombo[2], SIGNAL(currentIndexChanged(int)), this, SLOT(launchUpdateDeviceList2(int)));
     audioDevices.clear();
     int numDevices = Pa_GetDeviceCount();
     if (numDevices < 0) {
@@ -107,10 +124,11 @@ SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
             DeviceCombo[0]->insertItem(i, iconNOK, audioDevices[i]);
             DeviceCombo[1]->insertItem(i, iconNOK, audioDevices[i]);
         }
+        // for DVK don't do any checks
+        DeviceCombo[2]->insertItem(i, audioDevices[i]);
+        DVKRecordingComboBox->insertItem(i,audioDevices[i]);
         deviceOK[api].append(ok);
     }
-    DeviceCombo[0]->setEnabled(true);
-    DeviceCombo[1]->setEnabled(true);
 
     // terminate once we have the list
     Pa_Terminate();
@@ -123,7 +141,6 @@ SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
         Format[i].sampleFormat              = paInt24;
         Format[i].hostApiSpecificStreamInfo = NULL;
     }
-   // connect(SpotCallsCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(spotCallsSig(bool)));
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSDR()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     updateFromSettings();
@@ -143,6 +160,10 @@ void SDRDialog::updateFromSettings()
         if (n>(DeviceCombo[i]->maxCount())) n=0;
         DeviceCombo[i]->setCurrentIndex(n);
     }
+    Checkbox[2]->setChecked(settings->value(s_dvk_enabled,s_dvk_enabled_def).toBool());
+    APICombo[2]->setCurrentIndex(settings->value(s_dvk_api,s_dvk_api_def).toInt());
+    DeviceCombo[2]->setCurrentIndex(settings->value(s_dvk_device,s_dvk_device_def).toInt());
+    DVKRecordingComboBox->setCurrentIndex(settings->value(s_dvk_rec_device,s_dvk_rec_device_def).toInt());
     SpotCallsCheckBox->setChecked(settings->value(s_sdr_mark,s_sdr_mark_def).toBool());
     ChangeRadioClickCheckBox->setChecked(settings->value(s_sdr_changeclick,s_sdr_changeclick_def).toBool());
     lineEditIntegTime->setText(settings->value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
@@ -170,9 +191,14 @@ void SDRDialog::launchUpdateDeviceList1(int i)
     updateDeviceList(1, i);
 }
 
+void SDRDialog::launchUpdateDeviceList2(int i)
+{
+    updateDeviceList(2, i);
+}
+
 void SDRDialog::updateDeviceList(int nr, int indx)
 {
-    if (nr < 0 || nr >= NRIG) return;
+    if (nr < 0 || nr >= (NRIG+1)) return;
 
     DeviceCombo[nr]->clear();
     for (int i = 0; i < nApiDeviceNames[indx].size(); i++) {
@@ -231,6 +257,10 @@ void SDRDialog::updateSDR()
         settings->setValue(s_sdr_api[i],APICombo[i]->currentIndex());
         settings->setValue(s_sdr_device[i],DeviceCombo[i]->currentIndex());
     }
+    settings->setValue(s_dvk_enabled,Checkbox[2]->isChecked());
+    settings->setValue(s_dvk_api,APICombo[2]->currentIndex());
+    settings->setValue(s_dvk_device,DeviceCombo[2]->currentIndex());
+    settings->setValue(s_dvk_rec_device,DVKRecordingComboBox->currentIndex());
     settings->setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
     settings->setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
     settings->setValue(s_sdr_mark,SpotCallsCheckBox->isChecked());

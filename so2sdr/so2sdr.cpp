@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+/*! Copyright 2010-2013 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -60,7 +60,6 @@
 #include "defines.h"
 #include "so2sdr.h"
 #include "utils.h"
-
 
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 {
@@ -178,6 +177,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
+    dvk = new DVK(this);
     notes = new NoteDialog(this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(notes, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -1637,7 +1637,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2012 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2013 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
 #ifdef Q_OS_WIN
@@ -1646,9 +1646,10 @@ void So2sdr::about()
 #ifdef Q_OS_LINUX
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
 #endif
-                       + "<li>qextserialport http://code.google.com/p/qextserialport/"
-                       + "<li>QtSolutions_Telnet http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qttelnet/"
-                       + "<li>PortAudio http://portaudio.com"
+                       + "<li>qextserialport-1.2 http://code.google.com/p/qextserialport/"
+                       + "<li>QtSolutions_Telnet 2.1"
+                       + "<li>"+QString(Pa_GetVersionText())+" http://portaudio.com"
+                       + "<li>"+dvk->sndfile_version()+ " http://www.mega-nerd.com/libsndfile/"
                        + "<li>Windows parallel port:  Inpout32.dll http://logix4u.net/"
                        + "<li>MASTER.DTA algorithm, IQ balancing: Alex Shovkoplyas VE3NEA, http://www.dxatlas.com</ul>"
                        + "<hr><p>SO2SDR is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License "

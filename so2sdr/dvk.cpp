@@ -16,37 +16,17 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#ifndef SIGNAL_H
-#define SIGNAL_H
+#include "dvk.h"
+#include <sndfile.h>
 
-#include "defines.h"
-
-class Signal
+DVK::DVK(QObject *parent) :
+    QObject(parent)
 {
-public:
-    Signal();
+}
 
-    void clear();
-    bool active;
-    int  cnt;
-    int  f;
-    int  fcq;
-    int  n;
-    int  space;
-    long fsum;
-};
-Q_DECLARE_TYPEINFO(Signal, Q_MOVABLE_TYPE);
-
-class CalibSignal
+QString DVK::sndfile_version()
 {
-public:
-    CalibSignal();
-
-    double    gain, phase;
-    double    z[NRIG];
-    double    zsum[NRIG];
-    long long n;
-};
-Q_DECLARE_TYPEINFO(CalibSignal, Q_MOVABLE_TYPE);
-
-#endif // SIGNAL_H
+    char  buffer[128];
+    sf_command(NULL, SFC_GET_LIB_VERSION, buffer, sizeof (buffer));
+    return QString(buffer);
+}

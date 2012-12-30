@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+/*! Copyright 2010-2013 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -31,6 +31,7 @@
 #include "notedialog.h"
 #include "dupesheet.h"
 #include "bandmap.h"
+#include "dvk.h"
 #include "log.h"
 #include "logedit.h"
 #include "cty.h"
@@ -174,7 +175,7 @@ private:
     bool                 excMode[NRIG];
     bool                 grab;
     bool                 initialized;
-	bool                 keyInProgress;
+    bool                 keyInProgress;
     bool                 logSearchFlag;
     bool                 sendingOtherRadio;
     bool                 spotListPopUp[NRIG];
@@ -188,6 +189,7 @@ private:
     CWMessageDialog      *cwMessage;
     DetailedEdit         *detail;
     DupeSheet            *dupesheet[NRIG];
+    DVK                  *dvk;
     HelpDialog           *help;
     int                  activeRadio;
     int                  altDActive;

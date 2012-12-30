@@ -72,7 +72,8 @@ HEADERS += cwmessagedialog.h \
     detailededit.h \
     mytableview.h \
     contest_cqp.h \
-    contest_kqp.h
+    contest_kqp.h \
+    dvk.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -139,12 +140,13 @@ SOURCES += cwmessagedialog.cpp \
     detailededit.cpp \
     mytableview.cpp \
     contest_cqp.cpp \
-    contest_kqp.cpp
+    contest_kqp.cpp \
+    dvk.cpp
 unix { 
     include(../common.pri)
 
     CONFIG += link_pkgconfig
-    PKGCONFIG += fftw3 hamlib portaudio-2.0
+    PKGCONFIG += fftw3 hamlib portaudio-2.0 sndfile
 
     QMAKE_CXXFLAGS += -O2 -g \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"

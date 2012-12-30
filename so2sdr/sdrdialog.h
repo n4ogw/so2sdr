@@ -1,4 +1,4 @@
-/*! Copyright 2010-2012 R. Torsten Clay N4OGW
+/*! Copyright 2010-2013 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -51,15 +51,16 @@ public slots:
 private slots:
     void launchUpdateDeviceList0(int);
     void launchUpdateDeviceList1(int);
+    void launchUpdateDeviceList2(int);
 
 private:
     int                nAPI;
     int                *nApiDevices;
     PaStreamParameters Format[NRIG];
-    QCheckBox          *Checkbox[NRIG];
-    QComboBox          *APICombo[NRIG];
+    QCheckBox          *Checkbox[NRIG+1];
+    QComboBox          *APICombo[NRIG+1]; // extra for DVK
     QComboBox          *BitsCombo[NRIG];
-    QComboBox          *DeviceCombo[NRIG];
+    QComboBox          *DeviceCombo[NRIG+1]; // extra for DVK
     QIcon              iconNOK;
     QIcon              iconOK;
     QLineEdit          *OffsetLineEditPtr[NRIG];
