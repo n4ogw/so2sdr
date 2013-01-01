@@ -173,11 +173,13 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
+    dvk = new DVK(settings);
+    dvk->moveToThread(&dvkThread);
+    startDvk();
     sdr = new SDRDialog(settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
-    dvk = new DVK(this);
     notes = new NoteDialog(this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(notes, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -340,6 +342,13 @@ So2sdr::~So2sdr()
         catThread.wait();
     }
     delete cat;
+    // stop dvk thread
+    if (dvkThread.isRunning()) {
+        dvkThread.quit();
+        dvkThread.wait();
+    }
+    dvk->stopAudio();
+    delete dvk;
     if (bandmapOn[0]) {
         bandmap[0]->close();
     }
@@ -585,6 +594,15 @@ void So2sdr::quit()
         }
     }
     close();
+}
+
+void So2sdr::startDvk()
+{
+    if (dvkThread.isRunning()) {
+        dvkThread.quit();
+    }
+    dvk->initializeAudio();
+    dvkThread.start();
 }
 
 void So2sdr::openRadios()
@@ -860,6 +878,9 @@ bool So2sdr::setupContest()
     setSummaryGroupBoxTitle();
     if (options->OffTimeCheckBox->isChecked()) {
         updateOffTime();
+    }
+    if (sdr->checkBox_3->isChecked()) {
+        dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
     }
     return(true);
 }

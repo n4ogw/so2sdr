@@ -1502,6 +1502,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
              */
             clearR2CQ(activeRadio ^ 1);
             expandMacro(cwMessage->cqF[i].toUpper());
+            dvk->playMessage(0,activeRadio);
         } else {
             /*!
                assume exchange is in F2; sending exchange will reserve this

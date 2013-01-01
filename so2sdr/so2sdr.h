@@ -261,6 +261,7 @@ private:
     QString              installDirectory;
     QString              settingsFile;
     QThread              catThread;
+    QThread              dvkThread;
     QWidgetAction        *bandmapCheckAction[NRIG];
     QWidgetAction        *dupesheetCheckAction[NRIG];
     QWidgetAction        *grabAction;
@@ -331,6 +332,7 @@ private:
     void spaceSprint();
     void spMode(int i);
     void sprintMode();
+    void startDvk();
     void startTimers();
     void stopTimers();
     void superPartial(QByteArray partial);

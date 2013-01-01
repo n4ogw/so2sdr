@@ -124,7 +124,7 @@ bool AudioReaderPortAudio::initialize(const PaStreamParameters &format, sampleSi
         96000,
         periodSize,
         paClipOff | paDitherOff,
-        this->callback,
+        callback,
         this);
     if (checkError(err)) return(false);
     err = Pa_StartStream(stream);

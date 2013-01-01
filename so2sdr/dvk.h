@@ -20,18 +20,43 @@
 #define DVK_H
 
 #include <QObject>
+#include <QSettings>
+#include <QString>
+#include <portaudio.h>
+
+struct DVKMessage
+{
+    int *snddata;
+    unsigned long int sz;
+};
 
 class DVK : public QObject
 {
     Q_OBJECT
 public:
-    explicit DVK(QObject *parent = 0);
+    explicit DVK(QSettings *s,QObject *parent = 0);
+    void loadMessages(QString filename,QString op);
     QString sndfile_version();
-    
+protected:
+    static int callback(const void *input, void *output, unsigned long frameCount,
+                        const PaStreamCallbackTimeInfo* timeInfo,
+                        PaStreamCallbackFlags statusFlags, void *userdata);
 signals:
     
 public slots:
-    
+    void initializeAudio();
+    void playMessage(int nr,int ch);
+    void stopAudio();
+
+
+private:
+    int channel;
+    int *snddata;
+    unsigned long int position;
+    unsigned long int sz;
+    DVKMessage func[12];
+    PaStream  *stream;
+    QSettings *settings;
 };
 
 #endif // DVK_H
