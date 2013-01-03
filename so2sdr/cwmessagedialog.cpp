@@ -98,49 +98,59 @@ CWMessageDialog::CWMessageDialog(QWidget *parent) : QDialog(parent)
     quick_qsl_edit->setValidator(upperValidate);
 }
 
-void CWMessageDialog::initialize(QSettings *s)
+/*!
+ * \brief CWMessageDialog::initialize Initialize dialog from settings file
+ * \param s  contest settings file
+ * \param modeype Current type of mode: CW, PHONE have different saved macros
+ */
+void CWMessageDialog::initialize(QSettings *s,ModeTypes modetype)
 {
     settings=s;
+    mode=modetype;
+    int m=(int)mode;
+    if (m>1) m=0; // digi keys not implemented yet
+
     // function keys: cq
-    int sz=settings->beginReadArray(c_cq_func);
+    int sz=settings->beginReadArray(c_cq_func[m]);
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
-        funcEditPtr[i]->setText(settings->value("func","").toString());
+        funcEditPtr[i]->setText(settings->value("func",c_cq_func_def[m]).toString());
         cqF[i]=funcEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: exchange
-    sz=settings->beginReadArray(c_ex_func);
+    sz=settings->beginReadArray(c_ex_func[m]);
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
-        excFuncEditPtr[i]->setText(settings->value("func","").toString());
+        excFuncEditPtr[i]->setText(settings->value("func",c_ex_func_def[m]).toString());
         excF[i]=excFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: shift
-    sz=settings->beginReadArray(c_shift_func);
+    sz=settings->beginReadArray(c_shift_func[m]);
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
-        shiftFuncEditPtr[i]->setText(settings->value("func","").toString());
+        shiftFuncEditPtr[i]->setText(settings->value("func",c_shift_func_def[m]).toString());
         cqShiftF[i]=shiftFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: control
-    sz=settings->beginReadArray(c_ctrl_func);
+    sz=settings->beginReadArray(c_ctrl_func[m]);
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
-        ctrlFuncEditPtr[i]->setText(settings->value("func","").toString());
+        ctrlFuncEditPtr[i]->setText(settings->value("func",c_ctrl_func_def[m]).toString());
         cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // other special messages
-    sp_exc_edit->setText(settings->value(c_sp_exc,c_sp_exc_def).toString());
-    cq_exc_edit->setText(settings->value(c_cq_exc,c_cq_exc_def).toString());
-    qsl_msg_edit->setText(settings->value(c_qsl_msg,c_qsl_msg_def).toString());
-    qsl_updated_edit->setText(settings->value(c_qsl_msg_updated,c_qsl_msg_updated_def).toString());
-    dupe_msg_edit->setText(settings->value(c_dupe_msg,c_dupe_msg_def).toString());
-    quick_qsl_edit->setText(settings->value(c_qqsl_msg,c_qqsl_msg_def).toString());
+    sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
+    cq_exc_edit->setText(settings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
+    qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
+    qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
+    dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
+    quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
 }
+
 
 /*! slot called when cancel pressed: reset all line edits to
    stored values and close dialog */
@@ -152,12 +162,15 @@ void CWMessageDialog::rejectChanges()
         shiftFuncEditPtr[i]->setText(cqShiftF[i]);
         excFuncEditPtr[i]->setText(excF[i]);
     }
-    qsl_msg_edit->setText(settings->value(c_qsl_msg,c_qsl_msg_def).toString());
-    qsl_updated_edit->setText(settings->value(c_qsl_msg_updated,c_qsl_msg_updated_def).toString());
-    cq_exc_edit->setText(settings->value(c_cq_exc,c_cq_exc_def).toString());
-    sp_exc_edit->setText(settings->value(c_sp_exc,c_sp_exc_def).toString());
-    dupe_msg_edit->setText(settings->value(c_dupe_msg,c_dupe_msg_def).toString());
-    quick_qsl_edit->setText(settings->value(c_qqsl_msg,c_qqsl_msg_def).toString());
+    int m=(int)mode;
+    if (m>1) m=0; // digi keys not implemented yet
+
+    qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
+    qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
+    cq_exc_edit->setText(settings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
+    sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
+    dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
+    quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
 }
 
 CWMessageDialog::~CWMessageDialog()
@@ -170,8 +183,11 @@ CWMessageDialog::~CWMessageDialog()
  */
 void CWMessageDialog::updateCWMsg()
 {
+    int m=(int)mode;
+    if (m>1) m=0; // digi keys not implemented yet
+
     // function keys: cq
-    settings->beginWriteArray(c_cq_func,12);
+    settings->beginWriteArray(c_cq_func[m],12);
     for (int i=0;i<12;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",funcEditPtr[i]->text());
@@ -179,7 +195,7 @@ void CWMessageDialog::updateCWMsg()
     }
     settings->endArray();
     // function keys: ctrl+func
-    settings->beginWriteArray(c_ctrl_func,12);
+    settings->beginWriteArray(c_ctrl_func[m],12);
     for (int i=0;i<12;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",ctrlFuncEditPtr[i]->text());
@@ -187,26 +203,26 @@ void CWMessageDialog::updateCWMsg()
     }
     settings->endArray();
     // function keys: shift+func
-    settings->beginWriteArray(c_shift_func,12);
+    settings->beginWriteArray(c_shift_func[m],12);
     for (int i=0;i<12;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",shiftFuncEditPtr[i]->text());
-        cqShiftF[i]=shiftFuncEditPtr[i]->text().toAscii();
+            cqShiftF[i]=shiftFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: exchange
-    settings->beginWriteArray(c_ex_func,12);
+    settings->beginWriteArray(c_ex_func[m],12);
     for (int i=0;i<12;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",excFuncEditPtr[i]->text());
         excF[i]=excFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
-    settings->setValue(c_cq_exc,cq_exc_edit->text());
-    settings->setValue(c_sp_exc,sp_exc_edit->text());
-    settings->setValue(c_qsl_msg,qsl_msg_edit->text());
-    settings->setValue(c_qsl_msg_updated,qsl_updated_edit->text());
-    settings->setValue(c_qqsl_msg,quick_qsl_edit->text());
-    settings->setValue(c_dupe_msg,dupe_msg_edit->text());
+    settings->setValue(c_cq_exc[m],cq_exc_edit->text());
+    settings->setValue(c_sp_exc[m],sp_exc_edit->text());
+    settings->setValue(c_qsl_msg[m],qsl_msg_edit->text());
+    settings->setValue(c_qsl_msg_updated[m],qsl_updated_edit->text());
+    settings->setValue(c_qqsl_msg[m],quick_qsl_edit->text());
+    settings->setValue(c_dupe_msg[m],dupe_msg_edit->text());
     settings->sync();
 }

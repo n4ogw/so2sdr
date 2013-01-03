@@ -107,6 +107,8 @@ public slots:
     void updateRecord(QSqlRecord);
 
 signals:
+    void playDvk(int,int);
+    void stopDvk();
     void qsyExact(int, int);
     void setRigMode(int, rmode_t, pbwidth_t);
 
@@ -187,6 +189,7 @@ private:
     ContestOptionsDialog *options;
     Cty                  *cty;
     CWMessageDialog      *cwMessage;
+    CWMessageDialog      *ssbMessage;
     DetailedEdit         *detail;
     DupeSheet            *dupesheet[NRIG];
     DVK                  *dvk;
@@ -297,7 +300,7 @@ private:
     bool enterFreqOrMode();
     void esc();
     void exchCheck(int nr,const QString &exch);
-    void expandMacro(QByteArray msg);
+    void expandMacro(QByteArray msg,int ssbnr);
     void fillSentExch(int nr);
     void initDupeSheet();
     void initLogView();

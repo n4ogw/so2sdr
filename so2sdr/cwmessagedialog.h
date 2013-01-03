@@ -22,6 +22,7 @@
 #include <QByteArray>
 #include <QSettings>
 #include <QString>
+#include "defines.h"
 #include "ui_cwmessagedialog.h"
 #include "utils.h"
 
@@ -38,7 +39,7 @@ Q_OBJECT
 public:
     CWMessageDialog(QWidget *parent = 0);
     ~CWMessageDialog();
-    void initialize(QSettings *s);
+    void initialize(QSettings *s,ModeTypes modetype);
     friend class So2sdr;
 
 public slots:
@@ -46,6 +47,7 @@ public slots:
     void rejectChanges();
 
 private:
+    ModeTypes      mode;
     QByteArray     cqCtrlF[12];
     QByteArray     cqF[12];
     QByteArray     cqShiftF[12];

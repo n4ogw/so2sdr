@@ -659,35 +659,35 @@ const QString c_qso_type1_def="";
 const QString c_qso_type2="contest/qsotype2";
 const QString c_qso_type2_def="";
 
-const QString c_cq_func="keys/cq";
-const QString c_cq_func_def="";
+const QString c_cq_func[2]={"keys/cq","keys_phone/cq"};
+const QString c_cq_func_def[2]={"","{AUDIO}"};
 
-const QString c_ex_func="keys/ex";
-const QString c_ex_func_def="";
+const QString c_ex_func[2]={"keys/ex","keys_phone/ex"};
+const QString c_ex_func_def[2]={"","{AUDIO}"};
 
-const QString c_ctrl_func="keys/ctrl";
-const QString c_ctrl_func_def="";
+const QString c_ctrl_func[2]={"keys/ctrl","keys_phone/ctrl"};
+const QString c_ctrl_func_def[2]={"","{AUDIO}"};
 
-const QString c_shift_func="keys/shift";
-const QString c_shift_func_def="";
+const QString c_shift_func[2]={"keys/shift","keys_phone/shift"};
+const QString c_shift_func_def[2]={"","{AUDIO}"};
 
-const QString c_sp_exc="keys/sp_exch";
-const QString c_sp_exc_def="";
+const QString c_sp_exc[2]={"keys/sp_exch","keys_phone/sp_exch"};
+const QString c_sp_exc_def[2]={"",""};
 
-const QString c_cq_exc="keys/cq_exch";
-const QString c_cq_exc_def="";
+const QString c_cq_exc[2]={"keys/cq_exch","keys_phone/cq_exch"};
+const QString c_cq_exc_def[2]={"",""};
 
-const QString c_qsl_msg="keys/qsl_msg";
-const QString c_qsl_msg_def="";
+const QString c_qsl_msg[2]={"keys/qsl_msg","keys_phone/qsl_msg"};
+const QString c_qsl_msg_def[2]={"",""};
 
-const QString c_qsl_msg_updated="keys/qsl_msg_updated";
-const QString c_qsl_msg_updated_def="";
+const QString c_qsl_msg_updated[2]={"keys/qsl_msg_updated","keys_phone/qsl_msg_updated"};
+const QString c_qsl_msg_updated_def[2]={"",""};
 
-const QString c_qqsl_msg="keys/qqsl_msg";
-const QString c_qqsl_msg_def="";
+const QString c_qqsl_msg[2]={"keys/qqsl_msg","keys_phone/qqsl_msg"};
+const QString c_qqsl_msg_def[2]={"",""};
 
-const QString c_dupe_msg="keys/dupe_msg";
-const QString c_dupe_msg_def="";
+const QString c_dupe_msg[2]={"keys/dupe_msg","keys_phone/dupe_msg"};
+const QString c_dupe_msg_def[2]={"",""};
 
 const QString c_cty="contest/cty";
 const QString c_cty_def="wl_cty.dat";

@@ -163,6 +163,12 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     cwMessage->hide();
+    ssbMessage = new CWMessageDialog(this);
+    connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
+    connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
+    ssbMessage->setWindowTitle("SSB Messages");
+    ssbMessage->hide();
+
     radios = new RadioDialog(settings,cat, this);
     connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -174,6 +180,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
     dvk = new DVK(settings);
+    connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
+    connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
     dvk->moveToThread(&dvkThread);
     startDvk();
     sdr = new SDRDialog(settings,this);
@@ -222,6 +230,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options, SIGNAL(accepted()), this, SLOT(updateOptions()));
     connect(actionCW_Messages, SIGNAL(triggered()), cwMessage, SLOT(show()));
     connect(actionCW_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(actionSSB_Messages, SIGNAL(triggered()), ssbMessage, SLOT(show()));
+    connect(actionSSB_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
     initDupeSheet();
     menuWindows->addSeparator();
     bandmapCheckBox[0] = new QCheckBox("Bandmap 1", menuWindows);
@@ -343,11 +353,11 @@ So2sdr::~So2sdr()
     }
     delete cat;
     // stop dvk thread
+    emit(stopDvk());
     if (dvkThread.isRunning()) {
         dvkThread.quit();
         dvkThread.wait();
     }
-    dvk->stopAudio();
     delete dvk;
     if (bandmapOn[0]) {
         bandmap[0]->close();
@@ -361,6 +371,7 @@ So2sdr::~So2sdr()
     delete detail;
     delete radios;
     delete cwMessage;
+    delete ssbMessage;
     delete errorBox;
     delete winkeyDialog;
     delete station;
@@ -657,6 +668,7 @@ void So2sdr::disableUI()
         lineEditExchange[i]->setEnabled(false);
     }
     cwMessage->setEnabled(false);
+    ssbMessage->setEnabled(false);
     options->setEnabled(false);
     actionCW_Messages->setEnabled(false);
     actionContestOptions->setEnabled(false);
@@ -684,6 +696,7 @@ void So2sdr::enableUI()
         lineEditExchange[i]->setEnabled(true);
     }
     cwMessage->setEnabled(true);
+    ssbMessage->setEnabled(true);
     options->setEnabled(true);
     actionCW_Messages->setEnabled(true);
     actionContestOptions->setEnabled(true);
@@ -816,7 +829,8 @@ bool So2sdr::setupContest()
     QString cname=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
     if (cname.isEmpty()) return(false);
     selectContest(cname.toAscii());
-    cwMessage->initialize(csettings);
+    cwMessage->initialize(csettings,CWType);
+    ssbMessage->initialize(csettings,PhoneType);
     options->initialize(csettings);
     cty = new Cty();
     connect(cty, SIGNAL(ctyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
@@ -2624,6 +2638,7 @@ void So2sdr::setCqMode(int i)
  */
 void So2sdr::send(QByteArray text)
 {
+    if (cat->modeType(activeRadio)!=CWType) return;
     if (!settings->value(s_winkey_cwon,s_winkey_cwon_def).toBool()) return;
 
     if (winkey->isSending()) {
@@ -2654,9 +2669,11 @@ void So2sdr::clearR2CQ(int nr)
 }
 
 /*!
-   expands macros in msg and sends it to Winkey
+ * \brief So2sdr::expandMacro parse messages
+ * \param msg Text of message
+ * \param ssbnr If ssbnr >=0, activate {AUDIO} to play or record an audio message with number ssbnr
  */
-void So2sdr::expandMacro(QByteArray msg)
+void So2sdr::expandMacro(QByteArray msg,int ssbnr)
 {
     int        i0;
     int        i1;
@@ -2692,12 +2709,14 @@ void So2sdr::expandMacro(QByteArray msg)
                                        "RIG2_FREQ",
                                        "BEST_CQ",
                                        "BEST_CQ_R2",
-                                       "CANCEL" };
-    const int        n_token_names = 25;
+                                       "CANCEL",
+                                       "AUDIO"};
+    const int        n_token_names = 26;
 
     /*!
-       cw message macros
+       cw/ssb message macros
 
+       - {AUDIO}   play/record audio
        - {CALL}    insert callsign
        - {#}       insert qso number
        - {UP}      increase speed by 5
@@ -2878,6 +2897,10 @@ void So2sdr::expandMacro(QByteArray msg)
                         break;
                     case 24: // cancel speed change
                         out.append(0x1e);
+                        break;
+                    case 25: // play/record audio
+                        qDebug("dvk nr %d",ssbnr);
+                        emit(playDvk(ssbnr,activeRadio));
                         break;
                     }
                     break;
@@ -3443,6 +3466,7 @@ void So2sdr::initPointers()
     cabrillo      = 0;
     mylog         = 0;
     cwMessage     = 0;
+    ssbMessage    = 0;
     newContest    = 0;
     notes         = 0;
     options       = 0;

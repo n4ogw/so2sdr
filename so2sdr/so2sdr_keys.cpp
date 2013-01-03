@@ -126,6 +126,12 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     return(r);
                 }
             }
+            if (ssbMessage) {
+                if (ssbMessage->isActiveWindow()) {
+                    ssbMessage->rejectChanges();
+                    return(r);
+                }
+            }
             if (options) {
                 if (options->isActiveWindow()) {
                     options->rejectChanges();
@@ -309,6 +315,12 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (cwMessage) {
                 if (cwMessage->isActiveWindow()) {
                     cwMessage->updateCWMsg();
+                    return(r);
+                }
+            }
+            if (ssbMessage) {
+                if (ssbMessage->isActiveWindow()) {
+                    ssbMessage->updateCWMsg();
                     return(r);
                 }
             }
@@ -615,7 +627,8 @@ void So2sdr::backSlash()
         cqMode[activeRadio] &&
         exchangeSent[activeRadio])
     {
-        expandMacro(csettings->value(c_qqsl_msg,c_qqsl_msg_def).toByteArray());
+        int m=(int)cat->modeType(activeRadio);
+        expandMacro(csettings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toByteArray(),-1);
 
         // log qso
         if (!qso[activeRadio]->dupe && qso[activeRadio]->valid)
@@ -741,7 +754,7 @@ void So2sdr::spaceSprint()
             updateWorkedDisplay(activeRadio,qso[activeRadio]->worked);
             if (!qso[activeRadio]->dupe) {
                 prefillExch(activeRadio);
-                expandMacro(settings->value(s_call,s_call_def).toByteArray());
+                expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1);
                 callSent[activeRadio] = true;
                 lineEditExchange[activeRadio]->setFocus();
                 if (grab) {
@@ -752,7 +765,7 @@ void So2sdr::spaceSprint()
                 excMode[activeRadio]   = true;
             }
         } else {
-            expandMacro(settings->value(s_call,s_call_def).toByteArray());
+            expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1);
             callSent[activeRadio] = true;
         }
     }
@@ -797,7 +810,7 @@ void So2sdr::spaceAltD()
         lineEditExchange[activeRadio]->grabKeyboard();
     }
     grabWidget = lineEditExchange[activeRadio];
-    expandMacro(settings->value(s_call,s_call_def).toByteArray());
+    expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1);
     callSent[activeRadio] = true;
     prefillExch(activeRadio);
     // redisplay band/mult info for this station
@@ -1047,7 +1060,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     if (enterState[i1][i2][i3][i4] & 1) {
         if (mod != Qt::ShiftModifier &&
             !qso[activeRadio]->dupe) {
-            expandMacro(settings->value(s_call,s_call_def).toByteArray());
+            expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1);
             callSent[activeRadio] = true;
         }
     }
@@ -1061,10 +1074,11 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             nrReserved[activeRadio] = nrSent;
         }
         if (mod != Qt::ShiftModifier) {
+            int m=(int)cat->modeType(activeRadio);
             if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
-                expandMacro(csettings->value(c_dupe_msg,c_dupe_msg_def).toByteArray());
+                expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1);
             } else {
-                expandMacro(csettings->value(c_cq_exc,c_cq_exc_def).toByteArray());
+                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1);
             }
         }
         exchangeSent[activeRadio]    = true;
@@ -1148,7 +1162,10 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             nrReserved[activeRadio] = nrSent;
         }
         updateNrDisplay();
-        if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_sp_exc,c_sp_exc_def).toByteArray());
+        if (mod != Qt::ShiftModifier) {
+            int m=(int)cat->modeType(activeRadio);
+            expandMacro(csettings->value(c_sp_exc[m],c_sp_exc_def[m]).toByteArray(),-1);
+        }
         exchangeSent[activeRadio] = true;
     }
 
@@ -1173,7 +1190,16 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // send F1 message
     if (enterState[i1][i2][i3][i4] & 256) {
-        if (mod != Qt::ShiftModifier) expandMacro(cwMessage->cqF[0]);
+        if (mod != Qt::ShiftModifier) {
+            switch (cat->modeType(activeRadio)) {
+            case CWType:case DigiType:
+                expandMacro(cwMessage->cqF[0],0);
+                break;
+            case PhoneType:
+                expandMacro(ssbMessage->cqF[0],0);
+                break;
+            }
+        }
         exchangeSent[activeRadio] = false;
     }
 
@@ -1181,10 +1207,11 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     if (enterState[i1][i2][i3][i4] & 512) {
         // see if call was corrected
         // if control+Enter, do not send any CW here.
+        int m=(int)cat->modeType(activeRadio);
         if (qso[activeRadio]->call != origCallEntered[activeRadio]) {
-            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated,c_qsl_msg_updated_def).toByteArray());
+            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1);
         } else {
-            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg,c_qsl_msg_def).toByteArray());
+            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toByteArray(),-1);
         }
         exchangeSent[activeRadio] = false;
     }
@@ -1287,7 +1314,9 @@ void So2sdr::esc()
     static bool         first     = true;
     bool                altdClear = true;
 
-	keyInProgress=true;
+    keyInProgress=true;
+    ModeTypes mode=cat->modeType(activeRadio);
+
     // define states
     if (first) {
         escState[0][0][0][0] = 128 + 256 + 512 + 2048;
@@ -1311,11 +1340,29 @@ void So2sdr::esc()
     qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toAscii();
     qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
 
-    if (winkey->isSending()) {
-        // if sending cw, stop
-        winkey->cancelcw();
-        keyInProgress=false;
-        return;
+    // if sending CW or audio, stop
+    switch (mode) {
+    case CWType:
+    {
+        if (winkey->isSending()) {
+            winkey->cancelcw();
+            keyInProgress=false;
+            return;
+        }
+        break;
+    }
+    case PhoneType:
+    {
+        if (dvk->audioRunning()) {
+            emit(stopDvk());
+            keyInProgress=false;
+            return;
+        }
+        break;
+
+    }
+    case DigiType:
+        break;
     }
 
     // ESC needs to return focus to call field if it
@@ -1495,14 +1542,21 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
                sprint: if CQ qso is in progress, continue to send CQ Exch when F2
                pressed. Must be cleaner way to handle this?
              */
-            expandMacro(csettings->value(c_cq_exc,c_cq_exc_def).toByteArray());
+            int m=(int)cat->modeType(activeRadio);
+            expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1);
         } else if (cqMode[activeRadio] && !excMode[activeRadio]) {
             /*!
                reset 2nd radio color change if needed
              */
             clearR2CQ(activeRadio ^ 1);
-            expandMacro(cwMessage->cqF[i].toUpper());
-            dvk->playMessage(0,activeRadio);
+            switch (cat->modeType(activeRadio)) {
+            case CWType:case DigiType:
+                expandMacro(cwMessage->cqF[i].toUpper(),-1);
+                break;
+            case PhoneType:
+                expandMacro(ssbMessage->cqF[i].toUpper(),i);
+                break;
+            }
         } else {
             /*!
                assume exchange is in F2; sending exchange will reserve this
@@ -1523,14 +1577,35 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
             if (i == 0 && !cqMode[activeRadio]) {
                 callSent[activeRadio] = true;
             }
-            expandMacro(cwMessage->excF[i].toUpper());
+            switch (cat->modeType(activeRadio)) {
+            case CWType:case DigiType:
+                expandMacro(cwMessage->excF[i].toUpper(),-1);
+                break;
+            case PhoneType:
+                expandMacro(ssbMessage->excF[i].toUpper(),i+12);
+                break;
+            }
         }
         break;
     case Qt::ControlModifier:
-        expandMacro(cwMessage->cqCtrlF[i].toUpper());
+        switch (cat->modeType(activeRadio)) {
+        case CWType:case DigiType:
+            expandMacro(cwMessage->cqCtrlF[i].toUpper(),-1);
+            break;
+        case PhoneType:
+            expandMacro(ssbMessage->cqCtrlF[i].toUpper(),i+24);
+            break;
+        }
         break;
     case Qt::ShiftModifier:
-        expandMacro(cwMessage->cqShiftF[i].toUpper());
+        switch (cat->modeType(activeRadio)) {
+        case CWType:case DigiType:
+            expandMacro(cwMessage->cqShiftF[i].toUpper(),-1);
+            break;
+        case PhoneType:
+            expandMacro(ssbMessage->cqShiftF[i].toUpper(),i+36);
+            break;
+        }
         break;
     }
 }

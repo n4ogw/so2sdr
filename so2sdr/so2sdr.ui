@@ -2280,6 +2280,7 @@
     <addaction name="actionSDR"/>
     <addaction name="separator"/>
     <addaction name="actionCW_Messages"/>
+    <addaction name="actionSSB_Messages"/>
     <addaction name="actionContestOptions"/>
    </widget>
    <widget class="QMenu" name="HelpMenu">
@@ -2407,6 +2408,11 @@
   <action name="actionHelp">
    <property name="text">
     <string>&amp;Help</string>
+   </property>
+  </action>
+  <action name="actionSSB_Messages">
+   <property name="text">
+    <string>SSB Messages</string>
    </property>
   </action>
  </widget>

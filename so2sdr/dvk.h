@@ -30,33 +30,46 @@ struct DVKMessage
     unsigned long int sz;
 };
 
+// DVK message slot numbers
+// 0 -12 F1-F12 CQ
+// 13-24 F1-F12 Exc
+// 25-36 F1-F12 Ctrl
+// 37-48 F1-F12 Shift
+#define DVK_MAX_MSG 48
+
 class DVK : public QObject
 {
     Q_OBJECT
 public:
+    bool audioRunning();
     explicit DVK(QSettings *s,QObject *parent = 0);
+    ~DVK();
     void loadMessages(QString filename,QString op);
     QString sndfile_version();
 protected:
-    static int callback(const void *input, void *output, unsigned long frameCount,
+    static int writeCallback(const void *input, void *output, unsigned long frameCount,
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags, void *userdata);
 signals:
-    
+    void messageDone();
 public slots:
+    void cancelMessage();
     void initializeAudio();
     void playMessage(int nr,int ch);
     void stopAudio();
 
 
 private:
+    bool audioRunning_;
     int channel;
     int *snddata;
     unsigned long int position;
     unsigned long int sz;
-    DVKMessage func[12];
+    DVKMessage msg[DVK_MAX_MSG];
     PaStream  *stream;
     QSettings *settings;
+
+    void emitMessageDone();
 };
 
 #endif // DVK_H

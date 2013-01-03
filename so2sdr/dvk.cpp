@@ -26,6 +26,25 @@ DVK::DVK(QSettings *s,QObject *parent) :
     QObject(parent)
 {
     settings=s;
+    connect(this,SIGNAL(messageDone()),this,SLOT(cancelMessage()));
+    audioRunning_=false;
+    for (int i=0;i<12;i++) {
+        msg[i].sz=0;
+    }
+}
+
+DVK::~DVK()
+{
+    for (int i=0;i<12;i++) {
+        if (msg[i].sz) {
+            delete [] msg[i].snddata;
+        }
+    }
+}
+
+bool DVK::audioRunning()
+{
+    return audioRunning_;
 }
 
 /*!
@@ -41,28 +60,47 @@ QString DVK::sndfile_version()
 
 /*!
  * \brief DVK::initializeAudio Initialize Portaudio output
- * \return true on success
+ *
  */
 void DVK::initializeAudio()
 {
     PaError err = Pa_Initialize();
     if (err != paNoError) {
         qDebug("Error starting DVK portaudio");
-        return;
     } else {
         qDebug("Started DVK portaudio");
-        return;
+        audioRunning_=true;
     }
 }
 
 /*!
  * \brief DVK::stopAudio stop Portaudio output
- * \return true on success
+ *
  */
 void DVK::stopAudio()
 {
-    Pa_StopStream(stream);
-    Pa_Terminate();
+    if (audioRunning_) {
+        PaError err;
+        if (Pa_IsStreamActive(&stream))
+        {
+            err=Pa_CloseStream(&stream);
+        }
+#ifdef Q_OS_LINUX
+        usleep(100000);
+#endif
+#ifdef Q_OS_WIN
+        Sleep(100);
+#endif
+        err=Pa_Terminate();
+#ifdef Q_OS_LINUX
+        usleep(100000);
+#endif
+#ifdef Q_OS_WIN
+        Sleep(100);
+#endif
+
+        audioRunning_=false;
+    }
 }
 
 /*!
@@ -99,16 +137,16 @@ void DVK::loadMessages(QString filename,QString op)
     }
 
     // read in WAV
-    func[0].snddata=new int[sfInfo.frames];
-    unsigned long int n=sf_read_int(sndFile, func[0].snddata, sfInfo.frames);
-    func[0].sz=sfInfo.frames;
+    msg[0].snddata=new int[sfInfo.frames];
+    unsigned long int n=sf_read_int(sndFile, msg[0].snddata, sfInfo.frames);
+    msg[0].sz=sfInfo.frames;
     qDebug("read %ld frames\n",sfInfo.frames);
     sf_close(sndFile);
 }
 
 /*! Callback for writing audio data
  */
-int DVK::callback(const void *input, void *output, unsigned long frameCount,
+int DVK::writeCallback(const void *input, void *output, unsigned long frameCount,
                                    const PaStreamCallbackTimeInfo* timeInfo,
                                    PaStreamCallbackFlags statusFlags, void *userdata)
 {
@@ -123,9 +161,10 @@ int DVK::callback(const void *input, void *output, unsigned long frameCount,
     unsigned long m=frameCount;
 
     if ((sz - position) < frameCount) {
-      m-=(sz - position);
+      m=(sz - position);
     }
-    // insert padding to get only left or right channel output
+
+    // insert zero padding to get only left or right channel output
     for (unsigned long int i=0;i<m;i++) {
       if (static_cast<DVK*>(userdata)->channel) {
         *out = *ptr;
@@ -141,17 +180,46 @@ int DVK::callback(const void *input, void *output, unsigned long frameCount,
       ptr++;
     }
     static_cast<DVK*>(userdata)->position += m;
+    if (static_cast<DVK*>(userdata)->position==sz) {
+        // message finished
+        static_cast<DVK*>(userdata)->emitMessageDone();
+        return paComplete;
+    }
+
     return paContinue;
 }
 
+void DVK::emitMessageDone()
+{
+    emit(messageDone());
+}
+
+/*!
+ * \brief DVK::cancelMessage cancel any message currently being played
+ */
+void DVK::cancelMessage()
+{
+    Pa_StopStream(stream);
+    if (sz) {
+        delete [] snddata;
+        sz=0;
+    }
+}
+
+/*!
+ * \brief DVK::playMessage Plays a DVK message
+ * \param nr message number
+ * \param ch stereo channel 0=right 1=left
+ */
 void DVK::playMessage(int nr,int ch)
 {
-    qDebug("playing message %d",nr);
+    sz=msg[nr].sz;
+    if (sz==0) return; // skip empty message
+
     channel=ch;
     position=0;
-    sz=func[nr].sz;
-    snddata=new int[func[nr].sz];
-    for (unsigned long int i=0;i<func[nr].sz;i++) snddata[i]=func[nr].snddata[i];
+    snddata=new int[msg[nr].sz];
+    for (unsigned long int i=0;i<msg[nr].sz;i++) snddata[i]=msg[nr].snddata[i];
 
     PaStreamParameters outputParameters;
     outputParameters.device = Pa_GetDefaultOutputDevice();
@@ -165,7 +233,7 @@ void DVK::playMessage(int nr,int ch)
                                   44100,
                                   paFramesPerBufferUnspecified,
                                   paNoFlag,
-                                  callback,
+                                  writeCallback,
                                   this);
     if (error!=paNoError)
     {
@@ -173,7 +241,4 @@ void DVK::playMessage(int nr,int ch)
         return;
     }
     Pa_StartStream(stream);
-    Pa_Sleep(1000);
-    Pa_StopStream(stream);
-    delete [] snddata;
 }
