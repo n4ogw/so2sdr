@@ -61,8 +61,6 @@ RadioDialog::RadioDialog(QSettings *s,RigSerial *cat, QWidget *parent) : QDialog
     }
     connect(radioMfgComboBox[0], SIGNAL(currentIndexChanged(int)), this, SLOT(populateModels1(int)));
     connect(radioMfgComboBox[1], SIGNAL(currentIndexChanged(int)), this, SLOT(populateModels2(int)));
-    connect(radioModelComboBox[0], SIGNAL(currentIndexChanged(int)), this, SLOT(updateModelNr1(int)));
-    connect(radioModelComboBox[1], SIGNAL(currentIndexChanged(int)), this, SLOT(updateModelNr2(int)));
 
     radioMfgComboBox[0]->setCurrentIndex(0);
     radioMfgComboBox[1]->setCurrentIndex(0);
@@ -75,6 +73,20 @@ RadioDialog::RadioDialog(QSettings *s,RigSerial *cat, QWidget *parent) : QDialog
         radioBaudComboBox[i]->insertItem(0, "19200");
         radioBaudComboBox[i]->insertItem(0, "38400");
     }
+    comboBoxOTRSPBaud->insertItem(0,"1200");
+    comboBoxOTRSPBaud->insertItem(0,"4800");
+    comboBoxOTRSPBaud->insertItem(0,"9600");
+    comboBoxOTRSPBaud->insertItem(0,"19200");
+    comboBoxOTRSPBaud->insertItem(0,"38400");
+    comboBoxOTRSPBaud->setCurrentIndex(2);
+    comboBoxOTRSPBaud->setEnabled(false);
+    comboBoxOTRSPParity->insertItem(0,"N");
+    comboBoxOTRSPParity->setCurrentIndex(0);
+    comboBoxOTRSPParity->setEnabled(false);
+    comboBoxOTRSPStop->insertItem(0,"1");
+    comboBoxOTRSPStop->setCurrentIndex(0);
+    comboBoxOTRSPStop->setEnabled(false);
+    lineEditOTRSPPort->clear();
     RadioPinComboBox->insertItem(0, "9");
     RadioPinComboBox->insertItem(0, "8");
     RadioPinComboBox->insertItem(0, "7");
@@ -116,17 +128,6 @@ RadioDialog::~RadioDialog()
 {
 }
 
-void RadioDialog::updateModelNr1(int indx)
-{
-    updateModelNr(0, indx);
-}
-
-void RadioDialog::updateModelNr2(int indx)
-{
-    updateModelNr(1, indx);
-}
-
-
 void RadioDialog::populateModels1(int indx)
 {
     populateModelCombo(0, indx);
@@ -137,23 +138,6 @@ void RadioDialog::populateModels2(int indx)
     populateModelCombo(1, indx);
 }
 
-/*! update displayed hamlib model number
- */
-void RadioDialog::updateModelNr(int nrig, int model_indx)
-{
-    int mfg = radioMfgComboBox[nrig]->currentIndex();
-    int m   = catptr->hamlibModelIndex(mfg, model_indx);
-    switch (nrig) {
-    case 0:
-        groupBox1->setTitle("Radio 1: Hamlib model " + QString::number(m));
-        break;
-    case 1:
-        groupBox2->setTitle("Radio 2: Hamlib model " + QString::number(m));
-        break;
-    default:
-        break;
-    }
-}
 
 /*! populate the list of possible rig models
  */
@@ -195,10 +179,27 @@ void RadioDialog::updateRadio()
         settings->setValue(s_radios_pport,ParallelPortComboBox->currentText());
         pportUpdate=true;
     }
+    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()!=checkBoxParallelPort->isChecked()) {
+        settings->setValue(s_radios_pport_enabled,checkBoxParallelPort->isChecked());
+        pportUpdate=true;
+    }
+    bool otrspUpdate=false;
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+        settings->setValue(s_otrsp_enabled,checkBoxOTRSP->isChecked());
+        otrspUpdate=true;
+    }
+    if (settings->value(s_otrsp_device,s_otrsp_device_def).toString()!=lineEditOTRSPPort->text()) {
+        settings->setValue(s_otrsp_device,lineEditOTRSPPort->text());
+        otrspUpdate=true;
+    }
     settings->sync();
     // in case parallel port is changed
     if (pportUpdate) {
         emit(setParallelPort());
+    }
+    // restart otrsp if needed
+    if (otrspUpdate) {
+        emit(setOTRSP());
     }
     // this restarts the radio comms
     emit(startRadios());
@@ -249,6 +250,9 @@ void RadioDialog::updateFromSettings()
     if (!found) {
         ParallelPortComboBox->setCurrentIndex(0);
     }
+    checkBoxParallelPort->setChecked(settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool());
+    checkBoxOTRSP->setChecked(settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool());
+    lineEditOTRSPPort->setText(settings->value(s_otrsp_device,s_otrsp_device_def).toString());
 }
 
 /*! called if dialog rejected */

@@ -73,7 +73,8 @@ HEADERS += cwmessagedialog.h \
     mytableview.h \
     contest_cqp.h \
     contest_kqp.h \
-    dvk.h
+    dvk.h \
+    otrsp.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -141,7 +142,8 @@ SOURCES += cwmessagedialog.cpp \
     mytableview.cpp \
     contest_cqp.cpp \
     contest_kqp.cpp \
-    dvk.cpp
+    dvk.cpp \
+    otrsp.cpp
 unix { 
     include(../common.pri)
 

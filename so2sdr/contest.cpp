@@ -151,12 +151,6 @@ void Contest::addQsoMult(Qso *qso)
     }
     bool new_m[MMAX]  = { false, false };
     bool new_bm[MMAX] = { false, false };
-    int  b;
-    if (settings->value(c_multsband,c_multsband_def).toBool()) {
-        b = qso->band;
-    } else {
-        b = N_BANDS;
-    }
     for (int ii = 0; ii < MMAX; ii++) {
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists

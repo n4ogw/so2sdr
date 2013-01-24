@@ -179,11 +179,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
-    dvk = new DVK(settings);
-    connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
-    connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
-    dvk->moveToThread(&dvkThread);
-    startDvk();
+    //dvk = new DVK(settings);
+    //connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
+    //connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
+    //dvk->moveToThread(&dvkThread);
+    //startDvk();
     sdr = new SDRDialog(settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -291,7 +291,16 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(pport, SIGNAL(parallelPortError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     connect(radios, SIGNAL(setParallelPort()), pport, SLOT(initialize()));
     readStationSettings();
-    pport->initialize();
+    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+        pport->initialize();
+    }
+    // otrsp device
+    otrsp = new OTRSP(settings);
+    connect(radios,SIGNAL(setOTRSP()),otrsp,SLOT(openOTRSP()));
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+        otrsp->openOTRSP();
+    }
+
     WPMLineEdit->setReadOnly(true);
     // set background of WPM speed edit box to grey
     QPalette palette(wpmLineEditPtr[0]->palette());
@@ -353,12 +362,14 @@ So2sdr::~So2sdr()
     }
     delete cat;
     // stop dvk thread
+    /*
     emit(stopDvk());
     if (dvkThread.isRunning()) {
         dvkThread.quit();
         dvkThread.wait();
     }
     delete dvk;
+    */
     if (bandmapOn[0]) {
         bandmap[0]->close();
     }
@@ -410,6 +421,7 @@ So2sdr::~So2sdr()
     delete directory;
     delete winkey;
     delete pport;
+    delete otrsp;
     delete qso[0];
     delete qso[1];
     settings->sync();
@@ -893,9 +905,11 @@ bool So2sdr::setupContest()
     if (options->OffTimeCheckBox->isChecked()) {
         updateOffTime();
     }
+    /*
     if (sdr->checkBox_3->isChecked()) {
         dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
     }
+    */
     return(true);
 }
 
@@ -1025,16 +1039,8 @@ void So2sdr::selectContest(QByteArray name)
 void So2sdr::selectContest2()
 {
     // for several ARRL contests need to know whether station is US/VE or DX
-    bool isDx;
     Qso  tmp(1);
     tmp.call = settings->value(s_call,s_call_def).toString().toAscii();
-    bool b;
-    int  pfx = cty->idPfx(&tmp, b);
-    if (pfx == usveIndx[0] || pfx == usveIndx[1]) {
-        isDx = false;
-    } else {
-        isDx = true;
-    }
     QString snt_exch[MAX_EXCH_FIELDS];
     for (int i=0;i<contest->nExchange();i++) {
         snt_exch[i].clear();
@@ -1822,7 +1828,12 @@ void So2sdr::switchRadios(bool switchcw)
             lineEditExchange[activeRadio]->setCursorPosition(0);
         }
     }
-    pport->switchRadios(activeRadio);
+    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+        pport->switchRadios(activeRadio);
+    }
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+        otrsp->switchRadios(activeRadio);
+    }
     MasterTextEdit->clear();
     updateRadioFreq();
     updateBreakdown();
@@ -2676,6 +2687,8 @@ void So2sdr::clearR2CQ(int nr)
  */
 void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
 {
+    Q_UNUSED(ssbnr);
+    Q_UNUSED(ssbRecord);
     int        i0;
     int        i1;
     int        i2;
@@ -2838,8 +2851,12 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         txt.append(qso[activeRadio]->call);
                         break;
                     case 13: // togglestereopin
-                        pport->toggleStereoPin();
-
+                        if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+                            pport->toggleStereoPin();
+                        }
+                        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+                            otrsp->toggleStereo(activeRadio);
+                        }
                         // return immediately to avoid stopping cw
                         return;
                         break;
@@ -2900,11 +2917,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         out.append(0x1e);
                         break;
                     case 25: // play/record audio
-                        qDebug("dvk nr %d",ssbnr);
-                        if (ssbRecord) {
-                            qDebug("RECORDING");
-                        }
-                        emit(playDvk(ssbnr,activeRadio));
+                        //emit(playDvk(ssbnr,activeRadio));
                         break;
                     }
                     break;

@@ -55,6 +55,7 @@
 #include "contest_sweepstakes.h"
 #include "contest_wpx.h"
 #include "master.h"
+#include "otrsp.h"
 #include "qso.h"
 #include "telnet.h"
 #include "utils.h"
@@ -216,6 +217,7 @@ private:
     ModeTypes             modeTypeShown;
     NewDialog            *newContest;
     NoteDialog           *notes;
+    OTRSP                *otrsp;
     ParallelPort         *pport;
     QByteArray           lastMsg;
     QByteArray           origCallEntered[NRIG];

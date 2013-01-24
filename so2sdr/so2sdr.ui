@@ -2342,7 +2342,7 @@
   </action>
   <action name="actionRadios">
    <property name="text">
-    <string>&amp;Radios/Ports</string>
+    <string>&amp;Radios/SO2R</string>
    </property>
   </action>
   <action name="actionContest">
@@ -2411,6 +2411,9 @@
    </property>
   </action>
   <action name="actionSSB_Messages">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>SSB Messages</string>
    </property>

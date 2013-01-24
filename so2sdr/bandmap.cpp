@@ -685,5 +685,5 @@ int Bandmap::closestFreq(int fin) const
     if (spectrumProcessor) {
         f=spectrumProcessor->closestFreq(fin);
     }
-    return fin;
+    return f;
 }

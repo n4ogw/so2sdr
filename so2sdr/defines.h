@@ -451,6 +451,24 @@ const QString s_cab_name_def="";
 const QString c_cab_club="cabrillo/club";
 const QString c_cab_club_def="";
 
+const QString s_otrsp_enabled="otrsp/enable";
+const bool s_otrsp_enabled_def=false;
+
+const QString s_otrsp_device="otrsp/device";
+const QString s_otrsp_device_def="/dev/USB0";
+
+const QString s_otrsp_baud="otrsp/baud";
+const int s_otrsp_baud_def=9600;
+
+const QString s_otrsp_databits="otrsp/databits";
+const int s_otrsp_databits_def=8;
+
+const QString s_otrsp_parity="otrsp/parity";
+const bool s_otrsp_parity_def=false;
+
+const QString s_otrsp_stopbits="otrsp/stopbits";
+const int s_otrsp_stopbits_def=1;
+
 const QString s_winkey_device="winkey/device";
 const QString s_winkey_device_def="";
 
@@ -577,6 +595,9 @@ const int s_radios_baud_def[NRIG]={4800,4800};
 
 const QString s_radios_poll[NRIG]={"radios/poll1","radios/poll2"};
 const int s_radios_poll_def[NRIG]={500,500};
+
+const QString s_radios_pport_enabled="radios/pport_enabled";
+const bool s_radios_pport_enabled_def=false;
 
 const QString s_radios_pport="radios/pport";
 const QString s_radios_pport_def=defaultParallelPort;

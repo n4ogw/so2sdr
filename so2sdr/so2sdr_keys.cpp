@@ -1353,11 +1353,13 @@ void So2sdr::esc()
     }
     case PhoneType:
     {
+        /*
         if (dvk->audioRunning()) {
             emit(stopDvk());
             keyInProgress=false;
             return;
         }
+        */
         break;
 
     }

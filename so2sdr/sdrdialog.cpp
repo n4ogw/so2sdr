@@ -51,12 +51,6 @@ SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
     iconOK               = QIcon("check.png");
     iconNOK              = QIcon("x.png");
 
-    // sample rate currently fixed 96 KHz
-    //SampleRate1ComboBox->insertItem(0, "96 KHz");
-    //SampleRate1ComboBox->setEnabled(false);
-    //SampleRate2ComboBox->insertItem(0, "96 KHz");
-    //SampleRate2ComboBox->setEnabled(false);
-
     // bit sizes
     BitsCombo[0] = Bits1ComboBox;
     BitsCombo[1] = Bits2ComboBox;

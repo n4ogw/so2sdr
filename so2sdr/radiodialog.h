@@ -42,6 +42,7 @@ public:
 signals:
     void startRadios();
     void setParallelPort();
+    void setOTRSP();
 
 public slots:
     void rejectChanges();
@@ -50,12 +51,9 @@ public slots:
 private slots:
     void populateModels1(int);
     void populateModels2(int);
-    void updateModelNr1(int);
-    void updateModelNr2(int);
 
 private:
     void populateModelCombo(int, int);
-    void updateModelNr(int, int);
     void updateFromSettings();
 
     QComboBox  *radioBaudComboBox[NRIG];
