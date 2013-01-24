@@ -18,10 +18,11 @@
  */
 #ifndef DVK_H
 #define DVK_H
-
+#include <QMutex>
 #include <QObject>
 #include <QSettings>
 #include <QString>
+#include <QTimer>
 #include <portaudio.h>
 
 struct DVKMessage
@@ -42,6 +43,7 @@ class DVK : public QObject
     Q_OBJECT
 public:
     bool audioRunning();
+    bool messagePlaying();
     explicit DVK(QSettings *s,QObject *parent = 0);
     ~DVK();
     void loadMessages(QString filename,QString op);
@@ -50,24 +52,34 @@ protected:
     static int writeCallback(const void *input, void *output, unsigned long frameCount,
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags, void *userdata);
+    static int recordCallback(const void *input, void *output, unsigned long frameCount,
+                        const PaStreamCallbackTimeInfo* timeInfo,
+                        PaStreamCallbackFlags statusFlags, void *userdata);
 signals:
     void messageDone();
 public slots:
     void cancelMessage();
     void initializeAudio();
     void playMessage(int nr,int ch);
+    void recordMessage(int nr);
     void stopAudio();
-
+private slots:
+    void saveMessage();
+    void clearTimer();
 
 private:
+    bool busy_;
     bool audioRunning_;
+    bool messagePlaying_;
     int channel;
-    int *snddata;
+    int msgNr;
     unsigned long int position;
     unsigned long int sz;
     DVKMessage msg[DVK_MAX_MSG];
     PaStream  *stream;
+    QMutex mutex;
     QSettings *settings;
+    QTimer *timer;
 
     void emitMessageDone();
 };

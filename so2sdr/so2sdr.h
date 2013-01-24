@@ -300,7 +300,7 @@ private:
     bool enterFreqOrMode();
     void esc();
     void exchCheck(int nr,const QString &exch);
-    void expandMacro(QByteArray msg,int ssbnr);
+    void expandMacro(QByteArray msg,int ssbnr,bool ssbRecord);
     void fillSentExch(int nr);
     void initDupeSheet();
     void initLogView();

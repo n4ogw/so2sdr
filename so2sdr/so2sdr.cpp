@@ -2672,8 +2672,9 @@ void So2sdr::clearR2CQ(int nr)
  * \brief So2sdr::expandMacro parse messages
  * \param msg Text of message
  * \param ssbnr If ssbnr >=0, activate {AUDIO} to play or record an audio message with number ssbnr
+ * \param ssbRecord If true, record this message
  */
-void So2sdr::expandMacro(QByteArray msg,int ssbnr)
+void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
 {
     int        i0;
     int        i1;
@@ -2900,6 +2901,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr)
                         break;
                     case 25: // play/record audio
                         qDebug("dvk nr %d",ssbnr);
+                        if (ssbRecord) {
+                            qDebug("RECORDING");
+                        }
                         emit(playDvk(ssbnr,activeRadio));
                         break;
                     }

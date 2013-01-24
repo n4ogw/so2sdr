@@ -20,23 +20,32 @@
 #include "dvk.h"
 #include <portaudio.h>
 #include <sndfile.h>
+#include <QDebug>
 #include <QDir>
+#include <QThread>
 
 DVK::DVK(QSettings *s,QObject *parent) :
     QObject(parent)
 {
     settings=s;
     connect(this,SIGNAL(messageDone()),this,SLOT(cancelMessage()));
+    timer=new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer,SIGNAL(timeout()),this,SLOT(clearTimer()));
     audioRunning_=false;
-    for (int i=0;i<12;i++) {
+    messagePlaying_=false;
+    busy_=false;
+    for (int i=0;i<DVK_MAX_MSG;i++) {
         msg[i].sz=0;
+        msg[i].snddata=0;
     }
 }
 
 DVK::~DVK()
 {
-    for (int i=0;i<12;i++) {
-        if (msg[i].sz) {
+    delete(timer);
+    for (int i=0;i<DVK_MAX_MSG;i++) {
+        if (msg[i].snddata) {
             delete [] msg[i].snddata;
         }
     }
@@ -45,6 +54,15 @@ DVK::~DVK()
 bool DVK::audioRunning()
 {
     return audioRunning_;
+}
+
+bool DVK::messagePlaying()
+{
+    bool b;
+    mutex.lock();
+    b=messagePlaying_;
+    mutex.unlock();
+    return b;
 }
 
 /*!
@@ -156,7 +174,8 @@ int DVK::writeCallback(const void *input, void *output, unsigned long frameCount
 
     unsigned long int position=static_cast<DVK*>(userdata)->position;
     unsigned long int sz=static_cast<DVK*>(userdata)->sz;
-    int *ptr=& static_cast<DVK*>(userdata)->snddata[position];
+    int nr=static_cast<DVK*>(userdata)->msgNr;
+    int *ptr=& static_cast<DVK*>(userdata)->msg[nr].snddata[position];
     int *out=(int *)output;
     unsigned long m=frameCount;
 
@@ -183,11 +202,47 @@ int DVK::writeCallback(const void *input, void *output, unsigned long frameCount
     if (static_cast<DVK*>(userdata)->position==sz) {
         // message finished
         static_cast<DVK*>(userdata)->emitMessageDone();
+        static_cast<DVK*>(userdata)->mutex.lock();
+        static_cast<DVK*>(userdata)->messagePlaying_=false;
+        static_cast<DVK*>(userdata)->mutex.unlock();
+        return paComplete;
+    }
+    //static_cast<DVK*>(userdata)->messagePlaying_=true;
+    return paContinue;
+}
+
+/*! Callback for recording an audio message
+ */
+int DVK::recordCallback(const void *input, void *output, unsigned long frameCount,
+                                   const PaStreamCallbackTimeInfo* timeInfo,
+                                   PaStreamCallbackFlags statusFlags, void *userdata)
+{
+    Q_UNUSED(output);
+    Q_UNUSED(timeInfo);
+    Q_UNUSED(statusFlags);
+
+    int pos=static_cast<DVK*>(userdata)->position;
+    int nr=static_cast<DVK*>(userdata)->msgNr;
+    int *ptr=& static_cast<DVK*>(userdata)->msg[nr].snddata[pos];
+    int *inp=(int *)input;
+
+    // terminate after 5 seconds
+    if ((pos + frameCount)>= (44100*5) ) {
+        static_cast<DVK*>(userdata)->saveMessage();
         return paComplete;
     }
 
+    // copy audio data to buffer
+    for (unsigned long int i=0;i<frameCount;i++){
+        *ptr= *inp;
+        ptr++;
+        inp++;
+    }
+    static_cast<DVK*>(userdata)->position +=frameCount;
+
     return paContinue;
 }
+
 
 void DVK::emitMessageDone()
 {
@@ -199,11 +254,17 @@ void DVK::emitMessageDone()
  */
 void DVK::cancelMessage()
 {
-    Pa_StopStream(stream);
-    if (sz) {
-        delete [] snddata;
-        sz=0;
+    mutex.lock();
+    if (messagePlaying_) {
+        messagePlaying_=false;
+        Pa_AbortStream(stream);
     }
+    mutex.unlock();
+}
+
+void DVK::clearTimer()
+{
+    busy_=false;
 }
 
 /*!
@@ -213,13 +274,22 @@ void DVK::cancelMessage()
  */
 void DVK::playMessage(int nr,int ch)
 {
-    sz=msg[nr].sz;
-    if (sz==0) return; // skip empty message
+    if (busy_) return; // prevents from being called too often
+    if (msg[nr].sz==0) return; // skip empty message
 
+    // if currently playing a message, abort it
+    cancelMessage();
+
+    mutex.lock();
+    messagePlaying_=true;
+    mutex.unlock();
+
+    busy_=true;
+    timer->start(200);
+    msgNr=nr;
     channel=ch;
     position=0;
-    snddata=new int[msg[nr].sz];
-    for (unsigned long int i=0;i<msg[nr].sz;i++) snddata[i]=msg[nr].snddata[i];
+    sz=msg[nr].sz;
 
     PaStreamParameters outputParameters;
     outputParameters.device = Pa_GetDefaultOutputDevice();
@@ -227,6 +297,7 @@ void DVK::playMessage(int nr,int ch)
     outputParameters.sampleFormat = paInt32;
     outputParameters.suggestedLatency = 0.1;
     outputParameters.hostApiSpecificStreamInfo = 0;
+
     PaError error = Pa_OpenStream(&stream,
                                   0,
                                   &outputParameters,
@@ -238,6 +309,62 @@ void DVK::playMessage(int nr,int ch)
     if (error!=paNoError)
     {
         qDebug("error opening output");
+        Pa_AbortStream(stream);
+        mutex.lock();
+        messagePlaying_=false;
+        mutex.unlock();
+        return;
+    }
+    Pa_StartStream(stream);
+}
+
+/*!
+ * \brief DVK::saveMessage Called when recording is finished
+ */
+void DVK::saveMessage()
+{
+
+}
+
+/*!
+ * \brief DVK::recordMessage a DVK message
+ * \param nr message number
+  */
+void DVK::recordMessage(int nr)
+{
+    // cancel any message currently playing
+    if (audioRunning_) {
+        cancelMessage();
+    }
+    // clear out message
+    msgNr=nr;
+    if (msg[nr].sz!=0) {
+        msg[nr].sz=0;
+        delete [] msg[nr].snddata;
+    }
+    msg[nr].snddata=new int[44100*5];
+
+    // allocate enough memory for 5 seconds of recording
+    position=0;
+
+
+    PaStreamParameters inputParameters;
+    inputParameters.device = Pa_GetDefaultInputDevice();
+    inputParameters.channelCount = 1;
+    inputParameters.sampleFormat = paInt32;
+    inputParameters.suggestedLatency = 0.1;
+    inputParameters.hostApiSpecificStreamInfo = 0;
+    PaError error = Pa_OpenStream(&stream,
+                                  &inputParameters,
+                                  0,
+                                  44100,
+                                  paFramesPerBufferUnspecified,
+                                  paNoFlag,
+                                  recordCallback,
+                                  this);
+    if (error!=paNoError)
+    {
+        qDebug("error opening input");
         return;
     }
     Pa_StartStream(stream);
