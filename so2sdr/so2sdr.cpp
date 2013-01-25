@@ -2455,7 +2455,7 @@ void So2sdr::setDefaultFreq(int nrig)
 }
 
 /*!
-   Launch speed up: if modifier=shift key, apply to 2nd radio
+   Launch speed up: if modifier=ctrl key, apply to 2nd radio
  */
 void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod)
 {
@@ -2463,7 +2463,7 @@ void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod)
     case Qt::NoModifier:
         speedUp(activeRadio);
         break;
-    case Qt::ShiftModifier:
+    case Qt::ControlModifier:
         speedUp(activeRadio ^ 1);
         break;
     default:
@@ -2472,7 +2472,7 @@ void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod)
 }
 
 /*!
-   Launch speed down: if modifier=shift key, apply to 2nd radio
+   Launch speed down: if modifier=ctrl key, apply to 2nd radio
  */
 void So2sdr::launch_speedDn(Qt::KeyboardModifiers mod)
 {
@@ -2480,7 +2480,7 @@ void So2sdr::launch_speedDn(Qt::KeyboardModifiers mod)
     case Qt::NoModifier:
         speedDn(activeRadio);
         break;
-    case Qt::ShiftModifier:
+    case Qt::ControlModifier:
         speedDn(activeRadio ^ 1);
         break;
     default:
