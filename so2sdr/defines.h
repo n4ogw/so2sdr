@@ -455,7 +455,7 @@ const QString s_otrsp_enabled="otrsp/enable";
 const bool s_otrsp_enabled_def=false;
 
 const QString s_otrsp_device="otrsp/device";
-const QString s_otrsp_device_def="/dev/USB0";
+const QString s_otrsp_device_def="";
 
 const QString s_otrsp_baud="otrsp/baud";
 const int s_otrsp_baud_def=9600;

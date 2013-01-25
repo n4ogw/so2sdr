@@ -184,9 +184,11 @@ void RadioDialog::updateRadio()
         pportUpdate=true;
     }
     bool otrspUpdate=false;
-    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()!=checkBoxOTRSP->isChecked()) {
         settings->setValue(s_otrsp_enabled,checkBoxOTRSP->isChecked());
-        otrspUpdate=true;
+        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+            otrspUpdate=true;
+        }
     }
     if (settings->value(s_otrsp_device,s_otrsp_device_def).toString()!=lineEditOTRSPPort->text()) {
         settings->setValue(s_otrsp_device,lineEditOTRSPPort->text());

@@ -309,8 +309,8 @@ private:
     void initPointers();
     void initVariables();
     bool isaSpot(int f, int band);
-    void launch_speedUp(int);
-    void launch_speedDn(int);
+    void launch_speedUp(Qt::KeyboardModifiers);
+    void launch_speedDn(Qt::KeyboardModifiers);
     void loadSpots();
     bool logPartial(int nrig, QByteArray partial);
     void logSearch();

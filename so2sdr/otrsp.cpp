@@ -21,16 +21,10 @@
 #include "defines.h"
 #include "otrsp.h"
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
-
 OTRSP::OTRSP(QSettings *s, QObject *parent) : QObject(parent)
 {
-    // load from settings file
     settings=s;
     OTRSPPort     = new QextSerialPort(settings->value(s_otrsp_device,s_otrsp_device_def).toString(), QextSerialPort::EventDriven);
-    deviceName.clear();
     OTRSPOpen     = false;
     stereo        = false;
 }
@@ -50,36 +44,17 @@ bool OTRSP::OTRSPIsOpen() const
 }
 
 /*!
-   Slot triggered when data is available at port
-
-   nothing implemented yet- only send data to port
- */
-void OTRSP::receive()
-{
-    // unsigned char wkbyte;
-    //int           n = OTRSPPort->read((char *) &wkbyte, 1);
-}
-
-
-/*!
  * \brief OTRSP::switchRadios
- *switches both RX and TX focus to other radio
+ * switches both RX and TX focus to other radio
  */
 void OTRSP::switchRadios(int nr)
 {
     if (!OTRSPOpen || nr<0 || nr>1) return;
 
-    char radnr[2]={'1','2'};
-    const char rx[3]="RX";
-    const char tx[3]="TX";
-    const char cr=0x0d;
-    OTRSPPort->write(rx,2);
-    OTRSPPort->write(&radnr[nr],1);
-    OTRSPPort->write(&cr,1);
-
-    OTRSPPort->write(tx,2);
-    OTRSPPort->write(&radnr[nr],1);
-    OTRSPPort->write(&cr,1);
+    const char rxcmd[2][5]={"RX1\r","RX2\r"};
+    const char txcmd[2][5]={"TX1\r","TX2\r"};
+    OTRSPPort->write(rxcmd[nr],4);
+    OTRSPPort->write(txcmd[nr],4);
 }
 
 /*!
@@ -90,15 +65,13 @@ void OTRSP::switchRadios(int nr)
  */
 void OTRSP::toggleStereo(int nr)
 {
-    if (!OTRSPOpen) return;
+    if (!OTRSPOpen || nr<0 || nr>1) return;
     if (stereo) {
         switchRadios(nr);
         stereo=false;
     } else {
-        const char cmd[5]="RX1S";
-        const char cr=0x0d;
+        const char cmd[6]="RX1S\r";
         OTRSPPort->write(cmd,5);
-        OTRSPPort->write(&cr,1);
         stereo=true;
     }
 }
@@ -128,42 +101,12 @@ void OTRSP::openOTRSP()
     OTRSPPort->setDtr(0);
     OTRSPPort->flush();
 
-    // have to wait a while at various places
-#ifdef Q_OS_LINUX
-    usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-    Sleep(100);
-#endif
-
     if (!OTRSPPort->isOpen()) {
         OTRSPOpen = false;
+        qDebug("ERROR: could not open otrsp device");
         return;
     }
-/*
-    // get device name
-    char buff[64]="?NAME";
-    const char cr=0x0d;
-    OTRSPPort->write(buff, 5);
-    OTRSPPort->write(&cr,1);
-#ifdef Q_OS_LINUX
-    usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-    Sleep(100);
-#endif
-
-    // read response from OTRSP
-    int n = OTRSPPort->bytesAvailable();
-    if (n > 64) n = 64;
-    qDebug("%d bytes available",n);
-    OTRSPPort->read(buff, n);
-
-    deviceName=buff;
-    qDebug("OTRSP deviceName=%s",deviceName.data());
-  */
-  OTRSPOpen = true;
-
+    OTRSPOpen = true;
 }
 
 void OTRSP::closeOTRSP()

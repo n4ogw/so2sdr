@@ -32,14 +32,11 @@
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QMetaType>
 #include <QModelIndex>
 #include <QObject>
 #include <QPixmap>
 #include <QPalette>
-#include <QPointer>
 #include <QProgressDialog>
-#include <QRect>
 #include <QSettings>
 #include <QScrollBar>
 #include <QSqlDatabase>
@@ -52,7 +49,6 @@
 #include <QString>
 #include <QStringList>
 #include <QStyle>
-#include <QStyleOptionViewItemV4>
 #include <QThread>
 #include <QTimer>
 #include <QWidgetAction>
@@ -2459,15 +2455,15 @@ void So2sdr::setDefaultFreq(int nrig)
 }
 
 /*!
-   Launch speed up
+   Launch speed up: if modifier=shift key, apply to 2nd radio
  */
-void So2sdr::launch_speedUp(int mod)
+void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod)
 {
     switch (mod) {
-    case 0:
+    case Qt::NoModifier:
         speedUp(activeRadio);
         break;
-    case 1:
+    case Qt::ShiftModifier:
         speedUp(activeRadio ^ 1);
         break;
     default:
@@ -2476,15 +2472,15 @@ void So2sdr::launch_speedUp(int mod)
 }
 
 /*!
-   Launch speed down
+   Launch speed down: if modifier=shift key, apply to 2nd radio
  */
-void So2sdr::launch_speedDn(int mod)
+void So2sdr::launch_speedDn(Qt::KeyboardModifiers mod)
 {
     switch (mod) {
-    case 0:
+    case Qt::NoModifier:
         speedDn(activeRadio);
         break;
-    case 1:
+    case Qt::ShiftModifier:
         speedDn(activeRadio ^ 1);
         break;
     default:

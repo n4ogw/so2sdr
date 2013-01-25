@@ -18,14 +18,19 @@
  */
 #ifndef OTRSP_H
 #define OTRSP_H
-#include <QByteArray>
 #include <QSettings>
 #include "defines.h"
 #include <qextserialport.h>
 
-/*!
-   OTRSP (Open Two Radio Switching Protocl) device support
+/*
+ * Support for OTRSP (Open Two Radio Switching Protocol) devices
+ *
+ * -limited support at present: only uses RX1, RX2, TX1, TX2, and RX1S commands
+ * -does not receive any data from the device, only sends out commands
+ * -connection settings fixed at 9600N81
+ * -tested on SO2RDUINO device (N4OGW
  */
+
 class OTRSP : public QObject
 {
 Q_OBJECT
@@ -36,11 +41,6 @@ public:
     bool OTRSPIsOpen() const;
     void switchRadios(int nr);
     void toggleStereo(int nr);
-/*! @todo make this private; can connect signals instead of referring directly to OTRSPPort
- */
-    QextSerialPort *OTRSPPort;
-
-signals:
 
 public slots:
     void openOTRSP();
@@ -48,10 +48,9 @@ public slots:
 private:
     bool       OTRSPOpen;
     bool       stereo;
-    QByteArray deviceName;
+    QextSerialPort *OTRSPPort;
     QSettings *settings;
     void closeOTRSP();
-    void receive();
 };
 
 #endif // OTRSP_H
