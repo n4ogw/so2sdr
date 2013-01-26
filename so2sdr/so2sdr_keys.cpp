@@ -683,6 +683,7 @@ void So2sdr::backSlash()
         lineEditExchange[activeRadio]->setModified(false);
         qso[activeRadio]->exch.clear();
         qso[activeRadio]->prefill.clear();
+        validLabel[activeRadio]->clear();
 
         // clear call field
         lineEditCall[activeRadio]->clear();
