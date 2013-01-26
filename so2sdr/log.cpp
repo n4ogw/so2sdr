@@ -17,11 +17,17 @@
 
  */
 #include <QFile>
+#include <QByteArray>
+#include <QChar>
+#include <QDate>
+#include <QDateTime>
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlRecord>
+#include <QString>
+#include <QTime>
 #include "log.h"
 
 /*!
@@ -64,7 +70,7 @@ void log::closeLogFile()
 /*!
    ADIF file export
 
-   @todo Handle non-standard bands
+   @todo look up correct ADIF BAND strings for VHF/UHF
  */
 bool log::exportADIF(QFile *adifFile) const
 {
@@ -91,12 +97,18 @@ bool log::exportADIF(QFile *adifFile) const
 
         // band
         switch (m.record(i).value(SQL_COL_BAND).toInt()) {
-        case 0: tmp = tmp + "<BAND:4>160M"; break;
-        case 1: tmp = tmp + "<BAND:3>80M"; break;
-        case 2: tmp = tmp + "<BAND:3>40M"; break;
-        case 3: tmp = tmp + "<BAND:3>20M"; break;
-        case 4: tmp = tmp + "<BAND:3>15M"; break;
-        case 5: tmp = tmp + "<BAND:3>10M"; break;
+        case BAND160: tmp = tmp + "<BAND:4>160M"; break;
+        case BAND80: tmp = tmp + "<BAND:3>80M"; break;
+        case BAND60: tmp = tmp + "<BAND:3>60M"; break;
+        case BAND40: tmp = tmp + "<BAND:3>40M"; break;
+        case BAND30: tmp = tmp + "<BAND:3>30M"; break;
+        case BAND20: tmp = tmp + "<BAND:3>20M"; break;
+        case BAND17: tmp = tmp + "<BAND:3>17M"; break;
+        case BAND15: tmp = tmp + "<BAND:3>15M"; break;
+        case BAND12: tmp = tmp + "<BAND:3>12M"; break;
+        case BAND10: tmp = tmp + "<BAND:3>10M"; break;
+        case BAND6: tmp = tmp + "<BAND:2>6M"; break;
+        case BAND2: tmp = tmp + "<BAND:3>2M"; break;
         }
 
         // frequency
@@ -569,22 +581,19 @@ void log::setupQsoNumbers(const int n)
  */
 void log::offTime(QString &str,int minOffTime,QDateTime start,QDateTime end)
 {
-    str="Off 00:00";
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log", *db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
     if (m.rowCount() == 0) {
+        str="Off 00:00";
         return;  // nothing to do
     }
 
     int totOffTime=0;
-    int lastYr=0;
-    int lastMon=0;
-    int lastD=0;
-    int lastHr=0;
-    int lastMin=0;
+    int cnt=0;
+    QDateTime lastQsoTime;
     for (int i = 0; i < m.rowCount(); i++) {
         if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
 
@@ -595,24 +604,20 @@ void log::offTime(QString &str,int minOffTime,QDateTime start,QDateTime end)
         int min=m.record(i).value(SQL_COL_TIME).toByteArray().right(2).toInt();
         QDateTime qsoTime=QDateTime(QDate(yr,mon,d),QTime(hr,min),Qt::UTC);
 
-        if (i>0 && (qsoTime>start) && (qsoTime<end)) {
+        if (qsoTime<start || qsoTime>end) continue; // qso not during contest
+        if (cnt>0) {
             // calculate time difference from last qso
-            if (lastYr!=yr || lastMon!=mon) {  // too large to worry about
-                return;
-            }
-            int tmp1=lastHr*60+lastMin;
-            int tmp2=hr*60+24*60*(d-lastD)+min;
-            int diff=(tmp2-tmp1-1);
-            if (diff>minOffTime) {
+            int diff=lastQsoTime.secsTo(qsoTime);
+            if (diff<0) continue; // probably means log is out of order, this will fail!
+
+            diff/=60;
+            diff--;
+            if (diff>=minOffTime) {
                 totOffTime+=diff;
             }
         }
-
-        lastYr=yr;
-        lastMon=mon;
-        lastD=d;
-        lastHr=hr;
-        lastMin=min;
+        lastQsoTime=qsoTime;
+        cnt++;
     }
     if (totOffTime>=6039) {
         str="Off 99:99";
