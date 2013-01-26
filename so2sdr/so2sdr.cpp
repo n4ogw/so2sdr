@@ -1742,12 +1742,14 @@ void So2sdr::updateOffTime() {
 
 /*!
    process timer events
+
+   The timer frequencies are define in defines.h, timerSettings
  */
 void So2sdr::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == timerId[1]) {
-        // every 300 ms
-        // radio comm update
+        // radio updates; every 300 mS
+        // (the actual serial poll time is set in serial.cpp and may be different)
         updateRadioFreq();
 
         // check bandmap
@@ -1758,7 +1760,7 @@ void So2sdr::timerEvent(QTimerEvent *event)
             checkSpot(1);
         }
     } else if (event->timerId() == timerId[0]) {
-        // clock update; every second
+        // clock update; every 1000 mS
         TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     } else if (event->timerId() == timerId[2]) {
         // these happen every 60 seconds
