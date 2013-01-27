@@ -46,7 +46,7 @@ class Spectrum : public QObject
 Q_OBJECT
 
 public:
-    Spectrum(QSettings *s,QObject *parent = 0);
+    Spectrum(QSettings& s,QObject *parent = 0);
     friend class Bandmap;
 
     ~Spectrum();
@@ -129,7 +129,7 @@ private:
     unsigned char *output;
     unsigned long advance_size;
     unsigned long chunk_size;
-    QSettings *settings;
+    QSettings&    settings;
 
 #ifdef Q_OS_WIN
     fftw_malloc_ptr       fftw_mallocp;

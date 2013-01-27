@@ -21,7 +21,6 @@
 
 #include <QWidget>
 #include <QPixmap>
-#include <QSettings>
 #include "defines.h"
 
 
@@ -41,9 +40,11 @@ public:
     ~GLBandmap();
     friend class Bandmap;
 
-    void initialize(QSettings *,int nr, sampleSizes s);
+    void initialize(int nr, sampleSizes s);
     bool invert() const;
     void setInvert(bool t);
+    void setMark(bool b);
+    void setScale(int s);
 
 public slots:
     void plotSpectrum(unsigned char *, unsigned char);
@@ -67,12 +68,13 @@ private:
 #endif
     bool cmap[MAX_H];
     bool          _invert;
+    bool          mark;
     int           nrig;
+    int           scale;
     int           vfoPos;
     sampleSizes   sizes;
     unsigned char cut;
     unsigned char *dataptr;
-    QSettings *settings;
 };
 
 #endif

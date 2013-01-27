@@ -32,10 +32,8 @@ class Telnet : public QWidget, public Ui::TelnetDialog
 Q_OBJECT
 
 public:
-    Telnet(QSettings *s,QWidget *parent = 0);
+    Telnet(QSettings& s,QWidget *parent = 0);
     ~Telnet();
-  //  void addAddress(QString adr);
-  //  void clearAddresses();
 
 signals:
     void done();
@@ -54,7 +52,7 @@ private:
     QList<QString> hosts;
     QString        buffer;
     QString stripCR(const QString &msg);
-    QSettings *settings;
+    QSettings&     settings;
     QtTelnet       *telnet;
 };
 #endif // TELNET_H

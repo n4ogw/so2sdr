@@ -39,6 +39,26 @@ GLBandmap::GLBandmap(QWidget *parent) : QWidget(parent)
     cornery   = MAX_H / 2 - vfoPos;
     _invert   = false;
     nrig      = 0;
+    scale     = 1;
+    mark      = true;
+}
+
+/*!
+ * \brief GLBandmap::setScale
+ * \param s = display scale: either 1 or 2
+ */
+void GLBandmap::setScale(int s)
+{
+    scale=s;
+}
+
+/*!
+ * \brief GLBandmap::setMark
+ * \param b = true: highlight dupe signals
+ */
+void GLBandmap::setMark(bool b)
+{
+    mark=b;
 }
 
 GLBandmap::~GLBandmap()
@@ -54,8 +74,7 @@ void GLBandmap::mousePressEvent(QMouseEvent *event)
         int y = event->y();
 
         // compute QSY as change in frequency
-        int delta_f = (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length /
-                             settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt( )* (vfoPos - y));
+        int delta_f = (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length / scale* (vfoPos - y));
         emit(GLBandmapMouseQSY(nrig, delta_f));
     }
 }
@@ -80,9 +99,8 @@ bool GLBandmap::invert() const
 /*!
    Initialize
  */
-void GLBandmap::initialize(QSettings *set,int nr, sampleSizes s)
+void GLBandmap::initialize(int nr, sampleSizes s)
 {
-    settings=set;
     nrig  = nr;
     sizes = s;
 }
@@ -99,10 +117,9 @@ void GLBandmap::plotSpectrum(unsigned char *data, unsigned char bg)
     pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), height()));
     int      dy = height() / 2 - vfoPos;
     QPainter painter(&pixmap);
-    bool spotCalls=settings->value(s_sdr_mark,s_sdr_mark_def).toBool();
     if (!_invert) {
         for (int i = (MAX_H - height()) / 2 - dy, j = (MAX_H + height()) / 2 - 1 + dy; j >= (MAX_H - height()) / 2 + dy; i++, j--) {
-            if (cmap[j] && data[i] > cut && spotCalls) {
+            if (cmap[j] && data[i] > cut && mark) {
                 painter.setPen(qRgb(data[i], 0, data[i]));
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));
@@ -111,7 +128,7 @@ void GLBandmap::plotSpectrum(unsigned char *data, unsigned char bg)
         }
     } else {
         for (int i = (MAX_H - height()) / 2 - dy, j = (MAX_H - height()) / 2 + dy; j < MAX_H; i++, j++) {
-            if (cmap[j] && data[i] > cut && spotCalls) {
+            if (cmap[j] && data[i] > cut && mark) {
                 painter.setPen(qRgb(data[i], 0, data[i]));
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));

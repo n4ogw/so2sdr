@@ -42,7 +42,7 @@ class ParallelPort : public QObject
 Q_OBJECT
 
 public:
-    ParallelPort(QSettings *s);
+    ParallelPort(QSettings& s);
     ~ParallelPort();
     void switchRadios(int r);
     void toggleStereoPin();
@@ -61,6 +61,6 @@ private:
 
     void PinLow(const int p);
     void PinHigh(const int p);
-    QSettings *settings;
+    QSettings& settings;
 };
 #endif

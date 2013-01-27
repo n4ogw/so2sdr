@@ -34,9 +34,8 @@ void ParallelPort::Out32(short portaddr, short datum)
     (oup32fp) (portaddr, datum);
 }
 
-ParallelPort::ParallelPort(QSettings *s)
+ParallelPort::ParallelPort(QSettings &s) : settings(s)
 {
-    settings=s;
     port        = defaultParallelPort.toULong();
     initSuccess = false;
 	stereoPinStatus=false;

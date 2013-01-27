@@ -33,7 +33,7 @@ class WinkeyDialog : public QDialog, public Ui::WinkeyDialog
 Q_OBJECT
 
 public:
-    WinkeyDialog(QSettings *s,QWidget *parent = 0);
+    WinkeyDialog(QSettings& s,QWidget *parent = 0);
     ~WinkeyDialog();
 signals:
     void startWinkey();
@@ -44,7 +44,7 @@ public slots:
     void updateWinkey();
 
 private:
-    QSettings *settings;
+    QSettings& settings;
 };
 
 

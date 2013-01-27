@@ -21,10 +21,9 @@
 #include "defines.h"
 #include "otrsp.h"
 
-OTRSP::OTRSP(QSettings *s, QObject *parent) : QObject(parent)
+OTRSP::OTRSP(QSettings& s, QObject *parent) : QObject(parent),settings(s)
 {
-    settings=s;
-    OTRSPPort     = new QextSerialPort(settings->value(s_otrsp_device,s_otrsp_device_def).toString(), QextSerialPort::EventDriven);
+    OTRSPPort     = new QextSerialPort(settings.value(s_otrsp_device,s_otrsp_device_def).toString(), QextSerialPort::EventDriven);
     OTRSPOpen     = false;
     stereo        = false;
 }
@@ -86,7 +85,7 @@ void OTRSP::openOTRSP()
         closeOTRSP();
         OTRSPOpen = false;
     }
-    OTRSPPort->setPortName(settings->value(s_otrsp_device,s_otrsp_device_def).toString());
+    OTRSPPort->setPortName(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
 
     // currently only 9600N81
     OTRSPPort->setBaudRate(BAUD9600);

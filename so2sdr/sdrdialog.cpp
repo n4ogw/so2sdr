@@ -23,10 +23,9 @@
 #include "sdrdialog.h"
 #include "utils.h"
 
-SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
+SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    settings=s;
     DeviceCombo[0]       = SoundCard1ComboBox;
     DeviceCombo[1]       = SoundCard2ComboBox;
     DeviceCombo[2]       = SoundCardDVKComboBox;
@@ -142,37 +141,37 @@ SDRDialog::SDRDialog(QSettings *s,QWidget *parent) : QDialog(parent)
 
 void SDRDialog::updateFromSettings()
 {
-    SpotTimeoutLineEdit->setText(settings->value(s_sdr_spottime,s_sdr_spottime_def).toString());
+    SpotTimeoutLineEdit->setText(settings.value(s_sdr_spottime,s_sdr_spottime_def).toString());
     for (int i = 0; i < NRIG; i++) {
-        Checkbox[i]->setChecked(settings->value(s_sdr_enabled[i],s_sdr_enabled_def[i]).toBool());
-        OffsetLineEditPtr[i]->setText(settings->value(s_sdr_offset[i],s_sdr_offset_def[i]).toString());
-        BitsCombo[i]->setCurrentIndex(settings->value(s_sdr_bits[i],s_sdr_bits_def[i]).toInt());
-        int n=settings->value(s_sdr_api[i],0).toInt();
+        Checkbox[i]->setChecked(settings.value(s_sdr_enabled[i],s_sdr_enabled_def[i]).toBool());
+        OffsetLineEditPtr[i]->setText(settings.value(s_sdr_offset[i],s_sdr_offset_def[i]).toString());
+        BitsCombo[i]->setCurrentIndex(settings.value(s_sdr_bits[i],s_sdr_bits_def[i]).toInt());
+        int n=settings.value(s_sdr_api[i],0).toInt();
         if (n>nAPI) n=0;
         APICombo[i]->setCurrentIndex(n);
-        n=settings->value(s_sdr_device[i],s_sdr_device_def[i]).toInt();
+        n=settings.value(s_sdr_device[i],s_sdr_device_def[i]).toInt();
         if (n>(DeviceCombo[i]->maxCount())) n=0;
         DeviceCombo[i]->setCurrentIndex(n);
     }
-    Checkbox[2]->setChecked(settings->value(s_dvk_enabled,s_dvk_enabled_def).toBool());
-    APICombo[2]->setCurrentIndex(settings->value(s_dvk_api,s_dvk_api_def).toInt());
-    DeviceCombo[2]->setCurrentIndex(settings->value(s_dvk_device,s_dvk_device_def).toInt());
-    DVKRecordingComboBox->setCurrentIndex(settings->value(s_dvk_rec_device,s_dvk_rec_device_def).toInt());
-    SpotCallsCheckBox->setChecked(settings->value(s_sdr_mark,s_sdr_mark_def).toBool());
-    ChangeRadioClickCheckBox->setChecked(settings->value(s_sdr_changeclick,s_sdr_changeclick_def).toBool());
-    lineEditIntegTime->setText(settings->value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
-    lineEdit160low->setText(settings->value(s_sdr_cqlimit_low[0],cqlimit_default_low[0]).toString());
-    lineEdit160high->setText(settings->value(s_sdr_cqlimit_high[0],cqlimit_default_high[0]).toString());
-    lineEdit80low->setText(settings->value(s_sdr_cqlimit_low[1],cqlimit_default_low[1]).toString());
-    lineEdit80high->setText(settings->value(s_sdr_cqlimit_high[1],cqlimit_default_high[1]).toString());
-    lineEdit40low->setText(settings->value(s_sdr_cqlimit_low[2],cqlimit_default_low[2]).toString());
-    lineEdit40high->setText(settings->value(s_sdr_cqlimit_high[2],cqlimit_default_high[2]).toString());
-    lineEdit20low->setText(settings->value(s_sdr_cqlimit_low[3],cqlimit_default_low[3]).toString());
-    lineEdit20high->setText(settings->value(s_sdr_cqlimit_high[3],cqlimit_default_high[3]).toString());
-    lineEdit15low->setText(settings->value(s_sdr_cqlimit_low[4],cqlimit_default_low[4]).toString());
-    lineEdit15high->setText(settings->value(s_sdr_cqlimit_high[4],cqlimit_default_high[4]).toString());
-    lineEdit10low->setText(settings->value(s_sdr_cqlimit_low[5],cqlimit_default_low[5]).toString());
-    lineEdit10high->setText(settings->value(s_sdr_cqlimit_high[5],cqlimit_default_high[5]).toString());
+    Checkbox[2]->setChecked(settings.value(s_dvk_enabled,s_dvk_enabled_def).toBool());
+    APICombo[2]->setCurrentIndex(settings.value(s_dvk_api,s_dvk_api_def).toInt());
+    DeviceCombo[2]->setCurrentIndex(settings.value(s_dvk_device,s_dvk_device_def).toInt());
+    DVKRecordingComboBox->setCurrentIndex(settings.value(s_dvk_rec_device,s_dvk_rec_device_def).toInt());
+    SpotCallsCheckBox->setChecked(settings.value(s_sdr_mark,s_sdr_mark_def).toBool());
+    ChangeRadioClickCheckBox->setChecked(settings.value(s_sdr_changeclick,s_sdr_changeclick_def).toBool());
+    lineEditIntegTime->setText(settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
+    lineEdit160low->setText(settings.value(s_sdr_cqlimit_low[0],cqlimit_default_low[0]).toString());
+    lineEdit160high->setText(settings.value(s_sdr_cqlimit_high[0],cqlimit_default_high[0]).toString());
+    lineEdit80low->setText(settings.value(s_sdr_cqlimit_low[1],cqlimit_default_low[1]).toString());
+    lineEdit80high->setText(settings.value(s_sdr_cqlimit_high[1],cqlimit_default_high[1]).toString());
+    lineEdit40low->setText(settings.value(s_sdr_cqlimit_low[2],cqlimit_default_low[2]).toString());
+    lineEdit40high->setText(settings.value(s_sdr_cqlimit_high[2],cqlimit_default_high[2]).toString());
+    lineEdit20low->setText(settings.value(s_sdr_cqlimit_low[3],cqlimit_default_low[3]).toString());
+    lineEdit20high->setText(settings.value(s_sdr_cqlimit_high[3],cqlimit_default_high[3]).toString());
+    lineEdit15low->setText(settings.value(s_sdr_cqlimit_low[4],cqlimit_default_low[4]).toString());
+    lineEdit15high->setText(settings.value(s_sdr_cqlimit_high[4],cqlimit_default_high[4]).toString());
+    lineEdit10low->setText(settings.value(s_sdr_cqlimit_low[5],cqlimit_default_low[5]).toString());
+    lineEdit10high->setText(settings.value(s_sdr_cqlimit_high[5],cqlimit_default_high[5]).toString());
 }
 
 void SDRDialog::launchUpdateDeviceList0(int i)
@@ -220,7 +219,7 @@ PaStreamParameters& SDRDialog::format(int nrig)
     } else {
         nr = nrig;
     }
-    switch (settings->value(s_sdr_bits[nr],s_sdr_bits_def[nr]).toInt()) {
+    switch (settings.value(s_sdr_bits[nr],s_sdr_bits_def[nr]).toInt()) {
     case 0:
         Format[nr].sampleFormat = paInt16;
         break;
@@ -234,9 +233,9 @@ PaStreamParameters& SDRDialog::format(int nrig)
 
     // calculate device index
     int indx = 0;
-    for (int i = 0; i < settings->value(s_sdr_api[nr],0).toInt(); i++) indx += nApiDevices[i];
+    for (int i = 0; i < settings.value(s_sdr_api[nr],0).toInt(); i++) indx += nApiDevices[i];
 
-    indx += settings->value(s_sdr_device[nr],0).toInt();
+    indx += settings.value(s_sdr_device[nr],0).toInt();
     Format[nr].device = indx;
     return(Format[nr]);
 }
@@ -245,33 +244,33 @@ PaStreamParameters& SDRDialog::format(int nrig)
 void SDRDialog::updateSDR()
 {
     for (int i = 0; i < NRIG; i++) {
-        settings->setValue(s_sdr_bits[i],BitsCombo[i]->currentIndex());
-        settings->setValue(s_sdr_offset[i],OffsetLineEditPtr[i]->text().toInt());
-        settings->setValue(s_sdr_enabled[i],Checkbox[i]->isChecked());
-        settings->setValue(s_sdr_api[i],APICombo[i]->currentIndex());
-        settings->setValue(s_sdr_device[i],DeviceCombo[i]->currentIndex());
+        settings.setValue(s_sdr_bits[i],BitsCombo[i]->currentIndex());
+        settings.setValue(s_sdr_offset[i],OffsetLineEditPtr[i]->text().toInt());
+        settings.setValue(s_sdr_enabled[i],Checkbox[i]->isChecked());
+        settings.setValue(s_sdr_api[i],APICombo[i]->currentIndex());
+        settings.setValue(s_sdr_device[i],DeviceCombo[i]->currentIndex());
     }
-    settings->setValue(s_dvk_enabled,Checkbox[2]->isChecked());
-    settings->setValue(s_dvk_api,APICombo[2]->currentIndex());
-    settings->setValue(s_dvk_device,DeviceCombo[2]->currentIndex());
-    settings->setValue(s_dvk_rec_device,DVKRecordingComboBox->currentIndex());
-    settings->setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
-    settings->setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
-    settings->setValue(s_sdr_mark,SpotCallsCheckBox->isChecked());
-    settings->setValue(s_sdr_changeclick,ChangeRadioClickCheckBox->isChecked());
-    settings->setValue(s_sdr_cqlimit_low[0],lineEdit160low->text().toInt());
-    settings->setValue(s_sdr_cqlimit_high[0],lineEdit160high->text().toInt());
-    settings->setValue(s_sdr_cqlimit_low[1],lineEdit80low->text().toInt());
-    settings->setValue(s_sdr_cqlimit_high[1],lineEdit80high->text().toInt());
-    settings->setValue(s_sdr_cqlimit_low[2],lineEdit40low->text().toInt());
-    settings->setValue(s_sdr_cqlimit_high[2],lineEdit40high->text().toInt());
-    settings->setValue(s_sdr_cqlimit_low[3],lineEdit20low->text().toInt());
-    settings->setValue(s_sdr_cqlimit_high[3],lineEdit20high->text().toInt());
-    settings->setValue(s_sdr_cqlimit_low[4],lineEdit15low->text().toInt());
-    settings->setValue(s_sdr_cqlimit_high[4],lineEdit15high->text().toInt());
-    settings->setValue(s_sdr_cqlimit_low[5],lineEdit10low->text().toInt());
-    settings->setValue(s_sdr_cqlimit_high[5],lineEdit10high->text().toInt());
-    settings->sync();
+    settings.setValue(s_dvk_enabled,Checkbox[2]->isChecked());
+    settings.setValue(s_dvk_api,APICombo[2]->currentIndex());
+    settings.setValue(s_dvk_device,DeviceCombo[2]->currentIndex());
+    settings.setValue(s_dvk_rec_device,DVKRecordingComboBox->currentIndex());
+    settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
+    settings.setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
+    settings.setValue(s_sdr_mark,SpotCallsCheckBox->isChecked());
+    settings.setValue(s_sdr_changeclick,ChangeRadioClickCheckBox->isChecked());
+    settings.setValue(s_sdr_cqlimit_low[0],lineEdit160low->text().toInt());
+    settings.setValue(s_sdr_cqlimit_high[0],lineEdit160high->text().toInt());
+    settings.setValue(s_sdr_cqlimit_low[1],lineEdit80low->text().toInt());
+    settings.setValue(s_sdr_cqlimit_high[1],lineEdit80high->text().toInt());
+    settings.setValue(s_sdr_cqlimit_low[2],lineEdit40low->text().toInt());
+    settings.setValue(s_sdr_cqlimit_high[2],lineEdit40high->text().toInt());
+    settings.setValue(s_sdr_cqlimit_low[3],lineEdit20low->text().toInt());
+    settings.setValue(s_sdr_cqlimit_high[3],lineEdit20high->text().toInt());
+    settings.setValue(s_sdr_cqlimit_low[4],lineEdit15low->text().toInt());
+    settings.setValue(s_sdr_cqlimit_high[4],lineEdit15high->text().toInt());
+    settings.setValue(s_sdr_cqlimit_low[5],lineEdit10low->text().toInt());
+    settings.setValue(s_sdr_cqlimit_high[5],lineEdit10high->text().toInt());
+    settings.sync();
     emit(updateCQLimits());
 }
 

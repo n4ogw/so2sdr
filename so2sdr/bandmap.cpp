@@ -25,10 +25,9 @@
 #include <QSettings>
 #include "bandmap.h"
 
-Bandmap::Bandmap(QSettings *s,QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f)
+Bandmap::Bandmap(QSettings& s,QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f), settings(s)
 {
     setupUi(this);
-    settings=s;
 #ifdef Q_OS_LINUX
     userDirectory = QDir::homePath() + "/.so2sdr";
 #endif
@@ -146,10 +145,10 @@ void Bandmap::closeEvent(QCloseEvent *event)
     stop();
     // save geometry
     QString tmp="BandmapWindow"+QString::number(nrig+1);
-    settings->beginGroup(tmp);
-    settings->setValue("size", size());
-    settings->setValue("pos", pos());
-    settings->endGroup();
+    settings.beginGroup(tmp);
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
 }
 
 /*! close IQ dialog
@@ -165,7 +164,7 @@ void Bandmap::closeIQ()
 void Bandmap::deleteCallMouse()
 {
     int f = centerFreq + (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length *
-                                settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() * (vfoPos - mouse_y));
+                                settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() * (vfoPos - mouse_y));
     emit(deleteCallFreq(f, band));
 }
 
@@ -174,11 +173,11 @@ void Bandmap::deleteCallMouse()
 void Bandmap::emitParams()
 {
     emit(updateParams());
-    settings->setValue(s_sdr_iqcorrect[nrig],checkBoxIq->isChecked());
-    settings->setValue(s_sdr_iqdata[nrig],checkBoxIQData->isChecked());
-    settings->setValue(s_sdr_click[nrig],checkBoxClick->isChecked());
-    settings->setValue(s_sdr_peakdetect[nrig],checkBoxMark->isChecked());
-    settings->sync();
+    settings.setValue(s_sdr_iqcorrect[nrig],checkBoxIq->isChecked());
+    settings.setValue(s_sdr_iqdata[nrig],checkBoxIQData->isChecked());
+    settings.setValue(s_sdr_click[nrig],checkBoxClick->isChecked());
+    settings.setValue(s_sdr_peakdetect[nrig],checkBoxMark->isChecked());
+    settings.sync();
 }
 
 /*! get CQ frequency ranked ncq. Spectrum.cpp will find this
@@ -202,18 +201,18 @@ void Bandmap::initialize(QString dir, int nr,const PaStreamParameters &format)
 
     // restore window geometry
     QString tmp="BandmapWindow"+QString::number(nrig+1);
-    settings->beginGroup(tmp);
-    resize(settings->value("size", QSize(400, 594)).toSize());
-    move(settings->value("pos", QPoint(200, 200)).toPoint());
-    settings->endGroup();
+    settings.beginGroup(tmp);
+    resize(settings.value("size", QSize(400, 594)).toSize());
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
 
     // other settings
-    checkBoxClick->setChecked(settings->value(s_sdr_click[nrig],s_sdr_click_def[nrig]).toBool());
-    checkBoxIq->setChecked(settings->value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool());
-    checkBoxIQData->setChecked(settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool());
-    iqDialog->dataCheckBox->setChecked(settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool());
-    iqDialog->balanceCheckBox->setChecked(settings->value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool());
-    checkBoxMark->setChecked(settings->value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool());
+    checkBoxClick->setChecked(settings.value(s_sdr_click[nrig],s_sdr_click_def[nrig]).toBool());
+    checkBoxIq->setChecked(settings.value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool());
+    checkBoxIQData->setChecked(settings.value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool());
+    iqDialog->dataCheckBox->setChecked(settings.value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool());
+    iqDialog->balanceCheckBox->setChecked(settings.value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool());
+    checkBoxMark->setChecked(settings.value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool());
 
     sizes.sample_length = 4096;
     switch (format.sampleFormat) {
@@ -234,13 +233,15 @@ void Bandmap::initialize(QString dir, int nr,const PaStreamParameters &format)
     sizes.display_length = MAX_H;
     sizes.spec_buff      = N_SPEC * sizes.display_length;
 
-    int scale= settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
+    int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
+    display->setScale(scale);
     pix_per_khz = sizes.spec_length * scale / (double) SAMPLE_FREQ;
     pix_per_hz  = sizes.spec_length * scale / (double) (SAMPLE_FREQ * 1000.0);
     spectrumProcessor->initialize(sizes, format.sampleFormat, nr, userDirectory);
 
     setScaleX1();
-    display->initialize(settings,nrig, sizes);
+    display->initialize(nrig, sizes);
+    display->setScale(1);
 
     // data from audioReader connected to spectrumProcessor
     spectrumProcessor->connect(audioReader, SIGNAL(audioReady(unsigned char *, unsigned char)),
@@ -281,8 +282,9 @@ void Bandmap::makeCall(const QList<BandmapEntry>& map)
     // draw callsigns
     // cmap[i] is true if the call near i is a dupe. Used to color signal on bandmap
     //
-    if (settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) {
-        int scale= settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
+    if (settings.value(s_sdr_mark,s_sdr_mark_def).toBool()) {
+        int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
+        display->setMark(true);
         double fm = centerFreq - MAX_H / 2 * SAMPLE_FREQ * 1000 / (scale * sizes.spec_length);
         for (int i = 0; i < map.size(); i++) {
             if (map.at(i).f < fm || map.at(i).f > freqMax) continue;
@@ -310,11 +312,13 @@ void Bandmap::makeCall(const QList<BandmapEntry>& map)
             // BANDMAP_FONT_PIX_SIZE/3 is fudge factor to center callsign
             p.drawText(BANDMAP_CALL_X, y+ BANDMAP_FONT_PIX_SIZE / 3, map.at(i).call);
         }
+    } else {
+        display->setMark(false);
     }
     p.setPen(Qt::black);
 
     // draw symbol for each signal
-    if (settings->value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
+    if (settings.value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
         p.setBrush(Qt::SolidPattern);
         Signal *sigs = &spectrumProcessor->sigList[0];
         for (int i = 0; i < SIG_MAX; i++) {
@@ -341,7 +345,7 @@ void Bandmap::makeFreqScale()
     p.fillRect(freqPixmap.rect(), Qt::lightGray);
 
     // make ticks every KHz/4
-    pix_per_khz = sizes.spec_length *  settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() / (double) SAMPLE_FREQ;
+    pix_per_khz = sizes.spec_length *  settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() / (double) SAMPLE_FREQ;
     double y = 0.;
     int    i = 0;
     p.setPen(Qt::black);
@@ -370,7 +374,7 @@ void Bandmap::makeFreqScaleAbsolute()
 {
     int dy = (height() - 20) / 2 - vfoPos;
     spectrumProcessor->yOffset = dy;
-    int scale= settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
+    int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
     freqMin = centerFreq - (MAX_H / 2 + dy) * SAMPLE_FREQ * 1000 / (scale * sizes.spec_length);
     int      bottom_start      = (freqMin / 1000 + 1) * 1000;
     int      bottom_pix_offset = (bottom_start - freqMin) * sizes.spec_length * scale / (SAMPLE_FREQ * 1000);
@@ -471,7 +475,7 @@ void Bandmap::mousePressEvent(QMouseEvent *event)
  */
 int Bandmap::nextFreq(bool higher) const
 {
-    if (!settings->value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
+    if (!settings.value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
         return(0);
     }
     int    f  = centerFreq;
@@ -512,7 +516,7 @@ void Bandmap::qsyToNearest()
 {
     // note: need to subtract 20 from height due to height of checkbox bar at bottom of
     // bandmap
-    int    f = centerFreq + (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length /  settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()
+    int    f = centerFreq + (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length /  settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()
                                    * (vfoPos - mouse_y));
 
     Signal *s = &spectrumProcessor->sigList[0];
@@ -602,7 +606,7 @@ void Bandmap::setMark(bool b)
 {
     if (!initialized) return;
 
-    settings->setValue(s_sdr_peakdetect[nrig],b);
+    settings.setValue(s_sdr_peakdetect[nrig],b);
     if (b) {
         txLabel->clear();
     } else {
@@ -623,7 +627,8 @@ void Bandmap::setAddOffset(int i)
  */
 void Bandmap::setScaleX1()
 {
-    settings->setValue(s_sdr_scale[nrig],1);
+    settings.setValue(s_sdr_scale[nrig],1);
+    display->setScale(1);
     scaleX1->setChecked(true);
     scaleX2->setChecked(false);
     pix_per_khz = sizes.spec_length * 1 / (double) SAMPLE_FREQ;
@@ -635,7 +640,8 @@ void Bandmap::setScaleX1()
  */
 void Bandmap::setScaleX2()
 {
-    settings->setValue(s_sdr_scale[nrig],2);
+    settings.setValue(s_sdr_scale[nrig],2);
+    display->setScale(2);
     scaleX1->setChecked(false);
     scaleX2->setChecked(true);
     pix_per_khz = sizes.spec_length * 2 / (double) SAMPLE_FREQ;

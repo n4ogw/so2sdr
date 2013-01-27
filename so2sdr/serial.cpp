@@ -37,7 +37,7 @@ static struct rig_backend_list {
 } rig_backend_list[] = RIG_BACKEND_LIST;
 
 
-RigSerial::RigSerial(QObject *parent) : QObject(parent)
+RigSerial::RigSerial(QSettings& s,QObject *parent) : QObject(parent),settings(s)
 {
     cancelled = false;
 }
@@ -305,21 +305,20 @@ int RigSerial::hamlibModelIndex(int indx1, int indx2) const
 }
 
 /*! @todo Handle return codes from hamlib, emitting error code to main thread */
-void RigSerial::initialize(QSettings *s)
+void RigSerial::initialize()
 {
-    settings=s;
     for (int i = 0; i < NRIG; i++) {
         clearRitFlag[i] = 0;
         qsyFreq[i]      = 0;
         chgMode[i]      = RIG_MODE_NONE;
         radioOK[i]      = false;
         ifFreq_[i]      = 0;
-        model[i]=settings->value(s_radios_rig[i],RIG_MODEL_DUMMY).toInt();
+        model[i]=settings.value(s_radios_rig[i],RIG_MODEL_DUMMY).toInt();
         rig[i] = rig_init(model[i]);
         token_t t = rig_token_lookup(rig[i], "rig_pathname");
-        rig_set_conf(rig[i],t,settings->value(s_radios_port[i],defaultSerialPort[i]).toString().toAscii().data());
+        rig_set_conf(rig[i],t,settings.value(s_radios_port[i],defaultSerialPort[i]).toString().toAscii().data());
         // set baud rate
-        rig[i]->state.rigport.parm.serial.rate=settings->value(s_radios_baud[i],s_radios_baud_def[i]).toInt();
+        rig[i]->state.rigport.parm.serial.rate=settings.value(s_radios_baud[i],s_radios_baud_def[i]).toInt();
     }
 
     // default starting freq/mode if communications to rigs
@@ -341,8 +340,8 @@ RigSerial::~RigSerial()
  */
 void RigSerial::run()
 {
-    timerId[0] = startTimer(settings->value(s_radios_poll[0],500).toInt());
-    timerId[1] = startTimer(settings->value(s_radios_poll[1],500).toInt());
+    timerId[0] = startTimer(settings.value(s_radios_poll[0],500).toInt());
+    timerId[1] = startTimer(settings.value(s_radios_poll[1],500).toInt());
     timerId[2] = startTimer(RIG_SEND_TIMER);
     timerId[3] = startTimer(RIG_SEND_TIMER);
 }

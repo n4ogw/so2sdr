@@ -101,7 +101,7 @@ void So2sdr::showBandmap(int nr, int checkboxState)
         }
     } else {
         if (!bandmap[nr]) {
-            bandmap[nr] = new Bandmap(settings);
+            bandmap[nr] = new Bandmap(*settings);
             bandmap[nr]->setWindowIcon(QIcon(dataDirectory + "/icon24x24.png"));
             bandmap[nr]->installEventFilter(this);
             bandmap[nr]->setAttribute(Qt::WA_ShowWithoutActivating);

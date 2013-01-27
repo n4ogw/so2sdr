@@ -36,7 +36,7 @@ class OTRSP : public QObject
 Q_OBJECT
 
 public:
-    OTRSP(QSettings *s, QObject *parent = 0);
+    OTRSP(QSettings& s, QObject *parent = 0);
     ~OTRSP();
     bool OTRSPIsOpen() const;
     void switchRadios(int nr);
@@ -49,7 +49,7 @@ private:
     bool       OTRSPOpen;
     bool       stereo;
     QextSerialPort *OTRSPPort;
-    QSettings *settings;
+    QSettings&  settings;
     void closeOTRSP();
 };
 

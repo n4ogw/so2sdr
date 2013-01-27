@@ -44,7 +44,7 @@ class DVK : public QObject
 public:
     bool audioRunning();
     bool messagePlaying();
-    explicit DVK(QSettings *s,QObject *parent = 0);
+    explicit DVK(QSettings& s,QObject *parent = 0);
     ~DVK();
     void loadMessages(QString filename,QString op);
     QString sndfile_version();
@@ -78,7 +78,7 @@ private:
     DVKMessage msg[DVK_MAX_MSG];
     PaStream  *stream;
     QMutex mutex;
-    QSettings *settings;
+    QSettings& settings;
     QTimer *timer;
 
     void emitMessageDone();

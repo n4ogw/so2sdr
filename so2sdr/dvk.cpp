@@ -24,10 +24,8 @@
 #include <QDir>
 #include <QThread>
 
-DVK::DVK(QSettings *s,QObject *parent) :
-    QObject(parent)
+DVK::DVK(QSettings &s, QObject *parent) : QObject(parent),settings(s)
 {
-    settings=s;
     connect(this,SIGNAL(messageDone()),this,SLOT(cancelMessage()));
     timer=new QTimer(this);
     timer->setSingleShot(true);

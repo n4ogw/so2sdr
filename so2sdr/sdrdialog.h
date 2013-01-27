@@ -37,7 +37,7 @@ class SDRDialog : public QDialog, public Ui::SDRDialog
 Q_OBJECT
 
 public:
-    SDRDialog(QSettings *s,QWidget *parent = 0);
+    SDRDialog(QSettings& s,QWidget *parent = 0);
     ~SDRDialog();
     PaStreamParameters &format(int nrig);
 
@@ -67,7 +67,7 @@ private:
     QList<bool>        *deviceOK;
     QList<QString>     audioDevices;
     QList<QString>     *nApiDeviceNames;
-    QSettings          *settings;
+    QSettings&           settings;
     void updateDeviceList(int, int);
     void updateFromSettings();
 };

@@ -36,7 +36,7 @@ class RadioDialog : public QDialog, public Ui::RadioDialog
 Q_OBJECT
 
 public:
-    RadioDialog(QSettings *s,RigSerial *cat, QWidget *parent = 0);
+    RadioDialog(QSettings& s,RigSerial& cat, QWidget *parent = 0);
     ~RadioDialog();
 
 signals:
@@ -61,8 +61,8 @@ private:
     QComboBox  *radioModelComboBox[NRIG];
     QLineEdit  *radioDevEdit[NRIG];
     QLineEdit  *radioPollTimeEdit[NRIG];
-    QSettings  *settings;
-    RigSerial  *catptr;
+    QSettings&  settings;
+    RigSerial&  catptr;
 };
 
 #endif

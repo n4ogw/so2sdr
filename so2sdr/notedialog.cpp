@@ -30,7 +30,7 @@ NoteDialog::NoteDialog(QWidget *parent) : QDialog(parent)
  */
 void NoteDialog::enterNote(QString fname, QString dir, QString time, bool grab)
 {
-    this->show();
+    show();
     NoteLineEdit->setFocus();
     if (grab) NoteLineEdit->grabKeyboard();
     NoteLineEdit->setText(time + ":");

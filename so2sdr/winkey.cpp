@@ -28,11 +28,9 @@
 /*!
    WinkeyDevice : serial port of device
  */
-Winkey::Winkey(QSettings *s, QObject *parent) : QObject(parent)
+Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
 {
-    // load from settings file
-    settings=s;
-    winkeyPort     = new QextSerialPort(settings->value(s_winkey_device,s_winkey_device_def).toString(), QextSerialPort::EventDriven);
+    winkeyPort     = new QextSerialPort(settings.value(s_winkey_device,s_winkey_device_def).toString(), QextSerialPort::EventDriven);
     winkeyVersion  = 0;
     nchar          = 0;
     sendBuff       = "";
@@ -179,7 +177,7 @@ void Winkey::openWinkey()
         closeWinkey();
         winkeyOpen = false;
     }
-    winkeyPort->setPortName(settings->value(s_winkey_device,s_winkey_device_def).toString());
+    winkeyPort->setPortName(settings.value(s_winkey_device,s_winkey_device_def).toString());
 
     winkeyPort->setBaudRate(BAUD1200);
     winkeyPort->setFlowControl(FLOW_OFF);
@@ -278,11 +276,11 @@ void Winkey::openWinkey()
         buff[1] = 0;
 
         // Paddle sidetone only?  Set bit 7 (msb) of buff[1]
-        if (settings->value(s_winkey_sidetonepaddle,s_winkey_sidetonepaddle_def).toBool()) {
+        if (settings.value(s_winkey_sidetonepaddle,s_winkey_sidetonepaddle_def).toBool()) {
             buff[1] += 128;
         }
         // Set sidetone frequency (chosen in GUI)
-        buff[1] += settings->value(s_winkey_sidetone,s_winkey_sidetone_def).toInt();
+        buff[1] += settings.value(s_winkey_sidetone,s_winkey_sidetone_def).toInt();
 
         winkeyPort->write((char *) buff, 2);
 #ifdef Q_OS_LINUX
@@ -296,16 +294,16 @@ void Winkey::openWinkey()
         buff[0] = 0x0e;     // Set WK options command, next byte sets WK options
         buff[1] = 0;
         // CT spacing?  Set bit 0 (lsb) of buff[1]
-        if (settings->value(s_winkey_ctspace,s_winkey_ctspace_def).toBool()) {
+        if (settings.value(s_winkey_ctspace,s_winkey_ctspace_def).toBool()) {
             buff[1] += 1;
         }
         // Paddle swap?  Set bit 3 of buff[1]
-        if (settings->value(s_winkey_paddle_swap,s_winkey_paddle_swap_def).toBool()) {
+        if (settings.value(s_winkey_paddle_swap,s_winkey_paddle_swap_def).toBool()) {
             buff[1] += 8;
         }
         // Paddle mode, set bits 5,4 to bit mask, 00 = iambic B, 01 = iambic A,
         // 10 = ultimatic, 11 = bug
-        buff[1] += (settings->value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt()) << 4;
+        buff[1] += (settings.value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt()) << 4;
 
         winkeyPort->write((char *) buff, 2);
 #ifdef Q_OS_LINUX

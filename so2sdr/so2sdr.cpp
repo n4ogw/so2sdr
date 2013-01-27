@@ -128,7 +128,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     QProgressDialog progress("Please wait, querying installed hamlib backends", "Abort", 0, 0, this);
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(4000);
-    cat = new RigSerial();
+    cat = new RigSerial(*settings);
     connect(&progress, SIGNAL(canceled()), cat, SLOT(cancelHamlib()));
     connect(cat, SIGNAL(maxBackends(int)), &progress, SLOT(setMaximum(int)));
     connect(cat, SIGNAL(backendsDone(int)), &progress, SLOT(setValue(int)));
@@ -150,7 +150,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     detail->hide();
     cabrillo = new CabrilloDialog(this);
     cabrillo->hide();
-    station = new StationDialog(settings,this);
+    station = new StationDialog(*settings,this);
     connect(station, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(station, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(station, SIGNAL(stationUpdate()), this, SLOT(stationUpdate()));
@@ -165,22 +165,22 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     ssbMessage->setWindowTitle("SSB Messages");
     ssbMessage->hide();
 
-    radios = new RadioDialog(settings,cat, this);
+    radios = new RadioDialog(*settings,*cat, this);
     connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
     radios->hide();
-    winkeyDialog = new WinkeyDialog(settings,this);
+    winkeyDialog = new WinkeyDialog(*settings,this);
     winkeyDialog->setWinkeyVersionLabel(0);
     connect(winkeyDialog, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
-    //dvk = new DVK(settings);
+    //dvk = new DVK(*settings);
     //connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
     //connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
     //dvk->moveToThread(&dvkThread);
     //startDvk();
-    sdr = new SDRDialog(settings,this);
+    sdr = new SDRDialog(*settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
@@ -283,7 +283,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     directory = new QDir(contestDirectory);
 
     // parallel port
-    pport = new ParallelPort(settings);
+    pport = new ParallelPort(*settings);
     connect(pport, SIGNAL(parallelPortError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     connect(radios, SIGNAL(setParallelPort()), pport, SLOT(initialize()));
     readStationSettings();
@@ -291,7 +291,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         pport->initialize();
     }
     // otrsp device
-    otrsp = new OTRSP(settings);
+    otrsp = new OTRSP(*settings);
     connect(radios,SIGNAL(setOTRSP()),otrsp,SLOT(openOTRSP()));
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->openOTRSP();
@@ -307,7 +307,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     }
 
     // start serial comm
-    winkey = new Winkey(settings,this);
+    winkey = new Winkey(*settings,this);
     connect(winkey, SIGNAL(version(int)), winkeyDialog, SLOT(setWinkeyVersionLabel(int)));
     connect(winkeyDialog, SIGNAL(startWinkey()), this, SLOT(startWinkey()));
     connect(winkey->winkeyPort, SIGNAL(readyRead()), winkey, SLOT(receive()));
@@ -333,7 +333,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 
     // restore window geometry
     settings->beginGroup("MainWindow");
-    resize(settings->value("size", QSize(700, 560)).toSize());
+    resize(settings->value("size", QSize(720, 579)).toSize());
     move(settings->value("pos", QPoint(200, 200)).toPoint());
     settings->endGroup();
 
@@ -630,7 +630,7 @@ void So2sdr::openRadios()
         catThread.quit();
     }
 
-    cat->initialize(settings);
+    cat->initialize();
 
     // Connect signals from functions in this class with slots in RigSerial class
     connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
@@ -3537,14 +3537,14 @@ void So2sdr::initPointers()
     multWorkedLabel[0][1] = Mult1Label2;
     multWorkedLabel[1][0] = Mult2Label;
     multWorkedLabel[1][1] = Mult2Label2;
-	// the following is needed to get a monospace font under Windows
-	for (int i=0;i<2;i++) {
-		QFont font("Monospace");
-		font.setStyleHint(QFont::TypeWriter);
-		qsoWorkedLabel[i]->setFont(font);
-		multWorkedLabel[i][0]->setFont(font);
-		multWorkedLabel[i][1]->setFont(font);
-	}
+    // the following is needed to get a monospace font under Windows
+    for (int i=0;i<NRIG;i++) {
+        QFont font("Monospace");
+        font.setStyleHint(QFont::TypeWriter);
+        qsoWorkedLabel[i]->setFont(font);
+        multWorkedLabel[i][0]->setFont(font);
+        multWorkedLabel[i][1]->setFont(font);
+    }
     multNameLabel[0] = multName;
     multNameLabel[1] = multName2;
     multLabel[0][0] = mult160Label;
@@ -3648,6 +3648,8 @@ void So2sdr::initVariables()
 /*!
  * \brief So2sdr::screenShot
  * Take a screenshot of the bandmap windows
+ *
+ * creates a lag in the update. Any way to make faster?
  */
 void So2sdr::screenShot()
 {
@@ -3659,7 +3661,7 @@ void So2sdr::screenShot()
     p.save(filename,format.toAscii());
 
     // bandmap windows
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<NRIG;i++) {
         if (bandmapOn[i]) {
             QPixmap p=QPixmap::grabWindow(bandmap[i]->winId());
             QString format = "png";

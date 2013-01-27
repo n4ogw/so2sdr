@@ -45,9 +45,9 @@ class ParallelPort : public QObject
 Q_OBJECT
 
 public:
-    ParallelPort(QSettings *s);
+    ParallelPort(QSettings& s);
     ~ParallelPort();
-	void switchRadios(int r);
+    void switchRadios(int r);
     void toggleStereoPin();
 
 signals:
@@ -57,7 +57,7 @@ public slots:
     void initialize();
 
 private:
-	void PinLow(int p);
+    void PinLow(int p);
     void PinHigh(int p);
 
 	HINSTANCE hLib;
@@ -68,13 +68,13 @@ private:
     inpfuncPtr inp32fp;
     oupfuncPtr oup32fp;
     bool       initSuccess;
-	bool stereoPinStatus;
+    bool stereoPinStatus;
 // Wrapper functions for the function pointers
 // - call these functions to perform I/O.
 
     short  Inp32(short portaddr);
     void  Out32(short portaddr, short datum);
     unsigned long port;
-    QSettings *settings;
+    QSettings& settings;
 };
 #endif // WIN_PP_H

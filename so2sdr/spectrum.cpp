@@ -130,9 +130,8 @@ void Spectrum::initialize(sampleSizes s, PaSampleFormat b, int nr, QString dir)
     calcError(true);
 }
 
-Spectrum::Spectrum(QSettings *s,QObject *parent) : QObject(parent)
+Spectrum::Spectrum(QSettings& s,QObject *parent) : QObject(parent),settings(s)
 {
-    settings=s;
     peakDetectScale = 100;
     in              = 0;
     out             = 0;
@@ -274,7 +273,7 @@ void Spectrum::startFindCQ()
 void Spectrum::findCQ()
 {
     // peak detect must be turned on
-    if (!settings->value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
+    if (!settings.value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
         return;
     }
     sigCQ = 0;
@@ -287,8 +286,8 @@ void Spectrum::findCQ()
 
     // add limits to list of freqs
     int findCQLimit[2];
-    findCQLimit[0]=settings->value(s_sdr_cqlimit_low[band],cqlimit_default_low[band]).toInt();
-    findCQLimit[1]=settings->value(s_sdr_cqlimit_high[band],cqlimit_default_high[band]).toInt();
+    findCQLimit[0]=settings.value(s_sdr_cqlimit_low[band],cqlimit_default_low[band]).toInt();
+    findCQLimit[1]=settings.value(s_sdr_cqlimit_high[band],cqlimit_default_high[band]).toInt();
 
     int indx = -1;
     for (int i = 0; i < SIG_MAX; i++) {
@@ -493,7 +492,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
 #else
     fftw_execute(plan);
 #endif
-    if (settings->value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool()) {
+    if (settings.value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool()) {
         for (int i = 0; i < sizes.sample_length; i++) {
             // correct IQ imbalance
             int    j    = sizes.sample_length - i - 1;
@@ -510,7 +509,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     double bga, sigma;
     measureBackground(bga, sigma, spec_tmp);
 
-    if (settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()) {
+    if (settings.value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()) {
         if (calibCnt == (SIG_CALIB_FREQ - 1)) {
             measureIQError(bga, spec_tmp);
             calibCnt = 0;
@@ -531,11 +530,11 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     // put upper limit on background. Prevents display "blacking out"
     // from static crashes
     if (bga > 0.0) bga = 0.0;
-    if (settings->value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
+    if (settings.value(s_sdr_peakdetect[nrig],s_sdr_peakdetect_def[nrig]).toBool()) {
         detectPeaks(bga, sigma, spec_tmp);
     }
 
-    if (settings->value(s_sdr_click[nrig],s_sdr_click_def[nrig]).toBool()) {
+    if (settings.value(s_sdr_click[nrig],s_sdr_click_def[nrig]).toBool()) {
     //if (clickFilter) {
         clickRemove(bga, sigma, spec_tmp);
 
@@ -544,13 +543,13 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     }
 
 
-    if (settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() == 2) {
+    if (settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() == 2) {
         interp2(spec_tmp, tmp4, bga); // expand by 2 using linear interpolation
     } else {
         // IF offset included here
         // for (int i=0;i<sizes.display_length;i++) {
-        double tmp = ((settings->value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset) *
-                      sizes.spec_length * settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()) / (SAMPLE_FREQ * 1000.0);
+        double tmp = ((settings.value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset) *
+                      sizes.spec_length * settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()) / (SAMPLE_FREQ * 1000.0);
         int offsetPix = -(int) tmp;
         for (int i = 0; i < sizes.spec_length; i++) {
             unsigned int j = (sizes.spec_length - offsetPix - MAX_H / 2 + i) % sizes.spec_length;
@@ -704,7 +703,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
         return;
     }
     peakAvgCnt = 0;
-    int offset=(settings->value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset);
+    int offset=(settings.value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset);
 
     // average collected scans
     for (int i = 0; i < sizes.sample_length; i++) {
@@ -769,7 +768,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                 // is this a known signal already?
                 bool match = false;
                 int  indx  = -1;
-                int findCQTime=settings->value(s_sdr_cqtime,s_sdr_cqtime_def).toInt();
+                int findCQTime=settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toInt();
                 for (int j = 0; j < SIG_MAX; j++) {
                     if (abs(sigList[j].f - freq) < SIG_MIN_FREQ_DIFF) {
                         match = true;
@@ -906,7 +905,7 @@ void Spectrum::setInvert(bool b)
  */
 void Spectrum::measureIQError(double bg, double spec[])
 {
-  // if (settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()==false) return;
+  // if (settings.value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()==false) return;
 
     double a1[2];
     double a2[2];
@@ -943,7 +942,7 @@ void Spectrum::measureIQError(double bg, double spec[])
  */
 void Spectrum::calcError(bool force)
 {
-    if (!force && !settings->value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()) return;
+    if (!force && !settings.value(s_sdr_iqdata[nrig],s_sdr_iqdata_def[nrig]).toBool()) return;
     double t;
     double phase, phaseDeg;
     double gain;
@@ -1080,8 +1079,8 @@ void Spectrum::complexMult(double a[], double b[], double c[]) const
  */
 void Spectrum::interp2(double in[], double out[], double bga)
 {
-    int offset=(settings->value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset);
-    double tmp = (offset * sizes.spec_length * settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()) / (SAMPLE_FREQ * 1000.0);
+    int offset=(settings.value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset);
+    double tmp = (offset * sizes.spec_length * settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()) / (SAMPLE_FREQ * 1000.0);
     int offsetPix = -(int) tmp;
 
     unsigned int j0 = (sizes.spec_length - offsetPix / 2 - MAX_H / 4) % sizes.spec_length;

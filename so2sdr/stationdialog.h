@@ -33,7 +33,7 @@ class StationDialog : public QDialog, public Ui::StationDialog
 Q_OBJECT
 
 public:
-    StationDialog(QSettings *s,QWidget *parent = 0);
+    StationDialog(QSettings& s,QWidget *parent = 0);
     ~StationDialog();
     friend class So2sdr;
 
@@ -50,7 +50,7 @@ signals:
 private:
     double         Lat;
     double         Lon;
-    QSettings      *settings;
+    QSettings&      settings;
 };
 
 #endif

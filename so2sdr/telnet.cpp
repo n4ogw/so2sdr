@@ -23,10 +23,9 @@
 #include "defines.h"
 #include "telnet.h"
 
-Telnet::Telnet(QSettings *s,QWidget *parent) : QWidget(parent)
+Telnet::Telnet(QSettings &s, QWidget *parent) : QWidget(parent),settings(s)
 {
     setupUi(this);
-    settings=s;
     telnet = 0;
     telnet = new QtTelnet();
     connect(TelnetConnectButton, SIGNAL(clicked()), this, SLOT(connectTelnet()));
@@ -43,18 +42,18 @@ Telnet::Telnet(QSettings *s,QWidget *parent) : QWidget(parent)
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(sendText()));
 
     // get addresses from settings
-    int sz=settings->beginReadArray(s_telnet_addresses);
+    int sz=settings.beginReadArray(s_telnet_addresses);
     for (int i=0;i<sz;i++) {
-        settings->setArrayIndex(i);
-        TelnetComboBox->addItem(settings->value("address","").toString());
+        settings.setArrayIndex(i);
+        TelnetComboBox->addItem(settings.value("address","").toString());
     }
-    settings->endArray();
+    settings.endArray();
 
     // restore window geometry
-    settings->beginGroup("TelnetWindow");
-    resize(settings->value("size", QSize(400, 594)).toSize());
-    move(settings->value("pos", QPoint(200, 200)).toPoint());
-    settings->endGroup();
+    settings.beginGroup("TelnetWindow");
+    resize(settings.value("size", QSize(400, 594)).toSize());
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
 }
 
 Telnet::~Telnet()
@@ -71,17 +70,17 @@ void Telnet::closeEvent(QCloseEvent *event)
 
     // update saved address list
     int n=TelnetComboBox->count();
-    settings->beginWriteArray(s_telnet_addresses,n);
+    settings.beginWriteArray(s_telnet_addresses,n);
     for (int i=0;i<n;i++) {
-        settings->setArrayIndex(i);
-        settings->setValue("address",TelnetComboBox->itemText(i));
+        settings.setArrayIndex(i);
+        settings.setValue("address",TelnetComboBox->itemText(i));
     }
-    settings->endArray();
+    settings.endArray();
     // save window geometry
-    settings->beginGroup("TelnetWindow");
-    settings->setValue("size", size());
-    settings->setValue("pos", pos());
-    settings->endGroup();
+    settings.beginGroup("TelnetWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
 
     emit(done());
 }

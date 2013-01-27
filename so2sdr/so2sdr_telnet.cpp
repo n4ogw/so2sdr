@@ -123,7 +123,7 @@ void So2sdr::showTelnet(int checkboxState)
         }
     } else {
         if (!telnet) {
-            telnet = new Telnet(settings);
+            telnet = new Telnet(*settings);
         }
         telnet->show();
         connect(telnet, SIGNAL(done()), telnetCheckBox, SLOT(toggle()));

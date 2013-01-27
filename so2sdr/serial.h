@@ -66,7 +66,7 @@ class RigSerial : public QObject
 Q_OBJECT
 
 public:
-    RigSerial(QObject *parent = 0);
+    RigSerial(QSettings& s,QObject *parent = 0);
     ~RigSerial();
     void clearRIT(int nrig);
     ModeTypes getModeType(rmode_t mode) const;
@@ -78,7 +78,7 @@ public:
     void hamlibModelLookup(int, int&, int&) const;
     QString hamlibMfgName(int i) const;
     int ifFreq(int nrig);
-    void initialize(QSettings *s);
+    void initialize();
     bool initializeHamlib(QString dir);
     rmode_t mode(int nrig) const;
     QString modeStr(int nrig) const;
@@ -124,7 +124,7 @@ private:
     QMutex                  qsyMutex;
     RIG                     *rig[NRIG];
     int                     timerId[NRIG*2];
-    QSettings *settings;
+    QSettings&              settings;
 };
 
 #endif

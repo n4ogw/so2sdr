@@ -45,7 +45,7 @@ class Bandmap : public QWidget, public Ui::Bandmap
 Q_OBJECT
 
 public:
-    Bandmap(QSettings *s,QWidget *parent = 0, Qt::WindowFlags f = 0);
+    Bandmap(QSettings& s,QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~Bandmap();
     void calc();
     void closeIQ();
@@ -121,7 +121,7 @@ private:
     sampleSizes          sizes;
     Spectrum             *spectrumProcessor;
     unsigned long        chunk_size;
-    QSettings            *settings;
+    QSettings&            settings;
 
     void makeCall(const QList<BandmapEntry>& map);
     void makeFreqScale();

@@ -33,10 +33,12 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 
-ParallelPort::ParallelPort(QSettings *s)
+/*!
+ * \brief ParallelPort::ParallelPort Parallel port access under Linux
+ * \param s
+ */
+ParallelPort::ParallelPort(QSettings& s):settings(s)
 {
-    settings=s;
-    // default settings in defines.h
     parallelFD  = -1;
     initialized = false;
     stereoPinStatus=false;
@@ -44,7 +46,7 @@ ParallelPort::ParallelPort(QSettings *s)
 
 ParallelPort::~ParallelPort()
 {
-    QString port= settings->value(s_radios_pport,defaultParallelPort).toString();
+    QString port= settings.value(s_radios_pport,defaultParallelPort).toString();
     if (parallelFD != -1) {
         int err = ioctl(parallelFD, PPRELEASE);
         if (err == -1) {
@@ -68,7 +70,7 @@ ParallelPort::~ParallelPort()
  */
 void ParallelPort::initialize()
 {
-    QString port= settings->value(s_radios_pport,defaultParallelPort).toString();
+    QString port= settings.value(s_radios_pport,defaultParallelPort).toString();
     if (parallelFD != -1) {
         int err = ioctl(parallelFD, PPRELEASE);
         if (err == -1) {
@@ -115,7 +117,7 @@ void ParallelPort::PinLow(const int p)
     char data = 0;
     int  err  = ioctl(parallelFD, PPRDATA, &data); // read port data
     if (err == -1) {
-        QString tmp = "ERROR: Can't read from " +  settings->value(s_radios_pport,defaultParallelPort).toString();
+        QString tmp = "ERROR: Can't read from " +  settings.value(s_radios_pport,defaultParallelPort).toString();
         emit(parallelPortError(tmp));
         return;
     }
@@ -124,7 +126,7 @@ void ParallelPort::PinLow(const int p)
         data -= b;
         err   = ioctl(parallelFD, PPWDATA, &data);
         if (err == -1) {
-            QString tmp = "ERROR: Can't write to " +  settings->value(s_radios_pport,defaultParallelPort).toString();
+            QString tmp = "ERROR: Can't write to " +  settings.value(s_radios_pport,defaultParallelPort).toString();
             emit(parallelPortError(tmp));
         }
     }
@@ -140,7 +142,7 @@ void ParallelPort::PinHigh(const int p)
     char data = 0;
     int  err  = ioctl(parallelFD, PPRDATA, &data); // read port data
     if (err == -1) {
-        QString tmp = "ERROR: Can't read from " +  settings->value(s_radios_pport,defaultParallelPort).toString();
+        QString tmp = "ERROR: Can't read from " +  settings.value(s_radios_pport,defaultParallelPort).toString();
         emit(parallelPortError(tmp));
         return;
     }
@@ -149,7 +151,7 @@ void ParallelPort::PinHigh(const int p)
         data += b;
         err   = ioctl(parallelFD, PPWDATA, &data);
         if (err == -1) {
-            QString tmp = "ERROR: Can't write to " +  settings->value(s_radios_pport,defaultParallelPort).toString();
+            QString tmp = "ERROR: Can't write to " +  settings.value(s_radios_pport,defaultParallelPort).toString();
             emit(parallelPortError(tmp));
         }
     }
@@ -160,8 +162,8 @@ void ParallelPort::PinHigh(const int p)
   */
 void ParallelPort::switchRadios(int r)
 {
-    int radioPin=settings->value(s_radios_focus,defaultParallelPortRadioPin).toInt();
-    bool invert=settings->value(s_radios_focusinvert,false).toBool();
+    int radioPin=settings.value(s_radios_focus,defaultParallelPortRadioPin).toInt();
+    bool invert=settings.value(s_radios_focusinvert,false).toBool();
     if (r==0) {
         if (invert) {
             PinHigh(radioPin);
@@ -182,7 +184,7 @@ void ParallelPort::switchRadios(int r)
   */
 void ParallelPort::toggleStereoPin()
 {
-    int stereoPin=settings->value(s_radios_stereo,defaultParallelPortStereoPin).toInt();
+    int stereoPin=settings.value(s_radios_stereo,defaultParallelPortStereoPin).toInt();
     if (stereoPinStatus) {
         PinLow(stereoPin);
         stereoPinStatus = false;
