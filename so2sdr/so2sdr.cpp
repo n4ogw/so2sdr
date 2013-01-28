@@ -1731,10 +1731,8 @@ void So2sdr::updateRate()
  */
 void So2sdr::updateOffTime() {
     if (options->OffTimeCheckBox->isChecked()) {
-        QString tmp;
-        mylog->offTime(tmp,options->offMinimumLineEdit->text().toInt(),options->startDateTimeEdit->dateTime(),
-                       options->endDateTimeEdit->dateTime());
-        offPtr->setText(tmp);
+        offPtr->setText(mylog->offTime(options->offMinimumLineEdit->text().toInt(),options->startDateTimeEdit->dateTime(),
+                       options->endDateTimeEdit->dateTime()));
     } else {
         offPtr->clear();
     }
@@ -1781,11 +1779,11 @@ void So2sdr::timerEvent(QTimerEvent *event)
  */
 void So2sdr::swapRadios()
 {
-    int old_f[NRIG];
-    old_f[0] = rigFreq[0];
-    old_f[1] = rigFreq[1];
+    int old_f[NRIG]={rigFreq[0],rigFreq[1]};
     band[1]  = getBand(old_f[0]);
     band[0]  = getBand(old_f[1]);
+    updateMults(0);
+    updateMults(1);
     if (!cat) return;
     qsy(0, old_f[1], true);
     qsy(1, old_f[0], true);
@@ -1916,9 +1914,8 @@ void So2sdr::superPartial(QByteArray partial)
         lastcalls = calls;
     }
     MasterTextEdit->append("<font color=#000000>" + calls);
-
-    QScrollBar *sb = MasterTextEdit->verticalScrollBar();
-    sb->setValue(sb->minimum());
+    MasterTextEdit->moveCursor(QTextCursor::Start);
+    MasterTextEdit->ensureCursorVisible();
 }
 
 /*!
@@ -1929,12 +1926,11 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
     bool                dupe = false;
     QList<QByteArray>   calls;
     QList<unsigned int> worked;
-    QString             txt;
+    QString             txt("<font color=#0000FF>");
     QList<int>          mults1;
     QList<int>          mults2;
     qso[nrig]->worked = 0;
     searchPartial(qso[nrig], partial, calls, worked, mults1, mults2);
-    txt           = "<font color=#0000FF>";
     dupeCheckDone = false; // flag to indicate when a dupe check has been done
     const int nc = calls.size();
     for (int i = 0; i < nc; i++) {
@@ -2088,7 +2084,6 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         sunLabelPtr[nr]->clear();
         clearWorked(nr);
     }
-
 }
 
 /*!
@@ -2128,9 +2123,7 @@ void So2sdr::clearWorked(int i)
  */
 void So2sdr::updateWorkedMult(int nr)
 {
-    unsigned int worked[2];
-    worked[0] = 0;
-    worked[1] = 0;
+    unsigned int worked[2]={0,0};
     contest->workedMults(qso[nr], worked);
     for (int ii = 0; ii < MMAX; ii++) {
         QString tmp = multNameLabel[ii]->text();
@@ -2276,7 +2269,7 @@ bool So2sdr::enterFreqOrMode()
     labelLPBearing[activeRadio]->clear();
     sunLabelPtr[activeRadio]->clear();
 
-    return(true);
+    return true;
 }
 
 
@@ -2286,18 +2279,14 @@ bool So2sdr::enterFreqOrMode()
 void So2sdr::updateBreakdown()
 {
     int n = 0;
-    int nm[2];
-    nm[0] = 0;
-    nm[1] = 0;
-    int nb[2];
-    nb[0] = 0;
-    nb[1] = 0;
     for (int i = 0; i < N_BANDS; i++) {
         n += nqso[i];
         if (i==N_BANDS_SCORED) break;
 
         qsoLabel[i]->setNum(nqso[i]);
     }
+    int nm[2]={0,0};
+    int nb[2]={0,0};
     for (int ii = 0; ii < csettings->value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int i = 0; i < N_BANDS; i++) {
             int m = contest->nMultsBWorked(ii, i);
@@ -2328,11 +2317,11 @@ void So2sdr::updateMults(int ir)
     MultTextEdit->clear();
     if (!csettings->value(c_showmults,c_showmults_def).toBool()) return;
 
-    QByteArray tmp = "";
-    QByteArray mult;
-    bool       needed_band, needed;
+    QByteArray tmp;
+    tmp.clear();
     for (int i = 0; i < contest->nMults(multMode); i++) {
-        mult = contest->neededMultName(multMode, band[ir], i, needed_band, needed);
+        bool       needed_band, needed;
+        QByteArray mult = contest->neededMultName(multMode, band[ir], i, needed_band, needed);
         if (excludeMults[multMode].contains(mult)) continue;
         if (csettings->value(c_multsband,c_multsband_def).toBool()) {
             if (needed_band) {
@@ -2357,8 +2346,7 @@ void So2sdr::updateMults(int ir)
  */
 void So2sdr::updateRadioFreq()
 {
-    int           tmp[2];
-
+    int           tmp[NRIG];
     label_160->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_80->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_40->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
@@ -2497,7 +2485,6 @@ void So2sdr::launch_speedDn(Qt::KeyboardModifiers mod)
  */
 void So2sdr::speedUp(int nrig)
 {
-    QByteArray out = "";
     wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
@@ -2514,7 +2501,6 @@ void So2sdr::speedUp(int nrig)
  */
 void So2sdr::speedDn(int nrig)
 {
-    QByteArray out = "";
     wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
     if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
@@ -2687,12 +2673,8 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
 {
     Q_UNUSED(ssbnr);
     Q_UNUSED(ssbRecord);
-    int        i0;
-    int        i1;
-    int        i2;
     int        tmp_wpm = wpm[activeRadio];
     QByteArray out     = "";
-    QByteArray val;
     QByteArray txt = QByteArray::number(activeRadio + 1) + ":";
 
     // will not overwrite a dupe message that is present
@@ -2762,13 +2744,15 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
     winkey->setSpeed(tmp_wpm);
     winkey->setOutput(activeRadio);
     bool repeat = false;
+    int        i1;
+    int        i2;
     if ((i1 = msg.indexOf("{")) != -1) {
-        i0 = 0;
+        int i0 = 0;
         while (i1 != -1) {
             out.append(msg.mid(i0, i1 - i0));
             txt.append(msg.mid(i0, i1 - i0));
             i2  = msg.indexOf("}", i1);
-            val = msg.mid(i1 + 1, i2 - i1 - 1);
+            QByteArray val = msg.mid(i1 + 1, i2 - i1 - 1);
             val = val.trimmed();
             val = val.toUpper();
             for (int i = 0; i < n_token_names; i++) {
@@ -2991,7 +2975,7 @@ void So2sdr::openFile()
  */
 void So2sdr::rescore()
 {
-    Qso            *tmpqso = new Qso(contest->nExchange());
+    Qso tmpqso(contest->nExchange());
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log", *mylog->db);
     while (m.canFetchMore()) {
@@ -3005,24 +2989,24 @@ void So2sdr::rescore()
         dupes[i].clear();
     }
     for (int i = 0; i < m.rowCount(); i++) {
-        tmpqso->call    = m.record(i).value("call").toString().toAscii();
+        tmpqso.call    = m.record(i).value("call").toString().toAscii();
         // run prefix check on call: need to check for /MM, etc
-        tmpqso->country = cty->idPfx(tmpqso, b);
-        tmpqso->exch.clear();
+        tmpqso.country = cty->idPfx(&tmpqso, b);
+        tmpqso.exch.clear();
         QByteArray tmp[4];
         tmp[0] = m.record(i).value("rcv1").toString().toAscii();
         tmp[1] = m.record(i).value("rcv2").toString().toAscii();
         tmp[2] = m.record(i).value("rcv3").toString().toAscii();
         tmp[3] = m.record(i).value("rcv4").toString().toAscii();
-        tmpqso->nr=m.record(i).value("nr").toInt();
+        tmpqso.nr=m.record(i).value("nr").toInt();
 
         for (int j = 0; j < contest->nExchange(); j++) {
-            tmpqso->exch = tmpqso->exch + tmp[j] + " ";
+            tmpqso.exch = tmpqso.exch + tmp[j] + " ";
         }
-        tmpqso->mode = (rmode_t) m.record(i).value("mode").toInt();
-        tmpqso->modeType = cat->getModeType(tmpqso->mode);
-        tmpqso->band = m.record(i).value("band").toInt();
-        tmpqso->pts  = m.record(i).value("pts").toInt();
+        tmpqso.mode = (rmode_t) m.record(i).value("mode").toInt();
+        tmpqso.modeType = cat->getModeType(tmpqso.mode);
+        tmpqso.band = m.record(i).value("band").toInt();
+        tmpqso.pts  = m.record(i).value("pts").toInt();
 
         // valid can be changed to ways:
         // 1) when user unchecks checkbox
@@ -3030,59 +3014,57 @@ void So2sdr::rescore()
         //
         // first check for user changing check status
         bool userValid=m.record(i).value("valid").toBool();
-        tmpqso->valid=userValid;
+        tmpqso.valid=userValid;
 
         // dupe check
         // qsos marked invalid are excluded from log and dupe check
-        tmpqso->dupe = false;
-        if (tmpqso->valid) {
+        tmpqso.dupe = false;
+        if (tmpqso.valid) {
             if (csettings->value(c_dupemode,c_dupemode_def).toInt()!=NO_DUPE_CHECKING) {
                 // can work station on other bands, just check this one
-                QByteArray check=tmpqso->call;
+                QByteArray check=tmpqso.call;
                 // multi-mode contest: append a mode index to the call
                 if (csettings->value(c_multimode,c_multimode_def).toBool()) {
-                    check=check+QByteArray::number((int)tmpqso->modeType);
+                    check=check+QByteArray::number((int)tmpqso.modeType);
                 }
                 if (contest->dupeCheckingByBand()) {
-                    if (dupes[tmpqso->band].contains(check)) {
-                        tmpqso->dupe = true;
+                    if (dupes[tmpqso.band].contains(check)) {
+                        tmpqso.dupe = true;
                     }
                 } else {
                     // qsos count only once on any band
                     for (int j = 0; j < N_BANDS; j++) {
                         if (dupes[j].contains(check)) {
-                            tmpqso->dupe = true;
+                            tmpqso.dupe = true;
                         }
                     }
                 }
-                dupes[tmpqso->band].append(check);
+                dupes[tmpqso.band].append(check);
             }
-     //       if (!tmpqso->dupe) nqso[tmpqso->band]++;
         } else {
-            tmpqso->pts=0;
-            tmpqso->mult[0]=-1;
-            tmpqso->mult[1]=-1;
-            tmpqso->newmult[0]=-1;
-            tmpqso->newmult[1]=-1;
+            tmpqso.pts=0;
+            tmpqso.mult[0]=-1;
+            tmpqso.mult[1]=-1;
+            tmpqso.newmult[0]=-1;
+            tmpqso.newmult[1]=-1;
         }
         // next check exchange
         // in the case of mobiles, this might change dupe status!
-        bool exchValid=contest->validateExchange(tmpqso);
-        tmpqso->valid=userValid & exchValid;
+        bool exchValid=contest->validateExchange(&tmpqso);
+        tmpqso.valid=userValid & exchValid;
 
-        if (!tmpqso->dupe) nqso[tmpqso->band]++;
-        if (!tmpqso->valid || tmpqso->dupe) {
-            tmpqso->pts=0;
-            tmpqso->mult[0]=-1;
-            tmpqso->mult[1]=-1;
-            tmpqso->newmult[0]=-1;
-            tmpqso->newmult[1]=-1;
+        if (!tmpqso.dupe) nqso[tmpqso.band]++;
+        if (!tmpqso.valid || tmpqso.dupe) {
+            tmpqso.pts=0;
+            tmpqso.mult[0]=-1;
+            tmpqso.mult[1]=-1;
+            tmpqso.newmult[0]=-1;
+            tmpqso.newmult[1]=-1;
         }
-        contest->addQso(tmpqso);
+        contest->addQso(&tmpqso);
     }
     updateBreakdown();
     updateMults(activeRadio);
-    delete tmpqso;
 }
 
 
@@ -3166,8 +3148,7 @@ bool So2sdr::checkUserDirectory()
     QDir dir;
     if (dir.exists(userDirectory)) return(true);
 
-    QMessageBox *msg;
-    msg = new QMessageBox(this);
+    QMessageBox *msg= new QMessageBox(this);
     msg->setWindowTitle("Error");
     msg->setText("User data directory " + userDirectory + " does not exist.");
     msg->setInformativeText("Create it?");

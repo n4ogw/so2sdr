@@ -573,13 +573,12 @@ void log::setupQsoNumbers(const int n)
 
 /*!
  * \brief offTime Calculates the number of minutes of off-time taken between start and end.
- * \param str returns string with off time
  * \param minOffTime Minimum offtime length in minutes.
  * \param start Start of contest. QSO's must be after this time to be valid.
  * \param end End of contest. QSO's must be before this time to be valid.
- * \return
+ * \return string giving off time
  */
-void log::offTime(QString &str,int minOffTime,QDateTime start,QDateTime end)
+QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
 {
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log", *db);
@@ -587,8 +586,7 @@ void log::offTime(QString &str,int minOffTime,QDateTime start,QDateTime end)
         m.fetchMore();
     }
     if (m.rowCount() == 0) {
-        str="Off 00:00";
-        return;  // nothing to do
+        return "Off 00:00";  // nothing to do
     }
 
     int totOffTime=0;
@@ -619,11 +617,12 @@ void log::offTime(QString &str,int minOffTime,QDateTime start,QDateTime end)
         lastQsoTime=qsoTime;
         cnt++;
     }
+
     if (totOffTime>=6039) {
-        str="Off 99:99";
+        return "Off 99:99";
     } else {
         int hr=totOffTime/60;
         int min=totOffTime-hr*60;
-        str="Off "+QString::number(hr)+":"+QString("%1").arg(QString::number(min), 2, QChar('0'));
+        return "Off "+QString::number(hr)+":"+QString("%1").arg(QString::number(min), 2, QChar('0'));
     }
 }

@@ -63,7 +63,7 @@ public:
     void exportCabrillo(QFile *,QString call,QString,QString,QString,QString) const;
     bool isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const;
     int lastNr() const;
-    void offTime(QString &str, int minOffTime, QDateTime start, QDateTime end);
+    QString offTime(int minOffTime, QDateTime start, QDateTime end);
     bool openLogFile(QString fname,bool clear,QSettings *s);
     bool qsoPtsField() const;
     void setFieldsShown(const unsigned int snt, const unsigned int rcv);
