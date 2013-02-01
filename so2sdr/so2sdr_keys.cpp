@@ -166,6 +166,15 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             esc();
             r = true;
             break;
+        case Qt::Key_QuoteLeft: // left quote ` Toggles audio stereo
+            if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+                pport->toggleStereoPin();
+            }
+            if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+                otrsp->toggleStereo(activeRadio);
+            }
+            return(true);
+            break;
         case Qt::Key_C:     // alt-C : bring up config menu
             if (mod == Qt::AltModifier) {
                 menubar->setActiveAction(menubar->actions()[1]);
