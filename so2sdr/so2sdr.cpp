@@ -2738,11 +2738,8 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
        - {BEST_CQ} qsy current radio to "best" CQ freq
        - {BEST_CQ_R2} qsy 2nd radio to "best" CQ freq
     */
-    QPalette palette(lineEditCall[activeRadio ^ 1]->palette());
-    palette.setColor(QPalette::Base, ALTD_COLOR);
-    sendingOtherRadio = false;
-    winkey->setSpeed(tmp_wpm);
-    winkey->setOutput(activeRadio);
+    bool switchradio=true;
+    bool first=true;
     bool repeat = false;
     int        i1;
     int        i2;
@@ -2791,18 +2788,24 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         txt = txt.right(txt.size() - 2);
                         txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
                         sendingOtherRadio = true;
+                        switchradio=false;
                         break;
                     case 5: // Radio 2 CQ
+                    {
                         winkey->setSpeed(wpm[activeRadio ^ 1]);
                         winkey->setOutput(activeRadio ^ 1);
                         txt = txt.right(txt.size() - 2);
                         txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
                         setCqMode(activeRadio ^ 1);
                         activeR2CQ = true;
+                        QPalette palette(lineEditCall[activeRadio ^ 1]->palette());
+                        palette.setColor(QPalette::Base, ALTD_COLOR);
                         lineEditCall[activeRadio ^ 1]->setPalette(palette);
                         lineEditCall[activeRadio ^ 1]->setText("CQCQCQ");
                         lineEditExchange[activeRadio ^ 1]->setPalette(palette);
                         sendingOtherRadio = true;
+                        switchradio=false;
+                    }
                         break;
                     case 6: // State
                         out.append(settings->value(s_state,s_state_def).toByteArray());
@@ -2905,6 +2908,16 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                     break;
                 }
             }
+            if (first && switchradio) {
+                // the first element of most macros resets TX radio and speed
+                // TOGGLESTEREOPIN, R2, R2CQ do not
+                sendingOtherRadio = false;
+                winkey->setSpeed(tmp_wpm);
+                winkey->setOutput(activeRadio);
+              //  clearR2CQ(activeRadio ^ 1);
+            }
+            first=false;
+
             i0 = i2 + 1;
             i1 = msg.indexOf("{", i2); // find next one
         }

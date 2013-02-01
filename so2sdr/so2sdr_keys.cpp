@@ -1542,7 +1542,6 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
     ModeTypes mode=cat->modeType(activeRadio);
     int m=(int)mode;
     if (QApplication::keyboardModifiers() & Qt::AltModifier) {
-        qDebug("ALT");
         ssbRecord=true;
     }
     switch (mod) {

@@ -52,7 +52,11 @@ void OTRSP::switchRadios(int nr)
 
     const char rxcmd[2][5]={"RX1\r","RX2\r"};
     const char txcmd[2][5]={"TX1\r","TX2\r"};
-    OTRSPPort->write(rxcmd[nr],4);
+
+    // if in stereo mode, don't switch RX
+    if (!stereo) {
+        OTRSPPort->write(rxcmd[nr],4);
+    }
     OTRSPPort->write(txcmd[nr],4);
 }
 
@@ -66,8 +70,8 @@ void OTRSP::toggleStereo(int nr)
 {
     if (!OTRSPOpen || nr<0 || nr>1) return;
     if (stereo) {
-        switchRadios(nr);
         stereo=false;
+        this->switchRadios(nr);
     } else {
         const char cmd[6]="RX1S\r";
         OTRSPPort->write(cmd,5);
