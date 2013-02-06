@@ -2914,7 +2914,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                 sendingOtherRadio = false;
                 winkey->setSpeed(tmp_wpm);
                 winkey->setOutput(activeRadio);
-              //  clearR2CQ(activeRadio ^ 1);
             }
             first=false;
 
@@ -2939,6 +2938,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
         }
     } else {
         // no macro present send as-is
+        sendingOtherRadio = false;
+        winkey->setSpeed(tmp_wpm);
+        winkey->setOutput(activeRadio);
         out.append(msg);
         txt.append(msg);
         send(out);
