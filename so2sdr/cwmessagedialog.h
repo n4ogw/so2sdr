@@ -48,14 +48,14 @@ public slots:
 
 private:
     ModeTypes      mode;
-    QByteArray     cqCtrlF[12];
-    QByteArray     cqF[12];
-    QByteArray     cqShiftF[12];
-    QByteArray     excF[12];
-    QLineEdit      *ctrlFuncEditPtr[12];
-    QLineEdit      *excFuncEditPtr[12];
-    QLineEdit      *funcEditPtr[12];
-    QLineEdit      *shiftFuncEditPtr[12];
+    QByteArray     cqCtrlF[N_FUNC];
+    QByteArray     cqF[N_FUNC];
+    QByteArray     cqShiftF[N_FUNC];
+    QByteArray     excF[N_FUNC];
+    QLineEdit      *ctrlFuncEditPtr[N_FUNC];
+    QLineEdit      *excFuncEditPtr[N_FUNC];
+    QLineEdit      *funcEditPtr[N_FUNC];
+    QLineEdit      *shiftFuncEditPtr[N_FUNC];
     UpperValidator *upperValidate;
     QSettings      *settings;
 };

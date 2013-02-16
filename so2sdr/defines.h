@@ -346,8 +346,11 @@ typedef void (*fftw_destroy_plan_ptr)(fftw_plan plan);
 
 // /////// Misc stuff
 
+// number of F-keys
+const int N_FUNC=12;
+
 // timers
-const int N_TIMERS =4;
+const int N_TIMERS=4;
 
 // default frequency for various things (all in milliseconds)
 const int timerSettings[]={

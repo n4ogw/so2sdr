@@ -80,7 +80,7 @@ CWMessageDialog::CWMessageDialog(QWidget *parent) : QDialog(parent)
     excFuncEditPtr[9]  = exc_f10_edit;
     excFuncEditPtr[10] = exc_f11_edit;
     excFuncEditPtr[11] = exc_f12_edit;
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setValidator(upperValidate);
         ctrlFuncEditPtr[i]->setValidator(upperValidate);
         shiftFuncEditPtr[i]->setValidator(upperValidate);
@@ -156,7 +156,7 @@ void CWMessageDialog::initialize(QSettings *s,ModeTypes modetype)
    stored values and close dialog */
 void CWMessageDialog::rejectChanges()
 {
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setText(cqF[i]);
         ctrlFuncEditPtr[i]->setText(cqCtrlF[i]);
         shiftFuncEditPtr[i]->setText(cqShiftF[i]);
@@ -187,32 +187,32 @@ void CWMessageDialog::updateCWMsg()
     if (m>1) m=0; // digi keys not implemented yet
 
     // function keys: cq
-    settings->beginWriteArray(c_cq_func[m],12);
-    for (int i=0;i<12;i++) {
+    settings->beginWriteArray(c_cq_func[m],N_FUNC);
+    for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",funcEditPtr[i]->text());
         cqF[i]=funcEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: ctrl+func
-    settings->beginWriteArray(c_ctrl_func[m],12);
-    for (int i=0;i<12;i++) {
+    settings->beginWriteArray(c_ctrl_func[m],N_FUNC);
+    for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",ctrlFuncEditPtr[i]->text());
         cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: shift+func
-    settings->beginWriteArray(c_shift_func[m],12);
-    for (int i=0;i<12;i++) {
+    settings->beginWriteArray(c_shift_func[m],N_FUNC);
+    for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",shiftFuncEditPtr[i]->text());
             cqShiftF[i]=shiftFuncEditPtr[i]->text().toAscii();
     }
     settings->endArray();
     // function keys: exchange
-    settings->beginWriteArray(c_ex_func[m],12);
-    for (int i=0;i<12;i++) {
+    settings->beginWriteArray(c_ex_func[m],N_FUNC);
+    for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",excFuncEditPtr[i]->text());
         excF[i]=excFuncEditPtr[i]->text().toAscii();
