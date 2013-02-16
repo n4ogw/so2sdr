@@ -206,7 +206,7 @@ void So2sdr::populateDupesheet()
         dupeCallsKey[0][i].clear();
     }
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log WHERE BAND=" + QString::number(band[activeRadio]), *mylog->db);
+    m.setQuery("SELECT * FROM log WHERE BAND=" + QString::number(band[activeRadio]), mylog->db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }

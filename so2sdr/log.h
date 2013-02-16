@@ -83,7 +83,7 @@ private:
     int          nrField;
     int          rstField;
     QSettings    *csettings;
-    QSqlDatabase *db;
+    QSqlDatabase db;
     QString      logFileName;
     unsigned int rcvFieldsShown;
     unsigned int sntFieldsShown;

@@ -228,7 +228,7 @@ private:
     QCheckBox            *windowBorderCheckBox;
     QDir                 *directory;
     QErrorMessage        *errorBox;
-    QPixmap              *iconValid;
+    QPixmap              iconValid;
     QLabel               *freqDisplayPtr[NRIG];
     QLabel               *grabLabel;
     QLabel               *labelBearing[NRIG];

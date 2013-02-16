@@ -92,7 +92,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     setFocusPolicy(Qt::StrongFocus);
     errorBox           = new QErrorMessage(this);
     setWindowIcon(QIcon(dataDirectory + "/icon24x24.png"));
-    iconValid=new QPixmap(dataDirectory + "/check.png");
+    if (!iconValid.load(dataDirectory + "/check.png")) {
+        qDebug("file check.png missing");
+    }
 
     // pointers for each radio
     for (int i=0;i<NRIG;i++) {
@@ -346,7 +348,6 @@ So2sdr::~So2sdr()
         model->clear();
         delete model;
     }
-    delete iconValid;
     delete mylog;
     if (model) {
         QSqlDatabase::removeDatabase("QSQLITE");
@@ -1572,7 +1573,7 @@ void So2sdr::initLogView()
     LogTableView->verticalHeader()->hide();
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
 
-    model = new tableModel(this,*mylog->db);
+    model = new tableModel(this,mylog->db);
     model->setTable("log");
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
@@ -1886,12 +1887,12 @@ void So2sdr::exchCheck(int nr,const QString &exch)
     qso[nr]->valid=contest->validateExchange(qso[nr]);
     if (qso[nr]->valid) {
         updateWorkedMult(nr);
-        validLabel[nr]->setPixmap(*iconValid);
+        validLabel[nr]->setPixmap(iconValid);
     } else {
         validLabel[nr]->clear();
         // clear just mult status display
         for (int ii=0;ii<MMAX;ii++) {
-            multWorkedLabel[nr][ii]->setText(multNameLabel[ii]->text());
+      //      multWorkedLabel[nr][ii]->setText(multNameLabel[ii]->text());
         }
     }
 }
@@ -2992,7 +2993,7 @@ void So2sdr::rescore()
 {
     Qso tmpqso(contest->nExchange());
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", *mylog->db);
+    m.setQuery("SELECT * FROM log", mylog->db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -3291,7 +3292,7 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
     }
     // query for partial fragment
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log WHERE VALID<>0 AND (CALL LIKE'%" + part + "%' )", *mylog->db);
+    m.setQuery("SELECT * FROM log WHERE VALID<>0 AND (CALL LIKE'%" + part + "%' )", mylog->db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }

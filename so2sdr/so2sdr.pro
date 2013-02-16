@@ -150,7 +150,7 @@ unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += fftw3 hamlib portaudio-2.0 sndfile
 
-    QMAKE_CXXFLAGS += -O2 -g \
+    QMAKE_CXXFLAGS += -O2 \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
     HEADERS += linux_pp.h \
          glbandmap.h \

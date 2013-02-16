@@ -48,14 +48,12 @@ log:: log(int n_exch, QObject *parent = 0) : QObject(parent)
     _qsoPtsField = false;
     rstField     = -1;
     logFileName.clear();
-    db=new QSqlDatabase();
-    *db = QSqlDatabase::addDatabase("QSQLITE");
+    db=QSqlDatabase::addDatabase("QSQLITE");
 }
 
 log :: ~log()
 {
     closeLogFile();
-    delete db;
     delete [] prefill;
 }
 
@@ -64,7 +62,7 @@ log :: ~log()
   */
 void log::closeLogFile()
 {
-    db->close();
+    db.close();
 }
 
 /*!
@@ -75,7 +73,7 @@ void log::closeLogFile()
 bool log::exportADIF(QFile *adifFile) const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", *db);
+    m.setQuery("SELECT * FROM log", db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -214,7 +212,7 @@ bool log::exportADIF(QFile *adifFile) const
 void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString snt_exch2,QString snt_exch3,QString snt_exch4) const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", *db);
+    m.setQuery("SELECT * FROM log", db);
 
     while (m.canFetchMore()) {
         m.fetchMore();
@@ -376,7 +374,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 
     // call can only be worked once on any band
     if (!DupeCheckingEveryBand) {
-        m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", *db);
+        m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", db);
         while (m.canFetchMore()) {
             m.fetchMore();
         }
@@ -422,7 +420,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
                 return(false);
             }
         }
-        m.setQuery(query, *db);
+        m.setQuery(query, db);
         m.query().exec();
         while (m.canFetchMore()) {
             m.fetchMore();
@@ -431,7 +429,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             dupe=true;
         }
         if (FillWorked) {
-            m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", *db);
+            m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", db);
             for (int i = 0; i < m.rowCount(); i++) {
                 qso->worked += bits[m.record(i).value(SQL_COL_BAND).toInt()];
             }
@@ -449,7 +447,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 int log::lastNr() const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", *db);
+    m.setQuery("SELECT * FROM log", db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -491,16 +489,16 @@ bool log::openLogFile(QString fname,bool clear,QSettings *s)
 
     csettings=s;
     logFileName = fname.remove(".cfg") + ".log";
-    db->setDatabaseName(logFileName);
-    if (!db->open()) {
+    db.setDatabaseName(logFileName);
+    if (!db.open()) {
         return(false);
     }
-    QSqlQuery query(*db);
+    QSqlQuery query(db);
 
     if (!query.exec("create table if not exists log (nr int primary key,time text,freq int,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid int)")) {
         return(false);
     }
-    return(db->commit());
+    return(db.commit());
 }
 
 /*! show the qso points column on screen
@@ -581,7 +579,7 @@ void log::setupQsoNumbers(const int n)
 QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", *db);
+    m.setQuery("SELECT * FROM log", db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
