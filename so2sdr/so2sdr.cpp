@@ -67,19 +67,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     qRegisterMetaType<rmode_t>("rmode_t");
     qRegisterMetaType<pbwidth_t>("pbwidth_t");
 
-#ifdef Q_OS_WIN
-    // in Windows, keep data files in same directory as executable
-    //
-    installDirectory = QApplication::applicationDirPath();
-    dataDirectory    = installDirectory;
-#endif
-#ifdef Q_OS_LINUX
-    // in Linux, installDirectory is typically /usr/local with executable in
-    // /usr/local/bin and data in /usr/local/share/so2sdr
-    //
-    installDirectory = INSTALL_DIR;
-    dataDirectory    = installDirectory + "/share/so2sdr/";
-#endif
     // check to see if user directory exists
     initialized = checkUserDirectory();
 
@@ -841,14 +828,14 @@ bool So2sdr::setupContest()
     cwMessage->initialize(csettings,CWType);
     ssbMessage->initialize(csettings,PhoneType);
     options->initialize(csettings);
-    cty = new Cty();
+    cty = new Cty(*csettings);
     connect(cty, SIGNAL(ctyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     if (contest->zoneType() == 0) {
         contest->setMyZone(settings->value(s_cqzone,s_cqzone_def).toInt());
     } else {
         contest->setMyZone(settings->value(s_ituzone,s_ituzone_def).toInt());
     }
-    cty->initialize(csettings,dataDirectory,station->lat(), station->lon(), contest->zoneType());
+    cty->initialize(station->lat(), station->lon(), contest->zoneType());
 
     /* @todo disable changing the grid square
       need to figure work-around */

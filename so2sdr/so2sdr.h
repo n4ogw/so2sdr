@@ -261,9 +261,7 @@ private:
     QSettings            *csettings;
     QSettings            *settings;
     QString              contestDirectory;
-    QString              dataDirectory;
     QString              fileName;
-    QString              installDirectory;
     QString              settingsFile;
     QThread              catThread;
     QThread              dvkThread;

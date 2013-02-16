@@ -27,7 +27,7 @@
 /*! After calling constructor, must call initialize(), which reads cty file and sets up
      databases.
  */
-Cty::Cty()
+Cty::Cty(QSettings& s) : settings(s)
 {
     // portable identifiers not giving a new country
     portId.clear();
@@ -371,13 +371,12 @@ int Cty::idPfx2(Qso *qso, int sz) const
 
 /*! parses .cty file, makes country list
 
-   -  s : pointer to contest settings object
-   -  lat=latitude of station +=N
+      -  lat=latitude of station +=N
    -  lon=longitude of station +=W
    -  ZoneType: 0: read CQ zones/countries  1: read ITU zones/ARRL countries
 
  */
-void Cty::initialize(QSettings *s,QString d,double la, double lo, int ZoneType)
+void Cty::initialize(double la, double lo, int ZoneType)
 {
 /*! CTY file format
 
@@ -396,8 +395,8 @@ void Cty::initialize(QSettings *s,QString d,double la, double lo, int ZoneType)
  */
     double mylat=la;
     double mylon=lo;
-    settings=s;
-    QFile file(d+"/"+settings->value(c_cty,c_cty_def).toString());
+
+    QFile file(dataDirectory+"/"+settings.value(c_cty,c_cty_def).toString());
     int   indx;
 
     // sunrise/sunset times for station
@@ -407,8 +406,8 @@ void Cty::initialize(QSettings *s,QString d,double la, double lo, int ZoneType)
     // certain countries that span many zones
     QString zoneFileName;
     switch (ZoneType) {
-    case 0:zoneFileName=d+"/cq_zone_latlong.dat";break;
-    case 1:zoneFileName=d+"/itu_zone_latlong.dat";break;
+    case 0:zoneFileName=dataDirectory+"/cq_zone_latlong.dat";break;
+    case 1:zoneFileName=dataDirectory+"/itu_zone_latlong.dat";break;
     }
     QFile file2(zoneFileName);
     if (file2.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -445,7 +444,7 @@ void Cty::initialize(QSettings *s,QString d,double la, double lo, int ZoneType)
         }
     }
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString tmp = "ERROR: can't open file " + settings->value(c_cty,c_cty_def).toString();
+        QString tmp = "ERROR: can't open file " + settings.value(c_cty,c_cty_def).toString();
         emit(ctyError(tmp));
         return;
     }

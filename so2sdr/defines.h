@@ -18,6 +18,7 @@
  */
 #ifndef DEFINES_H
 #define DEFINES_H
+#include <QApplication>
 #include <QByteArray>
 #include <QColor>
 #include <QDateTime>
@@ -38,6 +39,24 @@ const QString userDirectory = QDir::homePath() + "/so2sdr";
 #ifdef Q_OS_LINUX
 const QString userDirectory = QDir::homePath() + "/.so2sdr";
 #endif
+
+// @todo need to eventually make dataDirectory configurable by command line
+// argument
+
+#ifdef Q_OS_WIN
+    // in Windows, keep data files in same directory as executable
+    //
+const QString installDirectory = QApplication::applicationDirPath();
+const QString dataDirectory    = installDirectory;
+#endif
+#ifdef Q_OS_LINUX
+    // in Linux, installDirectory is typically /usr/local with executable in
+    // /usr/local/bin and data in /usr/local/share/so2sdr
+    //
+const QString installDirectory = INSTALL_DIR;
+const QString dataDirectory    = installDirectory + "/share/so2sdr/";
+#endif
+
 
 #ifdef Q_OS_WIN
 // for some reason, can't access this variable in MSVC

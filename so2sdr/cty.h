@@ -34,12 +34,12 @@ class Cty : public QObject
 Q_OBJECT
 
 public:
-    Cty();
+    Cty(QSettings& s);
     ~Cty();
 
     int findPfx(QByteArray prefix, int& zone, Cont &continent, bool &o) const;
     int idPfx(Qso *qso, bool &qsy) const;
-    void initialize(QSettings *s, QString d,double la, double lo, int ZoneType);
+    void initialize(double la, double lo, int ZoneType);
     void mySunTimes(QString &sunTime);
     int nCountries() const;
     QByteArray pfxName(int indx) const;
@@ -58,7 +58,7 @@ private:
     QList<QByteArray> portId;
     QList<QByteArray> portIdMM;
     QList<QByteArray> portIdMobile;
-    QSettings *settings;
+    QSettings&        settings;
     QString           mySun;
     QList<int>        zoneBearing;
     QList<QString>    zoneSun;
