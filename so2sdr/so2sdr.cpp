@@ -868,7 +868,7 @@ bool So2sdr::setupContest()
     master = new Master();
     connect(master, SIGNAL(masterError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     startMaster();
-    mylog = new log(contest->nExchange(), this);
+    mylog = new log(*csettings,contest->nExchange(), this);
     connect(contest,SIGNAL(mobileDupeCheck(Qso*)),mylog,SLOT(mobileDupeCheck(Qso*)));
     connect(contest,SIGNAL(clearDupe()),So2sdrStatusBar,SLOT(clearMessage()));
     mylog->setRstField(contest->rstField());
@@ -881,7 +881,7 @@ bool So2sdr::setupContest()
 
     for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
     directory->setCurrent(contestDirectory);
-    mylog->openLogFile(fileName,false,csettings);
+    mylog->openLogFile(fileName,false);
     initLogView();
     loadSpots();
     rescore();

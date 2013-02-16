@@ -33,7 +33,7 @@
 /*!
    n_exch is number of exchange fields; this can't change during the contest
  */
-log:: log(int n_exch, QObject *parent = 0) : QObject(parent)
+log:: log(QSettings &s, int n_exch, QObject *parent = 0) : QObject(parent),csettings(s)
 {
     nExchange = n_exch;
     if (nExchange > MAX_EXCH_FIELDS) {
@@ -388,8 +388,8 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
         // case, count dupe only if exchange is identical
         QString query="SELECT * FROM log WHERE call='" + qso->call + "' AND band=" + QString::number(qso->band);
 
-        if (qso->isMobile && csettings->value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
-            QString exch=qso->rcv_exch[csettings->value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
+        if (qso->isMobile && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
+            QString exch=qso->rcv_exch[csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
             // if exchange not entered, can't determine dupe status yet
             if (exch.isEmpty()) {
                 return(false);
@@ -401,7 +401,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             }
 
             query=query+ " AND ";
-            switch (csettings->value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
+            switch (csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
             case 1:
                 query=query+"rcv1='"+exch+"'";
                 break;
@@ -479,13 +479,13 @@ void log::mobileDupeCheck(Qso *qso)
 
    s is pointer to contest settings file
  */
-bool log::openLogFile(QString fname,bool clear,QSettings *s)
+bool log::openLogFile(QString fname,bool clear)
 {
     Q_UNUSED(clear);
     if (fname.isEmpty())
         return(false);
 
-    csettings=s;
+  //  csettings=s;
     logFileName = fname.remove(".cfg") + ".log";
     db.setDatabaseName(logFileName);
     if (!db.open()) {

@@ -55,7 +55,7 @@ class log : public QObject
 Q_OBJECT
 
 public:
-    log(int n_exch, QObject *parent);
+    log(QSettings& s,int n_exch, QObject *parent);
     ~log();
 
     void closeLogFile();
@@ -64,7 +64,7 @@ public:
     bool isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const;
     int lastNr() const;
     QString offTime(int minOffTime, QDateTime start, QDateTime end);
-    bool openLogFile(QString fname,bool clear,QSettings *s);
+    bool openLogFile(QString fname,bool clear);
     bool qsoPtsField() const;
     void setFieldsShown(const unsigned int snt, const unsigned int rcv);
     void setPrefill(const int indx);
@@ -82,7 +82,7 @@ private:
     int          nExchange;
     int          nrField;
     int          rstField;
-    QSettings    *csettings;
+    QSettings&   csettings;
     QSqlDatabase db;
     QString      logFileName;
     unsigned int rcvFieldsShown;
