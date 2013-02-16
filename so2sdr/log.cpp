@@ -43,7 +43,6 @@ log:: log(int n_exch, QObject *parent = 0) : QObject(parent)
     nrField        = -1;
     sntFieldsShown = 0;
     rcvFieldsShown = 0;
-    prefill        = new bool[n_exch];
     for (int i = 0; i < n_exch; i++) prefill[i] = false;
     _qsoPtsField = false;
     rstField     = -1;
@@ -54,7 +53,6 @@ log:: log(int n_exch, QObject *parent = 0) : QObject(parent)
 log :: ~log()
 {
     closeLogFile();
-    delete [] prefill;
 }
 
 /*!
@@ -535,6 +533,7 @@ void log::setFieldsShown(const unsigned int snt, const unsigned int rcv)
  */
 void log::setPrefill(const int indx)
 {
+    if (indx<0 || indx>=MAX_EXCH_FIELDS) return;
     prefill[indx] = true;
 }
 

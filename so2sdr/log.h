@@ -77,7 +77,7 @@ public slots:
     void mobileDupeCheck(Qso *qso);
 
 private:
-    bool         *prefill;
+    bool         prefill[MAX_EXCH_FIELDS];
     bool         _qsoPtsField;
     int          nExchange;
     int          nrField;
