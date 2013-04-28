@@ -22,8 +22,12 @@
 #include "cwmessagedialog.h"
 #include "defines.h"
 
-CWMessageDialog::CWMessageDialog(QWidget *parent) : QDialog(parent)
+CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(parent)
 {
+    // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
+    m=(int)modetype;
+    if (m>1) m=0; // digi keys not implemented yet
+
     setupUi(this);
     upperValidate = new UpperValidator(this);
     connect(cwmessage_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
@@ -101,14 +105,10 @@ CWMessageDialog::CWMessageDialog(QWidget *parent) : QDialog(parent)
 /*!
  * \brief CWMessageDialog::initialize Initialize dialog from settings file
  * \param s  contest settings file
- * \param modeype Current type of mode: CW, PHONE have different saved macros
- */
-void CWMessageDialog::initialize(QSettings *s,ModeTypes modetype)
+  */
+void CWMessageDialog::initialize(QSettings *s)
 {
     settings=s;
-    mode=modetype;
-    int m=(int)mode;
-    if (m>1) m=0; // digi keys not implemented yet
 
     // function keys: cq
     int sz=settings->beginReadArray(c_cq_func[m]);
@@ -162,8 +162,6 @@ void CWMessageDialog::rejectChanges()
         shiftFuncEditPtr[i]->setText(cqShiftF[i]);
         excFuncEditPtr[i]->setText(excF[i]);
     }
-    int m=(int)mode;
-    if (m>1) m=0; // digi keys not implemented yet
 
     qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
     qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
@@ -183,9 +181,6 @@ CWMessageDialog::~CWMessageDialog()
  */
 void CWMessageDialog::updateCWMsg()
 {
-    int m=(int)mode;
-    if (m>1) m=0; // digi keys not implemented yet
-
     // function keys: cq
     settings->beginWriteArray(c_cq_func[m],N_FUNC);
     for (int i=0;i<N_FUNC;i++) {

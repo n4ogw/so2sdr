@@ -144,11 +144,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(station, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(station, SIGNAL(stationUpdate()), this, SLOT(stationUpdate()));
     station->hide();
-    cwMessage = new CWMessageDialog(this);
+    cwMessage = new CWMessageDialog(CWType,this);
     connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     cwMessage->hide();
-    ssbMessage = new CWMessageDialog(this);
+    ssbMessage = new CWMessageDialog(PhoneType,this);
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     ssbMessage->setWindowTitle("SSB Messages");
@@ -164,11 +164,13 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
-    //dvk = new DVK(*settings);
-    //connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
-    //connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
-    //dvk->moveToThread(&dvkThread);
-    //startDvk();
+    //DVK
+    dvk = new DVK(*settings);
+    connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
+    connect(this,SIGNAL(recordDvk(int)),dvk,SLOT(recordMessage(int)));
+    connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
+    dvk->moveToThread(&dvkThread);
+    startDvk();
     sdr = new SDRDialog(*settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -346,14 +348,14 @@ So2sdr::~So2sdr()
     }
     delete cat;
     // stop dvk thread
-    /*
+
     emit(stopDvk());
     if (dvkThread.isRunning()) {
         dvkThread.quit();
         dvkThread.wait();
     }
     delete dvk;
-    */
+
     if (bandmapOn[0]) {
         bandmap[0]->close();
     }
@@ -825,8 +827,8 @@ bool So2sdr::setupContest()
     QString cname=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
     if (cname.isEmpty()) return(false);
     selectContest(cname.toAscii());
-    cwMessage->initialize(csettings,CWType);
-    ssbMessage->initialize(csettings,PhoneType);
+    cwMessage->initialize(csettings);
+    ssbMessage->initialize(csettings);
     options->initialize(csettings);
     cty = new Cty(*csettings);
     connect(cty, SIGNAL(ctyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
@@ -889,11 +891,11 @@ bool So2sdr::setupContest()
     if (options->OffTimeCheckBox->isChecked()) {
         updateOffTime();
     }
-    /*
+
     if (sdr->checkBox_3->isChecked()) {
         dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
     }
-    */
+
     return(true);
 }
 
@@ -2890,7 +2892,11 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         out.append(0x1e);
                         break;
                     case 25: // play/record audio
-                        //emit(playDvk(ssbnr,activeRadio));
+                        if (ssbRecord) {
+                            emit(recordDvk(ssbnr));
+                        } else {
+                            emit(playDvk(ssbnr,activeRadio));
+                        }
                         break;
                     }
                     break;

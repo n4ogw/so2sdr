@@ -1363,13 +1363,13 @@ void So2sdr::esc()
     }
     case PhoneType:
     {
-        /*
+
         if (dvk->audioRunning()) {
             emit(stopDvk());
             keyInProgress=false;
             return;
         }
-        */
+
         break;
 
     }
@@ -1547,12 +1547,17 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
     if (statusBarDupe) {
         So2sdrStatusBar->clearMessage();
     }
-    bool ssbRecord=false;
     ModeTypes mode=cat->modeType(activeRadio);
     int m=(int)mode;
-    if (QApplication::keyboardModifiers() & Qt::AltModifier) {
-        ssbRecord=true;
+
+    // in voice mode check for both Control+Shift to record a message
+    if (mode==PhoneType) {
+        if ((mod & Qt::ShiftModifier) && (mod & Qt::ControlModifier)) {
+            expandMacro(ssbMessage->cqF[i].toUpper(),i,true);
+            return;
+        }
     }
+
     switch (mod) {
     case Qt::NoModifier:
         if (i == 1 && csettings->value(c_sprintmode,c_sprintmode_def).toBool() && cqQsoInProgress[activeRadio]) {
@@ -1571,7 +1576,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
                 expandMacro(cwMessage->cqF[i].toUpper(),-1,false);
                 break;
             case PhoneType:
-                expandMacro(ssbMessage->cqF[i].toUpper(),i,ssbRecord);
+                expandMacro(ssbMessage->cqF[i].toUpper(),i,false);
                 break;
             }
         } else {
@@ -1599,7 +1604,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
                 expandMacro(cwMessage->excF[i].toUpper(),-1,false);
                 break;
             case PhoneType:
-                expandMacro(ssbMessage->excF[i].toUpper(),i+12,ssbRecord);
+                expandMacro(ssbMessage->excF[i].toUpper(),i+12,false);
                 break;
             }
         }
@@ -1610,7 +1615,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
             expandMacro(cwMessage->cqCtrlF[i].toUpper(),-1,false);
             break;
         case PhoneType:
-            expandMacro(ssbMessage->cqCtrlF[i].toUpper(),i+24,ssbRecord);
+            // no Ctrl-func macros for SSB
             break;
         }
         break;
@@ -1620,7 +1625,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
             expandMacro(cwMessage->cqShiftF[i].toUpper(),-1,false);
             break;
         case PhoneType:
-            expandMacro(ssbMessage->cqShiftF[i].toUpper(),i+36,ssbRecord);
+            // no Shift-func macros for SSB
             break;
         }
         break;

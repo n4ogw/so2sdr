@@ -71,6 +71,7 @@ private:
     bool busy_;
     bool audioRunning_;
     bool messagePlaying_;
+    bool messageRecording_;
     int channel;
     int msgNr;
     unsigned long int position;

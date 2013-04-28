@@ -346,6 +346,9 @@ typedef void (*fftw_destroy_plan_ptr)(fftw_plan plan);
 
 // /////// Misc stuff
 
+// DVK max message length (seconds)
+const int DVK_MAX_LEN=20;
+
 // number of F-keys
 const int N_FUNC=12;
 

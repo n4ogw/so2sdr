@@ -109,6 +109,7 @@ public slots:
 
 signals:
     void playDvk(int,int);
+    void recordDvk(int);
     void stopDvk();
     void qsyExact(int, int);
     void setRigMode(int, rmode_t, pbwidth_t);

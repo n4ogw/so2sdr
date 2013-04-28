@@ -37,9 +37,9 @@ class CWMessageDialog : public QDialog, public Ui::CWMessageDialog
 Q_OBJECT
 
 public:
-    CWMessageDialog(QWidget *parent = 0);
+    CWMessageDialog(ModeTypes modetype,QWidget *parent = 0);
     ~CWMessageDialog();
-    void initialize(QSettings *s,ModeTypes modetype);
+    void initialize(QSettings *s);
     friend class So2sdr;
 
 public slots:
@@ -47,7 +47,7 @@ public slots:
     void rejectChanges();
 
 private:
-    ModeTypes      mode;
+    int            m;
     QByteArray     cqCtrlF[N_FUNC];
     QByteArray     cqF[N_FUNC];
     QByteArray     cqShiftF[N_FUNC];

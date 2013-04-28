@@ -32,6 +32,7 @@ DVK::DVK(QSettings &s, QObject *parent) : QObject(parent),settings(s)
     connect(timer,SIGNAL(timeout()),this,SLOT(clearTimer()));
     audioRunning_=false;
     messagePlaying_=false;
+    messageRecording_=false;
     busy_=false;
     for (int i=0;i<DVK_MAX_MSG;i++) {
         msg[i].sz=0;
@@ -147,10 +148,11 @@ void DVK::loadMessages(QString filename,QString op)
     } else {
         qDebug("frames=%d samplerate=%d channels=%d",(int)sfInfo.frames,(int)sfInfo.samplerate,(int)sfInfo.channels);
     }
+    /*
     if ((int)sfInfo.channels!=1) {
         sf_close(sndFile);
         return;
-    }
+    }*/
 
     // read in WAV
     msg[0].snddata=new int[sfInfo.frames];
@@ -205,7 +207,6 @@ int DVK::writeCallback(const void *input, void *output, unsigned long frameCount
         static_cast<DVK*>(userdata)->mutex.unlock();
         return paComplete;
     }
-    //static_cast<DVK*>(userdata)->messagePlaying_=true;
     return paContinue;
 }
 
@@ -219,13 +220,14 @@ int DVK::recordCallback(const void *input, void *output, unsigned long frameCoun
     Q_UNUSED(timeInfo);
     Q_UNUSED(statusFlags);
 
-    int pos=static_cast<DVK*>(userdata)->position;
+    unsigned long int pos=static_cast<DVK*>(userdata)->position;
     int nr=static_cast<DVK*>(userdata)->msgNr;
     int *ptr=& static_cast<DVK*>(userdata)->msg[nr].snddata[pos];
     int *inp=(int *)input;
 
-    // terminate after 5 seconds
-    if ((pos + frameCount)>= (44100*5) ) {
+    // terminate if over the max length or signal given to stop
+    if (!(static_cast<DVK*>(userdata)->messageRecording_) || (pos + frameCount)>= (44100*DVK_MAX_LEN) ) {
+        static_cast<DVK*>(userdata)->msg[nr].sz=pos+frameCount;
         static_cast<DVK*>(userdata)->saveMessage();
         return paComplete;
     }
@@ -321,7 +323,7 @@ void DVK::playMessage(int nr,int ch)
  */
 void DVK::saveMessage()
 {
-
+    qDebug("SAVE message");
 }
 
 /*!
@@ -334,18 +336,26 @@ void DVK::recordMessage(int nr)
     if (audioRunning_) {
         cancelMessage();
     }
+    // if recording a message, end that recording
+    if (messageRecording_) {
+        qDebug("stop recording");
+        messageRecording_=false;
+        return;
+    } else {
+        qDebug("start recording");
+        messageRecording_=true;
+    }
+
     // clear out message
+    // allocate enough memory for up to 20 seconds of recording
     msgNr=nr;
     if (msg[nr].sz!=0) {
         msg[nr].sz=0;
         delete [] msg[nr].snddata;
     }
-    msg[nr].snddata=new int[44100*5];
+    msg[nr].snddata=new int[44100*DVK_MAX_LEN];
 
-    // allocate enough memory for 5 seconds of recording
     position=0;
-
-
     PaStreamParameters inputParameters;
     inputParameters.device = Pa_GetDefaultInputDevice();
     inputParameters.channelCount = 1;

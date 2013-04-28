@@ -243,7 +243,7 @@
      <item row="11" column="0">
       <widget class="QCheckBox" name="checkBox_3">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="font">
         <font>
