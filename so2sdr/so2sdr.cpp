@@ -165,12 +165,14 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
     //DVK
+#ifdef DVK_ENABLE
     dvk = new DVK(*settings);
     connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
     connect(this,SIGNAL(recordDvk(int)),dvk,SLOT(recordMessage(int)));
     connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
     dvk->moveToThread(&dvkThread);
     startDvk();
+#endif
     sdr = new SDRDialog(*settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -217,8 +219,12 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options, SIGNAL(accepted()), this, SLOT(updateOptions()));
     connect(actionCW_Messages, SIGNAL(triggered()), cwMessage, SLOT(show()));
     connect(actionCW_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
+#ifdef DVK_ENABLE
     connect(actionSSB_Messages, SIGNAL(triggered()), ssbMessage, SLOT(show()));
     connect(actionSSB_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
+#else
+    actionSSB_Messages->setEnabled(false);
+#endif
     initDupeSheet();
     menuWindows->addSeparator();
     bandmapCheckBox[0] = new QCheckBox("Bandmap 1", menuWindows);
@@ -348,13 +354,14 @@ So2sdr::~So2sdr()
     }
     delete cat;
     // stop dvk thread
-
+#ifdef DVK_ENABLE
     emit(stopDvk());
     if (dvkThread.isRunning()) {
         dvkThread.quit();
         dvkThread.wait();
     }
     delete dvk;
+#endif
 
     if (bandmapOn[0]) {
         bandmap[0]->close();
@@ -694,7 +701,9 @@ void So2sdr::enableUI()
         lineEditExchange[i]->setEnabled(true);
     }
     cwMessage->setEnabled(true);
+#ifdef DVK_ENABLE
     ssbMessage->setEnabled(true);
+#endif
     options->setEnabled(true);
     actionCW_Messages->setEnabled(true);
     actionContestOptions->setEnabled(true);
@@ -828,7 +837,9 @@ bool So2sdr::setupContest()
     if (cname.isEmpty()) return(false);
     selectContest(cname.toAscii());
     cwMessage->initialize(csettings);
+#ifdef DVK_ENABLE
     ssbMessage->initialize(csettings);
+#endif
     options->initialize(csettings);
     cty = new Cty(*csettings);
     connect(cty, SIGNAL(ctyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
@@ -891,11 +902,11 @@ bool So2sdr::setupContest()
     if (options->OffTimeCheckBox->isChecked()) {
         updateOffTime();
     }
-
+#ifdef DVK_ENABLE
     if (sdr->checkBox_3->isChecked()) {
         dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
     }
-
+#endif
     return(true);
 }
 
@@ -2892,11 +2903,13 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         out.append(0x1e);
                         break;
                     case 25: // play/record audio
+#ifdef DVK_ENABLE
                         if (ssbRecord) {
                             emit(recordDvk(ssbnr));
                         } else {
                             emit(playDvk(ssbnr,activeRadio));
                         }
+#endif
                         break;
                     }
                     break;

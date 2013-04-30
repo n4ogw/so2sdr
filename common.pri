@@ -4,3 +4,6 @@
 # - data files in $$(SO2SDR_INSTALL_DIR)/share/so2sdr
 
 SO2SDR_INSTALL_DIR = /usr/local
+
+#enable DVK build
+#DVK_ENABLE = true

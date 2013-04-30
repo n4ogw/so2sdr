@@ -153,10 +153,17 @@ void SDRDialog::updateFromSettings()
         if (n>(DeviceCombo[i]->maxCount())) n=0;
         DeviceCombo[i]->setCurrentIndex(n);
     }
+#ifdef DVK_ENABLE
     Checkbox[2]->setChecked(settings.value(s_dvk_enabled,s_dvk_enabled_def).toBool());
     APICombo[2]->setCurrentIndex(settings.value(s_dvk_api,s_dvk_api_def).toInt());
     DeviceCombo[2]->setCurrentIndex(settings.value(s_dvk_device,s_dvk_device_def).toInt());
     DVKRecordingComboBox->setCurrentIndex(settings.value(s_dvk_rec_device,s_dvk_rec_device_def).toInt());
+#else
+    Checkbox[2]->setEnabled(false);
+    APICombo[2]->setEnabled(false);
+    DeviceCombo[2]->setEnabled(false);
+    DVKRecordingComboBox->setEnabled(false);
+#endif
     SpotCallsCheckBox->setChecked(settings.value(s_sdr_mark,s_sdr_mark_def).toBool());
     ChangeRadioClickCheckBox->setChecked(settings.value(s_sdr_changeclick,s_sdr_changeclick_def).toBool());
     lineEditIntegTime->setText(settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
@@ -250,10 +257,12 @@ void SDRDialog::updateSDR()
         settings.setValue(s_sdr_api[i],APICombo[i]->currentIndex());
         settings.setValue(s_sdr_device[i],DeviceCombo[i]->currentIndex());
     }
+#ifdef DVK_ENABLE
     settings.setValue(s_dvk_enabled,Checkbox[2]->isChecked());
     settings.setValue(s_dvk_api,APICombo[2]->currentIndex());
     settings.setValue(s_dvk_device,DeviceCombo[2]->currentIndex());
     settings.setValue(s_dvk_rec_device,DVKRecordingComboBox->currentIndex());
+#endif
     settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
     settings.setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
     settings.setValue(s_sdr_mark,SpotCallsCheckBox->isChecked());
