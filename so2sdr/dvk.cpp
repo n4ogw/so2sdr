@@ -24,16 +24,29 @@
 #include <QDir>
 #include <QThread>
 
+/*!
+  DVK support. Provides the following functionality
+
+  -record messages
+  -play back stored WAV files
+  -in live mode, loop audio from input to output
+
+  Uses portaudio and libsndfile for audio I/O
+*/
 DVK::DVK(QSettings &s, QObject *parent) : QObject(parent),settings(s)
 {
     connect(this,SIGNAL(messageDone()),this,SLOT(cancelMessage()));
-    timer=new QTimer(this);
+    timer=new QTimer(this); // see clearTimer below
     timer->setSingleShot(true);
     connect(timer,SIGNAL(timeout()),this,SLOT(clearTimer()));
     audioRunning_=false;
     messagePlaying_=false;
     messageRecording_=false;
+    loopback_=false;
+    restartLoopback_=false;
     busy_=false;
+    channel=0;
+    liveChannel=0;
     for (int i=0;i<DVK_MAX_MSG;i++) {
         msg[i].sz=0;
         msg[i].snddata=0;
@@ -48,6 +61,11 @@ DVK::~DVK()
             delete [] msg[i].snddata;
         }
     }
+}
+
+void DVK::setLiveChannel(int ch)
+{
+    liveChannel=ch;
 }
 
 bool DVK::audioRunning()
@@ -229,6 +247,7 @@ int DVK::recordCallback(const void *input, void *output, unsigned long frameCoun
     if (!(static_cast<DVK*>(userdata)->messageRecording_) || (pos + frameCount)>= (44100*DVK_MAX_LEN) ) {
         static_cast<DVK*>(userdata)->msg[nr].sz=pos+frameCount;
         static_cast<DVK*>(userdata)->saveMessage();
+        static_cast<DVK*>(userdata)->emitMessageDone();
         return paComplete;
     }
 
@@ -243,7 +262,49 @@ int DVK::recordCallback(const void *input, void *output, unsigned long frameCoun
     return paContinue;
 }
 
+/*! Callback for live audio: loops audio input to output
+ */
+int DVK::loopCallback(const void *input, void *output, unsigned long frameCount,
+                                   const PaStreamCallbackTimeInfo* timeInfo,
+                                   PaStreamCallbackFlags statusFlags, void *userdata)
+{
+    Q_UNUSED(timeInfo);
+    Q_UNUSED(statusFlags);
 
+    int *inp=(int *)input;
+    int *out=(int *)output;
+
+    // copy audio data to output
+    for (unsigned long int i=0;i<frameCount;i++){
+        if (static_cast<DVK*>(userdata)->liveChannel) {
+          *out = *inp;
+          out++;
+          *out = 0;
+          out++;
+        } else {
+          *out = 0;
+          out++;
+          *out = *inp;
+          out++;
+        }
+        inp++;
+    }
+    frameCount=0;
+
+    // check for exit
+    if (!static_cast<DVK*>(userdata)->loopback_) {
+        qDebug("loop callback got stop");
+        return paComplete;
+    }
+
+    return paContinue;
+}
+
+
+/*!
+ * \brief DVK::emitMessageDone
+ * send signal that current message has finished playing
+ */
 void DVK::emitMessageDone()
 {
     emit(messageDone());
@@ -260,8 +321,18 @@ void DVK::cancelMessage()
         Pa_AbortStream(stream);
     }
     mutex.unlock();
+    // restart live audio
+    if (restartLoopback_) {
+        Pa_StartStream(loopStream);
+        restartLoopback_=false;
+    }
 }
 
+/*!
+ * \brief DVK::clearTimer
+ * reset busy timer. Timer is used to prevent triggering messages too rapidly. Only allow
+ * a new message to be played after DVK_BUSY_TIMER ms.
+ */
 void DVK::clearTimer()
 {
     busy_=false;
@@ -279,13 +350,18 @@ void DVK::playMessage(int nr,int ch)
 
     // if currently playing a message, abort it
     cancelMessage();
-
     mutex.lock();
     messagePlaying_=true;
     mutex.unlock();
 
+    // if currently in live audio mode, stop it
+    if (Pa_IsStreamActive(loopStream)) {
+        Pa_StopStream(loopStream);
+        restartLoopback_=true;
+    }
+
     busy_=true;
-    timer->start(200);
+    timer->start(DVK_BUSY_TIMER);
     msgNr=nr;
     channel=ch;
     position=0;
@@ -336,6 +412,11 @@ void DVK::recordMessage(int nr)
     if (audioRunning_) {
         cancelMessage();
     }
+    // stop live audio mode
+    if (Pa_IsStreamActive(loopStream)) {
+        Pa_StopStream(loopStream);
+        restartLoopback_=true;
+    }
     // if recording a message, end that recording
     if (messageRecording_) {
         qDebug("stop recording");
@@ -376,4 +457,62 @@ void DVK::recordMessage(int nr)
         return;
     }
     Pa_StartStream(stream);
+}
+
+/*!
+ * \brief DVK::loopAudio starts live audio mode
+ *  loops audio input to audio output
+  */
+void DVK::loopAudio()
+{
+    // cancel any message currently playing
+    if (audioRunning_) {
+        cancelMessage();
+    }
+
+    PaStreamParameters inputParameters;
+    inputParameters.device = Pa_GetDefaultInputDevice();
+    inputParameters.channelCount = 1;
+    inputParameters.sampleFormat = paInt32;
+    inputParameters.suggestedLatency = 0.1;
+    inputParameters.hostApiSpecificStreamInfo = 0;
+
+    PaStreamParameters outputParameters;
+    outputParameters.device = Pa_GetDefaultOutputDevice();
+    outputParameters.channelCount = 2;
+    outputParameters.sampleFormat = paInt32;
+    outputParameters.suggestedLatency = 0.1;
+    outputParameters.hostApiSpecificStreamInfo = 0;
+
+    PaError error = Pa_OpenStream(&loopStream,
+                                  &inputParameters,
+                                  &outputParameters,
+                                  44100,
+                                  paFramesPerBufferUnspecified,
+                                  paNoFlag,
+                                  loopCallback,
+                                  this);
+    if (error!=paNoError)
+    {
+        qDebug("error starting loop mode");
+        return;
+    } else {
+        qDebug("starting live audio");
+    }
+    mutex.lock();
+    loopback_=true;
+    mutex.unlock();
+    Pa_StartStream(loopStream);
+}
+
+/*!
+ * \brief DVK::stopLoopAudio
+ * stop loopback mode if it is active
+ */
+void DVK::stopLoopAudio()
+{
+    qDebug("stopping live audio");
+    mutex.lock();
+    loopback_=false;
+    mutex.unlock();
 }

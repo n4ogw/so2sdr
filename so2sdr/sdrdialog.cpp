@@ -41,6 +41,7 @@ SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
         APICombo[i]->setEnabled(false);
     }
     DVKRecordingComboBox->setEnabled(false);
+    loopCheckBox->setChecked(false);
 
     OffsetLineEditPtr[0] = OffsetLineEdit;
     OffsetLineEditPtr[1] = Offset2LineEdit;
@@ -158,6 +159,7 @@ void SDRDialog::updateFromSettings()
     APICombo[2]->setCurrentIndex(settings.value(s_dvk_api,s_dvk_api_def).toInt());
     DeviceCombo[2]->setCurrentIndex(settings.value(s_dvk_device,s_dvk_device_def).toInt());
     DVKRecordingComboBox->setCurrentIndex(settings.value(s_dvk_rec_device,s_dvk_rec_device_def).toInt());
+    loopCheckBox->setChecked(settings.value(s_dvk_loop,s_dvk_loop_def).toBool());
 #else
     Checkbox[2]->setEnabled(false);
     APICombo[2]->setEnabled(false);
@@ -262,6 +264,9 @@ void SDRDialog::updateSDR()
     settings.setValue(s_dvk_api,APICombo[2]->currentIndex());
     settings.setValue(s_dvk_device,DeviceCombo[2]->currentIndex());
     settings.setValue(s_dvk_rec_device,DVKRecordingComboBox->currentIndex());
+    bool updatedvk=false;
+    if (settings.value(s_dvk_loop,s_dvk_loop_def).toBool()!=loopCheckBox->isChecked()) updatedvk=true;
+    settings.setValue(s_dvk_loop,loopCheckBox->isChecked());
 #endif
     settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
     settings.setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
@@ -281,6 +286,9 @@ void SDRDialog::updateSDR()
     settings.setValue(s_sdr_cqlimit_high[5],lineEdit10high->text().toInt());
     settings.sync();
     emit(updateCQLimits());
+#ifdef DVK_ENABLE
+    if (updatedvk) emit(updateDVK());
+#endif
 }
 
 void SDRDialog::rejectChanges()

@@ -646,6 +646,13 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </property>
       </widget>
      </item>
+     <item row="15" column="1">
+      <widget class="QCheckBox" name="loopCheckBox">
+       <property name="text">
+        <string>loop live audio</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

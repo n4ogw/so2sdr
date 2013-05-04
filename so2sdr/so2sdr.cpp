@@ -164,19 +164,21 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
     directory->setCurrent(dataDirectory);
+    sdr = new SDRDialog(*settings,this);
+    connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
+    connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
+    sdr->hide();
+
     //DVK
 #ifdef DVK_ENABLE
     dvk = new DVK(*settings);
+    connect(sdr,SIGNAL(updateDVK()),this,SLOT(updateDVK()));
     connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
     connect(this,SIGNAL(recordDvk(int)),dvk,SLOT(recordMessage(int)));
     connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
     dvk->moveToThread(&dvkThread);
     startDvk();
 #endif
-    sdr = new SDRDialog(*settings,this);
-    connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
-    connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
-    sdr->hide();
     notes = new NoteDialog(this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(notes, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -621,6 +623,19 @@ void So2sdr::startDvk()
     dvkThread.start();
 }
 
+/*!
+ * \brief So2sdr::updateDVK
+  update live audio when checkbox in sdrdialog changes
+  */
+void So2sdr::updateDVK()
+{
+    if (settings->value(s_dvk_loop,s_dvk_loop_def).toBool()) {
+        dvk->loopAudio();
+    } else {
+        dvk->stopLoopAudio();
+    }
+}
+
 void So2sdr::openRadios()
 {
     if (catThread.isRunning()) {
@@ -903,8 +918,11 @@ bool So2sdr::setupContest()
         updateOffTime();
     }
 #ifdef DVK_ENABLE
-    if (sdr->checkBox_3->isChecked()) {
+    if (settings->value(s_dvk_enabled,s_dvk_enabled_def).toBool()) {
         dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
+    }
+    if (settings->value(s_dvk_loop,s_dvk_loop_def).toBool()) {
+        dvk->loopAudio();
     }
 #endif
     return(true);
@@ -1795,7 +1813,7 @@ void So2sdr::swapRadios()
 
    Alt+R
 
-   switchcw (default=true) controls whether cw is switched or not
+   switchcw (default=true) controls whether cw/ssb is switched or not
  */
 void So2sdr::switchRadios(bool switchcw)
 {
@@ -1805,6 +1823,9 @@ void So2sdr::switchRadios(bool switchcw)
         winkey->cancelcw();
         winkey->setOutput(activeRadio);
         winkey->setSpeed(wpm[activeRadio]);
+#ifdef DVK_ENABLE
+        dvk->setLiveChannel(activeRadio);
+#endif
     }
     if (callFocus[activeRadio]) {
         lineEditCall[activeRadio]->setFocus();

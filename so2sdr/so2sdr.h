@@ -104,6 +104,7 @@ public slots:
     void showMessage(QString);
     void stationUpdate();
     void startWinkey();
+    void updateDVK();
     void updateOffTime();
     void updateRecord(QSqlRecord);
 

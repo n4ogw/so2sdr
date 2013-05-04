@@ -43,6 +43,7 @@ public:
 
 signals:
     void updateCQLimits();
+    void updateDVK();
 
 public slots:
     void updateSDR();

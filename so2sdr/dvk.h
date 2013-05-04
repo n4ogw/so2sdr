@@ -49,6 +49,9 @@ public:
     void loadMessages(QString filename,QString op);
     QString sndfile_version();
 protected:
+    static int loopCallback(const void *input, void *output, unsigned long frameCount,
+                        const PaStreamCallbackTimeInfo* timeInfo,
+                        PaStreamCallbackFlags statusFlags, void *userdata);
     static int writeCallback(const void *input, void *output, unsigned long frameCount,
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags, void *userdata);
@@ -60,9 +63,12 @@ signals:
 public slots:
     void cancelMessage();
     void initializeAudio();
+    void loopAudio();
     void playMessage(int nr,int ch);
     void recordMessage(int nr);
+    void setLiveChannel(int ch);
     void stopAudio();
+    void stopLoopAudio();
 private slots:
     void saveMessage();
     void clearTimer();
@@ -70,14 +76,18 @@ private slots:
 private:
     bool busy_;
     bool audioRunning_;
+    bool loopback_;
+    bool restartLoopback_;
     bool messagePlaying_;
     bool messageRecording_;
     int channel;
+    int liveChannel;
     int msgNr;
     unsigned long int position;
     unsigned long int sz;
     DVKMessage msg[DVK_MAX_MSG];
     PaStream  *stream;
+    PaStream *loopStream;
     QMutex mutex;
     QSettings& settings;
     QTimer *timer;

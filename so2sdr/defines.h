@@ -29,8 +29,11 @@
 #include "fftw3.h"
 #include "hamlib/rig.h"
 
+// enable building DVK features
+#define DVK_ENABLE
+
 // ///////// version ///////////////
-const QByteArray Version = "1.3.0";
+const QByteArray Version = "1.3.1";
 
 // directory where station config, hamlib cache, iqdata, etc are stored
 #ifdef Q_OS_WIN
@@ -349,6 +352,9 @@ typedef void (*fftw_destroy_plan_ptr)(fftw_plan plan);
 // DVK max message length (seconds)
 const int DVK_MAX_LEN=20;
 
+// DVK busy time
+const int DVK_BUSY_TIMER=200;
+
 // number of F-keys
 const int N_FUNC=12;
 
@@ -569,6 +575,9 @@ const int s_dvk_device_def=0;
 
 const QString s_dvk_rec_device="dvk/recdevice";
 const int s_dvk_rec_device_def=0;
+
+const QString s_dvk_loop="dvk/loop";
+const bool s_dvk_loop_def=false;
 
 const QString s_sdr_offset[NRIG]={"sdr/offset1","sdr/offset2"};
 const int s_sdr_offset_def[NRIG]={0,0};
