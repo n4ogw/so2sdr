@@ -788,7 +788,7 @@
           </widget>
          </item>
          <item row="3" column="2">
-          <widget class="QPushButton" name="rexExc4">
+          <widget class="QPushButton" name="recExc4">
            <property name="text">
             <string>REC</string>
            </property>

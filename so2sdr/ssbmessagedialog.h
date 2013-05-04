@@ -19,6 +19,7 @@
 #ifndef SSBMESSAGEDIALOG_H
 #define SSBMESSAGEDIALOG_H
 
+#include <QPushButton>
 #include <QByteArray>
 #include <QSettings>
 #include <QString>
@@ -26,8 +27,11 @@
 #include "ui_ssbmessagedialog.h"
 #include "utils.h"
 
+class QButtonGroup;
+class QPushButton;
 class QLineEdit;
 class So2sdr;
+
 
 /*!
    Dialog for entering SSB messages
@@ -46,18 +50,26 @@ public slots:
     void updateSSBMsg();
     void rejectChanges();
 
+private slots:
+    void processButton(int);
+
 private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     const static int  m=1;
 
+    QButtonGroup   *recGroup;
     QByteArray     cqCtrlF[N_FUNC];
     QByteArray     cqF[N_FUNC];
     QByteArray     cqShiftF[N_FUNC];
     QByteArray     excF[N_FUNC];
     QLineEdit      *ctrlFuncEditPtr[N_FUNC];
+    QPushButton    *ctrlFuncRecPtr[N_FUNC];
     QLineEdit      *excFuncEditPtr[N_FUNC];
+    QPushButton    *excFuncRecPtr[N_FUNC];
     QLineEdit      *funcEditPtr[N_FUNC];
+    QPushButton    *funcRecPtr[N_FUNC];
     QLineEdit      *shiftFuncEditPtr[N_FUNC];
+    QPushButton    *shiftFuncRecPtr[N_FUNC];
     UpperValidator *upperValidate;
     QSettings      *settings;
 };

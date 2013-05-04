@@ -690,6 +690,7 @@ void So2sdr::disableUI()
     ssbMessage->setEnabled(false);
     options->setEnabled(false);
     actionCW_Messages->setEnabled(false);
+    actionSSB_Messages->setEnabled(false);
     actionContestOptions->setEnabled(false);
     actionSave->setEnabled(false);
     actionADIF->setEnabled(false);
@@ -717,6 +718,7 @@ void So2sdr::enableUI()
     cwMessage->setEnabled(true);
 #ifdef DVK_ENABLE
     ssbMessage->setEnabled(true);
+    actionSSB_Messages->setEnabled(true);
 #endif
     options->setEnabled(true);
     actionCW_Messages->setEnabled(true);

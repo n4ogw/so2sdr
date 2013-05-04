@@ -16,6 +16,8 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QButtonGroup>
+#include <QPushButton>
 #include <QDialog>
 #include <QFormLayout>
 #include <QSettings>
@@ -24,10 +26,18 @@
 
 SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
 {
+//    noButton=new QPushButton();
+//    noButton->setCheckable(true);
+ //   noButton->setChecked(false);
     setupUi(this);
     upperValidate = new UpperValidator(this);
     connect(ssbmessage_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(ssbmessage_buttons, SIGNAL(accepted()), this, SLOT(updateSSBMsg()));
+
+    recGroup=new QButtonGroup(this);
+    recGroup->setExclusive(true);
+
+//    recGroup->addButton(noButton);
 
     funcEditPtr[0]  = cq_f1_edit;
     funcEditPtr[1]  = cq_f2_edit;
@@ -42,6 +52,24 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     funcEditPtr[10] = cq_f11_edit;
     funcEditPtr[11] = cq_f12_edit;
 
+    funcRecPtr[0]   = rec1;
+    funcRecPtr[1]   = rec2;
+    funcRecPtr[2]   = rec3;
+    funcRecPtr[3]   = rec4;
+    funcRecPtr[4]   = rec5;
+    funcRecPtr[5]   = rec6;
+    funcRecPtr[6]   = rec7;
+    funcRecPtr[7]   = rec8;
+    funcRecPtr[8]   = rec9;
+    funcRecPtr[9]   = rec10;
+    funcRecPtr[10]   = rec11;
+    funcRecPtr[11]   = rec12;
+
+    for (int i=0;i<12;i++) {
+        funcRecPtr[i]->setCheckable(true);
+        recGroup->addButton(funcRecPtr[i],i+1);
+    }
+
     ctrlFuncEditPtr[0]  = cq_ctrl_f1_edit;
     ctrlFuncEditPtr[1]  = cq_ctrl_f2_edit;
     ctrlFuncEditPtr[2]  = cq_ctrl_f3_edit;
@@ -54,6 +82,24 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     ctrlFuncEditPtr[9]  = cq_ctrl_f10_edit;
     ctrlFuncEditPtr[10] = cq_ctrl_f11_edit;
     ctrlFuncEditPtr[11] = cq_ctrl_f12_edit;
+
+    ctrlFuncRecPtr[0]   = recCtrl1;
+    ctrlFuncRecPtr[1]   = recCtrl2;
+    ctrlFuncRecPtr[2]   = recCtrl3;
+    ctrlFuncRecPtr[3]   = recCtrl4;
+    ctrlFuncRecPtr[4]   = recCtrl5;
+    ctrlFuncRecPtr[5]   = recCtrl6;
+    ctrlFuncRecPtr[6]   = recCtrl7;
+    ctrlFuncRecPtr[7]   = recCtrl8;
+    ctrlFuncRecPtr[8]   = recCtrl9;
+    ctrlFuncRecPtr[9]   = recCtrl10;
+    ctrlFuncRecPtr[10]   = recCtrl11;
+    ctrlFuncRecPtr[11]   = recCtrl12;
+
+    for (int i=0;i<12;i++) {
+        ctrlFuncRecPtr[i]->setCheckable(true);
+        //recGroup.addButton(ctrlFuncRecPtr[i]);
+    }
 
     shiftFuncEditPtr[0]  = cq_shift_f1_edit;
     shiftFuncEditPtr[1]  = cq_shift_f2_edit;
@@ -68,6 +114,24 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     shiftFuncEditPtr[10] = cq_shift_f11_edit;
     shiftFuncEditPtr[11] = cq_shift_f12_edit;
 
+    shiftFuncRecPtr[0]   = recShft1;
+    shiftFuncRecPtr[1]   = recShft2;
+    shiftFuncRecPtr[2]   = recShft3;
+    shiftFuncRecPtr[3]   = recShft4;
+    shiftFuncRecPtr[4]   = recShft5;
+    shiftFuncRecPtr[5]   = recShft6;
+    shiftFuncRecPtr[6]   = recShft7;
+    shiftFuncRecPtr[7]   = recShft8;
+    shiftFuncRecPtr[8]   = recShft9;
+    shiftFuncRecPtr[9]   = recShft10;
+    shiftFuncRecPtr[10]   = recShft11;
+    shiftFuncRecPtr[11]   = recShft12;
+
+    for (int i=0;i<12;i++) {
+        shiftFuncRecPtr[i]->setCheckable(true);
+        //recGroup.addButton(shiftFuncRecPtr[i]);
+    }
+
     excFuncEditPtr[0]  = exc_f1_edit;
     excFuncEditPtr[1]  = exc_f2_edit;
     excFuncEditPtr[2]  = exc_f3_edit;
@@ -80,6 +144,44 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     excFuncEditPtr[9]  = exc_f10_edit;
     excFuncEditPtr[10] = exc_f11_edit;
     excFuncEditPtr[11] = exc_f12_edit;
+
+    excFuncRecPtr[0]   = recExc1;
+    excFuncRecPtr[1]   = recExc2;
+    excFuncRecPtr[2]   = recExc3;
+    excFuncRecPtr[3]   = recExc4;
+    excFuncRecPtr[4]   = recExc5;
+    excFuncRecPtr[5]   = recExc6;
+    excFuncRecPtr[6]   = recExc7;
+    excFuncRecPtr[7]   = recExc8;
+    excFuncRecPtr[8]   = recExc9;
+    excFuncRecPtr[9]   = recExc10;
+    excFuncRecPtr[10]   = recExc11;
+    excFuncRecPtr[11]   = recExc12;
+
+    for (int i=0;i<12;i++) {
+        excFuncRecPtr[i]->setCheckable(true);
+      //  recGroup.addButton(excFuncRecPtr[i]);
+    }
+    recQsl->setCheckable(true);
+    //recGroup.addButton(recQsl);
+
+    recQuick->setCheckable(true);
+    //recGroup.addButton(recQuick);
+
+    recDupe->setCheckable(true);
+    //recGroup.addButton(recDupe);
+
+    recCallUpdate->setCheckable(true);
+    //recGroup.addButton(recCallUpdate);
+
+    recCqExc->setCheckable(true);
+    //recGroup.addButton(recCqExc);
+
+    //recGroup.setExclusive(true);
+
+    //connect(recGroup,SIGNAL(buttonClicked(int)),this,SLOT(processButton(int)));
+    connect(recGroup,SIGNAL(buttonPressed(int)),this,SLOT(processButton(int)));
+
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setValidator(upperValidate);
         ctrlFuncEditPtr[i]->setValidator(upperValidate);
@@ -96,6 +198,20 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     sp_exc_edit->setValidator(upperValidate);
     dupe_msg_edit->setValidator(upperValidate);
     quick_qsl_edit->setValidator(upperValidate);
+}
+
+void SSBMessageDialog::processButton(int id)
+{
+    int nr=id-1;
+    qDebug("id=%d pressed",id);
+    if (recGroup->button(id)->isChecked()) {
+        // this is needed so we can turn off buttons in an exclusive group
+        qDebug("UnchecK!");
+        //recGroup->button(id)->setChecked(false);
+//        noButton->setChecked(true);
+        return;
+    }
+
 }
 
 /*!
@@ -170,6 +286,8 @@ void SSBMessageDialog::rejectChanges()
 SSBMessageDialog::~SSBMessageDialog()
 {
     delete upperValidate;
+    delete recGroup;
+    //delete noButton;
 }
 
 /*!
