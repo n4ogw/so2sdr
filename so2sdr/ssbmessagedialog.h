@@ -27,7 +27,6 @@
 #include "ui_ssbmessagedialog.h"
 #include "utils.h"
 
-class QButtonGroup;
 class QPushButton;
 class QLineEdit;
 class So2sdr;
@@ -57,7 +56,6 @@ private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     const static int  m=1;
 
-    QButtonGroup   *recGroup;
     QByteArray     cqCtrlF[N_FUNC];
     QByteArray     cqF[N_FUNC];
     QByteArray     cqShiftF[N_FUNC];
