@@ -329,7 +329,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             }
             if (ssbMessage) {
                 if (ssbMessage->isActiveWindow()) {
-                    ssbMessage->updateCWMsg();
+                    ssbMessage->updateSSBMsg();
                     return(r);
                 }
             }
@@ -1565,7 +1565,15 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
                sprint: if CQ qso is in progress, continue to send CQ Exch when F2
                pressed. Must be cleaner way to handle this?
              */
-            expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+            switch (mode) {
+            case CWType:case DigiType:
+                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),ssbnr_cq_exc,false);
+                break;
+            case PhoneType:
+                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                break;
+            }
+
         } else if (cqMode[activeRadio] && !excMode[activeRadio]) {
             /*!
                reset 2nd radio color change if needed

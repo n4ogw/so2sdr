@@ -355,6 +355,24 @@ const int DVK_MAX_LEN=20;
 // DVK busy time
 const int DVK_BUSY_TIMER=200;
 
+// message numbers for DVK:
+//  0..11 are CQ F keys.
+const int ssnbr_cq=0;
+// 12..23 are exchange F keys
+const int ssnbr_exc=12;
+// 24..35 are Ctrl+F
+const int ssnbr_ctrl=24;
+// 36..47 are Shft+f
+const int ssnbr_shft=36;
+
+// further messages:
+const int ssbnr_cq_exc=48;
+const int ssnbr_sp_exc=49;
+const int ssbnr_qsl_msg=50;
+const int ssbnr_dupe_msg=51;
+const int ssbnr_qqsl_msg=52;
+const int ssbnr_call_updated_msg=53;
+
 // number of F-keys
 const int N_FUNC=12;
 

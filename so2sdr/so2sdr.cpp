@@ -148,10 +148,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     cwMessage->hide();
-    ssbMessage = new CWMessageDialog(PhoneType,this);
+    ssbMessage = new SSBMessageDialog(this);
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
-    ssbMessage->setWindowTitle("SSB Messages");
     ssbMessage->hide();
 
     radios = new RadioDialog(*settings,*cat, this);

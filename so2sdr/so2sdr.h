@@ -57,6 +57,7 @@
 #include "master.h"
 #include "otrsp.h"
 #include "qso.h"
+#include "ssbmessagedialog.h"
 #include "telnet.h"
 #include "utils.h"
 #include "winkey.h"
@@ -192,7 +193,7 @@ private:
     ContestOptionsDialog *options;
     Cty                  *cty;
     CWMessageDialog      *cwMessage;
-    CWMessageDialog      *ssbMessage;
+    SSBMessageDialog      *ssbMessage;
     DetailedEdit         *detail;
     DupeSheet            *dupesheet[NRIG];
     DVK                  *dvk;
