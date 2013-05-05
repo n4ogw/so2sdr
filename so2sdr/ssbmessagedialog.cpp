@@ -30,6 +30,9 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     connect(ssbmessage_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(ssbmessage_buttons, SIGNAL(accepted()), this, SLOT(updateSSBMsg()));
 
+    nowRecording=0;
+    recGroup.setExclusive(false);
+
     funcEditPtr[0]  = cq_f1_edit;
     funcEditPtr[1]  = cq_f2_edit;
     funcEditPtr[2]  = cq_f3_edit;
@@ -58,6 +61,7 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
 
     for (int i=0;i<12;i++) {
         funcRecPtr[i]->setCheckable(true);
+        recGroup.addButton(funcRecPtr[i],i+1);
     }
 
     ctrlFuncEditPtr[0]  = cq_ctrl_f1_edit;
@@ -155,6 +159,8 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     recCallUpdate->setCheckable(true);
     recCqExc->setCheckable(true);
 
+    connect(&recGroup,SIGNAL(buttonClicked(int)),this,SLOT(startRecording(int)));
+
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setValidator(upperValidate);
         ctrlFuncEditPtr[i]->setValidator(upperValidate);
@@ -173,9 +179,22 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     quick_qsl_edit->setValidator(upperValidate);
 }
 
-void SSBMessageDialog::processButton(int id)
+void SSBMessageDialog::startRecording(int id)
 {
-
+    qDebug("start recording id=%d",id);
+    if (recGroup.button(id)->isChecked()) {
+        qDebug("button id=%d checked",id);
+    } else {
+        qDebug("unchecked");
+    }
+    // check to make sure not already recording
+    if (nowRecording) {
+        qDebug("turning id=%d off",id);
+        recGroup.button(nowRecording)->setChecked(false);
+        nowRecording=0;
+    }
+    nowRecording=id;
+    qDebug("  ");
 }
 
 /*!

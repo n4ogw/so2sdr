@@ -19,6 +19,7 @@
 #ifndef SSBMESSAGEDIALOG_H
 #define SSBMESSAGEDIALOG_H
 
+#include <QButtonGroup>
 #include <QPushButton>
 #include <QByteArray>
 #include <QSettings>
@@ -50,12 +51,14 @@ public slots:
     void rejectChanges();
 
 private slots:
-    void processButton(int);
+    void startRecording(int id);
 
 private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     const static int  m=1;
 
+    int            nowRecording;
+    QButtonGroup   recGroup;
     QByteArray     cqCtrlF[N_FUNC];
     QByteArray     cqF[N_FUNC];
     QByteArray     cqShiftF[N_FUNC];
