@@ -59,6 +59,7 @@ private:
     QComboBox  *radioBaudComboBox[NRIG];
     QComboBox  *radioMfgComboBox[NRIG];
     QComboBox  *radioModelComboBox[NRIG];
+    QComboBox  *radioPttComboBox[NRIG];
     QLineEdit  *radioDevEdit[NRIG];
     QLineEdit  *radioPollTimeEdit[NRIG];
     QSettings&  settings;

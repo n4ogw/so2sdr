@@ -45,6 +45,9 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
     radioPollTimeEdit[1]  = Rig2PollEdit;
     radioDevEdit[0]       = Radio1DeviceLineEdit;
     radioDevEdit[1]       = Radio2DeviceLineEdit;
+    radioPttComboBox[0]   = Radio1PttComboBox;
+    radioPttComboBox[1]   = Radio2PttComboBox;
+
     for (int i = 0; i < NRIG; i++) {
 #ifdef Q_OS_WIN
         radioDevEdit[i]->setToolTip("serial port COM1, COM2, ...");
@@ -70,6 +73,10 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
         radioBaudComboBox[i]->insertItem(0, "9600");
         radioBaudComboBox[i]->insertItem(0, "19200");
         radioBaudComboBox[i]->insertItem(0, "38400");
+        radioPttComboBox[i]->insertItem(0,"None");
+        radioPttComboBox[i]->insertItem(0,"RTS");
+        radioPttComboBox[i]->insertItem(0,"DTR");
+        radioPttComboBox[i]->insertItem(0,"Hamlib");
     }
     comboBoxOTRSPBaud->insertItem(0,"1200");
     comboBoxOTRSPBaud->insertItem(0,"4800");

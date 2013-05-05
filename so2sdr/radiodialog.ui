@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>464</height>
+    <height>475</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>350</width>
-    <height>464</height>
+    <height>475</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>350</width>
-    <height>464</height>
+    <height>475</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -156,6 +156,21 @@
            </property>
           </widget>
          </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="Radio1PttComboBox"/>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Ptt method</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
@@ -264,6 +279,21 @@
           <widget class="QLineEdit" name="Rig2PollEdit">
            <property name="toolTip">
             <string>300 works well for K3</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="Radio2PttComboBox"/>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_19">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Ptt method</string>
            </property>
           </widget>
          </item>

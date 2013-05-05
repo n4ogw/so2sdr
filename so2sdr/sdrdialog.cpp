@@ -118,9 +118,25 @@ SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
             DeviceCombo[0]->insertItem(i, iconNOK, audioDevices[i]);
             DeviceCombo[1]->insertItem(i, iconNOK, audioDevices[i]);
         }
-        // for DVK don't do any checks
-        DeviceCombo[2]->insertItem(i, audioDevices[i]);
-        DVKRecordingComboBox->insertItem(i,audioDevices[i]);
+        // for DVK playback need 44.1 Khz stereo
+        ok=true;
+        err = Pa_IsFormatSupported(&testFormat, NULL, 44100);
+        if (err != paNoError) ok = false;
+        if (ok) {
+            DeviceCombo[2]->insertItem(i, iconOK, audioDevices[i]);
+        } else {
+            DeviceCombo[2]->insertItem(i, iconNOK, audioDevices[i]);
+        }
+        // DVK recording input needs 44.1 Khz mono
+        if (Pa_GetDeviceInfo(i)->maxInputChannels < 1) {
+            ok = false;
+        }
+        if (ok) {
+            DVKRecordingComboBox->insertItem(i,iconOK,audioDevices[i]);
+        } else {
+            DVKRecordingComboBox->insertItem(i,iconNOK,audioDevices[i]);
+        }
+
         deviceOK[api].append(ok);
     }
 
