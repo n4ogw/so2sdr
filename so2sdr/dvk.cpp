@@ -123,14 +123,14 @@ void DVK::initializeAudio()
     // there are 3 streams: play, record, and loopback
     //
     PaStreamParameters inputParameters;
-    inputParameters.device = Pa_GetDefaultInputDevice();
+    inputParameters.device=settings.value(s_dvk_rec_devindex,s_dvk_rec_devindex_def).toInt();
     inputParameters.channelCount = 1;
     inputParameters.sampleFormat = paInt32;
     inputParameters.suggestedLatency = 0.1;
     inputParameters.hostApiSpecificStreamInfo = 0;
 
     PaStreamParameters outputParameters;
-    outputParameters.device = Pa_GetDefaultOutputDevice();
+    outputParameters.device=settings.value(s_dvk_play_devindex,s_dvk_play_devindex_def).toInt();
     outputParameters.channelCount = 2;
     outputParameters.sampleFormat = paInt32;
     outputParameters.suggestedLatency = 0.1;
@@ -144,6 +144,7 @@ void DVK::initializeAudio()
                                   paNoFlag,
                                   loopCallback,
                                   this);
+    Pa_StopStream(loopStream);
     if (error!=paNoError) {
         qDebug("Pa_OpenStream error=%d loopStream",(int)error);
     }
@@ -156,6 +157,7 @@ void DVK::initializeAudio()
                                   paNoFlag,
                                   writeCallback,
                                   this);
+    Pa_StopStream(playStream);
     if (error!=paNoError) {
         qDebug("Pa_OpenStream error=%d playStream",(int)error);
     }
@@ -168,6 +170,7 @@ void DVK::initializeAudio()
                                   paNoFlag,
                                   recordCallback,
                                   this);
+    Pa_StopStream(recStream);
     if (error!=paNoError) {
         qDebug("Pa_OpenStream error=%d recStream",(int)error);
     }
@@ -319,6 +322,7 @@ int DVK::recordCallback(const void *input, void *output, unsigned long frameCoun
         ptr++;
         inp++;
     }
+
     static_cast<DVK*>(userdata)->position +=frameCount;
 
     return paContinue;
@@ -407,9 +411,10 @@ void DVK::clearTimer()
  */
 void DVK::playMessage(int nr,int ch)
 {
-    qDebug("play message");
+    qDebug("play message nr=%d size=%lu",nr,msg[nr].sz);
     if (busy_) return; // prevents from being called too often
     if (msg[nr].sz==0) return; // skip empty message
+
     // if currently playing a message, abort it
     cancelMessage();
     mutex.lock();
@@ -417,7 +422,6 @@ void DVK::playMessage(int nr,int ch)
     mutex.unlock();
 
     // if currently in live audio mode, stop it
-
     if (Pa_IsStreamActive(loopStream)==1) {
         Pa_AbortStream(loopStream);
         restartLoopback_=true;
@@ -429,10 +433,10 @@ void DVK::playMessage(int nr,int ch)
     position=0;
     sz=msg[nr].sz;
 
-    // try to prevent error -9982, trying to open stream that is not closed
-    if (Pa_IsStreamActive(playStream)==1) {
+    Pa_StopStream(playStream);
+    while (Pa_IsStreamActive(playStream)==1) {
         Pa_AbortStream(playStream);
-        Pa_Sleep(100);
+        Pa_Sleep(10);
     }
     PaError error=Pa_StartStream(playStream);
 
@@ -461,7 +465,6 @@ void DVK::saveMessage()
   */
 void DVK::recordMessage(int nr)
 {
-    qDebug("record message");
     // cancel any message currently playing
     if (audioRunning_) {
         cancelMessage();
@@ -475,11 +478,9 @@ void DVK::recordMessage(int nr)
 
     // if recording a message, end that recording
     if (messageRecording_) {
-        qDebug("stop recording");
         messageRecording_=false;
         return;
     } else {
-        qDebug("start recording");
         messageRecording_=true;
     }
 
@@ -493,10 +494,10 @@ void DVK::recordMessage(int nr)
     msg[nr].snddata=new int[44100*DVK_MAX_LEN];
 
     position=0;
-
-    if (Pa_IsStreamActive(recStream)==1) {
+    Pa_StopStream(recStream);
+    while (Pa_IsStreamActive(recStream)==1) {
         Pa_AbortStream(recStream);
-        Pa_Sleep(100);
+        Pa_Sleep(10);
     }
     PaError error = Pa_StartStream(recStream);
 
@@ -513,15 +514,14 @@ void DVK::recordMessage(int nr)
   */
 void DVK::loopAudio()
 {
-    qDebug("starting loop audio");
     // cancel any message currently playing
     if (audioRunning_) {
         cancelMessage();
     }
-
-    if (Pa_IsStreamActive(loopStream)==1) {
+    Pa_StopStream(loopStream);
+    while (Pa_IsStreamActive(loopStream)==1) {
         Pa_AbortStream(loopStream);
-        Pa_Sleep(100);
+        Pa_Sleep(10);
     }
     PaError error=Pa_StartStream(loopStream);
 
@@ -530,8 +530,6 @@ void DVK::loopAudio()
         qDebug("error %d starting loop stream",(int)error);
         Pa_AbortStream(loopStream);
         return;
-    } else {
-        qDebug("starting live audio");
     }
 
     mutex.lock();
@@ -546,7 +544,6 @@ void DVK::loopAudio()
  */
 void DVK::stopLoopAudio()
 {
-    qDebug("stopping live audio");
     mutex.lock();
     loopback_=false;
     mutex.unlock();

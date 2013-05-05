@@ -220,6 +220,11 @@ SDRDialog::~SDRDialog()
     delete[] deviceOK;
 }
 
+/*!
+ * \brief SDRDialog::format
+ * \param nrig either 0 or 1
+ * \return Returns PaStreamParameters format for bandscope displays
+ */
 PaStreamParameters& SDRDialog::format(int nrig)
 {
     int nr;
@@ -242,13 +247,12 @@ PaStreamParameters& SDRDialog::format(int nrig)
 
     // calculate device index
     int indx = 0;
-    for (int i = 0; i < settings.value(s_sdr_api[nr],0).toInt(); i++) indx += nApiDevices[i];
+    for (int i = 0; i < settings.value(s_sdr_api[nr],s_sdr_api_def[nr]).toInt(); i++) indx += nApiDevices[i];
 
     indx += settings.value(s_sdr_device[nr],0).toInt();
     Format[nr].device = indx;
     return(Format[nr]);
 }
-
 
 void SDRDialog::updateSDR()
 {
@@ -267,6 +271,19 @@ void SDRDialog::updateSDR()
     bool updatedvk=false;
     if (settings.value(s_dvk_loop,s_dvk_loop_def).toBool()!=loopCheckBox->isChecked()) updatedvk=true;
     settings.setValue(s_dvk_loop,loopCheckBox->isChecked());
+
+    // calculate device index for DVK audio output device
+    int indx = 0;
+    for (int i = 0; i < settings.value(s_dvk_api,s_dvk_api_def).toInt(); i++) indx += nApiDevices[i];
+    indx += settings.value(s_dvk_device,s_dvk_device_def).toInt();
+    settings.setValue(s_dvk_play_devindex,indx);
+
+    // calculate device index for DVK audio input device
+    indx = 0;
+    for (int i = 0; i < settings.value(s_dvk_api,s_dvk_api_def).toInt(); i++) indx += nApiDevices[i];
+    indx += settings.value(s_dvk_rec_device,s_dvk_rec_device_def).toInt();
+    settings.setValue(s_dvk_rec_devindex,indx);
+
 #endif
     settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
     settings.setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());

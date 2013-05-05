@@ -597,6 +597,12 @@ const int s_dvk_rec_device_def=0;
 const QString s_dvk_loop="dvk/loop";
 const bool s_dvk_loop_def=false;
 
+const QString s_dvk_play_devindex="dvk/playdev";
+const int s_dvk_play_devindex_def=0;
+
+const QString s_dvk_rec_devindex="dvk/recdev";
+const int s_dvk_rec_devindex_def=0;
+
 const QString s_sdr_offset[NRIG]={"sdr/offset1","sdr/offset2"};
 const int s_sdr_offset_def[NRIG]={0,0};
 
