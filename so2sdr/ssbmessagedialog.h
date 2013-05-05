@@ -45,13 +45,16 @@ public:
     ~SSBMessageDialog();
     void initialize(QSettings *s);
     friend class So2sdr;
+signals:
+    void stopRecording(int);
+    void startRecording(int);
 
 public slots:
     void updateSSBMsg();
     void rejectChanges();
 
 private slots:
-    void startRecording(int id);
+    void recButtons(int id);
 
 private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros

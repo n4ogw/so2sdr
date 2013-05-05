@@ -92,6 +92,7 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
 
     for (int i=0;i<12;i++) {
         ctrlFuncRecPtr[i]->setCheckable(true);
+        recGroup.addButton(ctrlFuncRecPtr[i],i+13);
     }
 
     shiftFuncEditPtr[0]  = cq_shift_f1_edit;
@@ -122,6 +123,7 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
 
     for (int i=0;i<12;i++) {
         shiftFuncRecPtr[i]->setCheckable(true);
+        recGroup.addButton(shiftFuncRecPtr[i],i+25);
     }
 
     excFuncEditPtr[0]  = exc_f1_edit;
@@ -152,14 +154,24 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
 
     for (int i=0;i<12;i++) {
         excFuncRecPtr[i]->setCheckable(true);
+        recGroup.addButton(excFuncRecPtr[i],i+37);
     }
     recQsl->setCheckable(true);
-    recQuick->setCheckable(true);
-    recDupe->setCheckable(true);
-    recCallUpdate->setCheckable(true);
-    recCqExc->setCheckable(true);
+    recGroup.addButton(recQsl,49);
 
-    connect(&recGroup,SIGNAL(buttonClicked(int)),this,SLOT(startRecording(int)));
+    recQuick->setCheckable(true);
+    recGroup.addButton(recQuick,50);
+
+    recDupe->setCheckable(true);
+    recGroup.addButton(recDupe,51);
+
+    recCallUpdate->setCheckable(true);
+    recGroup.addButton(recCallUpdate,52);
+
+    recCqExc->setCheckable(true);
+    recGroup.addButton(recCqExc,53);
+
+    connect(&recGroup,SIGNAL(buttonClicked(int)),this,SLOT(recButtons(int)));
 
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setValidator(upperValidate);
@@ -179,22 +191,28 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     quick_qsl_edit->setValidator(upperValidate);
 }
 
-void SSBMessageDialog::startRecording(int id)
+void SSBMessageDialog::recButtons(int id)
 {
-    qDebug("start recording id=%d",id);
-    if (recGroup.button(id)->isChecked()) {
-        qDebug("button id=%d checked",id);
-    } else {
-        qDebug("unchecked");
-    }
-    // check to make sure not already recording
-    if (nowRecording) {
-        qDebug("turning id=%d off",id);
+    int nr=id-1;
+    // if this msg was already recording, stop
+    if (nowRecording==id) {
         recGroup.button(nowRecording)->setChecked(false);
         nowRecording=0;
+        qDebug("id=%d finished",id);
+        emit(stopRecording(nr));
+    } else if (nowRecording) {
+        // some other was recording-cancel it
+        qDebug("cancelling %d",nowRecording);
+        emit(stopRecording(nowRecording-1));
+        recGroup.button(nowRecording)->setChecked(false);
+        nowRecording=id;
+        emit(startRecording(nr));
+    } else {
+        qDebug("starting id=%d",id);
+        nowRecording=id;
+        emit(startRecording(nr));
     }
-    nowRecording=id;
-    qDebug("  ");
+    qDebug(" ");
 }
 
 /*!
@@ -251,6 +269,7 @@ void SSBMessageDialog::initialize(QSettings *s)
    stored values and close dialog */
 void SSBMessageDialog::rejectChanges()
 {
+    if (nowRecording) emit(stopRecording(nowRecording-1));
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setText(cqF[i]);
         ctrlFuncEditPtr[i]->setText(cqCtrlF[i]);

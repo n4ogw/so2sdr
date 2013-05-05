@@ -175,6 +175,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
     connect(this,SIGNAL(recordDvk(int)),dvk,SLOT(recordMessage(int)));
     connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
+    connect(ssbMessage,SIGNAL(startRecording(int)),dvk,SLOT(recordMessage(int)));
+    connect(ssbMessage,SIGNAL(stopRecording(int)),dvk,SLOT(recordMessage(int)));
     dvk->moveToThread(&dvkThread);
     startDvk();
 #endif

@@ -49,6 +49,7 @@ public:
     void loadMessages(QString filename,QString op);
     QString sndfile_version();
 protected:
+    // is it easier to just have one callback that can read and write?
     static int loopCallback(const void *input, void *output, unsigned long frameCount,
                         const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags, void *userdata);
@@ -86,7 +87,8 @@ private:
     unsigned long int position;
     unsigned long int sz;
     DVKMessage msg[DVK_MAX_MSG];
-    PaStream  *stream;
+    PaStream  *recStream;
+    PaStream *playStream;
     PaStream *loopStream;
     QMutex mutex;
     QSettings& settings;
