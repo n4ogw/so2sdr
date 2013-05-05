@@ -308,6 +308,8 @@ int RigSerial::hamlibModelIndex(int indx1, int indx2) const
 void RigSerial::initialize()
 {
     for (int i = 0; i < NRIG; i++) {
+        pttOffFlag[i]=    false;
+        pttOnFlag[i]=     false;
         clearRitFlag[i] = 0;
         qsyFreq[i]      = 0;
         chgMode[i]      = RIG_MODE_NONE;
@@ -355,6 +357,20 @@ void RigSerial::stopSerial()
     }
 }
 
+/*! set ptt on or off
+ * state=0 : off  state=1 : on
+ */
+void RigSerial::setPtt(int nrig, int state)
+{
+    mutex[nrig].lock();
+    if (state) {
+        pttOnFlag[nrig]=true;
+    } else {
+        pttOffFlag[nrig]=true;
+    }
+    mutex[nrig].unlock();
+}
+
 /*!
    process timer events
  */
@@ -365,6 +381,22 @@ void RigSerial::timerEvent(QTimerEvent *event)
         // timerID[2] and timerId[3] are polled more frequently than the regular
         // radio poll timer
         if (radioOK[i] && event->timerId() == timerId[i + 2]) {
+            // set PTT on
+            mutex[i].lock();
+            if (pttOnFlag[i]) {
+                rig_set_ptt(rig[i],RIG_VFO_CURR,RIG_PTT_ON);
+                pttOnFlag[i]=false;
+            }
+            mutex[i].unlock();
+
+            // set PTT off
+            mutex[i].lock();
+            if (pttOffFlag[i]) {
+                rig_set_ptt(rig[i],RIG_VFO_CURR,RIG_PTT_OFF);
+                pttOffFlag[i]=false;
+            }
+            mutex[i].unlock();
+
             // clear RIT if flag set
             mutex[i].lock();
             if (clearRitFlag[i]) {

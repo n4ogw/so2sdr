@@ -85,6 +85,7 @@ public:
     ModeTypes modeType(int nrig) const;
     void openRig();
     bool radioOpen(int nrig);
+    void setPtt(int nrig,int state);
     void stopSerial();
 
 signals:
@@ -107,6 +108,8 @@ private:
 
     bool                    cancelled;
     bool                    clearRitFlag[NRIG];
+    bool                    pttOnFlag[NRIG];
+    bool                    pttOffFlag[NRIG];
     const struct confparams *confParamsIF[NRIG];
     const struct confparams *confParamsRIT[NRIG];
     QList<hamlibmfg>        mfg;
