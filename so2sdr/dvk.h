@@ -61,6 +61,8 @@ protected:
                         PaStreamCallbackFlags statusFlags, void *userdata);
 signals:
     void messageDone();
+    void ptt(int activeRadio,int state);
+
 public slots:
     void cancelMessage();
     void initializeAudio();

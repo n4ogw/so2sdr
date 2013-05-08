@@ -175,6 +175,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
     connect(this,SIGNAL(recordDvk(int)),dvk,SLOT(recordMessage(int)));
     connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
+    connect(dvk,SIGNAL(ptt(int,int)),cat,SLOT(setPtt(int,int)));
     connect(ssbMessage,SIGNAL(startRecording(int)),dvk,SLOT(recordMessage(int)));
     connect(ssbMessage,SIGNAL(stopRecording(int)),dvk,SLOT(recordMessage(int)));
     dvk->moveToThread(&dvkThread);
@@ -2696,8 +2697,10 @@ void So2sdr::clearR2CQ(int nr)
  */
 void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
 {
+#ifndef DVK_ENABLE
     Q_UNUSED(ssbnr);
     Q_UNUSED(ssbRecord);
+#endif
     int        tmp_wpm = wpm[activeRadio];
     QByteArray out     = "";
     QByteArray txt = QByteArray::number(activeRadio + 1) + ":";

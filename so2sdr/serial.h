@@ -85,7 +85,6 @@ public:
     ModeTypes modeType(int nrig) const;
     void openRig();
     bool radioOpen(int nrig);
-    void setPtt(int nrig,int state);
     void stopSerial();
 
 signals:
@@ -94,6 +93,7 @@ signals:
 
 public slots:
     void cancelHamlib();
+    void setPtt(int nrig,int state);
     void qsyExact(int nrig, int f);
     void setRigMode(int nrig, rmode_t m, pbwidth_t pb);
     void run();

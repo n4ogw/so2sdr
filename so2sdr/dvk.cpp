@@ -373,6 +373,7 @@ int DVK::loopCallback(const void *input, void *output, unsigned long frameCount,
  */
 void DVK::emitMessageDone()
 {
+    emit(ptt(channel,0));
     emit(messageDone());
 }
 
@@ -384,6 +385,7 @@ void DVK::cancelMessage()
     mutex.lock();
     if (messagePlaying_) {
         messagePlaying_=false;
+        emit(ptt(channel,0));
         Pa_AbortStream(playStream);
     }
     mutex.unlock();
@@ -438,6 +440,7 @@ void DVK::playMessage(int nr,int ch)
         Pa_AbortStream(playStream);
         Pa_Sleep(10);
     }
+    emit(ptt(channel,1));
     PaError error=Pa_StartStream(playStream);
 
     if (error!=paNoError)
