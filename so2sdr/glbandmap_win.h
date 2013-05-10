@@ -19,7 +19,6 @@
 #ifndef GLBANDMAP_H
 #define GLBANDMAP_H
 
-#include <QSettings>
 #include <QWidget>
 #include "defines.h"
 
@@ -38,9 +37,11 @@ public:
     ~GLBandmap();
     friend class Bandmap;
 
-	void initialize(QSettings *set,int nr, sampleSizes s);
+    void initialize(int nr, sampleSizes s);
     bool invert() const;
     void setInvert(bool t);
+    void setMark(bool b);
+    void setScale(int s);
 
 public slots:
     void plotSpectrum(unsigned char *, unsigned char);
@@ -56,12 +57,13 @@ protected:
 private:
     bool          cmap[MAX_H];
     bool          _invert;
+    bool          mark;
     int           nrig;
+    int           scale;
     int           vfoPos;
     sampleSizes   sizes;
     unsigned char cut;
     unsigned char *dataptr;
-	QSettings *settings;
 };
 
 #endif

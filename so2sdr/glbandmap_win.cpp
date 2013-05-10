@@ -35,6 +35,8 @@ GLBandmap::GLBandmap(QWidget *parent) : QWidget(parent)
     nrig      = 0;
     dataptr   = NULL;
     vfoPos    = height() / 2;
+    scale     = 1;
+    mark      = true;
     for (int i = 0; i < MAX_H; i++) cmap[i] = false;
 }
 
@@ -50,6 +52,25 @@ void GLBandmap::resizeEvent(QResizeEvent * event)
 }
 
 /*!
+ * \brief GLBandmap::setScale
+ * \param s = display scale: either 1 or 2
+ */
+void GLBandmap::setScale(int s)
+{
+    scale=s;
+}
+
+/*!
+ * \brief GLBandmap::setMark
+ * \param b = true: highlight dupe signals
+ */
+void GLBandmap::setMark(bool b)
+{
+    mark=b;
+}
+
+
+/*!
    mouse handler: if mouse left clicked, emits QSY frequency change in +/- Hz
  */
 void GLBandmap::mousePressEvent(QMouseEvent *event)
@@ -58,8 +79,7 @@ void GLBandmap::mousePressEvent(QMouseEvent *event)
         int y = event->y();
 
         // compute QSY as change in frequency
-        int delta_f = (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length /
-                             settings->value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt( )* (vfoPos - y));
+        int delta_f = (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length / scale* (vfoPos - y));
         emit(GLBandmapMouseQSY(nrig, delta_f));
     }
 }
@@ -82,9 +102,8 @@ bool GLBandmap::invert() const
 /*!
    Initialize
  */
-void GLBandmap::initialize(QSettings *set,int nr, sampleSizes s)
+void GLBandmap::initialize(int nr, sampleSizes s)
 {
-    settings=set;
     nrig  = nr;
     sizes = s;
 }
@@ -119,7 +138,6 @@ void GLBandmap::paintEvent(QPaintEvent *event)
     if (dataptr == NULL) {
         return;
     }
-    bool spotCalls=settings->value(s_sdr_mark,s_sdr_mark_def).toBool();	
     // draw new scanline
     int      dy = height() / 2 - vfoPos;
     int      w  = width();
@@ -127,7 +145,7 @@ void GLBandmap::paintEvent(QPaintEvent *event)
     QPainter p(this);
     if (!_invert) {
         for (int i = (MAX_H - h) / 2 - dy, j = h - 1; j >= 0; i++, j--) {
-            if (cmap[j] && dataptr[i] > cut && spotCalls) {
+            if (cmap[j] && dataptr[i] > cut && mark) {
                 p.setPen(qRgb(dataptr[i], 0, dataptr[i]));
             } else {
                 p.setPen(qRgb(dataptr[i], dataptr[i], dataptr[i]));
@@ -136,7 +154,7 @@ void GLBandmap::paintEvent(QPaintEvent *event)
         }
     } else {
         for (int i = (MAX_H - h) / 2 - dy, j = 0; j < h; i++, j++) {
-            if (cmap[j] && dataptr[i] > cut && spotCalls) {
+            if (cmap[j] && dataptr[i] > cut && mark) {
                 p.setPen(qRgb(dataptr[i], 0, dataptr[i]));
             } else {
                 p.setPen(qRgb(dataptr[i], dataptr[i], dataptr[i]));

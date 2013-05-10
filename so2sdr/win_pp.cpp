@@ -104,7 +104,7 @@ void ParallelPort::PinHigh(int p)
 void ParallelPort::initialize()
 {
     bool ok=false;
-	QString pstring=settings->value(s_radios_pport,defaultParallelPort).toString();
+        QString pstring=settings.value(s_radios_pport,defaultParallelPort).toString();
     port= pstring.toULong(&ok,0);
     if (!ok) {
         port = defaultParallelPort.toULong();
@@ -118,8 +118,8 @@ void ParallelPort::initialize()
   */
 void ParallelPort::switchRadios(int r)
 {
-    int radioPin=settings->value(s_radios_focus,defaultParallelPortRadioPin).toInt();
-    bool invert=settings->value(s_radios_focusinvert,false).toBool();
+    int radioPin=settings.value(s_radios_focus,defaultParallelPortRadioPin).toInt();
+    bool invert=settings.value(s_radios_focusinvert,false).toBool();
     if (r==0) {
         if (invert) {
             PinHigh(radioPin);
@@ -140,7 +140,7 @@ void ParallelPort::switchRadios(int r)
   */
 void ParallelPort::toggleStereoPin()
 {
-    int stereoPin=settings->value(s_radios_stereo,defaultParallelPortStereoPin).toInt();
+    int stereoPin=settings.value(s_radios_stereo,defaultParallelPortStereoPin).toInt();
     if (stereoPinStatus) {
         PinLow(stereoPin);
         stereoPinStatus = false;
