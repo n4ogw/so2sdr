@@ -1974,7 +1974,7 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
         } else {
             // show dupe with current band in grey, available calls from other bands in blue
             if (bits[band[nrig]] & worked[i]) {
-                txt.append("<font color=#CCCCCC>" + calls.at(i) + " <font color=#000000>");
+                txt.append("<font color=#AAAAAA>" + calls.at(i) + " <font color=#000000>");
                 if (calls.at(i) == partial) {
                     dupe          = true;
                     dupeCheckDone = true;
@@ -2123,7 +2123,7 @@ void So2sdr::updateWorkedDisplay(int nr,unsigned int worked)
         if (worked & bits[i]) {
             tmp = tmp + "<font color=#000000>" + bandName[i] + "</font> ";
         } else {
-            tmp = tmp + "<font color=#CCCCCC>" + bandName[i] + "</font> ";
+            tmp = tmp + "<font color=#AAAAAA>" + bandName[i] + "</font> ";
         }
     }
     if (nr == 0) {
@@ -2169,7 +2169,7 @@ void So2sdr::updateWorkedMult(int nr)
                     tmp = tmp + "<font color=#CC0000>      NEEDED      </font>";
                 else
                     tmp.clear();
-                //tmp = tmp + "<font color=#CCCCCC>160 80 40 20 15 10</font>";
+                //tmp = tmp + "<font color=#AAAAAA>160 80 40 20 15 10</font>";
             }
         } else {
             for (int i = 0; i < N_BANDS; i++) {
@@ -2178,7 +2178,7 @@ void So2sdr::updateWorkedMult(int nr)
                 if (worked[ii] & bits[i]) {
                     tmp = tmp + "<font color=#000000>" + bandName[i] + "</font> ";
                 } else {
-                    tmp = tmp + "<font color=#CCCCCC>" + bandName[i] + "</font> ";
+                    tmp = tmp + "<font color=#AAAAAA>" + bandName[i] + "</font> ";
                 }
             }
         }
@@ -2353,13 +2353,13 @@ void So2sdr::updateMults(int ir)
             if (needed_band) {
                 tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
             } else {
-                tmp = tmp + "<font color=#CCCCCC>" + mult + "</font> "; // grey=worked
+                tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; // grey=worked
             }
         } else {
             if (needed) {
                 tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
             } else {
-                tmp = tmp + "<font color=#CCCCCC>" + mult + "</font> "; // grey=worked
+                tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; // grey=worked
             }
         }
     }
