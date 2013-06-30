@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // enable building DVK features
-#define DVK_ENABLE
+//define DVK_ENABLE
 
 // ///////// version ///////////////
 const QByteArray Version = "1.3.1";

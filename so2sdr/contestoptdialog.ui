@@ -75,7 +75,7 @@
         </font>
        </property>
        <property name="toolTip">
-        <string>Special logic for Sprint QSY rule</string>
+        <string>Special logic for Sprint QSY rule. If enabled, alt-D will be disabled.</string>
        </property>
        <property name="text">
         <string>Sprint Mode</string>

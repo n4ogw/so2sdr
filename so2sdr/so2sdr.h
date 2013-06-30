@@ -347,7 +347,7 @@ private:
     void up();
     void updateBandmapDupes(const Qso *qso);
     void updateBreakdown();
-    void updateDupesheet(QByteArray call);
+    void updateDupesheet(QByteArray call,int nr);
     void updateMults(int ir);
     void updateNrDisplay();
     void updateRate();

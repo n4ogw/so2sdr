@@ -660,7 +660,7 @@ void So2sdr::backSlash()
         contest->addQso(qso[activeRadio]);
         qso[activeRadio]->time = QDateTime::currentDateTimeUtc(); // update time just before logging qso
         addQso(qso[activeRadio]);
-        updateDupesheet(qso[activeRadio]->call);
+        updateDupesheet(qso[activeRadio]->call,activeRadio);
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;
@@ -1136,7 +1136,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             removeSpotFreq(qso[activeRadio]->freq, band[activeRadio]);
             updateBandmapDupes(qso[activeRadio]);
         }
-        updateDupesheet(qso[activeRadio]->call);
+        updateDupesheet(qso[activeRadio]->call,activeRadio);
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;

@@ -732,6 +732,7 @@ void So2sdr::enableUI()
     grabCheckBox->setEnabled(true);
     actionImport_Cabrillo->setEnabled(true);
     dupesheetCheckBox[0]->setEnabled(true);
+    dupesheetCheckBox[1]->setEnabled(true);
     telnetCheckBox->setEnabled(true);
     windowBorderCheckBox->setEnabled(true);
 
@@ -1863,7 +1864,9 @@ void So2sdr::switchRadios(bool switchcw)
        @todo Implement option of mults display following non-active radio
      */
     updateMults(activeRadio);
-    if (nDupesheet) populateDupesheet();
+
+    // if only using 1 dupesheet, repopulate it so that it follows the active radio
+    if (nDupesheet==1) populateDupesheet();
 }
 
 /*!
