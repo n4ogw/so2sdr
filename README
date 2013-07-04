@@ -1,7 +1,7 @@
 A ham radio contest logging program incorporating software-defined
 radio (SDR) spectral displays. Runs under Linux and Windows.
 
-Copyright 2010-2012 R. Torsten Clay N4OGW
+Copyright 2010-2013 R. Torsten Clay N4OGW
 
 
 
@@ -18,7 +18,7 @@ Developer instructions (Linux)
 
 
 You will need the following development libraries installed: Qt4, FFTW, Hamlib,
-and PortAudio.
+libsndfile, and PortAudio.
 
 Various development packages include g++, Git, and pkg-config. A complete Qt4
 development suite (including Qt Creator and Qt 4 Designer) is advised.
@@ -52,7 +52,7 @@ Building under Windows/Visual Studio
 ====================================
 
 
-You will need Qt4, FFTW, Hamlib, and PortAudio libraries
+You will need Qt4, FFTW, Hamlib, libsndfile, and PortAudio libraries
 
 1. Clone the Git repository as above
 
