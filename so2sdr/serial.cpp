@@ -30,204 +30,76 @@
 #include <windows.h>
 #endif
 
-// list of backends in hamlib riglist.h
-static struct rig_backend_list {
-    rig_model_t model;
-    const char  *backend;
-} rig_backend_list[] = RIG_BACKEND_LIST;
+// initialize statics
+QList<hamlibmfg> RigSerial::mfg;
+QList<QByteArray> RigSerial::mfgName;
+
+/*! comparison for radio manufacturer class. Compare by name
+ */
+bool hamlibmfg::operator<(const hamlibmfg other) const
+{
+    return (mfg_name<other.mfg_name);
+}
+
+/*! comparison for rig models within a manufacturer. Alphabetize by name
+ */
+bool hamlibModel::operator<(const hamlibModel other) const
+{
+    return (model_name<other.model_name);
+}
 
 
 RigSerial::RigSerial(QSettings& s,QObject *parent) : QObject(parent),settings(s)
 {
-    cancelled = false;
-}
-
-/*! slot called to abort initializeHamlib
- */
-void RigSerial::cancelHamlib()
-{
-    cancelled = true;
-}
-
-/*! queries hamlib to generate a list of all supported rigs
-
-   dir should be directory with user data. Used to save/load hamlib model list
- */
-bool RigSerial::initializeHamlib(QString dir)
-{
     // turn off all the debug crud coming from hamlib
     rig_set_debug_level(RIG_DEBUG_NONE);
 
-    if (!loadHamlibList(dir)) {
-        mfgName.clear();
-        mfg.clear();
+    // load all backends and step through them. list_caps function defined below.
+    rig_load_all_backends();
+    rig_list_foreach(list_caps,NULL);
 
-        // wish hamlib had an faster way to query the possible rig numbers...
-        // it is very slow on Windows
-        RIG *rig;
-        int n = 1;
-        while (rig_backend_list[n].model != 0) {
-            n++;
-        }
-        emit(maxBackends(n - 1));
-        int cnt = 0;
-        for (int i = 0; i < n; i++) {
-            if (cancelled) {
-                return(false);
-            }
+    // sort list by manufacturer name
+    qSort(mfg.begin(),mfg.end());
+    qSort(mfgName.begin(),mfgName.end());
 
-            // not sure what happens in hamlib when there are more than 100 of a given model...
-            for (int j = 0; j < 100; j++) {
-                int m = RIG_MAKE_MODEL(i, j);
-                rig = 0;
-                rig = rig_init(m);
-                if (rig) {
-                    int         indx = 0;
-                    hamlibModel newrig;
-                    newrig.model_name = rig->caps->model_name;
-                    newrig.model_nr   = m;
-                    if (!mfgName.contains(rig->caps->mfg_name)) {
-                        mfgName.append(rig->caps->mfg_name);
-
-                        hamlibmfg newmfg;
-                        newmfg.mfg_name  = rig->caps->mfg_name;
-                        newmfg.mfg_index = i;
-                        newmfg.index     = cnt++;
-                        newmfg.models.clear();
-                        newmfg.models.append(newrig);
-                        mfg.append(newmfg);
-                    } else {
-                        for (int j = 0; j < mfg.size(); j++) {
-                            if (mfg.at(j).mfg_name == rig->caps->mfg_name) {
-                                indx = j;
-                                break;
-                            }
-                        }
-                        mfg[indx].models.append(newrig);
-                    }
-                    rig_close(rig);
-                    rig_cleanup(rig);
-                }
-            }
-            emit(backendsDone(i));
-        }
-        saveHamlibList(dir);
+    // sort list of rigs for each manuacturer
+    for (int i=0;i<mfg.size();i++) {
+        qSort(mfg[i].models.begin(),mfg[i].models.end());
     }
-    return(true);
 }
 
-/*! save the list of manufacturers and rig models queried from hamlib
-
-   dir is the directory to save hamlib.dat in
+/*! static function passed to rig_list_foreach
+ *
+ * see hamlib examples rigctl.c
  */
-void RigSerial::saveHamlibList(QString dir)
+int RigSerial::list_caps(const struct rig_caps *caps, void *data)
 {
-    QDir  directory;
-    directory.setCurrent(dir);
-    QFile file("hamlib.dat");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        return;
-    }
-#ifdef Q_OS_WIN
-    file.write("<" + QByteArray(so2sdr_hamlib_version) + ">\n");
-#endif
-#ifdef Q_OS_LINUX
-    file.write("<" + QByteArray(hamlib_version) + ">\n");
-#endif
-    for (int i = 0; i < mfgName.size(); i++) {
-        file.write("<" + mfgName.at(i) + ">\n");
-    }
-    file.write("#\n");
-    for (int i = 0; i < mfg.size(); i++) {
-        file.write(mfg.at(i).mfg_name + ";" + QByteArray::number(mfg.at(i).index) +
-                   ";" + QByteArray::number(mfg.at(i).mfg_index) + "\n");
-        for (int j = 0; j < mfg.at(i).models.size(); j++) {
-            file.write(mfg.at(i).models.at(j).model_name + ";" +
-                       QByteArray::number(mfg.at(i).models.at(j).model_nr) + "\n");
-        }
-        file.write("#\n");
-    }
-    file.close();
-}
+    Q_UNUSED(data)
 
-/*! load the list of manufacturers and rig models queried from hamlib
+    hamlibModel newrig;
+    newrig.model_name = caps->model_name;
+    newrig.model_nr   = caps->rig_model;
+    if (!mfgName.contains(caps->mfg_name)) {
+        mfgName.append(caps->mfg_name);
 
-   dir is the directory containing hamlib.dat
-
-   note: this data needs to match the internal data of the version of hamlib being used!
-    Returns true if matches and load was successful
- */
-bool RigSerial::loadHamlibList(QString dir)
-{
-    QDir  directory;
-    directory.setCurrent(dir);
-    QFile file("hamlib.dat");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return(false);
-    }
-
-    // check version
-#ifdef Q_OS_WIN
-    QByteArray hv(so2sdr_hamlib_version);
-#endif
-#ifdef Q_OS_LINUX
-    QByteArray hv(hamlib_version);
-#endif
-    QByteArray temp = file.readLine(40);
-    int        i1   = temp.indexOf(">");
-    if (i1 != -1) {
-        temp = temp.mid(1, i1 - 1);
+        hamlibmfg newmfg;
+        newmfg.mfg_name  = caps->mfg_name;
+        newmfg.models.clear();
+        newmfg.models.append(newrig);
+        mfg.append(newmfg);
     } else {
-        return(false);
-    }
-    if (temp != hv || file.atEnd()) return(false);
-
-    // list of manufacturer names
-    mfgName.clear();
-    do {
-        if (file.atEnd()) return(false);
-        temp = file.readLine(40);
-        if (temp.startsWith('#')) break;
-        int i1 = temp.indexOf(">");
-        if (i1 != -1) {
-            temp = temp.mid(1, i1 - 1);
-        } else {
-            return(false);
+        int indx=0;
+        for (int j = 0; j < mfg.size(); j++) {
+            if (mfg.at(j).mfg_name == caps->mfg_name) {
+                indx = j;
+                break;
+            }
         }
-        mfgName.append(temp);
-    } while (true);
-
-    // rig list
-    mfg.clear();
-    do {
-        temp = file.readLine(40);
-        hamlibmfg         x;
-        QList<QByteArray> temp2 = temp.split(';');
-        if (temp2.size() != 3) return(false);
-        x.mfg_name = temp2.at(0);
-        bool ok = true;
-        x.index = temp2.at(1).toInt(&ok, 10);
-        if (!ok) return(false);
-        temp2[2]    = temp2[2].simplified();
-        x.mfg_index = temp2.at(2).toInt(&ok, 10);
-        if (!ok) return(false);
-        mfg.append(x);
-        do {
-            temp = file.readLine(40);
-            if (temp.startsWith('#')) break;
-            QList<QByteArray> temp3 = temp.split(';');
-            if (temp3.size() != 2) return(false);
-            hamlibModel       z;
-            z.model_name = temp3.at(0);
-            temp3[1]     = temp3[1].simplified();
-            z.model_nr   = temp3.at(1).toInt(&ok, 10);
-            if (!ok) return(false);
-            mfg.last().models.append(z);
-        } while (true);
-    } while (!file.atEnd());
-    file.close();
-    return(true);
+        mfg[indx].models.append(newrig);
+    }
+    return -1;
 }
+
 
 /*! figure out the manufacturer and model index for combo boxes
    given the hamlib model number

@@ -110,19 +110,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     updateNrDisplay();
 
-    // create hamlib rig interface
-    // show a progress dialog if it will take longer than 4 seconds --
-    // initial load can take ~30 seconds on Windows
-    //
-    QProgressDialog progress("Please wait, querying installed hamlib backends", "Abort", 0, 0, this);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.setMinimumDuration(4000);
     cat = new RigSerial(*settings);
-    connect(&progress, SIGNAL(canceled()), cat, SLOT(cancelHamlib()));
-    connect(cat, SIGNAL(maxBackends(int)), &progress, SLOT(setMaximum(int)));
-    connect(cat, SIGNAL(backendsDone(int)), &progress, SLOT(setValue(int)));
-    initialized = cat->initializeHamlib(userDirectory);
-    if (!initialized) return;  // in case "abort" clicked
     cat->moveToThread(&catThread);
     connect(&catThread, SIGNAL(started()), cat, SLOT(run()));
     options = new ContestOptionsDialog(this);

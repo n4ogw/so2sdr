@@ -39,19 +39,23 @@
 // how often to check for commands to be sent to radios
 const int RIG_SEND_TIMER=20;
 
-typedef struct hamlibModel {
+class hamlibModel
+{
+public:
     QByteArray model_name;
     int        model_nr;
-} hamlibModel;
+    bool operator<(const hamlibModel other) const;
+};
 
-typedef struct hamlibmfg {
+class hamlibmfg
+{
+public:
     QByteArray         mfg_name;
-    int                mfg_index;
-    int                index;
     QList<hamlibModel> models;
-} hamlibType;
+    bool operator<(const hamlibmfg other) const;
+};
 
-// this has to match the modes defined in hamlib
+// this has to match the modes defined in hamlib rig.h, enum rmode_t
 const int nModes=21;
 const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
                             "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
@@ -79,7 +83,6 @@ public:
     QString hamlibMfgName(int i) const;
     int ifFreq(int nrig);
     void initialize();
-    bool initializeHamlib(QString dir);
     rmode_t mode(int nrig) const;
     QString modeStr(int nrig) const;
     ModeTypes modeType(int nrig) const;
@@ -87,12 +90,10 @@ public:
     bool radioOpen(int nrig);
     void stopSerial();
 
-signals:
-    void maxBackends(int);
-    void backendsDone(int);
+    static QList<hamlibmfg>        mfg;
+    static QList<QByteArray>       mfgName;
 
 public slots:
-    void cancelHamlib();
     void setPtt(int nrig,int state);
     void qsyExact(int nrig, int f);
     void setRigMode(int nrig, rmode_t m, pbwidth_t pb);
@@ -102,18 +103,14 @@ protected:
     void timerEvent(QTimerEvent *event);
 
 private:
-    void closeRig();
-    void                    saveHamlibList(QString);
-    bool                    loadHamlibList(QString);
+    static int list_caps(const struct rig_caps *caps, void *data);
 
-    bool                    cancelled;
+    void closeRig();
     bool                    clearRitFlag[NRIG];
     bool                    pttOnFlag[NRIG];
     bool                    pttOffFlag[NRIG];
     const struct confparams *confParamsIF[NRIG];
     const struct confparams *confParamsRIT[NRIG];
-    QList<hamlibmfg>        mfg;
-    QList<QByteArray>       mfgName;
     int                     qsyFreq[NRIG];
     rmode_t                 chgMode[NRIG];
     pbwidth_t               passBW[NRIG];
