@@ -27,7 +27,6 @@
 /*! This version for Windows only: it draws directly on the screen rather
    than into a pixmap */
 GLBandmap::GLBandmap(QWidget *parent) : QWidget(parent)
-
 // : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);

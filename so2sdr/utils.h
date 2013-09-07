@@ -43,5 +43,7 @@ public:
 };
 
 int getBand(int f);
+QString dataDirectory();
+QString userDirectory();
 
 #endif // UTILS_H

@@ -97,7 +97,7 @@ void So2sdr::showDupesheet(int nr, int checkboxState)
     } else {
         if (!dupesheet[nr]) {
             dupesheet[nr] = new DupeSheet(this);
-            dupesheet[nr]->setWindowIcon(QIcon(dataDirectory + "/icon24x24.png"));
+            dupesheet[nr]->setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
             dupesheet[nr]->installEventFilter(this);
             dupesheet[nr]->setAttribute(Qt::WA_DeleteOnClose);
             dupesheet[nr]->setFocusPolicy(Qt::NoFocus);

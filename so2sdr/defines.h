@@ -33,39 +33,12 @@
 //define DVK_ENABLE
 
 // ///////// version ///////////////
-const QByteArray Version = "1.3.1";
-
-// directory where station config, hamlib cache, iqdata, etc are stored
-#ifdef Q_OS_WIN
-const QString userDirectory = QDir::homePath() + "/so2sdr";
-#endif
-#ifdef Q_OS_LINUX
-const QString userDirectory = QDir::homePath() + "/.so2sdr";
-#endif
-
-// @todo need to eventually make dataDirectory configurable by command line
-// argument
+const QByteArray Version = "1.3.2";
 
 #ifdef Q_OS_WIN
-    // in Windows, keep data files in same directory as executable
-    //
-const QString installDirectory = QApplication::applicationDirPath();
-const QString dataDirectory    = installDirectory;
+// for some reason, can't access hamlib_version variable in MSVC
+const QByteArray so2sdr_hamlib_version="hamlib-1.2.15.3";
 #endif
-#ifdef Q_OS_LINUX
-    // in Linux, installDirectory is typically /usr/local with executable in
-    // /usr/local/bin and data in /usr/local/share/so2sdr
-    //
-const QString installDirectory = INSTALL_DIR;
-const QString dataDirectory    = installDirectory + "/share/so2sdr/";
-#endif
-
-
-#ifdef Q_OS_WIN
-// for some reason, can't access this variable in MSVC
-const QByteArray so2sdr_hamlib_version="1.2.14";
-#endif
-
 
 // //////// colors ////////////////
 // all of form (R,G,B)

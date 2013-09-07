@@ -93,7 +93,6 @@ public:
     void setContestName(QByteArray s);
     void setContinent(Cont);
     void setCountry(int);
-    void setDataDirectory(QString);
     virtual void setupContest(QByteArray MultFile[MMAX], const Cty * cty) = 0;
     void setMyZone(int);
     void setVExch(bool);
@@ -143,7 +142,6 @@ protected:
     QList<QByteArray>    exchElement;
     QList<QByteArray>    qsoTypeStr[MMAX];
     QList<scoreRecord *> score;
-    QString              dataDirectory;
     QSettings            *settings;
     QSettings            *stnSettings;
 

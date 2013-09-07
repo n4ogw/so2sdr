@@ -60,7 +60,7 @@
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 {
     setupUi(this);
-    initPointers();
+	initPointers();
     initVariables();
 
     // Register rmode_t, pbwidth_t for connect()
@@ -70,7 +70,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // check to see if user directory exists
     initialized = checkUserDirectory();
 
-    settingsFile=userDirectory+"/so2sdr.ini";
+    settingsFile=userDirectory()+"/so2sdr.ini";
     // check for optional command argument giving station config file name
     if (args.size() > 1) {
         settingsFile = args[1];
@@ -78,8 +78,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     settings=new QSettings(settingsFile,QSettings::IniFormat);
     setFocusPolicy(Qt::StrongFocus);
     errorBox           = new QErrorMessage(this);
-    setWindowIcon(QIcon(dataDirectory + "/icon24x24.png"));
-    if (!iconValid.load(dataDirectory + "/check.png")) {
+    setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+    if (!iconValid.load(dataDirectory() + "/check.png")) {
         qDebug("file check.png missing");
     }
 
@@ -150,7 +150,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
-    directory->setCurrent(dataDirectory);
+    directory->setCurrent(dataDirectory());
     sdr = new SDRDialog(*settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -783,7 +783,7 @@ void So2sdr::setupNewContest(int result)
         }
     }
     // copy standard config to contest directory
-    QFile stdFile(dataDirectory+"/"+fname);
+    QFile stdFile(dataDirectory()+"/"+fname);
     stdFile.copy(newfname);
     fileName=newfname;
     if (setupContest()) {
@@ -1027,7 +1027,6 @@ void So2sdr::selectContest(QByteArray name)
         multNameLabel[0]->setText(csettings->value(c_mult_name1,c_mult_name1_def).toString());
         multNameLabel[1]->setText(csettings->value(c_mult_name2,c_mult_name2_def).toString());
         readExcludeMults();
-        contest->setDataDirectory(dataDirectory);
         for (int i = 0; i < NRIG; i++) {
             lineEditCall[i]->setEnabled(true);
             lineEditExchange[i]->setEnabled(true);
@@ -1185,7 +1184,7 @@ void So2sdr::selectContest2()
 void So2sdr::startMaster()
 {
     if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
-        directory->setCurrent(dataDirectory);
+        directory->setCurrent(dataDirectory());
         QString filename=csettings->value(c_masterfile,c_masterfile_def).toString();
         QFile file(filename);
         if (file.open(QIODevice::ReadOnly)) {
@@ -3142,7 +3141,7 @@ void So2sdr::showHelp()
 {
     if (help == 0) {
         // open help file and display it
-        directory->setCurrent(dataDirectory);
+        directory->setCurrent(dataDirectory());
         help = new HelpDialog("so2sdrhelp.html", this);
         connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
         connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -3177,7 +3176,7 @@ void So2sdr::updateNrDisplay()
     }
 }
 
-/*! check to see if userDirectory exists. If not, give options to
+/*! check to see if userDirectory() exists. If not, give options to
    create it.
 
    returns true if directory exists or was created; false if program
@@ -3186,11 +3185,11 @@ void So2sdr::updateNrDisplay()
 bool So2sdr::checkUserDirectory()
 {
     QDir dir;
-    if (dir.exists(userDirectory)) return(true);
+    if (dir.exists(userDirectory())) return(true);
 
     QMessageBox *msg= new QMessageBox(this);
     msg->setWindowTitle("Error");
-    msg->setText("User data directory " + userDirectory + " does not exist.");
+    msg->setText("User data directory " + userDirectory() + " does not exist.");
     msg->setInformativeText("Create it?");
     msg->setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     msg->setDefaultButton(QMessageBox::Yes);
@@ -3199,11 +3198,11 @@ bool So2sdr::checkUserDirectory()
     case QMessageBox::Yes:
 
         // create directory
-        if (dir.mkdir(userDirectory)) {
+        if (dir.mkdir(userDirectory())) {
             msg->deleteLater();
             return(true);
         } else {
-            msg->setText("Could not create directory <" + userDirectory + ">");
+            msg->setText("Could not create directory <" + userDirectory() + ">");
             msg->exec();
             msg->deleteLater();
             return(false);
@@ -3434,7 +3433,7 @@ void So2sdr::closeEvent(QCloseEvent *event)
  */
 void So2sdr::readExcludeMults()
 {
-    directory->setCurrent(dataDirectory);
+    directory->setCurrent(dataDirectory());
     for (int ii=0;ii<MMAX;ii++) {
         QString filename;
         switch (ii) {
@@ -3472,11 +3471,10 @@ void So2sdr::readExcludeMults()
  */
 bool So2sdr::readContestList()
 {
-    directory->setCurrent(dataDirectory);
+    directory->setCurrent(dataDirectory());
     QFile file("contest_list.dat");
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug("can't open %s/contest_list.dat", dataDirectory.toAscii().data());
+ 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug("can't open %s/contest_list.dat", dataDirectory().toAscii().data());
         return(false);
     }
     while (!file.atEnd()) {

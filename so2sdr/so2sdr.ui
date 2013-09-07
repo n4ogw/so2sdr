@@ -1082,6 +1082,11 @@
             <height>100</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>Bitstream Vera Sans Mono</family>
+           </font>
+          </property>
           <property name="tabKeyNavigation">
            <bool>false</bool>
           </property>
@@ -1435,7 +1440,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -1466,7 +1471,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -1497,7 +1502,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -1528,7 +1533,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>

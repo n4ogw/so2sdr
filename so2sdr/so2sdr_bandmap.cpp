@@ -102,7 +102,7 @@ void So2sdr::showBandmap(int nr, int checkboxState)
     } else {
         if (!bandmap[nr]) {
             bandmap[nr] = new Bandmap(*settings);
-            bandmap[nr]->setWindowIcon(QIcon(dataDirectory + "/icon24x24.png"));
+            bandmap[nr]->setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
             bandmap[nr]->installEventFilter(this);
             bandmap[nr]->setAttribute(Qt::WA_ShowWithoutActivating);
             connect(bandmap[nr], SIGNAL(bandmapError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
@@ -112,7 +112,7 @@ void So2sdr::showBandmap(int nr, int checkboxState)
             connect(winkey, SIGNAL(markSignals(bool, int)), this, SLOT(setBandmapTxStatus(bool, int)));
             connect(bandmap[nr], SIGNAL(findCQMessage(QString)), this, SLOT(showMessage(QString)));
         }
-        bandmap[nr]->initialize(userDirectory, nr, sdr->format(nr));
+        bandmap[nr]->initialize(userDirectory(), nr, sdr->format(nr));
         bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]] + "m");
         if (windowBorderCheckBox->isChecked()) {
             bandmap[nr]->setWindowFlags(Qt::X11BypassWindowManagerHint);

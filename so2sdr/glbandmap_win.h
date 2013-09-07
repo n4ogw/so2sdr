@@ -57,9 +57,9 @@ protected:
 private:
     bool          cmap[MAX_H];
     bool          _invert;
-    bool          mark;
+	bool          mark;
     int           nrig;
-    int           scale;
+	int		      scale;
     int           vfoPos;
     sampleSizes   sizes;
     unsigned char cut;

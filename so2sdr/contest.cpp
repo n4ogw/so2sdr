@@ -22,10 +22,10 @@
 #include "cty.h"
 #include "contest.h"
 #include "hamlib/rotator.h"
+#include "utils.h"
 
 Contest::Contest()
 {
-    dataDirectory.clear();
     myGrid.clear();
     myLat = 0.0;
     myLon = 0.0;
@@ -69,11 +69,6 @@ QByteArray Contest::contestName() const
 void Contest::setContestName(QByteArray s)
 {
     _contestName=s;
-}
-
-void Contest::setDataDirectory(QString d)
-{
-    dataDirectory = d;
 }
 
 Contest::~Contest()
@@ -435,7 +430,7 @@ void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
  */
 void Contest::readMultFile(QByteArray filename[MMAX], const Cty *cty)
 {
-    QDir::setCurrent(dataDirectory);
+    QDir::setCurrent(dataDirectory());
     for (int ii = 0; ii < MMAX; ii++) multFile[ii] = filename[ii];
     Qso* tmpqso = new Qso(1);
     for (int ii = 0; ii < MMAX; ii++) {

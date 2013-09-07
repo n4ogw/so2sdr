@@ -104,7 +104,7 @@ void ParallelPort::PinHigh(int p)
 void ParallelPort::initialize()
 {
     bool ok=false;
-        QString pstring=settings.value(s_radios_pport,defaultParallelPort).toString();
+	QString pstring=settings.value(s_radios_pport,defaultParallelPort).toString();
     port= pstring.toULong(&ok,0);
     if (!ok) {
         port = defaultParallelPort.toULong();

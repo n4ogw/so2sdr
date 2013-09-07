@@ -16,6 +16,7 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QString>
 #include "defines.h"
 #include "utils.h"
 
@@ -121,3 +122,24 @@ int getBand(int f)
     return(-1);
 }
 
+/*! returns directory where program data is stored
+*/
+QString dataDirectory()
+{
+#ifdef Q_OS_WIN
+    // in Windows keep data files in same directory as executable
+	return qApp->applicationDirPath();
+#endif
+
+#ifdef Q_OS_LINUX
+	// INSTALL_DIR is usually /usr/local
+        return QString(INSTALL_DIR)+QString("/share/so2sdr/");
+#endif
+}
+
+/*! returns directory where user data (station config, hamlib cache,...) are stored
+	*/
+QString userDirectory()
+{
+        return QDir::homePath() + "/.so2sdr";
+}

@@ -23,6 +23,7 @@
 #include <QDebug>
 #include "hamlib/rotator.h"
 #include "cty.h"
+#include "utils.h"
 
 /*! After calling constructor, must call initialize(), which reads cty file and sets up
      databases.
@@ -396,7 +397,7 @@ void Cty::initialize(double la, double lo, int ZoneType)
     double mylat=la;
     double mylon=lo;
 
-    QFile file(dataDirectory+"/"+settings.value(c_cty,c_cty_def).toString());
+    QFile file(dataDirectory()+"/"+settings.value(c_cty,c_cty_def).toString());
     int   indx;
 
     // sunrise/sunset times for station
@@ -406,8 +407,8 @@ void Cty::initialize(double la, double lo, int ZoneType)
     // certain countries that span many zones
     QString zoneFileName;
     switch (ZoneType) {
-    case 0:zoneFileName=dataDirectory+"/cq_zone_latlong.dat";break;
-    case 1:zoneFileName=dataDirectory+"/itu_zone_latlong.dat";break;
+    case 0:zoneFileName=dataDirectory()+"/cq_zone_latlong.dat";break;
+    case 1:zoneFileName=dataDirectory()+"/itu_zone_latlong.dat";break;
     }
     QFile file2(zoneFileName);
     if (file2.open(QIODevice::ReadOnly | QIODevice::Text)) {
