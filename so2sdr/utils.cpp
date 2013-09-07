@@ -141,5 +141,11 @@ QString dataDirectory()
 	*/
 QString userDirectory()
 {
-        return QDir::homePath() + "/.so2sdr";
+#ifdef Q_OS_WIN
+	return QDir::homePath() + "/so2sdr";
+#endif
+
+#ifdef Q_OS_LINUX
+	return QDir::homePath() + "/.so2sdr";
+#endif
 }

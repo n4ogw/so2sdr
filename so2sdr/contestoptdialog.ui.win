@@ -226,6 +226,11 @@ share/so2sdr in linux or in program directory in Windows.</string>
      </item>
      <item row="9" column="0">
       <widget class="QCheckBox" name="OffTimeCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Off Times</string>
        </property>

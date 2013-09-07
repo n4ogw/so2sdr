@@ -28,11 +28,6 @@
     <height>711</height>
    </size>
   </property>
-  <property name="font">
-   <font>
-    <pointsize>10</pointsize>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>Sound Card setup</string>
   </property>
@@ -287,30 +282,60 @@
          <pointsize>10</pointsize>
         </font>
        </property>
+       <property name="toolTip">
+        <string/>
+       </property>
       </widget>
      </item>
      <item row="13" column="0">
       <widget class="QLabel" name="label_9">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>output device</string>
        </property>
       </widget>
      </item>
-     <item row="15" column="0">
+     <item row="13" column="1">
+      <widget class="QComboBox" name="SoundCardDVKComboBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0">
       <widget class="QLabel" name="label_20">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>recording device</string>
        </property>
       </widget>
      </item>
-     <item row="15" column="1">
+     <item row="14" column="1">
       <widget class="QComboBox" name="DVKRecordingComboBox">
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
-     <item row="16" column="0">
+     <item row="15" column="0">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -326,10 +351,11 @@
        </property>
       </spacer>
      </item>
-     <item row="17" column="0">
+     <item row="16" column="0">
       <widget class="QLabel" name="label_21">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -339,7 +365,7 @@
        </property>
       </widget>
      </item>
-     <item row="18" column="0">
+     <item row="17" column="0">
       <widget class="QLabel" name="label_5">
        <property name="font">
         <font>
@@ -351,7 +377,7 @@
        </property>
       </widget>
      </item>
-     <item row="18" column="1">
+     <item row="17" column="1">
       <widget class="QLineEdit" name="SpotTimeoutLineEdit">
        <property name="font">
         <font>
@@ -363,7 +389,7 @@
        </property>
       </widget>
      </item>
-     <item row="20" column="0">
+     <item row="19" column="0">
       <widget class="QCheckBox" name="SpotCallsCheckBox">
        <property name="font">
         <font>
@@ -379,7 +405,7 @@ Typically turned off only during the Sprint.</string>
        </property>
       </widget>
      </item>
-     <item row="20" column="1">
+     <item row="19" column="1">
       <widget class="QCheckBox" name="ChangeRadioClickCheckBox">
        <property name="font">
         <font>
@@ -395,7 +421,7 @@ make that radio active</string>
        </property>
       </widget>
      </item>
-     <item row="21" column="0">
+     <item row="20" column="0">
       <widget class="QLabel" name="label_11">
        <property name="font">
         <font>
@@ -407,7 +433,7 @@ make that radio active</string>
        </property>
       </widget>
      </item>
-     <item row="21" column="1">
+     <item row="20" column="1">
       <widget class="QLineEdit" name="lineEditIntegTime">
        <property name="font">
         <font>
@@ -420,7 +446,7 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </property>
       </widget>
      </item>
-     <item row="22" column="0">
+     <item row="21" column="0">
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="spacing">
         <number>3</number>
@@ -529,7 +555,7 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </item>
       </layout>
      </item>
-     <item row="22" column="1">
+     <item row="21" column="1">
       <layout class="QGridLayout" name="gridLayout">
        <property name="spacing">
         <number>3</number>
@@ -658,17 +684,15 @@ seconds in Sprints, 15-30 seconds in other contests.</string>
        </property>
       </widget>
      </item>
-     <item row="16" column="1">
+     <item row="15" column="1">
       <widget class="QCheckBox" name="loopCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>loop live audio</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="1">
-      <widget class="QComboBox" name="SoundCardDVKComboBox">
-       <property name="enabled">
-        <bool>false</bool>
        </property>
       </widget>
      </item>

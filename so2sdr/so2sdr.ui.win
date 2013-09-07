@@ -113,7 +113,6 @@
            </property>
            <property name="font">
             <font>
-             <family>Bitstream Vera Sans Mono</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -185,9 +184,8 @@
            </property>
            <property name="font">
             <font>
-             <family>Bitstream Vera Sans Mono</family>
+             <family>Consolas</family>
              <pointsize>10</pointsize>
-             <italic>false</italic>
             </font>
            </property>
            <property name="readOnly">
@@ -253,6 +251,71 @@
              <property name="spacing">
               <number>2</number>
              </property>
+             <item row="3" column="3">
+              <widget class="QLabel" name="mult40Label2">
+               <property name="font">
+                <font>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="4">
+              <widget class="QLabel" name="mult20Label2">
+               <property name="font">
+                <font>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="7">
+              <widget class="QLabel" name="label_13">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Tot</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="1">
               <widget class="QLabel" name="label_160">
                <property name="font">
@@ -407,8 +470,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -441,8 +504,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -475,8 +538,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -509,8 +572,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -543,8 +606,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -577,45 +640,12 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>0</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="7">
-              <widget class="QLabel" name="label_13">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
+                 <family>MS Shell Dlg 2</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
-                <string>Tot</string>
+                <string>0</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -644,8 +674,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -678,8 +708,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -712,8 +742,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -746,8 +776,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -780,8 +810,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -814,8 +844,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -848,8 +878,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -882,8 +912,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -898,8 +928,8 @@
               <widget class="QLabel" name="mult160Label2">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -914,40 +944,8 @@
               <widget class="QLabel" name="mult80Label2">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="3">
-              <widget class="QLabel" name="mult40Label2">
-               <property name="font">
-                <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="4">
-              <widget class="QLabel" name="mult20Label2">
-               <property name="font">
-                <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -962,8 +960,8 @@
               <widget class="QLabel" name="mult15Label2">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -978,8 +976,8 @@
               <widget class="QLabel" name="mult10Label2">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1012,8 +1010,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>9</pointsize>
+                 <family>MS Shell Dlg 2</family>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1087,7 +1085,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
+            <family>Consolas</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -1188,7 +1186,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
+            <family>Consolas</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -1235,7 +1233,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
+            <family>Consolas</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -1298,7 +1296,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
+            <family>Consolas</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -1326,7 +1324,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
+            <family>Consolas</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -1448,8 +1446,8 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
-            <pointsize>9</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1479,8 +1477,8 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
-            <pointsize>9</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1510,8 +1508,8 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
-            <pointsize>9</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1541,8 +1539,8 @@
           </property>
           <property name="font">
            <font>
-            <family>Bitstream Vera Sans Mono</family>
-            <pointsize>9</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -2258,7 +2256,7 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -2428,6 +2426,9 @@
     <bool>true</bool>
    </property>
    <property name="text">
+    <string>SSB Messages</string>
+   </property>
+   <property name="toolTip">
     <string>SSB Messages</string>
    </property>
   </action>
