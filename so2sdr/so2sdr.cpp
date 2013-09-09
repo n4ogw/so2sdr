@@ -1894,8 +1894,7 @@ void So2sdr::exchCheck2(const QString &exch)
 void So2sdr::exchCheck(int nr,const QString &exch)
 {
     if (qso[nr]->call.isEmpty()) return; // do nothing unless we have a callsign
-
-    // recopy call; needed incase call was changed by a previous
+    // recopy call; needed in case call was changed by a previous
     // exchange edit
     qso[nr]->call=lineEditCall[nr]->text().toAscii();
     qso[nr]->exch=exch.toAscii();
@@ -1993,7 +1992,6 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
     qso[nrig]->call = call.toAscii();
     qso[nrig]->call = qso[nrig]->call.toUpper();
     for (int ii = 0; ii < MMAX; ii++) qso[nrig]->mult[ii] = -1;
-
     // check/supercheck partial callsign fragment
     // don't do anything unless at least 2 chars entered
     if (qso[nrig]->call.size() > 1) {
@@ -2081,8 +2079,8 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             statusBarDupe = false;
         }
         // if exchange isn't empty, should recheck it now
-        if (!lineEditExchange[nr]->text().isEmpty()) {
-            exchCheck(nr,lineEditExchange[nr]->text());
+        if (!lineEditExchange[nrig]->text().isEmpty()) {
+            exchCheck(nrig,lineEditExchange[nrig]->text());
         }
     } else {
         if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
@@ -2722,8 +2720,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                                        "BEST_CQ",
                                        "BEST_CQ_R2",
                                        "CANCEL",
-                                       "AUDIO"};
-    const int        n_token_names = 26;
+                                       "AUDIO",
+                                       "SWITCH_RADIOS"};
+    const int        n_token_names = 27;
 
     /*!
        cw/ssb message macros
@@ -2755,6 +2754,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
        - {RIG2_FREQ} send current inactive rig freq in KHz
        - {BEST_CQ} qsy current radio to "best" CQ freq
        - {BEST_CQ_R2} qsy 2nd radio to "best" CQ freq
+       - {CANCEL} cancel a winkey speed change
+       - {AUDIO} message contains DVK audio
+       - {SWITCH_RADIOS} same as alt-R
     */
     bool switchradio=true;
     bool first=true;
@@ -2927,6 +2929,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                             emit(playDvk(ssbnr,activeRadio));
                         }
 #endif
+                        break;
+                    case 26: // switch radios
+                        switchRadios();
                         break;
                     }
                     break;
