@@ -51,7 +51,6 @@ private slots:
 private:
     QList<QString> hosts;
     QString        buffer;
-    QString stripCR(const QString &msg);
     QSettings&     settings;
     QtTelnet       *telnet;
 };

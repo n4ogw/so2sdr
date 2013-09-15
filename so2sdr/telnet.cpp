@@ -150,7 +150,7 @@ void Telnet::showText(QString txt)
             emit(dxSpot(call.toAscii(), f));
         }
     }
-    txt=stripCR(txt);
+    txt.remove(QRegExp("[^a-zA-Z/.\\d\\s]")); // remove all except letters, numbers, ., and /
     buffer = buffer + txt;
     if (buffer.size() > MAX_TELNET_CHARS) {
         // remove text from top of buffer
@@ -160,15 +160,4 @@ void Telnet::showText(QString txt)
     TelnetTextEdit->setText(buffer);
     QScrollBar *s = TelnetTextEdit->verticalScrollBar();
     s->setValue(s->maximum());
-}
-
-/*!
-   Remove CR and terminal codes from a line
- */
-QString Telnet::stripCR(const QString &msg)
-{
-    QString nmsg(msg);
-    nmsg.remove('\r');
-    nmsg.remove(QRegExp("\033\\[[0-9;]*[A-Za-z]"));  // Also remove terminal control codes
-    return(nmsg);
 }
