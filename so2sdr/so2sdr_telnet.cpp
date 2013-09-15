@@ -241,12 +241,13 @@ void So2sdr::checkSpot(int nr)
         return;
     }
     int f = cat->getRigFreq(nr);
-
     // if just had a band change, don't do anything
-    if (getBand(f) != getBand(lastFreq[nr])) {
-        lastFreq[nr] = f;
-        return;
-    }
+    // N4OGW 09/15/13 : this cause a call to incorrectly stick around when the band is changed on the radio.
+    //   will test to make sure removing does not introduce other bugs.
+    // if (getBand(f) != getBand(lastFreq[nr])) {
+    //     lastFreq[nr] = f;
+    //     return;
+    //   }
 
     // check for alt-D active state. If alt-D is active and vfo on 2nd radio has moved,
     // clear alt-D status

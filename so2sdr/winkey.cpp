@@ -186,7 +186,7 @@ void Winkey::openWinkey()
     winkeyPort->setStopBits(STOP_2);
 
     winkeyPort->setTimeout(250);
-    winkeyPort->open(QIODevice::ReadWrite);
+    winkeyPort->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
     winkeyPort->setRts(0);
     winkeyPort->setDtr(1);
     winkeyPort->flush();
