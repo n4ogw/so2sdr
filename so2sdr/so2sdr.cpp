@@ -3097,7 +3097,7 @@ void So2sdr::rescore()
         bool exchValid=contest->validateExchange(&tmpqso);
         tmpqso.valid=userValid & exchValid;
 
-        if (!tmpqso.dupe) nqso[tmpqso.band]++;
+        if (!tmpqso.dupe && tmpqso.valid) nqso[tmpqso.band]++;
         if (!tmpqso.valid || tmpqso.dupe) {
             tmpqso.pts=0;
             tmpqso.mult[0]=-1;
@@ -3109,6 +3109,7 @@ void So2sdr::rescore()
     }
     updateBreakdown();
     updateMults(activeRadio);
+    if (nDupesheet) populateDupesheet();
 }
 
 
@@ -3320,7 +3321,7 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
     }
     // query for partial fragment
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log WHERE VALID<>0 AND (CALL LIKE'%" + part + "%' )", mylog->db);
+    m.setQuery("SELECT * FROM log WHERE VALID='true' AND (CALL LIKE'%" + part + "%' )", mylog->db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }

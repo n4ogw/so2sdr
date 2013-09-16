@@ -71,7 +71,7 @@ void log::closeLogFile()
 bool log::exportADIF(QFile *adifFile) const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", db);
+    m.setQuery("SELECT * FROM log where valid='true'", db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -210,7 +210,7 @@ bool log::exportADIF(QFile *adifFile) const
 void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString snt_exch2,QString snt_exch3,QString snt_exch4) const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", db);
+    m.setQuery("SELECT * FROM log  where valid='true'", db);
 
     while (m.canFetchMore()) {
         m.fetchMore();
@@ -226,7 +226,7 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
     QByteArray snt[MAX_EXCH_FIELDS];
     for (int i = 0; i < m.rowCount(); i++) {
         // skip qsos marked as invalid
-        if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
+     //   if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
 
         // for sent exchange, if log field is empty use config file value
         snt[0]=m.record(i).value(SQL_COL_SNT1).toByteArray();
@@ -260,7 +260,7 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
 
     for (int i = 0; i < m.rowCount(); i++) {
         // skip qsos marked as invalid
-        if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
+       // if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
 
         // for sent exchange, if log field is empty use config file value
         snt[0]=m.record(i).value(SQL_COL_SNT1).toByteArray();
@@ -372,7 +372,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 
     // call can only be worked once on any band
     if (!DupeCheckingEveryBand) {
-        m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", db);
+        m.setQuery("SELECT * FROM log WHERE valid='true' and CALL='" + qso->call + "'", db);
         while (m.canFetchMore()) {
             m.fetchMore();
         }
@@ -386,7 +386,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     } else {
         // if mobile station, check for mobile dupe option. In this
         // case, count dupe only if exchange is identical
-        QString query="SELECT * FROM log WHERE call='" + qso->call + "' AND band=" + QString::number(qso->band);
+        QString query="SELECT * FROM log WHERE valid='true' and call='" + qso->call + "' AND band=" + QString::number(qso->band);
 
         if (qso->isMobile && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
             QString exch=qso->rcv_exch[csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
@@ -427,7 +427,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             dupe=true;
         }
         if (FillWorked) {
-            m.setQuery("SELECT * FROM log WHERE CALL='" + qso->call + "'", db);
+            m.setQuery("SELECT * FROM log WHERE valid='true' and CALL='" + qso->call + "'", db);
             for (int i = 0; i < m.rowCount(); i++) {
                 qso->worked += bits[m.record(i).value(SQL_COL_BAND).toInt()];
             }
@@ -445,7 +445,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 int log::lastNr() const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", db);
+    m.setQuery("SELECT * FROM log where valid='true'", db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -493,7 +493,7 @@ bool log::openLogFile(QString fname,bool clear)
     }
     QSqlQuery query(db);
 
-    if (!query.exec("create table if not exists log (nr int primary key,time text,freq int,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid int)")) {
+    if (!query.exec("create table if not exists log (nr int primary key,time text,freq int,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid boolean)")) {
         return(false);
     }
     return(db.commit());
@@ -578,7 +578,7 @@ void log::setupQsoNumbers(const int n)
 QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", db);
+    m.setQuery("SELECT * FROM log where valid='true'", db);
     while (m.canFetchMore()) {
         m.fetchMore();
     }
