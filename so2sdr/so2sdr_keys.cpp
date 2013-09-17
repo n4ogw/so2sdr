@@ -1393,7 +1393,7 @@ void So2sdr::esc()
     } else {
         i1 = 0;
     }
-    if (!qso[activeRadio]->exch.isEmpty()) { // && !qso[activeRadio]->dupe) {
+    if (!qso[activeRadio]->exch.simplified().isEmpty()) { // && !qso[activeRadio]->dupe) {
         i2 = 1;
     } else {
         i2 = 0;
@@ -1410,6 +1410,7 @@ void So2sdr::esc()
 
             // hide exchange line
             lineEditExchange[activeRadio]->hide();
+            validLabel[activeRadio]->clear();
 
             // switch back to radio 1
             callFocus[altDActiveRadio] = true;
@@ -1431,6 +1432,7 @@ void So2sdr::esc()
         sunLabelPtr[activeRadio]->clear();
         lineEditCall[activeRadio]->setCursorPosition(0);
         qso[activeRadio]->call.clear();
+        qso[activeRadio]->valid=false;
         So2sdrStatusBar->clearMessage();
         clearWorked(activeRadio);
         origCallEntered[activeRadio].clear();
