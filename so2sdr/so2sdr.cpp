@@ -2015,8 +2015,9 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         int  pp = cty->idPfx(qso[nrig], qsy);
 
         // 2nd radio CQ is active, display these on the other radio
+        // unless in S/P on active radio
         int nr = nrig;
-        if (activeR2CQ) {
+        if (activeR2CQ && cqMode[activeRadio]) {
             nr = nr ^ 1;
         }
         // WPX contest: check the callsign prefix
@@ -2088,8 +2089,9 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         }
 
         // if Alt-D or 2nd radio CQ is active, display these on the other radio
+        // if 2nd radio CQ and S/P on active radio, display on active radio
         int nr = nrig;
-        if (altDActive || activeR2CQ) {
+        if (altDActive || ( activeR2CQ && cqMode[activeRadio] ) ) {
             nr = nr ^ 1;
         }
         labelCountry[nr]->clear();
@@ -2604,6 +2606,9 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
 void So2sdr::sprintMode()
 {
     if (!cqMode[activeRadio]) {
+        if (activeR2CQ) { // clear 2nd radio CQ if S/P QSO is logged
+            clearR2CQ(activeRadio ^ 1);
+        }
         setCqMode(activeRadio);
     }
 }
