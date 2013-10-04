@@ -154,8 +154,10 @@ private slots:
     void speedUp(int nrig);
     void startLogEdit();
     void startMaster();
+    void switchAudio(int r);
     void switchMultMode();
     void switchRadios(bool switchcw = true);
+    void switchTransmit(int r, int CWspeed = 0);
     void ungrab();
     void updateOptions();
     void updateRadioFreq();

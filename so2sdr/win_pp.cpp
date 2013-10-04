@@ -116,9 +116,9 @@ void ParallelPort::initialize()
 /*!
   switch audio to radio r
   */
-void ParallelPort::switchRadios(int r)
+void ParallelPort::switchAudio(int r)
 {
-    int radioPin=settings.value(s_radios_focus,defaultParallelPortRadioPin).toInt();
+    int radioPin=settings.value(s_radios_focus,defaultParallelPortAudioPin).toInt();
     bool invert=settings.value(s_radios_focusinvert,false).toBool();
     if (r==0) {
         if (invert) {
@@ -131,6 +131,26 @@ void ParallelPort::switchRadios(int r)
             PinLow(radioPin);
         } else {
             PinHigh(radioPin);
+        }
+    }
+}
+
+// switch ptt routing
+void ParallelPort::switchTransmit(int r)
+{
+    int txPin=settings.value(s_radios_txfocus,defaultParallelPortTxPin).toInt();
+    bool invert=settings.value(s_radios_txfocusinvert,false).toBool();
+    if (r==0) {
+        if (invert) {
+            PinHigh(txPin);
+        } else {
+            PinLow(txPin);
+        }
+    } else {
+        if (invert) {
+            PinLow(txPin);
+        } else {
+            PinHigh(txPin);
         }
     }
 }

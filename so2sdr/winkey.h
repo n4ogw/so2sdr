@@ -37,7 +37,7 @@ public:
     void loadbuff(QByteArray msg);
     bool isSending() const;
     void sendcw();
-    void setOutput(int nrig);
+    void switchTransmit(int nrig);
     void setSpeed(int speed);
     bool winkeyIsOpen() const;
 

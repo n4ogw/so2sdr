@@ -1560,10 +1560,9 @@ void So2sdr::esc()
         exchangeSent[activeRadio] = false;
     }
 
-    // reset winkey output port
+    // reset winkey output port // transmit focus
     if (x & 128) {
-        winkey->setSpeed(activeRadio);
-        winkey->setOutput(activeRadio);
+        switchTransmit(activeRadio);
     }
 
     // clear radio2 cq status

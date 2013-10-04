@@ -550,7 +550,7 @@ void So2sdr::startWinkey()
 {
     winkey->openWinkey();
     winkey->setSpeed(wpm[activeRadio]);
-    winkey->setOutput(activeRadio);
+    winkey->switchTransmit(activeRadio);
 }
 
 
@@ -1800,6 +1800,36 @@ void So2sdr::swapRadios()
     qsy(1, old_f[0], true);
 }
 
+void So2sdr::switchAudio(int r)
+{
+    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+        pport->switchAudio(r);
+    }
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+        otrsp->switchAudio(r);
+    }
+}
+
+void So2sdr::switchTransmit(int r, int CWspeed)
+{
+    if (winkey->winkeyIsOpen()) {
+        winkey->cancelcw();
+        winkey->switchTransmit(r);
+        if (CWspeed != wpm[r]) {
+            winkey->setSpeed(CWspeed);
+        } else {
+            winkey->setSpeed(wpm[r]);
+        }
+
+    }
+    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+        pport->switchTransmit(r);
+    }
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+        otrsp->switchTransmit(r);
+    }
+}
+
 /*!
    Switch active radio
 
@@ -1811,13 +1841,14 @@ void So2sdr::switchRadios(bool switchcw)
 {
     activeRadio = activeRadio ^ 1;
     clearR2CQ(activeRadio);
+    switchAudio(activeRadio);
     if (switchcw) {
-        winkey->cancelcw();
-        winkey->setOutput(activeRadio);
-        winkey->setSpeed(wpm[activeRadio]);
+        switchTransmit(activeRadio);
+
 #ifdef DVK_ENABLE
         dvk->setLiveChannel(activeRadio);
 #endif
+
     }
     if (callFocus[activeRadio]) {
         lineEditCall[activeRadio]->setFocus();
@@ -1838,12 +1869,7 @@ void So2sdr::switchRadios(bool switchcw)
             lineEditExchange[activeRadio]->setCursorPosition(0);
         }
     }
-    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-        pport->switchRadios(activeRadio);
-    }
-    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-        otrsp->switchRadios(activeRadio);
-    }
+
     MasterTextEdit->clear();
     updateRadioFreq();
     updateBreakdown();
@@ -2808,8 +2834,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         }
                         break;
                     case 4: // Radio 2
-                        winkey->setSpeed(wpm[activeRadio ^ 1]);
-                        winkey->setOutput(activeRadio ^ 1);
+                        switchTransmit(activeRadio ^ 1);
                         txt = txt.right(txt.size() - 2);
                         txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
                         sendingOtherRadio = true;
@@ -2817,8 +2842,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         break;
                     case 5: // Radio 2 CQ
                     {
-                        winkey->setSpeed(wpm[activeRadio ^ 1]);
-                        winkey->setOutput(activeRadio ^ 1);
+                        switchTransmit(activeRadio ^ 1);
                         txt = txt.right(txt.size() - 2);
                         txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
                         setCqMode(activeRadio ^ 1);
@@ -2946,8 +2970,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
                 sendingOtherRadio = false;
-                winkey->setSpeed(tmp_wpm);
-                winkey->setOutput(activeRadio);
+                switchTransmit(activeRadio, tmp_wpm);
             }
             first=false;
 
@@ -2973,8 +2996,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
     } else {
         // no macro present send as-is
         sendingOtherRadio = false;
-        winkey->setSpeed(tmp_wpm);
-        winkey->setOutput(activeRadio);
+        switchTransmit(activeRadio, tmp_wpm);
         out.append(msg);
         txt.append(msg);
         send(out);

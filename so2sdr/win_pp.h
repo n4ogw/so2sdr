@@ -47,7 +47,7 @@ Q_OBJECT
 public:
     ParallelPort(QSettings& s);
     ~ParallelPort();
-    void switchRadios(int r);
+    void switchAudio(int r);
     void toggleStereoPin();
 
 signals:

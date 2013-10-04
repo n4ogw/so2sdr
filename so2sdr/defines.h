@@ -54,7 +54,8 @@ const int MAX_TELNET_CHARS=4096;
 
 /////////////// parallel port ////////////
 const int defaultParallelPortStereoPin=5;
-const int defaultParallelPortRadioPin=4;
+const int defaultParallelPortAudioPin=4;
+const int defaultParallelPortTxPin=3;
 #ifdef Q_OS_LINUX
 const QString defaultParallelPort = "/dev/parport0";
 #endif
@@ -634,10 +635,16 @@ const QString s_radios_pport="radios/pport";
 const QString s_radios_pport_def=defaultParallelPort;
 
 const QString s_radios_focus="radios/focuspin";
-const int s_radios_focus_def=defaultParallelPortRadioPin;
+const int s_radios_focus_def=defaultParallelPortAudioPin;
 
 const QString s_radios_focusinvert="radios/focusinvert";
 const bool s_radios_focusinvert_def=false;
+
+const QString s_radios_txfocus="radios/txfocuspin";
+const int s_radios_txfocus_def=defaultParallelPortTxPin;
+
+const QString s_radios_txfocusinvert="radios/txfocusinvert";
+const bool s_radios_txfocusinvert_def=false;
 
 const QString s_radios_stereo="radios/stereopin";
 const int s_radios_stereo_def=defaultParallelPortStereoPin;

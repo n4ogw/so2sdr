@@ -46,17 +46,24 @@ bool OTRSP::OTRSPIsOpen() const
  * \brief OTRSP::switchRadios
  * switches both RX and TX focus to other radio
  */
-void OTRSP::switchRadios(int nr)
+void OTRSP::switchAudio(int nr)
 {
     if (!OTRSPOpen || nr<0 || nr>1) return;
 
     const char rxcmd[2][5]={"RX1\r","RX2\r"};
-    const char txcmd[2][5]={"TX1\r","TX2\r"};
 
     // if in stereo mode, don't switch RX
     if (!stereo) {
         OTRSPPort->write(rxcmd[nr],4);
     }
+
+}
+
+void OTRSP::switchTransmit(int nr)
+{
+    if (!OTRSPOpen || nr<0 || nr>1) return;
+    const char txcmd[2][5]={"TX1\r","TX2\r"};
+
     OTRSPPort->write(txcmd[nr],4);
 }
 
@@ -71,7 +78,7 @@ void OTRSP::toggleStereo(int nr)
     if (!OTRSPOpen || nr<0 || nr>1) return;
     if (stereo) {
         stereo=false;
-        this->switchRadios(nr);
+        this->switchAudio(nr);
     } else {
         const char cmd[6]="RX1S\r";
         OTRSPPort->write(cmd,5);

@@ -149,8 +149,9 @@ void Winkey::setSpeed(int speed)
    set output port on Winkey
    sets PTT, sidetone on for either
  */
-void Winkey::setOutput(int nrig)
+void Winkey::switchTransmit(int nrig)
 {
+    if (!winkeyPort->isOpen()) return;
     rigNum = nrig;
     unsigned char buff[2];
     buff[0] = 0x09;

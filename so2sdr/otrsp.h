@@ -39,8 +39,9 @@ public:
     OTRSP(QSettings& s, QObject *parent = 0);
     ~OTRSP();
     bool OTRSPIsOpen() const;
-    void switchRadios(int nr);
-    void toggleStereo(int nr);
+    void switchAudio(int nr);
+    void toggleStereo(int nr); 
+    void switchTransmit(int nr);
 
 public slots:
     void openOTRSP();

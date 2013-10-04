@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>475</height>
+    <height>565</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>350</width>
-    <height>475</height>
+    <height>565</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>350</width>
-    <height>475</height>
+    <height>565</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -150,7 +150,7 @@
             </font>
            </property>
            <property name="text">
-            <string> Poll time (ms)</string>
+            <string>Poll time (ms)</string>
            </property>
           </widget>
          </item>
@@ -276,7 +276,7 @@
             </font>
            </property>
            <property name="text">
-            <string> Poll time (ms)</string>
+            <string>Poll time (ms)</string>
            </property>
           </widget>
          </item>
@@ -410,7 +410,7 @@
             </font>
            </property>
            <property name="text">
-            <string> Parallel Port</string>
+            <string>Parallel Port</string>
            </property>
           </widget>
          </item>
@@ -423,7 +423,35 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>Transmit Focus Pin</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QComboBox" name="TransmitPinComboBox">
+           <property name="toolTip">
+            <string>Used to switch transmit / PTT focus</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QCheckBox" name="TransmitInvertCheckBox">
+           <property name="text">
+            <string>Invert</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
           <widget class="QLabel" name="label_8">
            <property name="font">
             <font>
@@ -431,18 +459,18 @@
             </font>
            </property>
            <property name="text">
-            <string> Radio Focus Pin</string>
+            <string>Audio Focus Pin</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="6" column="1">
           <widget class="QComboBox" name="RadioPinComboBox">
            <property name="toolTip">
             <string>Used to switch audio when changing radios</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="7" column="1">
           <widget class="QCheckBox" name="RadioInvertCheckBox">
            <property name="toolTip">
             <string>Invert focus pin logic</string>
@@ -452,7 +480,14 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="8" column="0" colspan="2">
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
           <widget class="QLabel" name="label_9">
            <property name="font">
             <font>
@@ -460,14 +495,21 @@
             </font>
            </property>
            <property name="text">
-            <string> Stereo Switch Pin</string>
+            <string>Stereo Switch Pin</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="9" column="1">
           <widget class="QComboBox" name="StereoPinComboBox">
            <property name="toolTip">
             <string>Toggled to switch stereo headphone mode</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>

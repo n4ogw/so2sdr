@@ -44,8 +44,9 @@ Q_OBJECT
 public:
     ParallelPort(QSettings& s);
     ~ParallelPort();
-    void switchRadios(int r);
-    void toggleStereoPin();
+    void switchAudio(int r);
+    void toggleStereoPin();   
+    void switchTransmit(int r);
 
 public slots:
     void initialize();

@@ -100,6 +100,14 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
     RadioPinComboBox->insertItem(0, "4");
     RadioPinComboBox->insertItem(0, "3");
     RadioPinComboBox->insertItem(0, "2");
+    TransmitPinComboBox->insertItem(0, "9");
+    TransmitPinComboBox->insertItem(0, "8");
+    TransmitPinComboBox->insertItem(0, "7");
+    TransmitPinComboBox->insertItem(0, "6");
+    TransmitPinComboBox->insertItem(0, "5");
+    TransmitPinComboBox->insertItem(0, "4");
+    TransmitPinComboBox->insertItem(0, "3");
+    TransmitPinComboBox->insertItem(0, "2");
     StereoPinComboBox->insertItem(0, "9");
     StereoPinComboBox->insertItem(0, "8");
     StereoPinComboBox->insertItem(0, "7");
@@ -177,8 +185,10 @@ void RadioDialog::updateRadio()
                                                                    radioModelComboBox[i]->currentIndex()));
     }
     settings.setValue(s_radios_focus,RadioPinComboBox->currentIndex() + 2);
+    settings.setValue(s_radios_txfocus,TransmitPinComboBox->currentIndex() + 2);
     settings.setValue(s_radios_stereo,StereoPinComboBox->currentIndex() + 2);
     settings.setValue(s_radios_focusinvert,RadioInvertCheckBox->isChecked());
+    settings.setValue(s_radios_txfocusinvert,TransmitInvertCheckBox->isChecked());
     bool pportUpdate=false;
     if (settings.value(s_radios_pport,defaultParallelPort).toString()!=ParallelPortComboBox->currentText()) {
         settings.setValue(s_radios_pport,ParallelPortComboBox->currentText());
@@ -244,9 +254,11 @@ void RadioDialog::updateFromSettings()
             break;
         }
     }
-    RadioPinComboBox->setCurrentIndex(settings.value(s_radios_focus,defaultParallelPortRadioPin).toInt() - 2);
+    RadioPinComboBox->setCurrentIndex(settings.value(s_radios_focus,defaultParallelPortAudioPin).toInt() - 2);
+    TransmitPinComboBox->setCurrentIndex(settings.value(s_radios_txfocus,defaultParallelPortTxPin).toInt() - 2);
     StereoPinComboBox->setCurrentIndex(settings.value(s_radios_stereo,defaultParallelPortStereoPin).toInt() - 2);
     RadioInvertCheckBox->setChecked(settings.value(s_radios_focusinvert,false).toBool());
+    TransmitInvertCheckBox->setChecked(settings.value(s_radios_txfocusinvert,false).toBool());
     bool found=false;
     for (int i=0;i<ParallelPortComboBox->count();i++) {
         if (ParallelPortComboBox->itemText(i)==settings.value(s_radios_pport,defaultParallelPort).toString()) {
