@@ -46,7 +46,8 @@ public:
     ~ParallelPort();
     void switchAudio(int r);
     void toggleStereoPin();   
-    void switchTransmit(int r);
+    void switchTransmit(int r);   
+    bool stereoActive() const;
 
 public slots:
     void initialize();

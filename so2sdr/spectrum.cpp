@@ -962,7 +962,7 @@ void Spectrum::calcError(bool force)
         // skip points near zero freq
         if (i > mid1 && i < mid2) continue;
 
-        if (calibSigList[i].n > 10) {
+        if (calibSigList[i].n > 500) {
             calibSigList[i].z[0]  = calibSigList[i].zsum[0] / calibSigList[i].n;
             calibSigList[i].z[1]  = calibSigList[i].zsum[1] / calibSigList[i].n;
             t                     = sqrt(1.0 - 4.0 * calibSigList[i].z[0] * calibSigList[i].z[0]);
@@ -983,21 +983,24 @@ void Spectrum::calcError(bool force)
             if (gain < minGain) {
                 minGain = gain;
             }
-            if (iqPlotOpen) {
-                // points plotted starting with negative freqs, zero freq in middle of
-                // plot. j is x axis index
-                int j = (i + sizeIQ / 2) % sizeIQ;
-                emit(gainPoint(j, gain));
-                emit(phasePoint(j, phaseDeg));
-            }
             cnt++;
+        }
+    }
+    if (iqPlotOpen) {
+        emit(gainScale(minGain, maxGain));
+        emit(phaseScale(minPhase, maxPhase));
+        for (int i = 5; i < (sizeIQ - 5); i++) {
+            if (i > mid1 && i < mid2) continue;
+            if (calibSigList[i].n > 500) {
+                int j = (i + sizeIQ / 2) % sizeIQ;
+                emit(gainPoint(j, calibSigList[i].gain));
+                emit(phasePoint(j, calibSigList[i].phase));
+            }
         }
     }
     if (cnt > 10) {
         fitErrors();
         if (iqPlotOpen) {
-            emit(gainScale(minGain, maxGain));
-            emit(phaseScale(minPhase, maxPhase));
             emit(plotGainFunc(aGain[0], aGain[1], aGain[2], aGain[3]));
             emit(plotPhaseFunc(aPhase[0], aPhase[1], aPhase[2], aPhase[3]));
         }
@@ -1246,7 +1249,7 @@ void Spectrum::fitErrors()
     int mid1 = nxo2 - 5;
     int mid2 = mid1 + 10;
     int n    = 0;
-    const int N_CUT=100;
+    const int N_CUT=500;
     for (int i = 5; i < (sizeIQ - 5); i++) {
         if (i > mid1 && i < mid2) continue;
 

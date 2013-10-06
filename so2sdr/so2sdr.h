@@ -28,6 +28,7 @@
 #include "sdrdialog.h"
 #include "contestoptdialog.h"
 #include "newcontestdialog.h"
+#include "settingsdialog.h"
 #include "notedialog.h"
 #include "dupesheet.h"
 #include "bandmap.h"
@@ -81,6 +82,7 @@ class QProgessDialog;
 class QSettings;
 class QWidgetAction;
 class QErrorMessage;
+class QTime;
 
 /*!
    Main window
@@ -102,6 +104,7 @@ public slots:
     void removeSpotFreq(int f, int band);
     void rescore();
     void setBandmapTxStatus(bool, int);
+    void settingsUpdate();
     void showMessage(QString);
     void stationUpdate();
     void startWinkey();
@@ -139,7 +142,7 @@ private slots:
     void quit();
     void regrab();
     void screenShot();
-    void send(QByteArray text);
+    void send(QByteArray text, bool stopcw = true);
     void setGrab(bool);
     void setSummaryGroupBoxTitle();
     void setupNewContest(int result);
@@ -158,6 +161,7 @@ private slots:
     void switchMultMode();
     void switchRadios(bool switchcw = true);
     void switchTransmit(int r, int CWspeed = 0);
+    void toggleStereo();
     void ungrab();
     void updateOptions();
     void updateRadioFreq();
@@ -172,12 +176,16 @@ private:
     Bandmap              *bandmap[NRIG];
     bool                 aboutActive;
     bool                 activeR2CQ;
+    bool                 autoCQMode;
+    bool                 autoSend;
     bool                 bandInvert[NRIG][N_BANDS];
     bool                 bandmapOn[NRIG];
     bool                 callFocus[NRIG];
     bool                 callSent[NRIG];
     bool                 cqMode[NRIG];
     bool                 cqQsoInProgress[NRIG];
+    bool                 duelingCQMode;
+    bool                 duelingCQWait;
     bool                 dupeCheckDone;
     bool                 exchangeSent[NRIG];
     bool                 excMode[NRIG];
@@ -186,9 +194,11 @@ private:
     bool                 keyInProgress;
     bool                 logSearchFlag;
     bool                 sendingOtherRadio;
+    bool                 sendLongCQ;
     bool                 spotListPopUp[NRIG];
     bool                 statusBarDupe;
     bool                 telnetOn;
+    bool                 toggleMode;
     bool                 uiEnabled;
     CabrilloDialog       *cabrillo;
     Contest              * contest;
@@ -210,6 +220,7 @@ private:
     int                  nqso[N_BANDS];
     int                  nrReserved[NRIG];
     int                  nrSent;
+    int                  previousState[NRIG];
     int                  rateCount[60];
     int                  ratePtr;
     int                  rigFreq[NRIG];
@@ -234,6 +245,9 @@ private:
     QDir                 *directory;
     QErrorMessage        *errorBox;
     QPixmap              iconValid;
+    QLabel               *autoCQStatus;
+    QLabel               *autoSendStatus;
+    QLabel               *duelingCQStatus;
     QLabel               *freqDisplayPtr[NRIG];
     QLabel               *grabLabel;
     QLabel               *labelBearing[NRIG];
@@ -250,6 +264,7 @@ private:
     QLabel               *qsoWorkedLabel[NRIG];
     QLabel               *rLabelPtr[NRIG];
     QLabel               *sunLabelPtr[NRIG];
+    QLabel               *toggleStatus;
     QLabel               *validLabel[NRIG];
     QLabel               *winkeyLabel;
     QLineEdit            *lineEditCall[NRIG];
@@ -268,8 +283,13 @@ private:
     QString              contestDirectory;
     QString              fileName;
     QString              settingsFile;
+    QString              greenLED;
+    QString              redLED;
+    QString              clearLED;
+    QString              tmpCall;
     QThread              catThread;
     QThread              dvkThread;
+    QTime        cqTimer;
     QWidgetAction        *bandmapCheckAction[NRIG];
     QWidgetAction        *dupesheetCheckAction[NRIG];
     QWidgetAction        *grabAction;
@@ -279,6 +299,7 @@ private:
     RadioDialog          *radios;
     RigSerial            *cat;
     SDRDialog            *sdr;
+    SettingsDialog       *progsettings;
     StationDialog        *station;
     Telnet               *telnet;
     WinkeyDialog         *winkeyDialog;
@@ -305,7 +326,7 @@ private:
     bool enterFreqOrMode();
     void esc();
     void exchCheck(int nr,const QString &exch);
-    void expandMacro(QByteArray msg, int ssbnr, bool ssbRecord);
+    void expandMacro(QByteArray msg, int ssbnr, bool ssbRecord, bool stopcw = true);
     void fillSentExch(int nr);
     void initDupeSheet();
     void initLogView();
@@ -346,6 +367,7 @@ private:
     void superPartial(QByteArray partial);
     void swapRadios();
     void tab();
+    void toggleEnter(Qt::KeyboardModifiers);
     void up();
     void updateBandmapDupes(const Qso *qso);
     void updateBreakdown();
@@ -357,6 +379,13 @@ private:
     void updateWorkedMult(int nr);
     void writeNote();
     void writeStationSettings();
+    void autoCQ();
+    void duelingCQ();
+    void duelingCQActivate(bool state = false);
+    void autoSendExch();
+    void autoSendActivate(bool state = false);
+    void autoCQdelay(bool incr = true);
+    void autoCQActivate(bool state = false);
 };
 
 #endif

@@ -94,9 +94,20 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     winkeyLabel       = new QLabel("<font color=#FF0000>WK:OFF </font>");
     grabLabel         = new QLabel("Grab");
     offPtr            = new QLabel("");
+    autoCQStatus      = new QLabel("");
+    duelingCQStatus   = new QLabel("");
+    toggleStatus      = new QLabel("");
+    autoSendStatus      = new QLabel("");
+    redLED    = "QLabel { background-color : red; border-radius: 4px; }";
+    greenLED  = "QLabel { background-color : green; border-radius: 4px; }";
+    clearLED  = "QLabel { background-color : none; border-radius: 4px; }";
     So2sdrStatusBar->addPermanentWidget(offPtr);
     So2sdrStatusBar->addPermanentWidget(grabLabel);
     grabLabel->hide();
+    So2sdrStatusBar->addPermanentWidget(autoSendStatus);
+    So2sdrStatusBar->addPermanentWidget(duelingCQStatus);
+    So2sdrStatusBar->addPermanentWidget(autoCQStatus);
+    So2sdrStatusBar->addPermanentWidget(toggleStatus);
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[0]);
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[1]);
     So2sdrStatusBar->addPermanentWidget(winkeyLabel);
@@ -132,6 +143,12 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(station, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(station, SIGNAL(stationUpdate()), this, SLOT(stationUpdate()));
     station->hide();
+    progsettings = new SettingsDialog(*settings, this);
+    connect(progsettings, SIGNAL(accepted()), this, SLOT(regrab()));
+    connect(progsettings, SIGNAL(rejected()), this, SLOT(regrab()));
+    connect(progsettings, SIGNAL(settingsUpdate()), this, SLOT(settingsUpdate()));
+    progsettings->hide();
+
     cwMessage = new CWMessageDialog(CWType,this);
     connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -188,6 +205,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(actionWinkey, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(actionStation, SIGNAL(triggered()), station, SLOT(show()));
     connect(actionStation, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(actionSettings, SIGNAL(triggered()), progsettings, SLOT(show()));
+    connect(actionSettings, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(actionRadios, SIGNAL(triggered()), radios, SLOT(show()));
     connect(actionRadios, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(actionContestOptions, SIGNAL(triggered()), options, SLOT(show()));
@@ -304,6 +323,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     startWinkey();
 
     openRadios();
+    switchAudio(activeRadio);
+    toggleStereo();
+    switchTransmit(activeRadio);
 
     lineEditCall[activeRadio]->setFocus();
     grabWidget = lineEditCall[activeRadio];
@@ -498,8 +520,6 @@ void So2sdr::addQso(const Qso *qso)
     LogTableView->scrollToBottom();
 }
 
-
-
 /*! updates things depending on contents of Station dialog
  */
 void So2sdr::stationUpdate()
@@ -532,6 +552,22 @@ void So2sdr::stationUpdate()
     contest->setContinent(tmp.continent);
 }
 
+/*!
+    Update labels for General Settings changes
+ */
+void So2sdr::settingsUpdate()
+{
+    switchAudio(activeRadio);
+    switchTransmit(activeRadio);
+    if (autoSend) {
+        autoSendStatus->setText("<font color=#006699>AutoSend("
+            + QString::number(settings->value(s_settings_autosend,s_settings_autosend_def).toInt()) + ")</font>");
+    }
+    if (autoCQMode) {
+        autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+    }
+}
 
 /*! this will have clean-up code
  */
@@ -1756,25 +1792,26 @@ void So2sdr::updateOffTime() {
  */
 void So2sdr::timerEvent(QTimerEvent *event)
 {
-    if (event->timerId() == timerId[1]) {
+
+    if (event->timerId() == timerId[4]) {
+            // auto-CQ, dueling CQ, autoSend triggers, 100 ms resolution
+            if (autoCQMode) autoCQ();
+            if (duelingCQMode) duelingCQ();
+            if (autoSend) autoSendExch();
+    } else if (event->timerId() == timerId[1]) {
         // radio updates; every 300 mS
         // (the actual serial poll time is set in serial.cpp and may be different)
         updateRadioFreq();
 
         // check bandmap
-        if (bandmapOn[0] && !keyInProgress) {
-            checkSpot(0);
-        }
-        if (bandmapOn[1] && !keyInProgress) {
-            checkSpot(1);
-        }
+        checkSpot(0);
+        checkSpot(1);
+
+        // update bandmap calls
+        decaySpots();
     } else if (event->timerId() == timerId[0]) {
         // clock update; every 1000 mS
         TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
-    } else if (event->timerId() == timerId[2]) {
-        // these happen every 60 seconds
-        updateRate();
-        decaySpots();
     } else if (event->timerId() == timerId[3]) {
         // update IQ plot every 10 seconds
         for (int i=0;i<NRIG;i++) {
@@ -1782,6 +1819,225 @@ void So2sdr::timerEvent(QTimerEvent *event)
                 bandmap[i]->calc();
             }
         }
+    } else if (event->timerId() == timerId[2]) {
+        // these happen every 60 seconds
+        updateRate();
+    }
+}
+
+void So2sdr::autoCQActivate (bool state) {
+    autoCQMode = state;
+    if (autoCQMode) {
+        duelingCQActivate(false);
+        activeR2CQ = false;
+        clearR2CQ(activeRadio ^ 1);
+        sendingOtherRadio = false;
+        autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+    } else {
+        autoCQStatus->clear();
+    }
+}
+
+void So2sdr::autoSendActivate (bool state) {
+    if (settings->value(s_settings_autosend,s_settings_autosend_def).toInt() > 0) {
+        autoSend = state;
+    }
+    if (autoSend) {
+        autoSendStatus->setText("<font color=#006699>AutoSend("
+            + QString::number(settings->value(s_settings_autosend,s_settings_autosend_def).toInt()) + ")</font>");
+    } else {
+        autoSendStatus->clear();
+    }
+}
+
+void So2sdr::duelingCQActivate (bool state) {
+    duelingCQMode = state;
+    if (duelingCQMode) {
+        autoCQActivate(false);
+        autoSendStatus->hide();
+        activeR2CQ = false;
+        clearR2CQ(activeRadio ^ 1);
+        sendingOtherRadio = false;
+        if (altDActive) {
+            QPalette palette(lineEditCall[altDActiveRadio]->palette());
+            palette.setColor(QPalette::Base, CQ_COLOR);
+            lineEditCall[altDActiveRadio]->setPalette(palette);
+            lineEditExchange[altDActiveRadio]->setPalette(palette);
+            altDActive = 0;
+            callSent[altDActiveRadio] = false;
+            setCqMode(altDActiveRadio);
+        }
+        duelingCQStatus->setText("<font color=#006B00>DuelingCQ (AUTO)</font>");
+        toggleMode = true;
+        toggleStatus->clear();
+    } else {
+        duelingCQStatus->clear();
+        toggleMode = false;
+        toggleStatus->clear();
+        sendingOtherRadio = false;
+        autoSendStatus->show();
+    }
+}
+
+/*!
+ automatically send call and exchange after user defined characters
+ toggles with Alt/-
+ Buffers and sends call letters until CW catches up
+ Backspaced changes before CW catches up to buffer results in stopped CW, "?", and complete corrected call
+ */
+void So2sdr::autoSendExch() {
+
+    if (lineEditCall[activeRadio]->text().length() >= settings->value(s_settings_autosend,s_settings_autosend_def).toInt()
+            && !exchangeSent[activeRadio] && cqMode[activeRadio] && !activeR2CQ && !duelingCQMode && !toggleMode
+            && !sendingOtherRadio && !(altDActive && altDActiveRadio == activeRadio) ) {
+        int comp = QString::compare(tmpCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
+        if ( comp < 0) {
+            int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
+            tmpCall = lineEditCall[activeRadio]->text();
+            QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
+            send(callDiff.toAscii(), false);
+        } else if (comp > 0) {
+            winkey->cancelcw();
+            send(QByteArray("?"));
+            tmpCall = "";
+        } else { // calls equal
+            if (!winkey->isSending()) {
+                // duplicated from pieces of So2sdr::enter, {CALL_ENTERED} removed in Exch message macro
+                if (nrSent == nrReserved[activeRadio ^ 1]) {
+                    nrReserved[activeRadio] = nrSent + 1;
+                } else {
+                    nrReserved[activeRadio] = nrSent;
+                }
+                int m=(int)cat->modeType(activeRadio);
+                if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
+                    expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false,false);
+                } else {
+                    QByteArray tmpExch = csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray();
+                    tmpExch.replace("{CALL_ENTERED}", "");
+                    expandMacro(tmpExch,-1,false,false);
+                }
+                exchangeSent[activeRadio]    = true;
+                callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
+                origCallEntered[activeRadio] = qso[activeRadio]->call;
+                updateNrDisplay();
+                cqQsoInProgress[activeRadio] = true;
+                excMode[activeRadio] = true;
+                lineEditExchange[activeRadio]->show();
+                prefillExch(activeRadio);
+                lineEditExchange[activeRadio]->setFocus();
+                if (grab) {
+                    lineEditExchange[activeRadio]->grabKeyboard();
+                }
+                grabWidget             = lineEditExchange[activeRadio];
+                callFocus[activeRadio] = false;
+                if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
+                    lineEditExchange[activeRadio]->clear();
+                } else {
+                    lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
+                }
+                tmpCall.clear();
+            }
+        }
+    } else {
+        tmpCall.clear();
+    }
+}
+
+/*!
+ Automatic repeating CQ, user-defined delay
+ */
+void So2sdr::autoCQ () {
+    qint64 delay = (long long) (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() * 1000.0D);
+
+    if (activeR2CQ) {
+        activeR2CQ = false;
+        clearR2CQ(activeRadio ^ 1);
+        sendingOtherRadio = false;
+    }
+    if (!cqMode[activeRadio]) setCqMode(activeRadio);
+
+    if (!lineEditCall[activeRadio]->text().isEmpty() || ( !lineEditCall[activeRadio ^ 1]->text().isEmpty() && !altDActive ) ) {
+        cqTimer.restart();
+        autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
+    } else if (winkey->isSending()) {
+        cqTimer.restart();
+        autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+    } else if (cqTimer.elapsed() >= delay) {
+        cqTimer.restart();
+        QString steerCW = "";
+        if (altDActive && altDActiveRadio == activeRadio) {
+            steerCW = "{R2}";
+        }
+        switch (cat->modeType(activeRadio)) {
+        case CWType:case DigiType:
+            if (sendLongCQ) {
+                expandMacro(steerCW.toAscii() + cwMessage->cqF[0],0,false);
+            } else {
+                expandMacro(steerCW.toAscii() + cwMessage->cqF[1],0,false);
+            }
+            break;
+        case PhoneType:
+            if (sendLongCQ) {
+                expandMacro(steerCW.toAscii() + ssbMessage->cqF[0],0,false);
+            } else {
+                expandMacro(steerCW.toAscii() + ssbMessage->cqF[1],0,false);
+            }
+            break;
+        }
+    } else {
+        autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat() - ((float) cqTimer.elapsed() / 1000.0),'f',1) + "s)</font>");
+    }
+}
+
+/*!
+  Increment AutoCQ +/- 0.1 sec: alt-PgUP / alt-PgDN
+ */
+void So2sdr::autoCQdelay (bool incr) {
+    if (incr) {
+        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() + 0.1D);
+    } else {
+        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - 0.1D);
+        if (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() < 0) {
+            settings->setValue(s_settings_cqrepeat, 0.0D);
+        }
+    }
+    progsettings->CQRepeatLineEdit->setText(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
+    settings->sync();
+    if (autoCQMode && winkey->isSending()) {
+        autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+    } else {
+        So2sdrStatusBar->showMessage("CQ DELAY: " +
+             QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1), 2000);
+    }
+}
+
+/*!
+ Dueling CQ, user-defined delay
+ */
+void So2sdr::duelingCQ () {
+    qint64 delay = (long long) (settings->value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toDouble() * 1000.0D);
+
+    toggleMode = true;
+    activeR2CQ = false;
+    if (!cqMode[activeRadio]) setCqMode(activeRadio);
+    if (!cqMode[activeRadio ^ 1]) setCqMode(activeRadio ^ 1);
+
+    if (duelingCQWait) {
+        if (winkey->isSending()) { // prevent switching hysteresis
+            duelingCQWait = false;
+        }
+    } else if (!lineEditCall[activeRadio]->text().isEmpty() || !lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
+        duelingCQStatus->setText("<font color=#006B00>DuelingCQ (ESM) </font>");
+    } else if (winkey->isSending()) {
+        cqTimer.restart();
+    } else if (cqTimer.elapsed() >= delay) {
+        duelingCQWait = true;
+        duelingCQStatus->setText("<font color=#006B00>DuelingCQ (AUTO)</font>");
+        toggleEnter(Qt::NoModifier);
     }
 }
 
@@ -1800,6 +2056,19 @@ void So2sdr::swapRadios()
     qsy(1, old_f[0], true);
 }
 
+void So2sdr::toggleStereo() {
+    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+        pport->toggleStereoPin();
+    }
+    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+        otrsp->toggleStereo(activeRadio);
+    }
+    switchAudio(activeRadio); //update indicators
+}
+
+/*!
+ Switch Audio
+ */
 void So2sdr::switchAudio(int r)
 {
     if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
@@ -1808,25 +2077,62 @@ void So2sdr::switchAudio(int r)
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->switchAudio(r);
     }
+    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
+        bool stereo = false;
+        if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+            stereo = pport->stereoActive();
+        }
+        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+            stereo = otrsp->stereoActive();
+        }
+        if (stereo) {
+            RX1->setStyleSheet(greenLED);
+            RX2->setStyleSheet(greenLED);
+        } else {
+            if (activeRadio) {
+                RX1->setStyleSheet(clearLED);
+                RX2->setStyleSheet(greenLED);
+            } else {
+                RX1->setStyleSheet(greenLED);
+                RX2->setStyleSheet(clearLED);
+            }
+        }
+    } else {
+        RX1->setStyleSheet(clearLED);
+        RX2->setStyleSheet(clearLED);
+    }
 }
 
+/*!
+  Switch trasmit focus
+ */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
-    if (winkey->winkeyIsOpen()) {
-        winkey->cancelcw();
-        winkey->switchTransmit(r);
-        if (CWspeed != wpm[r]) {
-            winkey->setSpeed(CWspeed);
-        } else {
-            winkey->setSpeed(wpm[r]);
-        }
-
+    winkey->cancelcw();
+    if (CWspeed) {
+        winkey->setSpeed(CWspeed);
+    } else {
+        winkey->setSpeed(wpm[r]);
     }
+    winkey->switchTransmit(r);
+
     if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
         pport->switchTransmit(r);
     }
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->switchTransmit(r);
+    }
+    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
+        if (r) {
+            TX1->setStyleSheet(clearLED);
+            TX2->setStyleSheet(redLED);
+        } else {
+            TX1->setStyleSheet(redLED);
+            TX2->setStyleSheet(clearLED);
+        }
+    }    else {
+        TX1->setStyleSheet(clearLED);
+        TX2->setStyleSheet(clearLED);
     }
 }
 
@@ -1839,6 +2145,7 @@ void So2sdr::switchTransmit(int r, int CWspeed)
  */
 void So2sdr::switchRadios(bool switchcw)
 {
+    if (!altDActive) autoCQActivate(false);
     activeRadio = activeRadio ^ 1;
     clearR2CQ(activeRadio);
     switchAudio(activeRadio);
@@ -2389,6 +2696,7 @@ void So2sdr::updateMults(int ir)
 void So2sdr::updateRadioFreq()
 {
     int           tmp[NRIG];
+    int           tmpf[NRIG];
     label_160->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_80->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_40->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
@@ -2396,7 +2704,35 @@ void So2sdr::updateRadioFreq()
     label_15->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_10->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     for (int i = 0; i < NRIG; i++) {
-        rigFreq[i] = cat->getRigFreq(i);
+
+        tmpf[i] = cat->getRigFreq(i);
+        if (abs(rigFreq[i] - tmpf[i]) > SIG_MIN_SPOT_DIFF && contest) {
+            // focus qsy radio // in sprint, only focus if other radio is not s/p mode
+            if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
+                if ( lineEditCall[i ^ 1]->text().simplified().isEmpty() && lineEditExchange[i ^ 1]->text().simplified().isEmpty()
+                    && i != activeRadio && !activeR2CQ && !winkey->isSending()) {
+                    if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+                        if (cqMode[i ^ 1]) {
+                            switchRadios();
+                            callFocus[i] = true;
+                        }
+                    } else {
+                        switchRadios();
+                        callFocus[i] = true;
+                    }
+                    if (altDActive && i != altDActiveRadio && lineEditCall[altDActiveRadio]->text().simplified().isEmpty()) {
+                        altDActive = false;
+                        if (altDOrigMode && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+                            spMode(altDActiveRadio);
+                        } else {
+                            setCqMode(altDActiveRadio);
+                        }
+                    }
+                }
+            }
+        }
+
+        rigFreq[i] = tmpf[i];
         tmp[i]     = band[i];
         int b = getBand(rigFreq[i]);
 
@@ -2676,12 +3012,12 @@ void So2sdr::setCqMode(int i)
 /*!
    Send a CW message
  */
-void So2sdr::send(QByteArray text)
+void So2sdr::send(QByteArray text, bool stopcw)
 {
     if (cat->modeType(activeRadio)!=CWType) return;
     if (!settings->value(s_winkey_cwon,s_winkey_cwon_def).toBool()) return;
 
-    if (winkey->isSending()) {
+    if (winkey->isSending() && stopcw) {
         winkey->cancelcw();       // cancel any cw in progress
     }
     winkey->loadbuff(text);
@@ -2714,7 +3050,7 @@ void So2sdr::clearR2CQ(int nr)
  * \param ssbnr If ssbnr >=0, activate {AUDIO} to play or record an audio message with number ssbnr
  * \param ssbRecord If true, record this message
  */
-void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
+void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
 {
 #ifndef DVK_ENABLE
     Q_UNUSED(ssbnr);
@@ -2811,12 +3147,22 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         txt.append(settings->value(s_call,s_call_def).toByteArray());
                         break;
                     case 1:  // #
-                        if (nrReserved[activeRadio]) {
-                            out.append(QString::number(nrReserved[activeRadio]));
-                            txt.append(QString::number(nrReserved[activeRadio]));
+                        if (toggleMode || sendingOtherRadio) {
+                            if (nrReserved[activeRadio ^ 1]) {
+                                out.append(QString::number(nrReserved[activeRadio ^ 1]));
+                                txt.append(QString::number(nrReserved[activeRadio ^ 1]));
+                            } else {
+                                out.append(QString::number(nrSent));
+                                txt.append(QString::number(nrSent));
+                            }
                         } else {
-                            out.append(QString::number(nrSent));
-                            txt.append(QString::number(nrSent));
+                            if (nrReserved[activeRadio]) {
+                                out.append(QString::number(nrReserved[activeRadio]));
+                                txt.append(QString::number(nrReserved[activeRadio]));
+                            } else {
+                                out.append(QString::number(nrSent));
+                                txt.append(QString::number(nrSent));
+                            }
                         }
                         break;
                     case 2:  // SPEED UP
@@ -2881,24 +3227,32 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
                         txt.append(settings->value(s_grid,s_grid_def).toByteArray());
                         break;
                     case 12: // call entered
-                        out.append(qso[activeRadio]->call);
-                        txt.append(qso[activeRadio]->call);
+                        if (toggleMode || sendingOtherRadio) {
+                            out.append(qso[activeRadio ^ 1]->call);
+                            txt.append(qso[activeRadio ^ 1]->call);
+                        } else {
+                            out.append(qso[activeRadio]->call);
+                            txt.append(qso[activeRadio]->call);
+                        }
                         break;
                     case 13: // togglestereopin
-                        if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-                            pport->toggleStereoPin();
-                        }
-                        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-                            otrsp->toggleStereo(activeRadio);
-                        }
+                        toggleStereo();
                         // return immediately to avoid stopping cw
                         return;
                         break;
                     case 14: // cqmode
-                        setCqMode(activeRadio);
+                        if (toggleMode || sendingOtherRadio) {
+                            setCqMode(activeRadio ^ 1);
+                        } else {
+                            setCqMode(activeRadio);
+                        }
                         break;
                     case 15: // spmode
-                        spMode(activeRadio);
+                        if (toggleMode || sendingOtherRadio) {
+                            spMode(activeRadio ^ 1);
+                        } else {
+                            spMode(activeRadio);
+                        }
                         break;
                     case 16: // swap_radios
                         swapRadios();
@@ -2987,10 +3341,10 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
         // cancel any buffered speed changes
         out.append(0x1e);
         if (repeat) {
-            send(lastMsg);
+            send(lastMsg,stopcw);
             if (!statusBarDupe && lastMsg.size() > 2) So2sdrStatusBar->showMessage(lastMsg.simplified());
         } else {
-            send(out);
+            send(out,stopcw);
             if (!statusBarDupe && txt.size() > 2) So2sdrStatusBar->showMessage(txt.simplified());
         }
     } else {
@@ -2999,7 +3353,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord)
         switchTransmit(activeRadio, tmp_wpm);
         out.append(msg);
         txt.append(msg);
-        send(out);
+        send(out,stopcw);
         if (!statusBarDupe && txt.size() > 2) So2sdrStatusBar->showMessage(txt.simplified());
     }
     lastMsg = out;
@@ -3162,7 +3516,8 @@ void So2sdr::fillSentExch(int nr)
         }
         // put in qso number
         if (contest->exchType(i) == QsoNumber) {
-            qso[nr]->snt_exch[i] = QByteArray::number(nrReserved[activeRadio]);
+            //qso[nr]->snt_exch[i] = QByteArray::number(nrReserved[activeRadio]);
+            qso[nr]->snt_exch[i] = QByteArray::number(nrReserved[nr]);
         }
     }
 }
@@ -3659,7 +4014,7 @@ void So2sdr::initVariables()
     nrSent        = 1;
     nrReserved[0] = 0;
     nrReserved[1] = 0;
-    for (int i = 0; i < 4; i++) timerId[i] = 0;
+    for (int i = 0; i < N_TIMERS; i++) timerId[i] = 0;
     ratePtr = 0;
     for (int i = 0; i < 60; i++) rateCount[i] = 0;
     nDupesheet   = 0;
@@ -3695,6 +4050,15 @@ void So2sdr::initVariables()
     sendingOtherRadio  = false;
     grab               = false;
     keyInProgress=false;
+
+    toggleMode = false;
+    autoCQMode = false;
+    duelingCQMode = false;
+    duelingCQWait = false;
+    autoSend = false;
+    sendLongCQ = true;
+    tmpCall.clear();
+
 }
 
 /*!

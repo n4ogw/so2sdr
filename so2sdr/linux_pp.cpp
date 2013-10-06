@@ -213,3 +213,8 @@ void ParallelPort::toggleStereoPin()
         stereoPinStatus = true;
     }
 }
+
+bool ParallelPort::stereoActive() const
+{
+    return stereoPinStatus;
+}

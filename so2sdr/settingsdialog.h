@@ -16,12 +16,34 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "bandmapentry.h"
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
-BandmapEntry::BandmapEntry()
+#include <QString>
+#include <QDialog>
+#include <QCloseEvent>
+#include <QSettings>
+#include "ui_settingsdialog.h"
+#include "utils.h"
+
+class SettingsDialog : public QDialog, public Ui::SettingsDialog
 {
-    call.clear();
-    f    = 0;
-    createdTime = 0;
-    dupe = false;
-}
+Q_OBJECT
+
+public:
+    SettingsDialog(QSettings &s, QWidget *parent = 0);
+    ~SettingsDialog();
+    friend class So2sdr;
+
+public slots:
+    void updateSettings();
+    void rejectChanges();
+
+signals:
+    void settingsUpdate();
+
+private:
+    QSettings&      settings;
+};
+
+#endif // SETTINGSDIALOG_H

@@ -282,38 +282,34 @@ void Bandmap::makeCall(const QList<BandmapEntry>& map)
     // draw callsigns
     // cmap[i] is true if the call near i is a dupe. Used to color signal on bandmap
     //
-    if (settings.value(s_sdr_mark,s_sdr_mark_def).toBool()) {
-        int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
-        display->setMark(true);
-        double fm = centerFreq - MAX_H / 2 * SAMPLE_FREQ * 1000 / (scale * sizes.spec_length);
-        for (int i = 0; i < map.size(); i++) {
-            if (map.at(i).f < fm || map.at(i).f > freqMax) continue;
-            int pix_offset = (map.at(i).f - fm) * pix_per_hz;
-            int y          = MAX_H - pix_offset;
+    int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
+    display->setMark(true);
+    double fm = centerFreq - MAX_H / 2 * SAMPLE_FREQ * 1000 / (scale * sizes.spec_length);
+    for (int i = 0; i < map.size(); i++) {
+        if (map.at(i).f < fm || map.at(i).f > freqMax) continue;
+        int pix_offset = (map.at(i).f - fm) * pix_per_hz;
+        int y          = MAX_H - pix_offset;
 
-            int l1 = y - BANDMAP_FONT_PIX_SIZE / 2;
+        int l1 = y - BANDMAP_FONT_PIX_SIZE / 2;
+        if (l1 < 0) l1 = 0;
+        int l2 = y + BANDMAP_FONT_PIX_SIZE / 2;
+        if (l2 >= MAX_H) l2 = MAX_H - 1;
+
+        if (map.at(i).dupe) {
+            // make line wider when scale is *2
+            int l1 = y - 1 - 2 * scale;
             if (l1 < 0) l1 = 0;
-            int l2 = y + BANDMAP_FONT_PIX_SIZE / 2;
+            int l2 = y + 2 + 2 * scale;
             if (l2 >= MAX_H) l2 = MAX_H - 1;
-
-            if (map.at(i).dupe) {
-                // make line wider when scale is *2
-                int l1 = y - 1 - 2 * scale;
-                if (l1 < 0) l1 = 0;
-                int l2 = y + 2 + 2 * scale;
-                if (l2 >= MAX_H) l2 = MAX_H - 1;
-                for (int j = l1; j < l2; j++) display->cmap[j] = true;
-                p.setPen(ALTD_COLOR);
-            } else {
-                p.setPen(Qt::black);
-            }
-            pix_offset = (map.at(i).f - freqMin) * pix_per_hz;
-            y          = MAX_H - pix_offset;
-            // BANDMAP_FONT_PIX_SIZE/3 is fudge factor to center callsign
-            p.drawText(BANDMAP_CALL_X, y+ BANDMAP_FONT_PIX_SIZE / 3, map.at(i).call);
+            for (int j = l1; j < l2; j++) display->cmap[j] = true;
+            p.setPen(ALTD_COLOR);
+        } else {
+            p.setPen(Qt::black);
         }
-    } else {
-        display->setMark(false);
+        pix_offset = (map.at(i).f - freqMin) * pix_per_hz;
+        y          = MAX_H - pix_offset;
+        // BANDMAP_FONT_PIX_SIZE/3 is fudge factor to center callsign
+        p.drawText(BANDMAP_CALL_X, y+ BANDMAP_FONT_PIX_SIZE / 3, map.at(i).call);
     }
     p.setPen(Qt::black);
 

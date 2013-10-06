@@ -182,7 +182,6 @@ void SDRDialog::updateFromSettings()
     DeviceCombo[2]->setEnabled(false);
     DVKRecordingComboBox->setEnabled(false);
 #endif
-    SpotCallsCheckBox->setChecked(settings.value(s_sdr_mark,s_sdr_mark_def).toBool());
     ChangeRadioClickCheckBox->setChecked(settings.value(s_sdr_changeclick,s_sdr_changeclick_def).toBool());
     lineEditIntegTime->setText(settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
     lineEdit160low->setText(settings.value(s_sdr_cqlimit_low[0],cqlimit_default_low[0]).toString());
@@ -303,7 +302,6 @@ void SDRDialog::updateSDR()
 #endif
     settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
     settings.setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
-    settings.setValue(s_sdr_mark,SpotCallsCheckBox->isChecked());
     settings.setValue(s_sdr_changeclick,ChangeRadioClickCheckBox->isChecked());
     settings.setValue(s_sdr_cqlimit_low[0],lineEdit160low->text().toInt());
     settings.setValue(s_sdr_cqlimit_high[0],lineEdit160high->text().toInt());

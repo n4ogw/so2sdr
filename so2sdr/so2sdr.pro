@@ -75,7 +75,8 @@ HEADERS += cwmessagedialog.h \
     contest_kqp.h \
     dvk.h \
     otrsp.h \
-    ssbmessagedialog.h
+    ssbmessagedialog.h \
+    settingsdialog.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -92,7 +93,8 @@ FORMS += cwmessagedialog.ui \
     cabrillo.ui \
     iqbalance.ui \
     detailededit.ui \
-    ssbmessagedialog.ui
+    ssbmessagedialog.ui \
+    settingsdialog.ui
 SOURCES += cwmessagedialog.cpp \
     main.cpp \
     serial.cpp \
@@ -146,7 +148,8 @@ SOURCES += cwmessagedialog.cpp \
     contest_kqp.cpp \
     dvk.cpp \
     otrsp.cpp \
-    ssbmessagedialog.cpp
+    ssbmessagedialog.cpp \
+    settingsdialog.cpp
 unix { 
     include(../common.pri)
 

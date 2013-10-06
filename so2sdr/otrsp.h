@@ -42,6 +42,7 @@ public:
     void switchAudio(int nr);
     void toggleStereo(int nr); 
     void switchTransmit(int nr);
+    bool stereoActive() const;
 
 public slots:
     void openOTRSP();

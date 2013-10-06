@@ -167,12 +167,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_QuoteLeft: // left quote ` Toggles audio stereo
-            if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-                pport->toggleStereoPin();
-            }
-            if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-                otrsp->toggleStereo(activeRadio);
-            }
+            toggleStereo();
             return(true);
             break;
         case Qt::Key_C:     // alt-C : bring up config menu
@@ -240,9 +235,18 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 r=true;
             }
             break;
+        case Qt::Key_Q:     // alt-Q
+            if (mod == Qt::AltModifier) {
+                autoCQActivate(autoCQMode ^ 1);
+                r = true;
+            }
+            break;
         case Qt::Key_R:     // alt-R
             if (mod == Qt::AltModifier) {
                 switchRadios();
+                r = true;
+            } else if (mod == Qt::ControlModifier) { // switchradios w/o killing cw
+                switchRadios(false);
                 r = true;
             }
             break;
@@ -345,7 +349,14 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     return(r);
                 }
             }
-            if (altDActive && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+            //if (altDActive && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+            // toggle mode
+            if (duelingCQMode &&
+                    lineEditCall[activeRadio]->text().isEmpty() && lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
+                // ignore if in auto mode
+            } else if (toggleMode || mod == Qt::AltModifier) {
+                toggleEnter(mod);
+            } else if (altDActive) {
                 altDEnter(altDActive, mod);
             } else {
                 enter(mod);
@@ -353,19 +364,35 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_PageUp:
-            launch_speedUp(mod);
+            if (mod == Qt::AltModifier) {
+                autoCQdelay(true); // increase
+            } else {
+                launch_speedUp(mod);
+            }
             r = true;
             break;
         case Qt::Key_PageDown:
-            launch_speedDn(mod);
+            if (mod == Qt::AltModifier) {
+                autoCQdelay(false); // decrease
+            } else {
+                launch_speedDn(mod);
+            }
             r = true;
             break;
         case Qt::Key_F1:
-            sendFunc(0, mod);
+            if (duelingCQMode || autoCQMode || toggleMode) {
+                sendLongCQ = true;
+            } else {
+                sendFunc(0, mod);
+            }
             r = true;
             break;
         case Qt::Key_F2:
-            sendFunc(1, mod);
+            if (duelingCQMode || autoCQMode || toggleMode) {
+                sendLongCQ = false;
+            } else {
+                sendFunc(1, mod);
+            }
             r = true;
             break;
         case Qt::Key_F3:
@@ -413,7 +440,13 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_Minus:
-            markDupe(activeRadio);
+            if (mod == Qt::ControlModifier) {
+                duelingCQActivate(duelingCQMode ^ 1);
+            } else if (mod == Qt::AltModifier) {
+                autoSendActivate(autoSend ^ 1);
+            } else {
+                markDupe(activeRadio);
+            }
             r = true;
             break;
         default:
@@ -484,12 +517,45 @@ void So2sdr::markDupe(int nrig)
  */
 void So2sdr::altd()
 {
-    // nothing if sequence already active; not available with sprint so2r
-    if (altDActive || csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return;
+    // wipe alt-d if already active (toggle off)
+    // nothing if dueling CQ or Toggle Modes active
+    //if (altDActive || csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return;
+    if (altDActive) {
+        callFocus[altDActiveRadio] = true;
+        lineEditCall[altDActiveRadio]->clear();
+        lineEditCall[altDActiveRadio]->setModified(false);
+        lineEditExchange[altDActiveRadio]->clear();
+        qso[altDActiveRadio]->call.clear();
+        exchangeSent[altDActiveRadio] = false;
+        qso[altDActiveRadio]->prefill.clear();
+        origCallEntered[altDActiveRadio].clear();
+        labelCountry[altDActiveRadio]->clear();
+        labelBearing[altDActiveRadio]->clear();
+        labelLPBearing[altDActiveRadio]->clear();
+        sunLabelPtr[altDActiveRadio]->clear();
+        clearWorked(altDActiveRadio);
+        qso[altDActiveRadio]->dupe = false;
+        So2sdrStatusBar->clearMessage();
+        altDActive = false;
+        if (altDOrigMode) {
+            spMode(altDActiveRadio);
+        } else {
+            setCqMode(altDActiveRadio);
+        }
+        if (altDActiveRadio == activeRadio) {
+            switchRadios(false);
+        }
+        return;
+    }
+    if (duelingCQMode || toggleMode) {
+        So2sdrStatusBar->showMessage("Disable Dueling CQ or Toggle",2000);
+        return;
+    }
 
     // switch radios, but don't switch/stop cw
-    switchRadios(false);
+    callFocus[activeRadio ^ 1] = true;
     altDActive = 1;
+    switchRadios(false);
     if (cqMode[activeRadio]) {
         altDOrigMode = 0;
     } else {
@@ -529,14 +595,15 @@ void So2sdr::up()
     }
 }
 
-/*! control+pageup : tune to next higher signal on bandmap
+/*! control+up : tune to next higher signal on bandmap
 
    If activeRadio is in S&P mode, tune that radio. Otherwise tune the 2nd radio
+   Tune active radio in Sprint, assumes active radio always S/P
  */
 void So2sdr::keyCtrlUp()
 {
     int nr = activeRadio;
-    if (cqMode[activeRadio]) {
+    if (cqMode[activeRadio] && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
         nr = nr ^ 1;
     }
     if (bandmapOn[nr]) {
@@ -571,14 +638,15 @@ void So2sdr::down()
     }
 }
 
-/*! control+pagedown : tune to next lower signal on bandmap
+/*! control+down : tune to next lower signal on bandmap
 
    If activeRadio is in S&P mode, tune that radio. Otherwise tune the 2nd radio
+   Tune active radio in Sprint, assumes active radio always S/P
  */
 void So2sdr::keyCtrlDn()
 {
     int nr = activeRadio;
-    if (cqMode[activeRadio]) {
+    if (cqMode[activeRadio] && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
         nr = nr ^ 1;
     }
     if (bandmapOn[nr]) {
@@ -771,8 +839,20 @@ void So2sdr::spaceSprint()
         }
         return;
     }
-
+    if (altDActive && altDActiveRadio == activeRadio) { // treat space like enter for alt-D, return to other radio
+        altDEnter(1, Qt::NoModifier);
+        return;
+    }
     if (callFocus[activeRadio]) {
+        if (altDActive) {
+            altDActive = 0;
+            callSent[altDActiveRadio] = false;
+            if (lineEditCall[altDActiveRadio]->text().simplified().isEmpty()) {
+                setCqMode(altDActiveRadio);
+            } else {
+                spMode(altDActiveRadio);
+            }
+        }
         spMode(activeRadio);
         lineEditCall[activeRadio]->setModified(false);
         lineEditCall[activeRadio]->setFocus();
@@ -849,6 +929,7 @@ void So2sdr::spaceSP(int nrig)
  */
 void So2sdr::spaceAltD()
 {
+    autoCQActivate(false);
     switchRadios();
     spMode(activeRadio);
     lineEditExchange[activeRadio]->setFocus();
@@ -885,7 +966,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
     case 1:
         qso[activeRadio]->freq = rigFreq[activeRadio];
         addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
-        if (qso[activeRadio]->dupe) {
+        if (qso[activeRadio]->dupe || lineEditCall[activeRadio]->text().isEmpty()) {
             // call is a dupe- clear everything
             QPalette palette(lineEditCall[activeRadio]->palette());
             palette.setColor(QPalette::Base, CQ_COLOR);
@@ -905,6 +986,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             clearWorked(activeRadio);
             qso[activeRadio]->dupe = false;
             altDActive             = 0;
+            So2sdrStatusBar->clearMessage();
         } else {
             altDActive = 2; // setting 2 will change spacebar checking rules
         }
@@ -926,7 +1008,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             } else {
                 spMode(activeRadio);
             }
-            switchRadios(true);
+            switchRadios(false); // don't kill exchange
 
             // popup any call entered after "/" on original radio
             QByteArray tmp;
@@ -999,20 +1081,20 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         enterState[1][0][0][0] = 2 + 4 + 1024 + 8192 + 16384;
         enterState[1][0][1][0] = 4 + 1 + 1024 + 8192;
         enterState[1][1][0][0] = 2 + 4 + 1024;
-        if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
-            enterState[1][1][1][0] = 8 + 16 + 32 + 64 + 128 + 2048;
-        } else {
-            enterState[1][1][1][0] = 16;
-        }
         enterState[0][0][0][1] = 0;
         enterState[0][0][1][1] = 0;
         enterState[0][1][0][1] = 0;
         enterState[0][1][1][1] = 0;
-        enterState[1][0][0][1] = 65536;
+        enterState[1][0][0][1] = 4 + 65536;
         enterState[1][0][1][1] = 0;
         enterState[1][1][0][1] = 8 + 32 + 64 + 128 + 512 + 2048 + 4096;
         enterState[1][1][1][1] = 8 + 32 + 64 + 128 + 2048;
         first                  = false;
+    }
+    if (settings->value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool()) {
+        enterState[1][1][1][0] = 8 + 16 + 32 + 64 + 128 + 2048;
+    } else {
+        enterState[1][1][1][0] = 16;
     }
 
     // is it an entered frequency or mode?
@@ -1075,6 +1157,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     i4 = exchangeSent[activeRadio];
     if (i4 > 2) i4 = 0;
 
+    sendingOtherRadio = false;
+
     // change radios
     /*!
        @todo make actions below separate functions; some are duplicated elsewhere (backslash,...)
@@ -1100,6 +1184,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
             clearWorked(activeRadio ^ 1);
             clearR2CQ(activeRadio);
+            sendingOtherRadio = false;
 
             cqMode[activeRadio]       = true;
             excMode[activeRadio]      = false;
@@ -1111,8 +1196,20 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     if (enterState[i1][i2][i3][i4] & 1) {
         if (mod != Qt::ShiftModifier &&
             !qso[activeRadio]->dupe) {
-            expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1,false);
-            callSent[activeRadio] = true;
+            // send AGN if call already sent and exchange invalid
+            if (callSent[activeRadio] && lineEditExchange[activeRadio]->hasFocus()) {
+                switch (cat->modeType(activeRadio)) {
+                case CWType:case DigiType:
+                    expandMacro(cwMessage->cqShiftF[1].toUpper(),0,false);
+                    break;
+                case PhoneType:
+                    expandMacro(ssbMessage->cqShiftF[1].toUpper(),0,false);
+                    break;
+                }
+            } else {
+                expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1,false);
+                callSent[activeRadio] = true;
+            }
         }
     }
 
@@ -1197,6 +1294,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             // add to bandmap if in S&P mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
             addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
+            spotListPopUp[activeRadio]=true; // this prevents the call from immediately popping up
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
@@ -1327,11 +1425,441 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             break;
         case PhoneType:
             expandMacro(ssbMessage->cqShiftF[1].toUpper(),0,false);
-            break;    
+            break;
         }
     }
 
     keyInProgress=false;
+
+    // save active radio state in case alt-Enter "toggle" is called
+    previousState[activeRadio] = enterState[i1][i2][i3][i4];
+}
+
+void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
+    // don't switch first time but send CW on opposite radio immediately
+    if (toggleMode) {
+        switchRadios();
+    }
+    // enable/disable if alt-Enter, unless dueling CQ (dependent on toggle)
+    if (mod == Qt::AltModifier && !duelingCQMode) {
+        toggleMode ^= 1;
+        if (toggleMode) {
+            autoCQActivate(false);
+            autoSendStatus->hide();
+            toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
+        } else {
+            // go to radio where cw was last sent
+            sendingOtherRadio = false;
+            toggleStatus->clear();
+            autoSendStatus->show();
+            return;
+        }
+    }
+    // clear alt-D state
+    if (altDActive) {
+        altDActive = 0;
+        callSent[altDActiveRadio] = false;
+        if (altDOrigMode || csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+            spMode(altDActiveRadio);
+        } else {
+            setCqMode(altDActiveRadio);
+        }
+    }
+    if (activeR2CQ) clearR2CQ(activeRadio ^ 1);
+
+    /*
+        <li>a. is there text in call field  (test().size!=0)(0=no, 1=yes)
+        <li>b. exchange validated and not a dupe            (0=no, 1=yes)
+        <li>c. CQ or S&P mode                               (0=cq 1=sp)
+        <li>d. exchange sent
+
+       <li>a. send Call                     0=1
+       <li>b. send CQ exchange              1=2
+       <li>c. focus exchange field          2=4
+       <li>d. log qso                       3=8
+       <li>e. send SP exchange              4=16
+       <li>f. focus call field              5=32
+       <li>g. clear exchange field          6=64
+       <li>h. clear call field              7=128
+       <li>i. send F1                       8=256
+       <li>j. send QSL_Msg                  9=512
+       <li>k. set Exc mode                 10=1024
+       <li>l. unset Exc mode               11=2048
+       <li>n. set initial exchange         13=8192
+       <li>q. send F9 (?)                  16=65536
+       </ul>
+    */
+    keyInProgress=true;
+    // active radio states
+    int                 i1;
+    int                 i2;
+    int                 i3;
+    int                 i4;
+    // inactive radio states (where cw is going)
+    int                 j1;
+    int                 j2;
+    int                 j3;
+    int                 j4;
+    static bool         first = true;
+    static unsigned int enterState[2][2][2][3];
+    // each step needs a focus state (&32 or &4)
+    if (first) {
+        enterState[0][0][0][0] = 256 + 32;
+        enterState[0][0][1][0] = 1 + 32;
+        enterState[0][1][0][0] = 32;
+        enterState[0][1][1][0] = 1 + 32;
+        enterState[1][0][0][0] = 2 + 4 + 1024 + 8192;
+        enterState[1][0][1][0] = 4 + 1 + 1024 + 8192;
+        enterState[1][1][0][0] = 2 + 4 + 1024;
+        enterState[0][0][0][1] = 32;
+        enterState[0][0][1][1] = 32;
+        enterState[0][1][0][1] = 32;
+        enterState[0][1][1][1] = 32;
+        enterState[1][0][0][1] = 4 + 65536;
+        enterState[1][0][1][1] = 4;
+        enterState[1][1][0][1] = 8 + 32 + 64 + 128 + 512 + 2048;
+        enterState[1][1][1][1] = 8 + 32 + 64 + 128 + 2048;
+
+        first                  = false;
+    }
+    if (settings->value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool()) {
+        enterState[1][1][1][0] = 8 + 16 + 32 + 64 + 128 + 2048;
+    } else {
+        enterState[1][1][1][0] = 4 + 16;
+    }
+
+    // active radio
+    if (!qso[activeRadio]->call.isEmpty()) {
+        i1 = 1;
+    } else {
+        i1 = 0;
+    }
+    if (cqMode[activeRadio]) {
+        // CQ mode
+        i3 = 0;
+        // if WORK_DUPES is set, don't use dupe status of qso
+        if (csettings->value(c_dupemode,c_dupemode_def).toInt()==WORK_DUPES) {
+            if (qso[activeRadio]->valid) {
+                i2=1;
+            } else {
+                i2=0;
+            }
+        } else {
+            if (qso[activeRadio]->valid && !qso[activeRadio]->dupe) {
+                i2=1;
+            } else {
+                i2=0;
+            }
+        }
+    } else {
+        // S&P mode
+        i3 = 1;
+        // always check dupe status in S&P. NO_DUPE_CHECKING setting is
+        // enforced in so2sdr.cpp where qso[activeRadio]->dupe is set
+        if (qso[activeRadio]->valid && !qso[activeRadio]->dupe) {
+            i2=1;
+        } else {
+            i2=0;
+        }
+    }
+    if (!cqMode[activeRadio] && !callSent[activeRadio]) {
+        i2 = 0;
+    }
+    // ctrl+Enter logs without dupecheck or exchange validation
+    if (mod == Qt::ControlModifier) {
+        i2 = 1;
+        // so only one enter press will log
+        exchangeSent[activeRadio] = true;
+    }
+    i4 = exchangeSent[activeRadio];
+    if (i4 > 2) i4 = 0;
+
+    // inactive radio
+    if (!qso[activeRadio ^1]->call.isEmpty()) {
+        j1 = 1;
+    } else {
+        j1 = 0;
+    }
+
+    if (cqMode[activeRadio ^ 1]) {
+        // CQ mode
+        j3 = 0;
+        // if WORK_DUPES is set, don't use dupe status of qso
+        if (csettings->value(c_dupemode,c_dupemode_def).toInt()==WORK_DUPES) {
+            if (qso[activeRadio ^ 1]->valid) {
+                j2=1;
+            } else {
+                j2=0;
+            }
+        } else {
+            if (qso[activeRadio ^ 1]->valid && !qso[activeRadio ^ 1]->dupe) {
+                j2=1;
+            } else {
+                j2=0;
+            }
+        }
+    } else {
+        // S&P mode
+        j3 = 1;
+        // always check dupe status in S&P. NO_DUPE_CHECKING setting is
+        // enforced in so2sdr.cpp where qso[activeRadio]->dupe is set
+        if (qso[activeRadio ^ 1]->valid && !qso[activeRadio ^ 1]->dupe) {
+            j2=1;
+        } else {
+            j2=0;
+        }
+    }
+    if (!cqMode[activeRadio ^ 1] && !callSent[activeRadio ^ 1]) {
+        j2 = 0;
+    }
+    // ctrl+Enter logs without dupecheck or exchange validation
+    if (mod == Qt::ControlModifier) {
+        j2 = 1;
+        // so only one enter press will log
+        exchangeSent[activeRadio ^ 1] = true;
+    }
+    j4 = exchangeSent[activeRadio ^ 1];
+    if (j4 > 2) j4 = 0;
+
+    sendingOtherRadio = false;
+
+    // cw and log actions reference inactive radio
+    // focus actions reference active radio
+
+    // send callsign
+    if (enterState[j1][j2][j3][j4] & 1) {
+        if (mod != Qt::ShiftModifier && !qso[activeRadio ^ 1]->dupe) {
+            expandMacro("{R2}" + settings->value(s_call,s_call_def).toByteArray(),-1,false);
+            callSent[activeRadio ^ 1] = true;
+        }
+    }
+
+    // send CQ exchange
+    if (enterState[j1][j2][j3][j4] & 2) {
+        // check to see if this qso number already taken
+        if (nrSent == nrReserved[activeRadio]) {
+            nrReserved[activeRadio ^ 1] = nrSent + 1;
+        } else {
+            nrReserved[activeRadio ^ 1] = nrSent;
+        }
+        if (mod != Qt::ShiftModifier) {
+            int m=(int)cat->modeType(activeRadio ^ 1);
+            if (qso[activeRadio ^ 1]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
+                expandMacro("{R2}" + csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+            } else {
+                expandMacro("{R2}" + csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+            }
+        }
+        exchangeSent[activeRadio ^ 1]    = true;
+        callSent[activeRadio ^ 1]        = true; // set this true as well in case mode switched to S&P
+        origCallEntered[activeRadio ^ 1] = qso[activeRadio ^ 1]->call;
+        updateNrDisplay();
+        cqQsoInProgress[activeRadio ^ 1] = true;
+    }
+
+    // set exc mode
+    if (enterState[j1][j2][j3][j4] & 1024) {
+        excMode[activeRadio ^ 1] = true;
+        lineEditExchange[activeRadio ^ 1]->show();
+    }
+
+    // set initial exchange
+    if (enterState[j1][j2][j3][j4] & 8192) {
+        prefillExch(activeRadio ^ 1);
+    }
+
+    // focus call field
+    if (previousState[activeRadio] & 32) {
+        lineEditCall[activeRadio]->setFocus();
+        if (grab) {
+            lineEditCall[activeRadio]->grabKeyboard();
+        }
+        grabWidget             = lineEditCall[activeRadio];
+        callFocus[activeRadio] = true;
+        updateWorkedMult(activeRadio);
+    }
+
+    // focus exchange
+    if (previousState[activeRadio] & 4) { // && !qso[activeRadio]->dupe) {
+        lineEditExchange[activeRadio]->setFocus();
+        if (grab) {
+            lineEditExchange[activeRadio]->grabKeyboard();
+        }
+        grabWidget             = lineEditExchange[activeRadio];
+        callFocus[activeRadio] = false;
+        if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
+            lineEditExchange[activeRadio]->clear();
+        } else {
+            lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
+        }
+        updateWorkedMult(activeRadio);
+    }
+
+    // send F1 message
+    if (enterState[j1][j2][j3][j4] & 256) {
+        if (mod != Qt::ShiftModifier) {
+            switch (cat->modeType(activeRadio ^ 1)) {
+            case CWType:case DigiType:
+                if (sendLongCQ) {
+                    expandMacro("{R2}" + cwMessage->cqF[0],0,false);
+                } else {
+                    expandMacro("{R2}" + cwMessage->cqF[1],0,false);
+                }
+                break;
+            case PhoneType:
+                if (sendLongCQ) {
+                    expandMacro("{R2}" + ssbMessage->cqF[0],0,false);
+                } else {
+                    expandMacro("{R2}" + ssbMessage->cqF[1],0,false);
+                }
+                break;
+            }
+            exchangeSent[activeRadio ^ 1] = false;
+        }
+    }
+
+    // send SP exch
+    if (enterState[j1][j2][j3][j4] & 16) {
+        // check to see if this qso number already taken
+        if (nrSent == nrReserved[activeRadio]) {
+            nrReserved[activeRadio ^ 1] = nrSent + 1;
+        } else {
+            nrReserved[activeRadio ^ 1] = nrSent;
+        }
+        updateNrDisplay();
+        if (mod != Qt::ShiftModifier) {
+            int m=(int)cat->modeType(activeRadio ^ 1);
+            expandMacro("{R2}" + csettings->value(c_sp_exc[m],c_sp_exc_def[m]).toByteArray(),-1,false);
+        }
+        exchangeSent[activeRadio ^ 1] = true;
+    }
+
+    // send QSL msg
+    if (enterState[j1][j2][j3][j4] & 512) {
+        // see if call was corrected
+        // if control+Enter, do not send any CW here.
+        int m=(int)cat->modeType(activeRadio ^ 1);
+        if (qso[activeRadio ^ 1]->call != origCallEntered[activeRadio ^ 1]) {
+            if (mod != Qt::ShiftModifier) expandMacro("{R2}" + csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1,false);
+        } else {
+            if (mod != Qt::ShiftModifier) expandMacro("{R2}" + csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toByteArray(),-1,false);
+        }
+        exchangeSent[activeRadio ^ 1] = false;
+    }
+
+    // send shift-F2 (AGN?) message
+    if (enterState[j1][j2][j3][j4] & 65536) {
+        switch (cat->modeType(activeRadio ^ 1)) {
+        case CWType:case DigiType:
+            expandMacro("{R2}" + cwMessage->cqShiftF[1].toUpper(),0,false);
+            break;
+        case PhoneType:
+            expandMacro("{R2}" + ssbMessage->cqShiftF[1].toUpper(),0,false);
+            break;
+        }
+    }
+
+    // log qso
+    if (enterState[j1][j2][j3][j4] & 8) {
+        if (duelingCQMode) {
+            duelingCQWait = true; // prevent premature dueling CQ takeover until QSL message is complete
+        }
+        fillSentExch(activeRadio ^ 1);
+        qso[activeRadio ^ 1]->mode = cat->mode(activeRadio ^ 1);
+        contest->addQso(qso[activeRadio ^ 1]);
+        qso[activeRadio ^ 1]->time = QDateTime::currentDateTimeUtc(); // update time just before logging qso
+        addQso(qso[activeRadio ^ 1]);
+        if (!qso[activeRadio ^ 1]->dupe && qso[activeRadio ^ 1]->valid) {
+            nqso[band[activeRadio ^ 1]]++;
+        }
+        updateBreakdown();
+        qso[activeRadio ^ 1]->dupe = true;
+        if (!cqMode[activeRadio ^ 1]) {
+            // add to bandmap if in S&P mode
+            qso[activeRadio ^ 1]->freq = rigFreq[activeRadio ^ 1];
+            addSpot(qso[activeRadio ^ 1]->call, qso[activeRadio ^ 1]->freq, true);
+        } else {
+            // remove any spot on this freq, update other spots if in CQ mode
+            qso[activeRadio ^ 1]->freq = rigFreq[activeRadio ^ 1];
+            removeSpotFreq(qso[activeRadio ^ 1]->freq, band[activeRadio ^ 1]);
+            updateBandmapDupes(qso[activeRadio ^ 1]);
+        }
+        updateDupesheet(qso[activeRadio ^ 1]->call,activeRadio ^ 1);
+        updateMults(activeRadio ^ 1);
+        rateCount[ratePtr]++;
+        exchangeSent[activeRadio ^ 1] = false;
+        if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+            //sprintMode(); // need to reference inactive radio
+            if (!cqMode[activeRadio ^ 1]) {
+                setCqMode(activeRadio ^ 1);
+            } else {
+                toggleMode = false;
+                toggleStatus->clear();
+                duelingCQActivate(false);
+                sendingOtherRadio = false;
+            }
+        }
+        labelCountry[activeRadio ^ 1]->clear();
+        labelBearing[activeRadio ^ 1]->clear();
+        labelLPBearing[activeRadio ^ 1]->clear();
+        sunLabelPtr[activeRadio ^ 1]->clear();
+        qso[activeRadio ^ 1]->prefill.clear();
+
+        // advance qso numbers
+        nrReserved[activeRadio ^ 1] = 0;
+        nrSent++;
+        updateNrDisplay();
+        cqQsoInProgress[activeRadio ^ 1] = false;
+        // already done upon entering toggle function
+        /*
+        if (altDActive && altDActiveRadio == activeRadio) {
+            // if doing an alt-D SO2R qso, reset counter
+            altDActive = 0;
+        }
+        */
+        qso[activeRadio ^ 1]->dupe = false;
+        qso[activeRadio ^ 1]->valid = false;
+        callSent[activeRadio ^ 1]  = false;
+        // since this radio is not active in toggle mode, replicate &32 mask for cleanup
+        callFocus[activeRadio ^ 1] = true;
+        updateWorkedMult(activeRadio ^ 1);
+    }
+
+    // clear exch field
+    if (enterState[j1][j2][j3][j4] & 64) {
+        lineEditExchange[activeRadio ^ 1]->clear();
+        lineEditExchange[activeRadio ^ 1]->setModified(false);
+        qso[activeRadio ^ 1]->exch.clear();
+        qso[activeRadio ^ 1]->prefill.clear();
+        validLabel[activeRadio ^ 1]->clear();
+    }
+
+    // clear call field
+    if (enterState[j1][j2][j3][j4] & 128) {
+        lineEditCall[activeRadio ^ 1]->clear();
+        lineEditCall[activeRadio ^ 1]->setModified(false);
+        qso[activeRadio ^ 1]->call.clear();
+        exchangeSent[activeRadio ^ 1] = false;
+        qso[activeRadio ^ 1]->prefill.clear();
+        origCallEntered[activeRadio ^ 1].clear();
+        clearWorked(activeRadio ^ 1);
+        statusBarDupe         = false;
+        callSent[activeRadio ^ 1] = false;
+    }
+
+    // exit exc mode
+    if (enterState[j1][j2][j3][j4] & 2048) {
+        excMode[activeRadio ^ 1] = false;
+        if (cqMode[activeRadio ^ 1]) {
+            lineEditExchange[activeRadio ^ 1]->hide();
+        }
+    }
+
+    keyInProgress=false;
+
+    previousState[activeRadio] = enterState[i1][i2][i3][i4];
+    previousState[activeRadio ^ 1] = enterState[j1][j2][j3][j4];
+
 }
 
 void So2sdr::prefillExch(int nr)
@@ -1423,6 +1951,9 @@ void So2sdr::esc()
         if (winkey->isSending()) {
             winkey->cancelcw();
             keyInProgress=false;
+            duelingCQActivate(false);
+            autoCQActivate(false);
+            if (toggleMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
             return;
         }
         break;

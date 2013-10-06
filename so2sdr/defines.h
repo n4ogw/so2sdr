@@ -291,14 +291,6 @@ const int MAX_H=2049; // max pixmap height
 const int MAX_W=800; // max pixmap width
 const int SAMPLE_FREQ=96; // Sampling frequency in Khz
 
-/*! ALSA period size in units of frames. This sets the frequency of interrupts to
-   the audio device.
-
-   1 frame = left + right samples, 4 bytes for 16 bit audio,
-   8 bytes for 24(padded) or 32 bit
- */
-const int ALSA_PERIOD_SIZE=2048;
-
 typedef struct sampleSizes {
     int           sample_length; // FFT length
     unsigned long chunk_size;    // FFT length * size of 1 frame (L+R channel samples)
@@ -351,14 +343,15 @@ const int ssbnr_call_updated_msg=53;
 const int N_FUNC=12;
 
 // timers
-const int N_TIMERS=4;
+const int N_TIMERS=5;
 
 // default frequency for various things (all in milliseconds)
 const int timerSettings[]={
     1000,  // clock update
     300, // radio/serial update
     60000, // rate display update, band spot update
-    10000 // IQ plot update
+    10000, // IQ plot update
+    100 // auto-CQ, dueling CQ resolution
 };
 
 /*! number of minutes in moving average of rate display
@@ -583,9 +576,6 @@ const int s_sdr_offset_def[NRIG]={0,0};
 const QString s_sdr_scale[NRIG]={"sdr/scale1","sdr/scale2"};
 const int s_sdr_scale_def[NRIG]={1,1};
 
-const QString s_sdr_mark="sdr/mark";
-const bool s_sdr_mark_def=true;
-
 const QString s_sdr_peakdetect[NRIG]={"sdr/peakdetect1","sdr/peakdetect2"};
 const bool s_sdr_peakdetect_def[NRIG]={true,true};
 
@@ -602,7 +592,7 @@ const QString s_sdr_cqtime="sdr/cqtime";
 const int s_sdr_cqtime_def=15;
 
 const QString s_sdr_spottime="sdr/spottime";
-const int s_sdr_spottime_def=30;
+const int s_sdr_spottime_def=1800;
 
 const QString s_sdr_cqlimit_low[N_BANDS]={"sdr/160low","sdr/80low","sdr/40low","sdr/20low","sdr/15low","sdr/10low","sdr/60low",
                                           "sdr/30low","sdr/17low","sdr/12low","sdr/6low","sdr/2low","sdr/420low","sdr/222low","sdr/902low",
@@ -651,6 +641,24 @@ const int s_radios_stereo_def=defaultParallelPortStereoPin;
 
 const QString s_telnet_addresses="telnet/addresses";
 const QString s_telnet_addresses_def="";
+
+const QString s_settings_qsyfocus="main/qsyfocus";
+const bool s_settings_qsyfocus_def=false;
+
+const QString s_settings_focusindicators="main/focusindicators";
+const bool s_settings_focusindicators_def=false;
+
+const QString s_settings_exchangelogs="main/exchangelogs";
+const bool s_settings_exchangelogs_def=false;
+
+const QString s_settings_cqrepeat="main/cqrepeat";
+const float s_settings_cqrepeat_def=3.0;
+
+const QString s_settings_duelingcqdelay="main/duelingcqdelay";
+const float s_settings_duelingcqdelay_def=0.0;
+
+const QString s_settings_autosend="main/autosend";
+const int s_settings_autosend_def=0;
 
 const QString c_multsband="contest/multsband";
 const bool c_multsband_def=true;

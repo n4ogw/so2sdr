@@ -49,6 +49,7 @@ public:
     ~ParallelPort();
     void switchAudio(int r);
     void toggleStereoPin();
+    bool stereoPinStatus;
 
 signals:
     void parallelPortError(const QString &);
@@ -68,7 +69,6 @@ private:
     inpfuncPtr inp32fp;
     oupfuncPtr oup32fp;
     bool       initSuccess;
-    bool stereoPinStatus;
 // Wrapper functions for the function pointers
 // - call these functions to perform I/O.
 

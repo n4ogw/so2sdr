@@ -16,6 +16,7 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QMutableListIterator>
@@ -27,6 +28,11 @@
  */
 void So2sdr::loadSpots()
 {
+    // clear spot list
+    for (int b = 0; b < N_BANDS; b++) {
+        spotList[b].clear();
+    }
+
     // file will be contest_name.dat in same directory as contest cfg file
     directory->setCurrent(contestDirectory);
     QString fname = fileName;
@@ -38,17 +44,8 @@ void So2sdr::loadSpots()
     }
     QDataStream s(spotFile);
 
-    // determine how old (in minutes) saved spots are
-    QDateTime fileTime;
-    s >> fileTime;
-    int       mins = fileTime.secsTo(QDateTime::currentDateTimeUtc()) / 60;
-
-    // clear spot list
-    for (int b = 0; b < N_BANDS; b++) {
-        spotList[b].clear();
-    }
-
-    // read data, updating times
+    // read data, deleting old spots
+    qint64 currentTime=QDateTime::currentMSecsSinceEpoch();
     while (!spotFile->atEnd()) {
         int b;
         s >> b;
@@ -56,10 +53,9 @@ void So2sdr::loadSpots()
             BandmapEntry *newSpot = new BandmapEntry();
             s >> newSpot->call;
             s >> newSpot->dupe;
-            s >> newSpot->t;
+            s >> newSpot->createdTime;
             s >> newSpot->f;
-            newSpot->t += mins;
-            if (newSpot->t < settings->value(s_sdr_spottime,s_sdr_spottime_def).toInt()) {
+            if ((newSpot->createdTime+settings->value(s_sdr_spottime,s_sdr_spottime_def).toInt()*1000) > currentTime) {
                 spotList[b].append(*newSpot);
             } else {
                 delete newSpot;
@@ -94,16 +90,13 @@ void So2sdr::saveSpots()
     }
     QDataStream s(spotFile);
 
-    // save current time
-    s << QDateTime::currentDateTimeUtc();
-
     // save spots
     for (int b = 0; b < N_BANDS; b++) {
         for (int i = 0; i < spotList[b].size(); i++) {
             s << (qint32) b;
             s << spotList[b][i].call;
             s << spotList[b][i].dupe;
-            s << spotList[b][i].t;
+            s << spotList[b][i].createdTime;
             s << spotList[b][i].f;
         }
     }
@@ -136,8 +129,6 @@ void So2sdr::showTelnet(int checkboxState)
  */
 void So2sdr::addSpot(QByteArray call, int f)
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) return;
-
     // * is a special case, used to mark freq without callsign
     bool d = true;
     if (call != "*") {
@@ -156,12 +147,11 @@ void So2sdr::addSpot(QByteArray call, int f)
  */
 void So2sdr::addSpot(QByteArray call, int f, bool d)
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) return;
-
     BandmapEntry spot;
     spot.call = call;
     spot.f    = f;
-    spot.t    = 0;
+    qint64 t = QDateTime::currentMSecsSinceEpoch();
+    spot.createdTime = t;
     spot.dupe = d;
 
     int b = getBand(f);
@@ -207,7 +197,7 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
             // replace previous spot, reset timer
             spotList[b][idupe].call = call;
             spotList[b][idupe].f    = f;
-            spotList[b][idupe].t    = 0;
+            spotList[b][idupe].createdTime = t;
             spotList[b][idupe].dupe = d;
         } else {
             spotList[b].append(spot);
@@ -232,7 +222,6 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
  */
 void So2sdr::checkSpot(int nr)
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool() || altDActive == 1 || altDActive == 3) return;
     static int lastFreq[2] = { 0, 0 };
 
     // initialize last freq
@@ -241,49 +230,17 @@ void So2sdr::checkSpot(int nr)
         return;
     }
     int f = cat->getRigFreq(nr);
-    // if just had a band change, don't do anything
-    // N4OGW 09/15/13 : this cause a call to incorrectly stick around when the band is changed on the radio.
-    //   will test to make sure removing does not introduce other bugs.
-    // if (getBand(f) != getBand(lastFreq[nr])) {
-    //     lastFreq[nr] = f;
-    //     return;
-    //   }
 
-    // check for alt-D active state. If alt-D is active and vfo on 2nd radio has moved,
-    // clear alt-D status
-    if (altDActive == 2 && nr == (activeRadio ^ 1)) {
-        if (abs(f - lastFreq[nr]) > SIG_MIN_FREQ_DIFF) {
-            QPalette palette(lineEditCall[nr]->palette());
-            palette.setColor(QPalette::Base, CQ_COLOR);
-            lineEditCall[nr]->setPalette(palette);
-            lineEditCall[nr]->clear();
-            qso[nr]->call.clear();
-            lineEditCall[nr]->setModified(false);
-            lineEditExchange[nr]->setPalette(palette);
-            lineEditExchange[nr]->clear();
-            qso[nr]->call.clear();
-            exchangeSent[nr] = false;
-            qso[nr]->prefill.clear();
-            origCallEntered[nr].clear();
-            labelCountry[nr]->clear();
-            labelBearing[nr]->clear();
-            sunLabelPtr[nr]->clear();
-            validLabel[nr]->clear();
-            statusBarDupe = false;
-            So2sdrStatusBar->clearMessage();
-            clearWorked(nr);
-            altDActive   = 0;
-            lastFreq[nr] = f;
-            return;
-        }
-    }
+    // freq changed, so recheck spot list
     if (f != lastFreq[nr]) spotListPopUp[nr] = false;
 
+    // currently have a call from list shown. Don't do anything
     if (spotListPopUp[nr]) {
         lastFreq[nr] = f;
         return;
     }
 
+    // search list of spots for one matching current freq
     bool found = false;
     for (int i = 0; i < spotList[band[nr]].size(); i++) {
         if (abs(f - spotList[band[nr]].at(i).f) < SIG_MIN_FREQ_DIFF) {
@@ -303,18 +260,84 @@ void So2sdr::checkSpot(int nr)
     if (found) {
         prefixCheck(nr, lineEditCall[nr]->text());
         spotListPopUp[nr] = true;
-    } else if (!found && abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF) {
-        lineEditCall[nr]->clear();
+    } else if (abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && contest) {
+        if (winkey->isSending() &&
+                (
+                    ( nr != activeRadio && ( toggleMode || sendingOtherRadio || activeR2CQ || (altDActive && nr != altDActiveRadio)) )
+                    || (nr == activeRadio && !toggleMode && !sendingOtherRadio && !activeR2CQ && (!altDActive || (altDActive && nr != altDActiveRadio)))
+                    )
+                )
+        {
+            winkey->cancelcw();
+            keyInProgress=false;
+        }
+        if (autoCQMode && nr == activeRadio) {
+            autoCQActivate(false);
+        }
+        duelingCQActivate(false);
+        if (activeR2CQ && nr != activeRadio) {
+            activeR2CQ = false;
+            setCqMode(nr);
+        }
+        if (altDActive && nr == altDActiveRadio) {
+            altDActive = false;
+            if (nr == activeRadio) {
+                switchRadios(false);
+            }
+            if (altDOrigMode) {
+                spMode(nr);
+            } else {
+                setCqMode(nr);
+            }
+        }
+        if (toggleMode) {
+            toggleMode = false;
+            sendingOtherRadio = false;
+            toggleStatus->clear();
+            if (nr == activeRadio) {
+                switchRadios(false);
+            }
+        }
+        if (!cqMode[nr] && csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+            setCqMode(nr);
+        }
         qso[nr]->call.clear();
+        qso[nr]->valid=false;
+        lineEditCall[nr]->clear();
+        lineEditCall[nr]->setModified(false);
+        lineEditCall[nr]->setCursorPosition(0);
         lineEditExchange[nr]->clear();
+        origCallEntered[nr].clear();
+        clearWorked(nr);
         labelCountry[nr]->clear();
         labelBearing[nr]->clear();
+        labelLPBearing[nr]->clear();
         sunLabelPtr[nr]->clear();
-        validLabel[nr]->clear();
-        spotListPopUp[nr] = false;
-        statusBarDupe     = false;
         So2sdrStatusBar->clearMessage();
-        clearWorked(nr);
+        updateNrDisplay();
+        callSent[nr] = false;
+        if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
+            if ( lineEditCall[nr ^ 1]->text().simplified().isEmpty() && lineEditExchange[nr ^ 1]->text().simplified().isEmpty()
+                 && nr != activeRadio && !activeR2CQ && !winkey->isSending()) {
+                if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+                    if (cqMode[nr ^ 1]) {
+                        switchRadios();
+                        callFocus[nr] = true;
+                    }
+                } else {
+                    switchRadios();
+                    callFocus[nr] = true;
+                }
+                if (altDActive && nr != altDActiveRadio && lineEditCall[altDActiveRadio]->text().simplified().isEmpty()) {
+                    altDActive = false;
+                    if (altDOrigMode && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
+                        spMode(altDActiveRadio);
+                    } else {
+                        setCqMode(altDActiveRadio);
+                    }
+                }
+            }
+        }
     }
     lastFreq[nr] = f;
 }
@@ -323,8 +346,6 @@ void So2sdr::checkSpot(int nr)
  */
 void So2sdr::removeSpot(QByteArray call, int band)
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) return;
-
     int indx = -1;
     for (int i = 0; i < spotList[band].size(); i++) {
         if (spotList[band][i].call == call) {
@@ -339,8 +360,6 @@ void So2sdr::removeSpot(QByteArray call, int band)
  */
 void So2sdr::removeSpotFreq(int f, int band)
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) return;
-
     int indx = -1;
     for (int i = 0; i < spotList[band].size(); i++) {
         if (abs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
@@ -369,8 +388,6 @@ bool So2sdr::isaSpot(int f, int band)
  */
 void So2sdr::updateBandmapDupes(const Qso *qso)
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) return;
-
     for (int i = 0; i < spotList[qso->band].size(); i++) {
         if (spotList[qso->band].at(i).call == qso->call) {
             spotList[qso->band][i].dupe = qso->dupe;
@@ -383,17 +400,13 @@ void So2sdr::updateBandmapDupes(const Qso *qso)
  */
 void So2sdr::decaySpots()
 {
-    if (!settings->value(s_sdr_mark,s_sdr_mark_def).toBool()) return;
-
+    qint64 currentTime=QDateTime::currentMSecsSinceEpoch();
     for (int i = 0; i < N_BANDS; i++) {
         QMutableListIterator<BandmapEntry> j(spotList[i]);
         while (j.hasNext()) {
             BandmapEntry tmp = j.next();
-            tmp.t++;
-            if (tmp.t > settings->value(s_sdr_spottime,s_sdr_spottime_def).toInt()) {
+            if ((tmp.createdTime+settings->value(s_sdr_spottime,s_sdr_spottime_def).toInt()*1000)<currentTime) {
                 j.remove();
-            } else {
-                j.setValue(tmp);
             }
         }
     }

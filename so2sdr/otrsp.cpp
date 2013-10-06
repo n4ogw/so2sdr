@@ -86,6 +86,11 @@ void OTRSP::toggleStereo(int nr)
     }
 }
 
+bool OTRSP::stereoActive () const
+{
+    return stereo;
+}
+
 /*!
    open OTRSP device
  */

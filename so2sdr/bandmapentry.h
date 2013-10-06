@@ -31,7 +31,7 @@ public:
 
     bool       dupe;
     int        f;
-    int        t;
+    qint64     createdTime;
     QByteArray call;
 };
 
