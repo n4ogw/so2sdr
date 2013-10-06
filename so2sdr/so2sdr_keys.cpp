@@ -243,9 +243,12 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             break;
         case Qt::Key_R:     // alt-R
             if (mod == Qt::AltModifier) {
+                duelingCQActivate(false);
                 switchRadios();
                 r = true;
             } else if (mod == Qt::ControlModifier) { // switchradios w/o killing cw
+                autoCQActivate(false);
+                duelingCQActivate(false);
                 switchRadios(false);
                 r = true;
             }
@@ -726,6 +729,7 @@ void So2sdr::backSlash()
             // add to bandmap if in S&P mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
             addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
+            spotListPopUp[activeRadio] = true;
         } else {
             // remove any spot that is on freq, update other spots if in CQ mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
@@ -1778,6 +1782,7 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
             // add to bandmap if in S&P mode
             qso[activeRadio ^ 1]->freq = rigFreq[activeRadio ^ 1];
             addSpot(qso[activeRadio ^ 1]->call, qso[activeRadio ^ 1]->freq, true);
+            spotListPopUp[activeRadio ^ 1] = true;
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
             qso[activeRadio ^ 1]->freq = rigFreq[activeRadio ^ 1];

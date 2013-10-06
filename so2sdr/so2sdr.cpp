@@ -1957,7 +1957,7 @@ void So2sdr::autoCQ () {
     }
     if (!cqMode[activeRadio]) setCqMode(activeRadio);
 
-    if (!lineEditCall[activeRadio]->text().isEmpty() || ( !lineEditCall[activeRadio ^ 1]->text().isEmpty() && !altDActive ) ) {
+    if ((!lineEditCall[activeRadio]->text().isEmpty() && !(altDActive && altDActiveRadio == activeRadio)) ) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
     } else if (winkey->isSending()) {
@@ -2145,7 +2145,7 @@ void So2sdr::switchTransmit(int r, int CWspeed)
  */
 void So2sdr::switchRadios(bool switchcw)
 {
-    if (!altDActive) autoCQActivate(false);
+    if (switchcw) autoCQActivate(false);
     activeRadio = activeRadio ^ 1;
     clearR2CQ(activeRadio);
     switchAudio(activeRadio);
@@ -2865,7 +2865,13 @@ void So2sdr::speedUp(int nrig)
 {
     wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
-    if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
+    if (winkey->isSending() &&
+            (
+                ( nrig != activeRadio && ( toggleMode || sendingOtherRadio || activeR2CQ || (altDActive && nrig != altDActiveRadio)) )
+                || (nrig == activeRadio && !toggleMode && !sendingOtherRadio && !activeR2CQ && (!altDActive || (altDActive && nrig != altDActiveRadio)))
+                )
+            )
+    {
         // don't actually change speed if we are sending on other radio
         winkey->setSpeed(wpm[nrig]);
     }
@@ -2881,7 +2887,13 @@ void So2sdr::speedDn(int nrig)
 {
     wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
-    if (!(sendingOtherRadio && winkey->isSending() && nrig == activeRadio)) {
+    if (winkey->isSending() &&
+            (
+                ( nrig != activeRadio && ( toggleMode || sendingOtherRadio || activeR2CQ || (altDActive && nrig != altDActiveRadio)) )
+                || (nrig == activeRadio && !toggleMode && !sendingOtherRadio && !activeR2CQ && (!altDActive || (altDActive && nrig != altDActiveRadio)))
+                )
+            )
+    {
         // don't actually change speed if we are sending on other radio
         winkey->setSpeed(wpm[nrig]);
     }
