@@ -1220,25 +1220,31 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // send CQ exchange
     if (enterState[i1][i2][i3][i4] & 2) {
-        // check to see if this qso number already taken
-        if (nrSent == nrReserved[activeRadio ^ 1]) {
-            nrReserved[activeRadio] = nrSent + 1;
+        int m=(int)cat->modeType(activeRadio);
+        if (lineEditCall[activeRadio]->text().contains("?") && (m == CWType || m == DigiType)) {
+            expandMacro("{CALL_ENTERED}",-1,false);
+            keyInProgress=false;
+            return; // prevent further processing
         } else {
-            nrReserved[activeRadio] = nrSent;
-        }
-        if (mod != Qt::ShiftModifier) {
-            int m=(int)cat->modeType(activeRadio);
-            if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
-                expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+            // check to see if this qso number already taken
+            if (nrSent == nrReserved[activeRadio ^ 1]) {
+                nrReserved[activeRadio] = nrSent + 1;
             } else {
-                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                nrReserved[activeRadio] = nrSent;
             }
+            if (mod != Qt::ShiftModifier) {
+                if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
+                    expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+                } else {
+                    expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                }
+            }
+            exchangeSent[activeRadio]    = true;
+            callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
+            origCallEntered[activeRadio] = qso[activeRadio]->call;
+            updateNrDisplay();
+            cqQsoInProgress[activeRadio] = true;
         }
-        exchangeSent[activeRadio]    = true;
-        callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
-        origCallEntered[activeRadio] = qso[activeRadio]->call;
-        updateNrDisplay();
-        cqQsoInProgress[activeRadio] = true;
     }
 
     // set exc mode
@@ -1334,7 +1340,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     }
 
     // focus call field
-    if (enterState[i1][i2][i3][i4] & 32) {
+    if (enterState[i1][i2][i3][i4] & 32 || lineEditCall[activeRadio]->text().contains("?")) {
         lineEditCall[activeRadio]->setFocus();
         if (grab) {
             lineEditCall[activeRadio]->grabKeyboard();
@@ -1435,9 +1441,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     }
 
     keyInProgress=false;
-
-    // save active radio state in case alt-Enter "toggle" is called
-    previousState[activeRadio] = enterState[i1][i2][i3][i4];
 }
 
 /*!
@@ -1485,6 +1488,8 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         }
     }
     if (activeR2CQ) clearR2CQ(activeRadio ^ 1);
+
+    switchTransmit(activeRadio ^ 1);
 
     /*
         <li>a. is there text in call field  (test().size!=0)(0=no, 1=yes)
@@ -1537,13 +1542,13 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         enterState[0][1][1][1] = 32;
         enterState[1][0][0][1] = 4 + 65536;
         enterState[1][0][1][1] = 4;
-        enterState[1][1][0][1] = 8 + 32 + 64 + 128 + 512 + 2048;
-        enterState[1][1][1][1] = 8 + 32 + 64 + 128 + 2048;
+        enterState[1][1][0][1] = 4 + 8 + 64 + 128 + 512 + 2048;
+        enterState[1][1][1][1] = 4 + 8 + 64 + 128 + 2048;
 
         first                  = false;
     }
     if (settings->value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool()) {
-        enterState[1][1][1][0] = 8 + 16 + 32 + 64 + 128 + 2048;
+        enterState[1][1][1][0] = 4 + 8 + 16 + 64 + 128 + 2048;
     } else {
         enterState[1][1][1][0] = 4 + 16;
     }
@@ -1656,7 +1661,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
     // send callsign
     if (enterStateTX & 1) {
         if (mod != Qt::ShiftModifier && !qso[activeRadio ^ 1]->dupe) {
-            switchTransmit(activeRadio ^ 1);
             expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1,false);
             callSent[activeRadio ^ 1] = true;
         }
@@ -1664,26 +1668,30 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
 
     // send CQ exchange
     if (enterStateTX & 2) {
-        // check to see if this qso number already taken
-        if (nrSent == nrReserved[activeRadio]) {
-            nrReserved[activeRadio ^ 1] = nrSent + 1;
+        int m=(int)cat->modeType(activeRadio ^ 1);
+        if (lineEditCall[activeRadio ^ 1]->text().contains("?") && (m == CWType || m == DigiType)) {
+            expandMacro("{CALL_ENTERED}",-1,false);
+            enterStateTX = 0; // prevent further processing
         } else {
-            nrReserved[activeRadio ^ 1] = nrSent;
-        }
-        if (mod != Qt::ShiftModifier) {
-            int m=(int)cat->modeType(activeRadio ^ 1);
-            switchTransmit(activeRadio ^ 1);
-            if (qso[activeRadio ^ 1]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
-                expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+            // check to see if this qso number already taken
+            if (nrSent == nrReserved[activeRadio]) {
+                nrReserved[activeRadio ^ 1] = nrSent + 1;
             } else {
-                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                nrReserved[activeRadio ^ 1] = nrSent;
             }
+            if (mod != Qt::ShiftModifier) {
+                if (qso[activeRadio ^ 1]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
+                    expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+                } else {
+                    expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                }
+            }
+            exchangeSent[activeRadio ^ 1]    = true;
+            callSent[activeRadio ^ 1]        = true; // set this true as well in case mode switched to S&P
+            origCallEntered[activeRadio ^ 1] = qso[activeRadio ^ 1]->call;
+            updateNrDisplay();
+            cqQsoInProgress[activeRadio ^ 1] = true;
         }
-        exchangeSent[activeRadio ^ 1]    = true;
-        callSent[activeRadio ^ 1]        = true; // set this true as well in case mode switched to S&P
-        origCallEntered[activeRadio ^ 1] = qso[activeRadio ^ 1]->call;
-        updateNrDisplay();
-        cqQsoInProgress[activeRadio ^ 1] = true;
     }
 
     // set exc mode
@@ -1697,23 +1705,8 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         prefillExch(activeRadio ^ 1);
     }
 
-    // focus call field
-    if (previousState[activeRadio] & 32) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditCall[activeRadio];
-        callFocus[activeRadio] = true;
-        if (qso[activeRadio]->call.isEmpty()) {
-            clearWorked(activeRadio);
-        } else {
-            updateWorkedMult(activeRadio);
-        }
-    }
-
     // focus exchange
-    if (previousState[activeRadio] & 4) { // && !qso[activeRadio]->dupe) {
+    if (enterState[i1][i2][i3][i4] & 4) {
         lineEditExchange[activeRadio]->setFocus();
         if (grab) {
             lineEditExchange[activeRadio]->grabKeyboard();
@@ -1728,10 +1721,24 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         updateWorkedMult(activeRadio);
     }
 
+    // focus call field
+    if (enterState[i1][i2][i3][i4] & 32 || lineEditCall[activeRadio]->text().contains("?")) {
+        lineEditCall[activeRadio]->setFocus();
+        if (grab) {
+            lineEditCall[activeRadio]->grabKeyboard();
+        }
+        grabWidget             = lineEditCall[activeRadio];
+        callFocus[activeRadio] = true;
+        if (qso[activeRadio]->call.isEmpty()) {
+            clearWorked(activeRadio);
+        } else {
+            updateWorkedMult(activeRadio);
+        }
+    }
+
     // send F1 message
     if (enterStateTX & 256) {
         if (mod != Qt::ShiftModifier) {
-            switchTransmit(activeRadio ^ 1);
             switch (cat->modeType(activeRadio ^ 1)) {
             case CWType:case DigiType:
                 if (sendLongCQ) {
@@ -1763,7 +1770,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         updateNrDisplay();
         if (mod != Qt::ShiftModifier) {
             int m=(int)cat->modeType(activeRadio ^ 1);
-            switchTransmit(activeRadio ^ 1);
             expandMacro(csettings->value(c_sp_exc[m],c_sp_exc_def[m]).toByteArray(),-1,false);
         }
         exchangeSent[activeRadio ^ 1] = true;
@@ -1774,9 +1780,9 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         // see if call was corrected
         // if control+Enter, do not send any CW here.
         int m=(int)cat->modeType(activeRadio ^ 1);
-        switchTransmit(activeRadio ^ 1);
         if (qso[activeRadio ^ 1]->call != origCallEntered[activeRadio ^ 1]) {
-            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1,false);
+            if (mod != Qt::ShiftModifier)
+expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1,false);
         } else {
             if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toByteArray(),-1,false);
         }
@@ -1785,7 +1791,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
 
     // send shift-F2 (AGN?) message
     if (enterStateTX & 65536) {
-        switchTransmit(activeRadio ^ 1);
         switch (cat->modeType(activeRadio ^ 1)) {
         case CWType:case DigiType:
             expandMacro(cwMessage->cqShiftF[1].toUpper(),0,false);
@@ -1894,14 +1899,8 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
     }
 
     if (toggleFxKeySend) {
-        switchTransmit(activeRadio ^ 1);
         sendFunc(toggleFxKey,toggleFxKeyMod);
-    } else {
-        // only update previous state if not sending fill requests
-        previousState[activeRadio ^ 1] = enterState[j1][j2][j3][j4];
     }
-    previousState[activeRadio] = enterState[i1][i2][i3][i4];
-
 
     //clear ESM override
     toggleFxKey = -1;

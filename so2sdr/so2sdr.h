@@ -221,7 +221,6 @@ private:
     int                  nqso[N_BANDS];
     int                  nrReserved[NRIG];
     int                  nrSent;
-    int                  previousState[NRIG];
     int                  rateCount[60];
     int                  ratePtr;
     int                  rigFreq[NRIG];
