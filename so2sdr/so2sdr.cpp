@@ -2021,7 +2021,7 @@ void So2sdr::autoCQdelay (bool incr) {
 void So2sdr::duelingCQ () {
     qint64 delay = (long long) (settings->value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toDouble() * 1000.0D);
 
-    toggleMode = true;
+    //toggleMode = true;
     activeR2CQ = false;
     if (!cqMode[activeRadio]) setCqMode(activeRadio);
     if (!cqMode[activeRadio ^ 1]) setCqMode(activeRadio ^ 1);
@@ -3290,7 +3290,11 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         }
                         break;
                     case 19: // clear RIT
-                        cat->clearRIT(activeRadio);
+                        if (toggleMode || sendingOtherRadio) {
+                            cat->clearRIT(activeRadio ^ 1);
+                        } else {
+                            cat->clearRIT(activeRadio);
+                        }
                         break;
                     case 20: // RIG_FREQ
                         out.append(QByteArray::number(qRound(rigFreq[activeRadio] / 1000.0)));
@@ -3332,7 +3336,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                     break;
                 }
             }
-            if (first && switchradio) {
+            if (first && switchradio && !toggleMode) {
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
                 sendingOtherRadio = false;
@@ -3361,8 +3365,10 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
         }
     } else {
         // no macro present send as-is
-        sendingOtherRadio = false;
-        switchTransmit(activeRadio, tmp_wpm);
+        if (!toggleMode) {
+            sendingOtherRadio = false;
+            switchTransmit(activeRadio, tmp_wpm);
+        }
         out.append(msg);
         txt.append(msg);
         send(out,stopcw);
@@ -4070,7 +4076,9 @@ void So2sdr::initVariables()
     autoSend = false;
     sendLongCQ = true;
     tmpCall.clear();
-
+    toggleFxKey = -1;
+    toggleFxKeyMod = Qt::NoModifier;
+    toggleFxKeySend = false;
 }
 
 /*!

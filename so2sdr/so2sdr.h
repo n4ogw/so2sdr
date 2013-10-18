@@ -198,6 +198,7 @@ private:
     bool                 spotListPopUp[NRIG];
     bool                 statusBarDupe;
     bool                 telnetOn;
+    bool                 toggleFxKeySend;
     bool                 toggleMode;
     bool                 uiEnabled;
     CabrilloDialog       *cabrillo;
@@ -225,6 +226,7 @@ private:
     int                  ratePtr;
     int                  rigFreq[NRIG];
     int                  timerId[N_TIMERS];
+    int                  toggleFxKey;
     int                  usveIndx[MMAX];
     int                  wpm[NRIG];
     log                  *mylog;
@@ -289,7 +291,8 @@ private:
     QString              tmpCall;
     QThread              catThread;
     QThread              dvkThread;
-    QTime        cqTimer;
+    QTime                cqTimer;
+    Qt::KeyboardModifiers toggleFxKeyMod;
     QWidgetAction        *bandmapCheckAction[NRIG];
     QWidgetAction        *dupesheetCheckAction[NRIG];
     QWidgetAction        *grabAction;
