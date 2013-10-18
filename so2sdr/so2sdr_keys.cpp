@@ -623,7 +623,16 @@ void So2sdr::keyCtrlUp()
 void So2sdr::down()
 {
     // if in CQ mode and only call window showing
-    if (cqMode[activeRadio] && !excMode[activeRadio]) return;
+    if (cqMode[activeRadio] && !excMode[activeRadio]) {
+        // method to get to exch w/o CW
+        if (!lineEditCall[activeRadio]->text().simplified().isEmpty()) {
+            excMode[activeRadio] = true;
+            lineEditExchange[activeRadio]->show();
+            prefillExch(activeRadio);
+        } else {
+            return;
+        }
+    }
 
     if (callFocus[activeRadio]) {
         callFocus[activeRadio] = false;
@@ -850,13 +859,8 @@ void So2sdr::spaceSprint()
     }
     if (callFocus[activeRadio]) {
         if (altDActive) {
-            altDActive = 0;
+            altd();
             callSent[altDActiveRadio] = false;
-            if (lineEditCall[altDActiveRadio]->text().simplified().isEmpty()) {
-                setCqMode(altDActiveRadio);
-            } else {
-                spMode(altDActiveRadio);
-            }
         }
         spMode(activeRadio);
         lineEditCall[activeRadio]->setModified(false);
