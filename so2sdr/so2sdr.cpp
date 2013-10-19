@@ -2697,7 +2697,6 @@ void So2sdr::updateMults(int ir)
 void So2sdr::updateRadioFreq()
 {
     int           tmp[NRIG];
-    int           tmpf[NRIG];
     label_160->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_80->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     label_40->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
@@ -2706,34 +2705,7 @@ void So2sdr::updateRadioFreq()
     label_10->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     for (int i = 0; i < NRIG; i++) {
 
-        tmpf[i] = cat->getRigFreq(i);
-        if (abs(rigFreq[i] - tmpf[i]) > SIG_MIN_SPOT_DIFF && contest) {
-            // focus qsy radio // in sprint, only focus if other radio is not s/p mode
-            if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
-                if ( lineEditCall[i ^ 1]->text().simplified().isEmpty() && lineEditExchange[i ^ 1]->text().simplified().isEmpty()
-                    && i != activeRadio && !activeR2CQ && !winkey->isSending()) {
-                    if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
-                        if (cqMode[i ^ 1]) {
-                            switchRadios();
-                            callFocus[i] = true;
-                        }
-                    } else {
-                        switchRadios();
-                        callFocus[i] = true;
-                    }
-                    if (altDActive && i != altDActiveRadio && lineEditCall[altDActiveRadio]->text().simplified().isEmpty()) {
-                        altDActive = false;
-                        if (altDOrigMode && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
-                            spMode(altDActiveRadio);
-                        } else {
-                            setCqMode(altDActiveRadio);
-                        }
-                    }
-                }
-            }
-        }
-
-        rigFreq[i] = tmpf[i];
+        rigFreq[i] = cat->getRigFreq(i);
         tmp[i]     = band[i];
         int b = getBand(rigFreq[i]);
 
