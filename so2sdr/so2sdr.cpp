@@ -1831,7 +1831,7 @@ void So2sdr::autoCQActivate (bool state) {
         duelingCQActivate(false);
         activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);
-        sendingOtherRadio = false;
+        switchTransmit(activeRadio);
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
     } else {
@@ -1858,7 +1858,7 @@ void So2sdr::duelingCQActivate (bool state) {
         autoSendStatus->hide();
         activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);
-        sendingOtherRadio = false;
+        switchTransmit(activeRadio);
         if (altDActive) {
             QPalette palette(lineEditCall[altDActiveRadio]->palette());
             palette.setColor(QPalette::Base, CQ_COLOR);
@@ -1875,7 +1875,7 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQStatus->clear();
         toggleMode = false;
         toggleStatus->clear();
-        sendingOtherRadio = false;
+        switchTransmit(activeRadio);
         autoSendStatus->show();
     }
 }
@@ -1890,7 +1890,7 @@ void So2sdr::autoSendExch() {
 
     if (lineEditCall[activeRadio]->text().length() >= settings->value(s_settings_autosend,s_settings_autosend_def).toInt()
             && !exchangeSent[activeRadio] && cqMode[activeRadio] && !activeR2CQ && !duelingCQMode && !toggleMode
-            && !sendingOtherRadio && !(altDActive && altDActiveRadio == activeRadio) ) {
+            && !(altDActive && altDActiveRadio == activeRadio) && activeTxRadio == activeRadio) {
         int comp = QString::compare(tmpCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
         if ( comp < 0) {
             int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
@@ -1953,7 +1953,7 @@ void So2sdr::autoCQ () {
     if (activeR2CQ) {
         activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);
-        sendingOtherRadio = false;
+        switchTransmit(activeRadio);
     }
     if (!cqMode[activeRadio]) setCqMode(activeRadio);
 
@@ -2134,6 +2134,7 @@ void So2sdr::switchTransmit(int r, int CWspeed)
         TX1->setStyleSheet(clearLED);
         TX2->setStyleSheet(clearLED);
     }
+    activeTxRadio = r;
 }
 
 /*!
@@ -2865,12 +2866,7 @@ void So2sdr::speedUp(int nrig)
 {
     wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
-    if (winkey->isSending() &&
-            (
-                ( nrig != activeRadio && ( toggleMode || sendingOtherRadio || activeR2CQ || (altDActive && nrig != altDActiveRadio)) )
-                || (nrig == activeRadio && !toggleMode && !sendingOtherRadio && !activeR2CQ && (!altDActive || (altDActive && nrig != altDActiveRadio)))
-                )
-            )
+    if (winkey->isSending() && nrig == activeTxRadio)
     {
         // don't actually change speed if we are sending on other radio
         winkey->setSpeed(wpm[nrig]);
@@ -2887,12 +2883,7 @@ void So2sdr::speedDn(int nrig)
 {
     wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
-    if (winkey->isSending() &&
-            (
-                ( nrig != activeRadio && ( toggleMode || sendingOtherRadio || activeR2CQ || (altDActive && nrig != altDActiveRadio)) )
-                || (nrig == activeRadio && !toggleMode && !sendingOtherRadio && !activeR2CQ && (!altDActive || (altDActive && nrig != altDActiveRadio)))
-                )
-            )
+    if (winkey->isSending() && nrig == activeTxRadio)
     {
         // don't actually change speed if we are sending on other radio
         winkey->setSpeed(wpm[nrig]);
@@ -2944,7 +2935,7 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
     } else {
         if (ok) {
             wpm[nrig] = w;
-            if (!(sendingOtherRadio && winkey->isSending())) {
+            if (nrig == activeTxRadio) {
                 // don't actually change speed if we are sending on other radio
                 winkey->setSpeed(wpm[nrig]);
             }
@@ -3159,22 +3150,12 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         txt.append(settings->value(s_call,s_call_def).toByteArray());
                         break;
                     case 1:  // #
-                        if (toggleMode || sendingOtherRadio) {
-                            if (nrReserved[activeRadio ^ 1]) {
-                                out.append(QString::number(nrReserved[activeRadio ^ 1]));
-                                txt.append(QString::number(nrReserved[activeRadio ^ 1]));
-                            } else {
-                                out.append(QString::number(nrSent));
-                                txt.append(QString::number(nrSent));
-                            }
+                        if (nrReserved[activeTxRadio]) {
+                            out.append(QString::number(nrReserved[activeTxRadio]));
+                            txt.append(QString::number(nrReserved[activeTxRadio]));
                         } else {
-                            if (nrReserved[activeRadio]) {
-                                out.append(QString::number(nrReserved[activeRadio]));
-                                txt.append(QString::number(nrReserved[activeRadio]));
-                            } else {
-                                out.append(QString::number(nrSent));
-                                txt.append(QString::number(nrSent));
-                            }
+                            out.append(QString::number(nrSent));
+                            txt.append(QString::number(nrSent));
                         }
                         break;
                     case 2:  // SPEED UP
@@ -3195,7 +3176,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         switchTransmit(activeRadio ^ 1);
                         txt = txt.right(txt.size() - 2);
                         txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
-                        sendingOtherRadio = true;
                         switchradio=false;
                         break;
                     case 5: // Radio 2 CQ
@@ -3210,7 +3190,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         lineEditCall[activeRadio ^ 1]->setPalette(palette);
                         lineEditCall[activeRadio ^ 1]->setText("CQCQCQ");
                         lineEditExchange[activeRadio ^ 1]->setPalette(palette);
-                        sendingOtherRadio = true;
                         switchradio=false;
                     }
                         break;
@@ -3239,13 +3218,8 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         txt.append(settings->value(s_grid,s_grid_def).toByteArray());
                         break;
                     case 12: // call entered
-                        if (toggleMode || sendingOtherRadio) {
-                            out.append(qso[activeRadio ^ 1]->call);
-                            txt.append(qso[activeRadio ^ 1]->call);
-                        } else {
-                            out.append(qso[activeRadio]->call);
-                            txt.append(qso[activeRadio]->call);
-                        }
+                        out.append(qso[activeTxRadio]->call);
+                        txt.append(qso[activeTxRadio]->call);
                         break;
                     case 13: // togglestereopin
                         toggleStereo();
@@ -3253,18 +3227,10 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         return;
                         break;
                     case 14: // cqmode
-                        if (toggleMode || sendingOtherRadio) {
-                            setCqMode(activeRadio ^ 1);
-                        } else {
-                            setCqMode(activeRadio);
-                        }
+                        setCqMode(activeTxRadio);
                         break;
                     case 15: // spmode
-                        if (toggleMode || sendingOtherRadio) {
-                            spMode(activeRadio ^ 1);
-                        } else {
-                            spMode(activeRadio);
-                        }
+                        spMode(activeTxRadio);
                         break;
                     case 16: // swap_radios
                         swapRadios();
@@ -3274,12 +3240,12 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 18: // repeat NR
                         int nr;
-                        if (lineEditCall[activeRadio]->text().isEmpty()) {
+                        if (lineEditCall[activeTxRadio]->text().isEmpty()) {
                             // send last logged number
                             nr = mylog->lastNr();
                         } else {
-                            if (nrReserved[activeRadio]) {
-                                nr = nrReserved[activeRadio];
+                            if (nrReserved[activeTxRadio]) {
+                                nr = nrReserved[activeTxRadio];
                             } else {
                                 nr = nrSent;
                             }
@@ -3290,11 +3256,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         }
                         break;
                     case 19: // clear RIT
-                        if (toggleMode || sendingOtherRadio) {
-                            cat->clearRIT(activeRadio ^ 1);
-                        } else {
-                            cat->clearRIT(activeRadio);
-                        }
+                        cat->clearRIT(activeTxRadio);
                         break;
                     case 20: // RIG_FREQ
                         out.append(QByteArray::number(qRound(rigFreq[activeRadio] / 1000.0)));
@@ -3339,7 +3301,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
             if (first && switchradio && !toggleMode) {
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
-                sendingOtherRadio = false;
                 switchTransmit(activeRadio, tmp_wpm);
             }
             first=false;
@@ -3366,7 +3327,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
     } else {
         // no macro present send as-is
         if (!toggleMode) {
-            sendingOtherRadio = false;
             switchTransmit(activeRadio, tmp_wpm);
         }
         out.append(msg);
@@ -4007,6 +3967,7 @@ void So2sdr::initVariables()
     labelLPBearing1->clear();
     labelLPBearing2->clear();
     activeRadio = 0;
+    activeTxRadio = activeRadio;
     altDActive         = 0;
     altDActiveRadio    = 0;
     altDOrigMode       = 0;
@@ -4065,7 +4026,6 @@ void So2sdr::initVariables()
     dupeCheckDone      = false;
     cqQsoInProgress[0] = false;
     cqQsoInProgress[1] = false;
-    sendingOtherRadio  = false;
     grab               = false;
     keyInProgress=false;
 

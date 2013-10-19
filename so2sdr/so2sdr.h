@@ -193,7 +193,6 @@ private:
     bool                 initialized;
     bool                 keyInProgress;
     bool                 logSearchFlag;
-    bool                 sendingOtherRadio;
     bool                 sendLongCQ;
     bool                 spotListPopUp[NRIG];
     bool                 statusBarDupe;
@@ -212,6 +211,7 @@ private:
     DVK                  *dvk;
     HelpDialog           *help;
     int                  activeRadio;
+    int                  activeTxRadio;
     int                  altDActive;
     int                  altDActiveRadio;
     int                  altDOrigMode;

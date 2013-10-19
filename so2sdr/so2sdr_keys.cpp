@@ -1166,8 +1166,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     i4 = exchangeSent[activeRadio];
     if (i4 > 2) i4 = 0;
 
-    sendingOtherRadio = false;
-
     // change radios
     /*!
        @todo make actions below separate functions; some are duplicated elsewhere (backslash,...)
@@ -1193,7 +1191,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
             clearWorked(activeRadio ^ 1);
             clearR2CQ(activeRadio);
-            sendingOtherRadio = false;
 
             cqMode[activeRadio]       = true;
             excMode[activeRadio]      = false;
@@ -1472,7 +1469,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
             toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
         } else {
             // go to radio where cw was last sent
-            sendingOtherRadio = false;
             toggleStatus->clear();
             autoSendStatus->show();
             return;
@@ -1649,8 +1645,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
     }
     j4 = exchangeSent[activeRadio ^ 1];
     if (j4 > 2) j4 = 0;
-
-    sendingOtherRadio = false;
 
     if (toggleFxKey != -1) {
         toggleFxKeySend = true;
@@ -1843,7 +1837,6 @@ expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toBy
                 toggleMode = false;
                 toggleStatus->clear();
                 duelingCQActivate(false);
-                sendingOtherRadio = false;
             }
         }
         labelCountry[activeRadio ^ 1]->clear();

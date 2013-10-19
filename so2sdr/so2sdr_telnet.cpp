@@ -261,12 +261,7 @@ void So2sdr::checkSpot(int nr)
         prefixCheck(nr, lineEditCall[nr]->text());
         spotListPopUp[nr] = true;
     } else if (abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && contest) {
-        if (winkey->isSending() &&
-                (
-                    ( nr != activeRadio && ( toggleMode || sendingOtherRadio || activeR2CQ || (altDActive && nr != altDActiveRadio)) )
-                    || (nr == activeRadio && !toggleMode && !sendingOtherRadio && !activeR2CQ && (!altDActive || (altDActive && nr != altDActiveRadio)))
-                    )
-                )
+        if (winkey->isSending() && nr == activeTxRadio)
         {
             winkey->cancelcw();
             keyInProgress=false;
@@ -292,7 +287,6 @@ void So2sdr::checkSpot(int nr)
         }
         if (toggleMode) {
             toggleMode = false;
-            sendingOtherRadio = false;
             toggleStatus->clear();
             if (nr == activeRadio) {
                 switchRadios(false);
