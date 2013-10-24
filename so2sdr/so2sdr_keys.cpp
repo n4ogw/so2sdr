@@ -243,12 +243,13 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             break;
         case Qt::Key_R:     // alt-R
             if (mod == Qt::AltModifier) {
-                duelingCQActivate(false);
+                if (autoCQMode) autoCQActivate(false);
+                if (duelingCQMode) duelingCQActivate(false);
                 switchRadios();
                 r = true;
             } else if (mod == Qt::ControlModifier) { // switchradios w/o killing cw
-                autoCQActivate(false);
-                duelingCQActivate(false);
+                if (autoCQMode) autoCQActivate(false);
+                if (duelingCQMode) duelingCQActivate(false);
                 switchRadios(false);
                 r = true;
             }
@@ -726,7 +727,7 @@ void So2sdr::backSlash()
         cqMode[activeRadio] &&
         exchangeSent[activeRadio])
     {
-        int m=(int)cat->modeType(activeRadio);
+        int m=(int)cat->modeType(activeTxRadio);
         expandMacro(csettings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toByteArray(),-1,false);
 
         // log qso
@@ -938,7 +939,6 @@ void So2sdr::spaceSP(int nrig)
  */
 void So2sdr::spaceAltD()
 {
-    autoCQActivate(false);
     switchRadios();
     spMode(activeRadio);
     lineEditExchange[activeRadio]->setFocus();
@@ -1008,6 +1008,9 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
         enter(mod);
         break;
     case 3:
+        if (activeTxRadio != altDActiveRadio) {
+            switchTransmit(altDActiveRadio);
+        }
         enter(mod);
         if (altDActive == 0) {
             // only switch radios if qso is logged, which sets altDActive=0 again
@@ -1166,6 +1169,11 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     i4 = exchangeSent[activeRadio];
     if (i4 > 2) i4 = 0;
 
+    // test
+    if (activeTxRadio != activeRadio) {
+        switchTransmit(activeRadio);
+    }
+
     // change radios
     /*!
        @todo make actions below separate functions; some are duplicated elsewhere (backslash,...)
@@ -1204,7 +1212,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             !qso[activeRadio]->dupe) {
             // send AGN if call already sent and exchange invalid
             if (callSent[activeRadio] && lineEditExchange[activeRadio]->hasFocus()) {
-                switch (cat->modeType(activeRadio)) {
+                switch (cat->modeType(activeTxRadio)) {
                 case CWType:case DigiType:
                     expandMacro(cwMessage->cqShiftF[1].toUpper(),0,false);
                     break;
@@ -1221,7 +1229,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // send CQ exchange
     if (enterState[i1][i2][i3][i4] & 2) {
-        int m=(int)cat->modeType(activeRadio);
+        int m=(int)cat->modeType(activeTxRadio);
         if (lineEditCall[activeRadio]->text().contains("?") && (m == CWType || m == DigiType)) {
             expandMacro("{CALL_ENTERED}",-1,false);
             keyInProgress=false;
@@ -1284,7 +1292,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         }
         updateNrDisplay();
         if (mod != Qt::ShiftModifier) {
-            int m=(int)cat->modeType(activeRadio);
+            int m=(int)cat->modeType(activeTxRadio);
             expandMacro(csettings->value(c_sp_exc[m],c_sp_exc_def[m]).toByteArray(),-1,false);
         }
         exchangeSent[activeRadio] = true;
@@ -1366,7 +1374,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
                     expandMacro("{R2CQ}" + cwMessage->cqF[0],0,false);
             } else {
 
-                switch (cat->modeType(activeRadio)) {
+                switch (cat->modeType(activeTxRadio)) {
                 case CWType:case DigiType:
                     expandMacro(cwMessage->cqF[0],0,false);
                     break;
@@ -1383,7 +1391,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     if (enterState[i1][i2][i3][i4] & 512) {
         // see if call was corrected
         // if control+Enter, do not send any CW here.
-        int m=(int)cat->modeType(activeRadio);
+        int m=(int)cat->modeType(activeTxRadio);
         if (qso[activeRadio]->call != origCallEntered[activeRadio]) {
             if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1,false);
         } else {
@@ -1431,7 +1439,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // send shift-F2 (AGN?) message
     if (enterState[i1][i2][i3][i4] & 65536) {
-        switch (cat->modeType(activeRadio)) {
+        switch (cat->modeType(activeTxRadio)) {
         case CWType:case DigiType:
             expandMacro(cwMessage->cqShiftF[1].toUpper(),0,false);
             break;
@@ -1836,7 +1844,7 @@ expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toBy
             } else {
                 toggleMode = false;
                 toggleStatus->clear();
-                duelingCQActivate(false);
+                if (duelingCQMode) duelingCQActivate(false);
             }
         }
         labelCountry[activeRadio ^ 1]->clear();
@@ -1964,7 +1972,7 @@ void So2sdr::esc()
     bool                altdClear = true;
 
     keyInProgress=true;
-    ModeTypes mode=cat->modeType(activeRadio);
+    ModeTypes mode=cat->modeType(activeTxRadio);
 
     // define states
     if (first) {
@@ -1996,8 +2004,8 @@ void So2sdr::esc()
         if (winkey->isSending()) {
             winkey->cancelcw();
             keyInProgress=false;
-            duelingCQActivate(false);
-            autoCQActivate(false);
+            if (duelingCQMode) duelingCQActivate(false);
+            if (autoCQMode) autoCQActivate(false);
             if (toggleMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
             return;
         }

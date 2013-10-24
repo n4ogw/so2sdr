@@ -1828,10 +1828,12 @@ void So2sdr::timerEvent(QTimerEvent *event)
 void So2sdr::autoCQActivate (bool state) {
     autoCQMode = state;
     if (autoCQMode) {
-        duelingCQActivate(false);
+        if (duelingCQMode) duelingCQActivate(false);
         activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);
-        switchTransmit(activeRadio);
+        if (activeTxRadio != activeRadio) {
+            switchTransmit(activeRadio);
+        }
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
     } else {
@@ -1858,7 +1860,9 @@ void So2sdr::duelingCQActivate (bool state) {
         autoSendStatus->hide();
         activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);
-        switchTransmit(activeRadio);
+        if (activeTxRadio != activeRadio) {
+            switchTransmit(activeRadio);
+        }
         if (altDActive) {
             QPalette palette(lineEditCall[altDActiveRadio]->palette());
             palette.setColor(QPalette::Base, CQ_COLOR);
@@ -1875,7 +1879,9 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQStatus->clear();
         toggleMode = false;
         toggleStatus->clear();
-        switchTransmit(activeRadio);
+        if (activeTxRadio != activeRadio) {
+            switchTransmit(activeRadio);
+        }
         autoSendStatus->show();
     }
 }
@@ -1909,7 +1915,7 @@ void So2sdr::autoSendExch() {
                 } else {
                     nrReserved[activeRadio] = nrSent;
                 }
-                int m=(int)cat->modeType(activeRadio);
+                int m=(int)cat->modeType(activeTxRadio);
                 if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
                     expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false,false);
                 } else {
@@ -1955,9 +1961,14 @@ void So2sdr::autoCQ () {
         clearR2CQ(activeRadio ^ 1);
         switchTransmit(activeRadio);
     }
-    if (!cqMode[activeRadio]) setCqMode(activeRadio);
-
-    if ((!lineEditCall[activeRadio]->text().isEmpty() && !(altDActive && altDActiveRadio == activeRadio)) ) {
+    if (!cqMode[activeRadio] && !(altDActive && altDActiveRadio == activeRadio)) {
+        setCqMode(activeRadio);
+    } else if (!cqMode[activeRadio ^ 1] && altDActive && altDActiveRadio == activeRadio) {
+        setCqMode(activeRadio ^ 1);
+    }
+    if ((!lineEditCall[activeRadio]->text().isEmpty() && !(altDActive && altDActiveRadio == activeRadio))
+            || (!lineEditCall[activeRadio ^ 1]->text().isEmpty() && altDActive && altDActiveRadio == activeRadio)
+            || (altDActive > 2 && altDActiveRadio == activeRadio) ) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
     } else if (winkey->isSending()) {
@@ -1966,23 +1977,24 @@ void So2sdr::autoCQ () {
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
     } else if (cqTimer.elapsed() >= delay) {
         cqTimer.restart();
-        QString steerCW = "";
         if (altDActive && altDActiveRadio == activeRadio) {
-            steerCW = "{R2}";
+            switchTransmit(altDActiveRadio ^ 1);
+        } else if (activeTxRadio != activeRadio) {
+            switchTransmit(activeRadio);
         }
-        switch (cat->modeType(activeRadio)) {
+        switch (cat->modeType(activeTxRadio)) {
         case CWType:case DigiType:
             if (sendLongCQ) {
-                expandMacro(steerCW.toAscii() + cwMessage->cqF[0],0,false);
+                expandMacro(cwMessage->cqF[0],0,false);
             } else {
-                expandMacro(steerCW.toAscii() + cwMessage->cqF[1],0,false);
+                expandMacro(cwMessage->cqF[1],0,false);
             }
             break;
         case PhoneType:
             if (sendLongCQ) {
-                expandMacro(steerCW.toAscii() + ssbMessage->cqF[0],0,false);
+                expandMacro(ssbMessage->cqF[0],0,false);
             } else {
-                expandMacro(steerCW.toAscii() + ssbMessage->cqF[1],0,false);
+                expandMacro(ssbMessage->cqF[1],0,false);
             }
             break;
         }
@@ -2146,7 +2158,7 @@ void So2sdr::switchTransmit(int r, int CWspeed)
  */
 void So2sdr::switchRadios(bool switchcw)
 {
-    if (switchcw) autoCQActivate(false);
+    if (switchcw && !altDActive) autoCQActivate(false);
     activeRadio = activeRadio ^ 1;
     clearR2CQ(activeRadio);
     switchAudio(activeRadio);
@@ -2989,7 +3001,7 @@ void So2sdr::setCqMode(int i)
  */
 void So2sdr::send(QByteArray text, bool stopcw)
 {
-    if (cat->modeType(activeRadio)!=CWType) return;
+    if (cat->modeType(activeTxRadio)!=CWType) return;
     if (!settings->value(s_winkey_cwon,s_winkey_cwon_def).toBool()) return;
 
     if (winkey->isSending() && stopcw) {
@@ -3270,7 +3282,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                     break;
                 }
             }
-            if (first && switchradio && !toggleMode) {
+            if (first && switchradio && !toggleMode && !autoCQMode) {
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
                 switchTransmit(activeRadio, tmp_wpm);
@@ -4001,6 +4013,7 @@ void So2sdr::initVariables()
     grab               = false;
     keyInProgress=false;
 
+    cqTimer.start();
     toggleMode = false;
     autoCQMode = false;
     duelingCQMode = false;
