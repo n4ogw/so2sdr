@@ -3282,7 +3282,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                     break;
                 }
             }
-            if (first && switchradio && !toggleMode && !autoCQMode) {
+            if (first && switchradio && !toggleMode) {
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
                 switchTransmit(activeRadio, tmp_wpm);

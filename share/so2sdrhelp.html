@@ -1,10 +1,10 @@
-<a name="top"><h2>SO2SDR help file v1.3.3</h2></a>
+<a name="top"><h2>SO2SDR help file v1.4.0</h2></a>
 <hr>
 
 <h3>Topics</h3>
 <ul>
 <li><a href="#building">installing/configuring so2sdr</a>
-<li><a href="#v133">current version notes</a> 
+<li><a href="#v140">current version notes</a> 
 <li><a href="#opnotes">operating notes</a>
 <li><a href="#keys">key reference</a>
 <li><a href="#cw">CW macros</a>
@@ -207,33 +207,50 @@ KHz in the callsign window. If the number is followed by a semicolon
 <li> ctrl+Enter : logs qso with no dupe checking or exchange validation (be
 careful). The qso may not be scored correctly.
 <li> shift+Enter : logs qso without sending CW
+<li> alt+Enter : start toggle mode. In this mode, each enter press toggles
+back and forth between the two radios. Use this to call alternating cq's on
+both radios.
 <li> Backslash : log qso and send Quick QSL message
-<li> alt+D : dupe check on 2nd radio
-<li> alt+M : switch mult display mode
-<li> ctrl+N : make a note
-<li> alt+R : Switch radios
-<li> alt+S : Set CW speed. Followed by two numeric digits.
-<li> ctrl+alt+S : take screenshot of main and bandmap windows.
-Screenshot files are placed in the same directory as the log file.
 <li> PdDn : decrease CW speed
 <li> PgUp : increase CW speed 
 <li> ctrl+PdDn : decrease CW speed on inactive radio
 <li> ctrl+PgUp : increase CW speed  on inactive radio
+<li> alt+PgDn : in Auto CQ mode, decrease delay
+<li> alt+PgUp : in Auto CQ mode, increase delay
 <li> up/down arrow : switch between call and exchange windows
 <li> ctrl+up : In S&P mode, tune to next higher detected signal on bandmap. 
 In CQ mode  tune to the next higher signal on the INACTIVE radio.
 <li> ctrl+down : In S&P mode, tune to next lower detected signal on bandmap. 
 In CQ mode  tune to the next lower signal on the INACTIVE radio.
-<li> ctrl+E : when QSO row is selected with the mouse, brings up
-QSO edit dialog.
-<li> ctrl+F : search log for callsign fragment. ESC clears search results. 
-<li> ctrl+Z (in call/exchange entry field) : undo
+<li> ctrl+- : (Ctrl-Minus) Activates Dueling-CQ mode.
+<li> alt+- : (Alt-Minus) Activates auto-send mode.
 <li> Tab : enter S&P mode
 <li> Esc : exit S&P mode; clear logging fields; reset Alt-D status
 <li> minus (-) : mark frequency on active radio as a dupe, or clear
 the current mark
 <li> equals (=) : mark frequency on inactive radio as a dupe, or clear
 the current mark
+<li> left quote (`) : toggle audio stereo mode (split/non-split)
+<li> alt+C : bring up Config menu
+<li> alt+D : dupe check on 2nd radio
+<li> ctrl+E : when QSO row is selected with the mouse, brings up
+QSO edit dialog.
+<li> alt+F : bring up File menu
+<li> ctrl+F : search log for callsign fragment. ESC clears search results.
+<li> alt+H : bring up Help menu
+<li> alt+M : switch mult display mode
+<li> ctrl+N : make a note
+<li> alt+Q : start auto (repeating) CQ mode. While in Auto CQ, Alt-PageUp
+and Alt-PageDn adjust the delay time between CQ's. Auto CQ sends F1 by default;
+pressing F1 or F2 will change the message that is repeating. ESC or alt+Q
+exits Auto CQ mode.
+<li> alt+R : Switch radios
+<li> ctrl+R : switch radios without killing cw.
+<li> alt+S : Set CW speed. Followed by two numeric digits.
+<li> ctrl+alt+S : take screenshot of main and bandmap windows.
+Screenshot files are placed in the same directory as the log file.
+<li> alt+W : bring up Windows menu
+<li> ctrl+Z (in call/exchange entry field) : undo
 </ul>
 
 
@@ -495,6 +512,32 @@ to call CQ on in this situation.
 
 <br>
 <a href="#top">Return to top</a> 
+<hr>
+<a name="v140"><h3>Version 1.4.0</h3></a> 
+
+<ul>
+<li> Many new features added by NO3M
+<ul>
+<li> Dueling cq mode
+<li> Auto cq mode
+<li> ESM Toggle (Alt Enter) to switch between ESM states on two radios
+<li> Transmit radio switching using either Winkey, parallel port, or OTRSP
+<li> New general settings dialog
+<li> Autosend
+<li> RX and TX focus indicators
+</ul>
+<li> Bug fix in IQ balance plot; fit appears immediately. Increased averaging
+     of data
+<li> Fix handling of unchecked calls
+<li> Correct default cq finder limits for 40m 
+<li> Improve printout in telnet- remove non-printing characters correctly
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
+
 <hr>
 <a name="v133"><h3>Version 1.3.3</h3></a> 
 
