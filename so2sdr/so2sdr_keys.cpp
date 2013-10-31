@@ -2004,9 +2004,20 @@ void So2sdr::esc()
         if (winkey->isSending()) {
             winkey->cancelcw();
             keyInProgress=false;
-            if (duelingCQMode) duelingCQActivate(false);
-            if (autoCQMode) autoCQActivate(false);
-            if (toggleMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
+            // de-activate dueling-CQ if call fields on both radios empty
+            if (duelingCQMode && lineEditCall[activeRadio]->text().isEmpty() && lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
+                duelingCQActivate(false);
+            }
+            // de-activate auto-CQ if call field empty on auto-CQ radio
+            if (autoCQMode &&
+                    (
+                      (!altDActive && lineEditCall[activeRadio]->text().isEmpty())
+                      || (altDActive && lineEditCall[altDActiveRadio ^ 1]->text().isEmpty())
+                    )
+            ) {
+                autoCQActivate(false);
+            }
+            if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
             return;
         }
         break;

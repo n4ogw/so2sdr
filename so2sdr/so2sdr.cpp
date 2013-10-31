@@ -60,7 +60,7 @@
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 {
     setupUi(this);
-	initPointers();
+    initPointers();
     initVariables();
 
     // Register rmode_t, pbwidth_t for connect()
@@ -101,6 +101,28 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     redLED    = "QLabel { background-color : red; border-radius: 4px; }";
     greenLED  = "QLabel { background-color : green; border-radius: 4px; }";
     clearLED  = "QLabel { background-color : none; border-radius: 4px; }";
+    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
+        switch (activeRadio) {
+        case 0:
+            RX1->setStyleSheet(redLED);
+            RX2->setStyleSheet(clearLED);
+            break;
+        case 1:
+            RX2->setStyleSheet(redLED);
+            RX1->setStyleSheet(clearLED);
+            break;
+        }
+        switch (activeTxRadio) {
+        case 0:
+            TX1->setStyleSheet(redLED);
+            TX2->setStyleSheet(clearLED);
+            break;
+        case 1:
+            TX2->setStyleSheet(redLED);
+            TX1->setStyleSheet(clearLED);
+            break;
+        }
+    }
     So2sdrStatusBar->addPermanentWidget(offPtr);
     So2sdrStatusBar->addPermanentWidget(grabLabel);
     grabLabel->hide();
@@ -2116,7 +2138,7 @@ void So2sdr::switchAudio(int r)
 }
 
 /*!
-  Switch trasmit focus
+  Switch transmit focus
  */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
@@ -2126,27 +2148,29 @@ void So2sdr::switchTransmit(int r, int CWspeed)
     } else {
         winkey->setSpeed(wpm[r]);
     }
-    winkey->switchTransmit(r);
+    if (r != activeTxRadio) {
+        winkey->switchTransmit(r);
 
-    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-        pport->switchTransmit(r);
-    }
-    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-        otrsp->switchTransmit(r);
-    }
-    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
-        if (r) {
+        if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
+            pport->switchTransmit(r);
+        }
+        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
+            otrsp->switchTransmit(r);
+        }
+        if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
+            if (r) {
+                TX1->setStyleSheet(clearLED);
+                TX2->setStyleSheet(redLED);
+            } else {
+                TX1->setStyleSheet(redLED);
+                TX2->setStyleSheet(clearLED);
+            }
+        }    else {
             TX1->setStyleSheet(clearLED);
-            TX2->setStyleSheet(redLED);
-        } else {
-            TX1->setStyleSheet(redLED);
             TX2->setStyleSheet(clearLED);
         }
-    }    else {
-        TX1->setStyleSheet(clearLED);
-        TX2->setStyleSheet(clearLED);
+        activeTxRadio = r;
     }
-    activeTxRadio = r;
 }
 
 /*!
@@ -3043,9 +3067,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
     Q_UNUSED(ssbnr);
     Q_UNUSED(ssbRecord);
 #endif
-    int        tmp_wpm = wpm[activeRadio];
+    int        tmp_wpm = wpm[activeTxRadio];
     QByteArray out     = "";
-    QByteArray txt = QByteArray::number(activeRadio + 1) + ":";
+    QByteArray txt = "";
 
     // will not overwrite a dupe message that is present
     if (!statusBarDupe) So2sdrStatusBar->clearMessage();
@@ -3158,15 +3182,11 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 4: // Radio 2
                         switchTransmit(activeRadio ^ 1);
-                        txt = txt.right(txt.size() - 2);
-                        txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
                         switchradio=false;
                         break;
                     case 5: // Radio 2 CQ
                     {
                         switchTransmit(activeRadio ^ 1);
-                        txt = txt.right(txt.size() - 2);
-                        txt.prepend(QByteArray::number((activeRadio ^ 1) + 1) + ":");
                         setCqMode(activeRadio ^ 1);
                         activeR2CQ = true;
                         QPalette palette(lineEditCall[activeRadio ^ 1]->palette());
@@ -3282,10 +3302,14 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                     break;
                 }
             }
-            if (first && switchradio && !toggleMode) {
+            if (first && switchradio) {
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
-                switchTransmit(activeRadio, tmp_wpm);
+                if (toggleMode || autoCQMode) {
+                    switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
+                } else {
+                    switchTransmit(activeRadio, tmp_wpm);
+                }
             }
             first=false;
 
@@ -3306,17 +3330,25 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
             if (!statusBarDupe && lastMsg.size() > 2) So2sdrStatusBar->showMessage(lastMsg.simplified());
         } else {
             send(out,stopcw);
-            if (!statusBarDupe && txt.size() > 2) So2sdrStatusBar->showMessage(txt.simplified());
+            if (!statusBarDupe && txt.size() > 2) {
+                txt.prepend(QByteArray::number(activeTxRadio + 1) + ":");
+                So2sdrStatusBar->showMessage(txt.simplified());
+            }
         }
     } else {
         // no macro present send as-is
-        if (!toggleMode) {
+        if (toggleMode || autoCQMode) {
+            switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
+        } else {
             switchTransmit(activeRadio, tmp_wpm);
         }
         out.append(msg);
         txt.append(msg);
         send(out,stopcw);
-        if (!statusBarDupe && txt.size() > 2) So2sdrStatusBar->showMessage(txt.simplified());
+        if (!statusBarDupe && txt.size() > 2) {
+            txt.prepend(QByteArray::number(activeTxRadio + 1) + ":");
+            So2sdrStatusBar->showMessage(txt.simplified());
+        }
     }
     lastMsg = out;
 }
