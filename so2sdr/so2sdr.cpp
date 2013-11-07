@@ -965,9 +965,7 @@ bool So2sdr::setupContest()
     enableUI();
     So2sdrStatusBar->showMessage("Read " + fileName, 3000);
     setSummaryGroupBoxTitle();
-    if (options->OffTimeCheckBox->isChecked()) {
-        updateOffTime();
-    }
+    if (csettings->value(c_off_time_enable,c_off_time_enable_def).toBool()) updateOffTime();
 #ifdef DVK_ENABLE
     if (settings->value(s_dvk_enabled,s_dvk_enabled_def).toBool()) {
         dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
@@ -1763,7 +1761,7 @@ void So2sdr::about()
     regrab();
 }
 
-/*! update rate display. Called by timerId[2] every 60 seconds
+/*! update rate display.
  */
 void So2sdr::updateRate()
 {
@@ -1799,7 +1797,7 @@ void So2sdr::updateRate()
  * \brief So2sdr::updateOffTime calculate and update off-time display
  */
 void So2sdr::updateOffTime() {
-    if (options->OffTimeCheckBox->isChecked()) {
+    if (csettings->value(c_off_time_enable,c_off_time_enable_def).toBool()) {
         offPtr->setText(mylog->offTime(options->offMinimumLineEdit->text().toInt(),options->startDateTimeEdit->dateTime(),
                        options->endDateTimeEdit->dateTime()));
     } else {
@@ -1815,7 +1813,7 @@ void So2sdr::updateOffTime() {
 void So2sdr::timerEvent(QTimerEvent *event)
 {
 
-    if (event->timerId() == timerId[4]) {
+    if (event->timerId() == timerId[3]) {
             // auto-CQ, dueling CQ, autoSend triggers, 100 ms resolution
             if (autoCQMode) autoCQ();
             if (duelingCQMode) duelingCQ();
@@ -1834,16 +1832,17 @@ void So2sdr::timerEvent(QTimerEvent *event)
     } else if (event->timerId() == timerId[0]) {
         // clock update; every 1000 mS
         TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
-    } else if (event->timerId() == timerId[3]) {
+        // update rate display at beginning of minute
+        if (QDateTime::currentDateTimeUtc().time().second()==0) {
+            updateRate();
+        }
+    } else if (event->timerId() == timerId[2]) {
         // update IQ plot every 10 seconds
         for (int i=0;i<NRIG;i++) {
             if (bandmapOn[i]) {
                 bandmap[i]->calc();
             }
         }
-    } else if (event->timerId() == timerId[2]) {
-        // these happen every 60 seconds
-        updateRate();
     }
 }
 

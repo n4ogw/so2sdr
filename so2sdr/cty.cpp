@@ -32,6 +32,7 @@ Cty::Cty(QSettings& s) : settings(s)
 {
     // portable identifiers not giving a new country
     portId.clear();
+    portId << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "9" << "0";
     portId << "P" << "M" << "QRP" << "AE" << "AG" << "KT";
 
     // portable ids for aero/maritime stations, ie qth is R1, R2, or R3
@@ -218,7 +219,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
             }
         }
 
-        // choose the prefix which is shortest and was indentified by idpfx2
+        // choose the prefix which is shortest and was identified by idpfx2
         bool ok = false;
         i1 = parts.at(0).size();
         int  ip = p[0];

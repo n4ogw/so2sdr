@@ -343,13 +343,12 @@ const int ssbnr_call_updated_msg=53;
 const int N_FUNC=12;
 
 // timers
-const int N_TIMERS=5;
+const int N_TIMERS=4;
 
 // default frequency for various things (all in milliseconds)
 const int timerSettings[]={
     1000,  // clock update
     300, // radio/serial update
-    60000, // rate display update, band spot update
     10000, // IQ plot update
     100 // auto-CQ, dueling CQ resolution
 };

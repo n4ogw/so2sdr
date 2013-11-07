@@ -569,7 +569,7 @@ void log::setupQsoNumbers(const int n)
 }
 
 /*!
- * \brief offTime Calculates the number of minutes of off-time taken between start and end.
+ * \brief offTime Calculates the number of minutes of off-time taken since start.
  * \param minOffTime Minimum offtime length in minutes.
  * \param start Start of contest. QSO's must be after this time to be valid.
  * \param end End of contest. QSO's must be before this time to be valid.
@@ -583,12 +583,15 @@ QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
         m.fetchMore();
     }
     if (m.rowCount() == 0) {
-        return "Off 00:00";  // nothing to do
+        return "Off 00:00/00:00";  // nothing to do
     }
+    // make sure times are rounded to minutes
+    start=start.addSecs(-start.time().second());
+    end=end.addSecs(-end.time().second()+60); // need to add 1 minute since end is time of last possible qso
 
     int totOffTime=0;
     int cnt=0;
-    QDateTime lastQsoTime;
+    QDateTime lastQsoTime=start;
     for (int i = 0; i < m.rowCount(); i++) {
         if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
 
@@ -614,12 +617,34 @@ QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
         lastQsoTime=qsoTime;
         cnt++;
     }
+    // add any additional off time taken up to current time
+    int extra=0;
+    if (lastQsoTime<end) {
+        QDateTime current=QDateTime::currentDateTime();
+        if (end<current) {
+            current=end;
+        }
+        // instead of current time, want only current minute
+        current=current.addSecs(-current.time().second());
+        extra=lastQsoTime.secsTo(current);
+        extra/=60;
+        extra--;
+        if (extra<0) extra=0;
+        if (extra>=minOffTime) totOffTime+=extra;
+    }
 
     if (totOffTime>=6039) {
-        return "Off 99:99";
+        return "Off 00:00/99:99";
     } else {
+        int ehr=extra/60;
+        int emin=extra-ehr*60;
         int hr=totOffTime/60;
         int min=totOffTime-hr*60;
-        return "Off "+QString::number(hr)+":"+QString("%1").arg(QString::number(min), 2, QChar('0'));
+        QString tmp="Off "+QString("%1").arg(QString::number(ehr), 2, QChar('0'))+
+                ":"+QString("%1").arg(QString::number(emin), 2, QChar('0'));
+        tmp=tmp+"/";
+        tmp=tmp+QString("%1").arg(QString::number(hr), 2, QChar('0'))+
+                ":"+QString("%1").arg(QString::number(min), 2, QChar('0'));
+        return tmp;
     }
 }
