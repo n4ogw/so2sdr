@@ -209,6 +209,17 @@ void RadioDialog::updateRadio()
         settings.setValue(s_otrsp_device,lineEditOTRSPPort->text());
         otrspUpdate=true;
     }
+    bool microHamUpdate=false;
+    if (settings.value(s_microham_enabled,s_microham_enabled_def).toBool()!=checkBoxMicroHam->isChecked()) {
+        settings.setValue(s_microham_enabled,checkBoxMicroHam->isChecked());
+        if (settings.value(s_microham_enabled,s_microham_enabled_def).toBool()) {
+            microHamUpdate=true;
+        }
+    }
+    if (settings.value(s_microham_device,s_microham_device_def).toString()!=lineEditMicroHamPort->text()) {
+        settings.setValue(s_microham_device,lineEditMicroHamPort->text());
+        microHamUpdate=true;
+    }
     settings.sync();
     // in case parallel port is changed
     if (pportUpdate) {
@@ -217,6 +228,9 @@ void RadioDialog::updateRadio()
     // restart otrsp if needed
     if (otrspUpdate) {
         emit(setOTRSP());
+    }
+    if (microHamUpdate) {
+        emit(setMicroHam());
     }
     // this restarts the radio comms
     emit(startRadios());
@@ -272,6 +286,8 @@ void RadioDialog::updateFromSettings()
     checkBoxParallelPort->setChecked(settings.value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool());
     checkBoxOTRSP->setChecked(settings.value(s_otrsp_enabled,s_otrsp_enabled_def).toBool());
     lineEditOTRSPPort->setText(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
+    checkBoxMicroHam->setChecked(settings.value(s_microham_enabled,s_microham_enabled_def).toBool());
+    lineEditMicroHamPort->setText(settings.value(s_microham_device,s_microham_device_def).toString());
 }
 
 /*! called if dialog rejected */

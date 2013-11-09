@@ -484,6 +484,12 @@ const bool s_otrsp_parity_def=false;
 const QString s_otrsp_stopbits="otrsp/stopbits";
 const int s_otrsp_stopbits_def=1;
 
+const QString s_microham_enabled="microham/enable";
+const bool s_microham_enabled_def=false;
+
+const QString s_microham_device="microham/device";
+const QString s_microham_device_def="";
+
 const QString s_winkey_device="winkey/device";
 const QString s_winkey_device_def="";
 

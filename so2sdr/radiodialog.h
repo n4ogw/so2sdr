@@ -43,6 +43,7 @@ signals:
     void startRadios();
     void setParallelPort();
     void setOTRSP();
+    void setMicroHam();
 
 public slots:
     void rejectChanges();

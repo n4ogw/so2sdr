@@ -326,6 +326,12 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->openOTRSP();
     }
+    // microHam device
+    microham = new MicroHam(*settings);
+    connect(radios,SIGNAL(setMicroHam()),microham,SLOT(openMicroHam()));
+    if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
+        microham->openMicroHam();
+    }
 
     WPMLineEdit->setReadOnly(true);
     // set background of WPM speed edit box to grey
@@ -1833,7 +1839,7 @@ void So2sdr::timerEvent(QTimerEvent *event)
         // clock update; every 1000 mS
         TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
         // update rate display at beginning of minute
-        if (QDateTime::currentDateTimeUtc().time().second()==0) {
+        if (QDateTime::currentDateTimeUtc().time().second()==0 && contest) {
             updateRate();
         }
     } else if (event->timerId() == timerId[2]) {
@@ -2096,6 +2102,9 @@ void So2sdr::toggleStereo() {
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->toggleStereo(activeRadio);
     }
+    if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
+        microham->toggleStereo(activeRadio);
+    }
     switchAudio(activeRadio); //update indicators
 }
 
@@ -2110,6 +2119,9 @@ void So2sdr::switchAudio(int r)
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->switchAudio(r);
     }
+    if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
+        microham->switchAudio(r);
+    }
     if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
         bool stereo = false;
         if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
@@ -2117,6 +2129,9 @@ void So2sdr::switchAudio(int r)
         }
         if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
             stereo = otrsp->stereoActive();
+        }
+        if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
+            stereo = microham->stereoActive();
         }
         if (stereo) {
             RX1->setStyleSheet(greenLED);
@@ -2155,6 +2170,9 @@ void So2sdr::switchTransmit(int r, int CWspeed)
         }
         if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
             otrsp->switchTransmit(r);
+        }
+        if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
+            microham->switchTransmit(r);
         }
         if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
             if (r) {

@@ -56,6 +56,7 @@
 #include "contest_sweepstakes.h"
 #include "contest_wpx.h"
 #include "master.h"
+#include "microham.h"
 #include "otrsp.h"
 #include "qso.h"
 #include "ssbmessagedialog.h"
@@ -231,6 +232,7 @@ private:
     log                  *mylog;
     logDelegate          *logdel;
     Master               *master;
+    MicroHam             *microham;
     ModeTypes             modeTypeShown;
     NewDialog            *newContest;
     NoteDialog           *notes;
