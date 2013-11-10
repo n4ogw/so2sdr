@@ -51,6 +51,7 @@ Bandmap::Bandmap(QSettings& s,QWidget *parent, Qt::WindowFlags f) : QWidget(pare
 #endif
 
     connect(display, SIGNAL(GLBandmapMouseQSY(int, int)), this, SIGNAL(mouseQSY(int, int)));
+    connect(display, SIGNAL(mouseClick()),this,SIGNAL(mouseClick()));
     nrig        = 0;
     centerFreq  = 0;
     addOffset=0;
@@ -462,7 +463,6 @@ void Bandmap::mousePressEvent(QMouseEvent *event)
         }
     }
 }
-
 
 /*!
    returns next higher or lower detected signal

@@ -24,8 +24,8 @@
 ContestOptionsDialog::ContestOptionsDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
-    connect(this, SIGNAL(rejected()), this, SLOT(rejectChanges()));
-    connect(this, SIGNAL(accepted()), this, SLOT(updateOptions()));
+    connect(contest_dialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
+    connect(contest_dialog_buttons, SIGNAL(accepted()), this, SLOT(updateOptions()));
     sent[0]=lineEditExch1;
     sent[1]=lineEditExch2;
     sent[2]=lineEditExch3;
@@ -127,11 +127,13 @@ void ContestOptionsDialog::updateOptions()
             oldMin!=newMin || oldStartDate!=newStartDate || oldEndDate!=newEndDate) emit(updateOffTime());
 
     settings->sync();
-  }
+    accept();
+}
 
 /*! reject changes; cancel
  */
 void ContestOptionsDialog::rejectChanges()
 {
     setOptions();
+    reject();
 }

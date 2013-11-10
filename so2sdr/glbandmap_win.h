@@ -47,6 +47,7 @@ public slots:
     void plotSpectrum(unsigned char *, unsigned char);
  
 signals:
+    void mouseClick();
     void GLBandmapMouseQSY(int, int);
 
 protected:

@@ -355,8 +355,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     toggleStereo();
     switchTransmit(activeRadio);
 
-    lineEditCall[activeRadio]->setFocus();
-    grabWidget = lineEditCall[activeRadio];
+    callFocus[activeRadio]=true;
+    setEntryFocus();
     for (int i = 0; i < NRIG; i++) {
         lineEditExchange[i]->hide();
         lineEditCall[i]->setEnabled(false);
@@ -625,6 +625,7 @@ void So2sdr::regrab()
     if (grab) {
         grabLabel->show();
         grabWidget->setFocus();
+        grabWidget->activateWindow();
         grabWidget->grabKeyboard();
     }
 }
@@ -638,6 +639,7 @@ void So2sdr::setGrab(bool s)
         grabLabel->show();
         grabWidget->grabKeyboard();
         grabWidget->setFocus();
+        grabWidget->activateWindow();
     } else {
         grab = false;
         grabWidget->releaseKeyboard();
@@ -650,6 +652,31 @@ void So2sdr::ungrab()
     if (grab) {
         grabWidget->releaseKeyboard();
         grabLabel->hide();
+    }
+}
+
+/*!
+ * \brief So2sdr::setEntryFocus
+ * Sets focus and grab status to current line edit
+ */
+void So2sdr::setEntryFocus()
+{
+    if (callFocus[activeRadio]) {
+        lineEditCall[activeRadio]->setFocus();
+        if (grab) {
+            lineEditCall[activeRadio]->grabKeyboard();
+            lineEditCall[activeRadio]->activateWindow();
+            raise();
+        }
+        grabWidget = lineEditCall[activeRadio];
+    } else {
+        lineEditExchange[activeRadio]->setFocus();
+        if (grab) {
+            lineEditExchange[activeRadio]->grabKeyboard();
+            lineEditExchange[activeRadio]->activateWindow();
+            raise();
+        }
+        grabWidget = lineEditExchange[activeRadio];
     }
 }
 
@@ -788,15 +815,11 @@ void So2sdr::enableUI()
     telnetCheckBox->setEnabled(true);
     windowBorderCheckBox->setEnabled(true);
 
-    // dupesheetCheckBox[1]->setEnabled(true); // @todo currently support only 1 dupesheet
     if (sdr->checkBox->isChecked()) bandmapCheckBox[0]->setEnabled(true);
     if (sdr->checkBox_2->isChecked()) bandmapCheckBox[1]->setEnabled(true);
     uiEnabled = true;
-    lineEditCall[activeRadio]->setFocus();
-    if (grab) {
-        lineEditCall[activeRadio]->grabKeyboard();
-    }
-    grabWidget = lineEditCall[activeRadio];
+    callFocus[activeRadio]=true;
+    setEntryFocus();
     connect(sdr->checkBox, SIGNAL(toggled(bool)), bandmapCheckBox[0], SLOT(setEnabled(bool)));
     connect(sdr->checkBox_2, SIGNAL(toggled(bool)), bandmapCheckBox[1], SLOT(setEnabled(bool)));
 }
@@ -876,19 +899,7 @@ void So2sdr::updateOptions()
     }
     updateBreakdown();
     updateMults(activeRadio);
-    if (callFocus[activeRadio]) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditCall[activeRadio];
-    } else {
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditExchange[activeRadio];
-    }
+    setEntryFocus();
     startMaster();
 }
 
@@ -1093,11 +1104,8 @@ void So2sdr::selectContest(QByteArray name)
             lineEditCall[i]->setEnabled(true);
             lineEditExchange[i]->setEnabled(true);
         }
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditCall[activeRadio];
+        callFocus[activeRadio]=true;
+        setEntryFocus();
     }
 }
 
@@ -1961,6 +1969,7 @@ void So2sdr::autoSendExch() {
                 lineEditExchange[activeRadio]->setFocus();
                 if (grab) {
                     lineEditExchange[activeRadio]->grabKeyboard();
+                    lineEditExchange[activeRadio]->activateWindow();
                 }
                 grabWidget             = lineEditExchange[activeRadio];
                 callFocus[activeRadio] = false;
@@ -2211,21 +2220,12 @@ void So2sdr::switchRadios(bool switchcw)
 #endif
 
     }
+    setEntryFocus();
     if (callFocus[activeRadio]) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditCall[activeRadio];
         if (qso[activeRadio]->call.isEmpty()) {
             lineEditCall[activeRadio]->setCursorPosition(0);
         }
     } else {
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditExchange[activeRadio];
         if (qso[activeRadio]->exch.isEmpty()) {
             lineEditExchange[activeRadio]->setCursorPosition(0);
         }
@@ -2655,6 +2655,7 @@ bool So2sdr::enterFreqOrMode()
 
     if (grab) {
         lineEditCall[activeRadio]->grabKeyboard();
+        lineEditCall[activeRadio]->activateWindow();
     }
 
     grabWidget = lineEditCall[activeRadio];
@@ -2973,12 +2974,14 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
         lineEditCall[nrig]->setFocus();
         if (grab) {
             lineEditCall[activeRadio]->grabKeyboard();
+            lineEditCall[activeRadio]->activateWindow();
         }
         grabWidget = lineEditCall[activeRadio];
     } else {
         lineEditExchange[nrig]->setFocus();
         if (grab) {
             lineEditExchange[activeRadio]->grabKeyboard();
+            lineEditExchange[activeRadio]->activateWindow();
         }
         grabWidget = lineEditExchange[activeRadio];
     }

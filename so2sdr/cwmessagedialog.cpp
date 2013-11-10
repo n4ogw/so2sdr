@@ -169,6 +169,7 @@ void CWMessageDialog::rejectChanges()
     sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
     dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
     quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
+    reject();
 }
 
 CWMessageDialog::~CWMessageDialog()
@@ -220,4 +221,5 @@ void CWMessageDialog::updateCWMsg()
     settings->setValue(c_qqsl_msg[m],quick_qsl_edit->text());
     settings->setValue(c_dupe_msg[m],dupe_msg_edit->text());
     settings->sync();
+    accept();
 }

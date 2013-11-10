@@ -122,6 +122,7 @@ void So2sdr::showBandmap(int nr, int checkboxState)
         bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
         connect(bandmap[nr], SIGNAL(done()), bandmapCheckBox[nr], SLOT(toggle()));
         connect(bandmap[nr], SIGNAL(mouseQSY(int, int)), this, SLOT(mouseQSYevent(int, int)));
+        connect(bandmap[nr],SIGNAL(mouseClick()),this,SLOT(setEntryFocus()));
         bandmap[nr]->setFreq(rigFreq[nr], band[nr], spotList[band[nr]]);
         if (bandmap[nr]->start()) {
             bandmap[nr]->show();
@@ -135,4 +136,5 @@ void So2sdr::showBandmap(int nr, int checkboxState)
 
     // return focus
     regrab();
+    setEntryFocus();
 }

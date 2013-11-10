@@ -122,6 +122,7 @@ void So2sdr::showTelnet(int checkboxState)
         connect(telnet, SIGNAL(done()), telnetCheckBox, SLOT(toggle()));
         connect(telnet, SIGNAL(dxSpot(QByteArray, int)), this, SLOT(addSpot(QByteArray, int)));
         telnetOn = true;
+        setEntryFocus();
     }
 }
 

@@ -67,6 +67,7 @@ signals:
     void deleteCallFreq(int, int);
     void done();
     void findCQMessage(QString);
+    void mouseClick();
     void mouseQSY(int, int);
     void qsy(int, int);
     void startReading();

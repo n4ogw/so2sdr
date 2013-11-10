@@ -75,6 +75,7 @@ void GLBandmap::mousePressEvent(QMouseEvent *event)
 
         // compute QSY as change in frequency
         int delta_f = (int) (1000.0 * SAMPLE_FREQ / (double) sizes.spec_length / scale* (vfoPos - y));
+        emit(mouseClick());
         emit(GLBandmapMouseQSY(nrig, delta_f));
     }
 }

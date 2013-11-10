@@ -21,8 +21,6 @@
 #include <QSqlTableModel>
 #include "so2sdr.h"
 
-
-
 /*! event filter handling key presses. This gets installed in
    -main window
    -both call entry windows
@@ -36,12 +34,11 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
         return QObject::eventFilter(o,e);
     }
 
-    // block going-out-of-focus event, if event is from window losing active focus. This is to
-    // prevent losing the cursor in the call and exchange line edits. Not sure yet if there are
-    // unintended consequences.
-    if (e->type()==QEvent::FocusOut) {
+    // out-of-focus event: refocus line edits
+    if (grab && e->type()==QEvent::FocusOut) {
         QFocusEvent* ev = static_cast<QFocusEvent*>(e);
-        if (ev->reason()==Qt::ActiveWindowFocusReason) {
+        if (ev->reason()==Qt::MouseFocusReason || ev->reason()==Qt::ActiveWindowFocusReason) {
+            setEntryFocus();
             return true;
         }
     }
@@ -54,27 +51,27 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     case QEvent::MouseButtonPress:
 
         // if call line edit clicked in, switch to that radio
-        if (lineEditCall[0]->underMouse() && activeRadio == 1) {
-            switchRadios(false);
-            return(true);
+        // otherwise focus that entry line
+        for (int i=0;i<NRIG;i++) {
+            if (lineEditCall[i]->underMouse()) {
+                if (activeRadio!=i) {
+                    switchRadios(false);
+                }
+                callFocus[activeRadio]=true;
+                setEntryFocus();
+                return true;
+            }
+            if (lineEditExchange[i]->underMouse()) {
+                if (activeRadio!=i) {
+                    switchRadios(false);
+                }
+                callFocus[activeRadio]=false;
+                setEntryFocus();
+                return true;
+            }
         }
-        if (lineEditCall[1]->underMouse() && activeRadio == 0) {
-            switchRadios(false);
-            return(true);
-        }
-
-        // if exchange line edit clicked, switch to that radio
-        // and focus exchange
-        if (lineEditExchange[0]->underMouse() && activeRadio == 1) {
-            switchRadios(false);
-            lineEditExchange[0]->setFocus();
-            return(true);
-        }
-        if (lineEditExchange[1]->underMouse() && activeRadio == 0) {
-            switchRadios(false);
-            lineEditExchange[1]->setFocus();
-            return(true);
-        }
+        // catch other mouse presses and reset focus to line edits
+        setEntryFocus();
         break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
@@ -153,6 +150,12 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (help) {
                 if (help->isActiveWindow()) {
                     help->reject();
+                    return(r);
+                }
+            }
+            if (progsettings) {
+                if (progsettings->isActiveWindow()) {
+                    progsettings->rejectChanges();
                     return(r);
                 }
             }
@@ -583,21 +586,8 @@ void So2sdr::up()
     // if in CQ mode and only call window showing
     if (cqMode[activeRadio] && !excMode[activeRadio]) return;
 
-    if (callFocus[activeRadio]) {
-        callFocus[activeRadio] = false;
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-            grabWidget = lineEditExchange[activeRadio];
-        }
-    } else {
-        callFocus[activeRadio] = true;
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-            grabWidget = lineEditCall[activeRadio];
-        }
-    }
+    callFocus[activeRadio]= !callFocus[activeRadio];
+    setEntryFocus();
 }
 
 /*! control+up : tune to next higher signal on bandmap
@@ -634,22 +624,8 @@ void So2sdr::down()
             return;
         }
     }
-
-    if (callFocus[activeRadio]) {
-        callFocus[activeRadio] = false;
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditExchange[activeRadio];
-    }   else    {
-        callFocus[activeRadio] = true;
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditCall[activeRadio];
-    }
+    callFocus[activeRadio]= !callFocus[activeRadio];
+    setEntryFocus();
 }
 
 /*! control+down : tune to next lower signal on bandmap
@@ -685,26 +661,17 @@ void So2sdr::tab()
         // redisplay band/mult info for this station
         updateWorkedDisplay(activeRadio,qso[activeRadio]->worked);
         updateWorkedMult(activeRadio);
+        callFocus[activeRadio]=true;
     } else {
-        if (callFocus[activeRadio]) {
-            callFocus[activeRadio] = false;
-            lineEditExchange[activeRadio]->setFocus();
-            if (grab) {
-                lineEditExchange[activeRadio]->grabKeyboard();
-            }
-            grabWidget = lineEditExchange[activeRadio];
-            if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
-                lineEditExchange[activeRadio]->clear();
-            } else {
-                lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
-            }
+        callFocus[activeRadio]= !callFocus[activeRadio];
+    }
+    setEntryFocus();
+
+    if (!callFocus[activeRadio]) {
+        if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
+            lineEditExchange[activeRadio]->clear();
         } else {
-            callFocus[activeRadio] = true;
-            lineEditCall[activeRadio]->setFocus();
-            if (grab) {
-                lineEditCall[activeRadio]->grabKeyboard();
-            }
-            grabWidget = lineEditCall[activeRadio];
+            lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
         }
     }
 }
@@ -773,12 +740,8 @@ void So2sdr::backSlash()
         cqQsoInProgress[activeRadio] = false;
 
         // focus call field
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditCall[activeRadio];
         callFocus[activeRadio] = true;
+        setEntryFocus();
 
         // clear exchange field
         lineEditExchange[activeRadio]->clear();
@@ -840,12 +803,8 @@ void So2sdr::spaceSprint()
     // if already in SP mode and in call field, move to exch field, otherwise, no nothing
     if (!cqMode[activeRadio]) {
         if (callFocus[activeRadio] && !lineEditCall[activeRadio]->text().isEmpty()) {
-            lineEditExchange[activeRadio]->setFocus();
-            if (grab) {
-                lineEditExchange[activeRadio]->grabKeyboard();
-            }
-            grabWidget             = lineEditExchange[activeRadio];
             callFocus[activeRadio] = false;
+            setEntryFocus();
             excMode[activeRadio]   = true;
             if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
                 lineEditExchange[activeRadio]->clear();
@@ -866,12 +825,7 @@ void So2sdr::spaceSprint()
         }
         spMode(activeRadio);
         lineEditCall[activeRadio]->setModified(false);
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditCall[activeRadio];
-
+        setEntryFocus();
         if (lineEditCall[activeRadio]->text().length() > 3) {
 
 // leaves exchange empty, even non-dupes.  prefill.clear in log.cpp
@@ -882,12 +836,8 @@ void So2sdr::spaceSprint()
             }
 */
             if (!qso[activeRadio]->dupe) {
-                lineEditExchange[activeRadio]->setFocus();
                 callFocus[activeRadio] = false;
-                if (grab) {
-                    lineEditExchange[activeRadio]->grabKeyboard();
-                }
-                grabWidget = lineEditExchange[activeRadio];
+                setEntryFocus();
                 expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1,false);
                 callSent[activeRadio] = true;
 
@@ -942,12 +892,8 @@ void So2sdr::spaceAltD()
 {
     switchRadios();
     spMode(activeRadio);
-    lineEditExchange[activeRadio]->setFocus();
     callFocus[activeRadio] = false;
-    if (grab) {
-        lineEditExchange[activeRadio]->grabKeyboard();
-    }
-    grabWidget = lineEditExchange[activeRadio];
+    setEntryFocus();
     expandMacro(settings->value(s_call,s_call_def).toByteArray(),-1,false);
     callSent[activeRadio] = true;
     prefillExch(activeRadio);
@@ -1270,12 +1216,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // focus exchange
     if ((enterState[i1][i2][i3][i4] & 4)) { // && !qso[activeRadio]->dupe) {
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditExchange[activeRadio];
         callFocus[activeRadio] = false;
+        setEntryFocus();
         if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
             lineEditExchange[activeRadio]->clear();
         } else {
@@ -1352,12 +1294,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // focus call field
     if (enterState[i1][i2][i3][i4] & 32 || lineEditCall[activeRadio]->text().contains("?")) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditCall[activeRadio];
         callFocus[activeRadio] = true;
+        setEntryFocus();
     }
 
     // clear exch field
@@ -1715,12 +1653,8 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
 
     // focus exchange
     if (enterState[i1][i2][i3][i4] & 4) {
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditExchange[activeRadio];
         callFocus[activeRadio] = false;
+        setEntryFocus();
         if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
             lineEditExchange[activeRadio]->clear();
         } else {
@@ -1731,12 +1665,8 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
 
     // focus call field
     if (enterState[i1][i2][i3][i4] & 32 || lineEditCall[activeRadio]->text().contains("?")) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditCall[activeRadio];
         callFocus[activeRadio] = true;
+        setEntryFocus();
         if (qso[activeRadio]->call.isEmpty()) {
             clearWorked(activeRadio);
         } else {
@@ -2044,11 +1974,7 @@ void So2sdr::esc()
     // ESC needs to return focus to call field if it
     // screwed up by the mouse
     if (callFocus[activeRadio] && !lineEditCall[activeRadio]->hasFocus()) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget = lineEditCall[activeRadio];
+        setEntryFocus();
     }
 
     QByteArray call = lineEditCall[activeRadio]->text().toAscii().toUpper();
@@ -2126,22 +2052,14 @@ void So2sdr::esc()
 
     // return focus to call
     if (x & 8) {
-        lineEditCall[activeRadio]->setFocus();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditCall[activeRadio];
         callFocus[activeRadio] = true;
+        setEntryFocus();
     }
 
     // return focus to exch
     if (x & 16) {
-        lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-        }
-        grabWidget             = lineEditExchange[activeRadio];
         callFocus[activeRadio] = false;
+        setEntryFocus();
     }
 
     // exit exchange mode

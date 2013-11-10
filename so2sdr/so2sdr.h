@@ -105,6 +105,7 @@ public slots:
     void removeSpotFreq(int f, int band);
     void rescore();
     void setBandmapTxStatus(bool, int);
+    void setEntryFocus();
     void settingsUpdate();
     void showMessage(QString);
     void stationUpdate();

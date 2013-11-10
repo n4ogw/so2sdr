@@ -145,6 +145,7 @@ void So2sdr::showDupesheet(int nr, int checkboxState)
         populateDupesheet();
         dupesheet[nr]->show();
         connect(dupesheet[nr], SIGNAL(destroyed()), dupesheetCheckBox[nr], SLOT(toggle()));
+        setEntryFocus();
     }
 }
 
