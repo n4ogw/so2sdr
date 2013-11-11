@@ -347,7 +347,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Spot Timeout (minutes)</string>
+        <string>Spot Timeout (seconds)</string>
        </property>
       </widget>
      </item>
@@ -359,23 +359,7 @@
         </font>
        </property>
        <property name="toolTip">
-        <string>Calls are removed from the bandmap after this amount of time</string>
-       </property>
-      </widget>
-     </item>
-     <item row="20" column="0">
-      <widget class="QCheckBox" name="SpotCallsCheckBox">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>Put callsigns on bandmap and highlight signals. 
-Typically turned off only during the Sprint.</string>
-       </property>
-       <property name="text">
-        <string>Spot calls</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calls are removed from the bandmap after this amount of time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>

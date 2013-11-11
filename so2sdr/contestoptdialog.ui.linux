@@ -324,7 +324,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QDialogButtonBox" name="contest_dialog_buttons">
      <property name="font">
       <font>
        <pointsize>10</pointsize>
@@ -343,7 +343,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>contest_dialog_buttons</sender>
    <signal>accepted()</signal>
    <receiver>ContestOptDialog</receiver>
    <slot>accept()</slot>
@@ -359,7 +359,7 @@ share/so2sdr in linux or in program directory in Windows.</string>
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>contest_dialog_buttons</sender>
    <signal>rejected()</signal>
    <receiver>ContestOptDialog</receiver>
    <slot>reject()</slot>
