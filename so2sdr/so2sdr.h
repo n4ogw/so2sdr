@@ -180,6 +180,8 @@ private:
     bool                 activeR2CQ;
     bool                 autoCQMode;
     bool                 autoSend;
+    bool                 autoSendPause;
+    bool                 autoSendTrigger;
     bool                 bandInvert[NRIG][N_BANDS];
     bool                 bandmapOn[NRIG];
     bool                 callFocus[NRIG];

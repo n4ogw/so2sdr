@@ -34,6 +34,9 @@ SettingsDialog::SettingsDialog(QSettings &s, QWidget *parent)  : QDialog(parent)
     CQRepeatLineEdit->setText(settings.value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
     AutoSendLineEdit->setText(settings.value(s_settings_autosend,s_settings_autosend_def).toString());
     DuelingCQLineEdit->setText(settings.value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toString());
+    AutoSendComboBox->insertItem(0, "Semi");
+    AutoSendComboBox->insertItem(1, "Auto");
+    AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
     connect(settings_dialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(settings_dialog_buttons, SIGNAL(accepted()), this, SLOT(updateSettings()));
 }
@@ -50,6 +53,7 @@ void SettingsDialog::updateSettings()
     settings.setValue(s_settings_autosend,AutoSendLineEdit->text().toInt());
     settings.setValue(s_settings_cqrepeat,CQRepeatLineEdit->text().toDouble());
     settings.setValue(s_settings_duelingcqdelay,DuelingCQLineEdit->text().toDouble());
+    settings.setValue(s_settings_autosend_mode,AutoSendComboBox->currentIndex());
     settings.sync();
     emit(settingsUpdate());
     accept();
@@ -63,5 +67,6 @@ void SettingsDialog::rejectChanges()
     AutoSendLineEdit->setText(settings.value(s_settings_autosend,s_settings_autosend_def).toString());
     CQRepeatLineEdit->setText(settings.value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
     DuelingCQLineEdit->setText(settings.value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toString());
+    AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
     reject();
 }

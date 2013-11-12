@@ -45,6 +45,7 @@ public:
     void toggleStereo(int nr);
     void switchTransmit(int nr);
     bool stereoActive() const;
+    void sendCommand(QByteArray command);
 
 public slots:
     void openMicroHam();

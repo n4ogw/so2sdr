@@ -73,38 +73,48 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_3">
        <property name="toolTip">
         <string>Automatically start CW when this many characters are entered in the callsign (Set to 0 to disable)</string>
        </property>
        <property name="text">
-        <string>Auto Send Character Count</string>
+        <string>Auto Send &quot;Auto&quot; Character Count</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLineEdit" name="AutoSendLineEdit"/>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Auto CQ Repeat Time (sec)</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QLineEdit" name="CQRepeatLineEdit"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Dueling CQ Delay (sec)</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="DuelingCQLineEdit"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Auto Send Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="AutoSendComboBox"/>
      </item>
     </layout>
    </item>

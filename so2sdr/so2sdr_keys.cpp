@@ -456,6 +456,12 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             }
             r = true;
             break;
+        case Qt::Key_Backspace:
+            if (lineEditCall[activeRadio]->text().isEmpty()) {
+                autoSendTrigger = false;
+                autoSendPause = false;
+            }
+            break;
         default:
             break;
         }
@@ -758,6 +764,10 @@ void So2sdr::backSlash()
         qso[activeRadio]->prefill.clear();
         origCallEntered[activeRadio].clear();
         clearWorked(activeRadio);
+        if (autoSend) {
+            autoSendPause = false;
+            autoSendTrigger = false;
+        }
 
         // exit echange mode
         excMode[activeRadio] = false;
@@ -1182,24 +1192,28 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             keyInProgress=false;
             return; // prevent further processing
         } else {
-            // check to see if this qso number already taken
-            if (nrSent == nrReserved[activeRadio ^ 1]) {
-                nrReserved[activeRadio] = nrSent + 1;
+            if (autoSend && !autoSendPause && settings->value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt() == 0) { // semi-auto
+                autoSendTrigger = true;
             } else {
-                nrReserved[activeRadio] = nrSent;
-            }
-            if (mod != Qt::ShiftModifier) {
-                if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
-                    expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+                // check to see if this qso number already taken
+                if (nrSent == nrReserved[activeRadio ^ 1]) {
+                    nrReserved[activeRadio] = nrSent + 1;
                 } else {
-                    expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                    nrReserved[activeRadio] = nrSent;
                 }
+                if (mod != Qt::ShiftModifier) {
+                    if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
+                        expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false);
+                    } else {
+                        expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
+                    }
+                }
+                exchangeSent[activeRadio]    = true;
+                callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
+                origCallEntered[activeRadio] = qso[activeRadio]->call;
+                updateNrDisplay();
+                cqQsoInProgress[activeRadio] = true;
             }
-            exchangeSent[activeRadio]    = true;
-            callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
-            origCallEntered[activeRadio] = qso[activeRadio]->call;
-            updateNrDisplay();
-            cqQsoInProgress[activeRadio] = true;
         }
     }
 
@@ -1215,7 +1229,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     }
 
     // focus exchange
-    if ((enterState[i1][i2][i3][i4] & 4)) { // && !qso[activeRadio]->dupe) {
+    if ((enterState[i1][i2][i3][i4] & 4) && (!autoSendTrigger || autoSendPause)) {
         callFocus[activeRadio] = false;
         setEntryFocus();
         if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
@@ -1351,6 +1365,10 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         clearWorked(activeRadio);
         statusBarDupe         = false;
         callSent[activeRadio] = false;
+        if (autoSend) {
+            autoSendPause = false;
+            autoSendTrigger = false;
+        }
     }
 
     // exit exc mode
@@ -1951,6 +1969,9 @@ void So2sdr::esc()
                 autoCQActivate(false);
             }
             if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
+            if (autoSend) {
+                autoSendPause = true;
+            }
             return;
         }
         break;
@@ -2031,6 +2052,10 @@ void So2sdr::esc()
         MasterTextEdit->clear();
         statusBarDupe         = false;
         callSent[activeRadio] = false;
+        if (autoSend) {
+            autoSendPause = false;
+            autoSendTrigger = false;
+        }
     }
 
     // clear exchange field

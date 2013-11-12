@@ -42,6 +42,12 @@ bool OTRSP::OTRSPIsOpen() const
     return(OTRSPOpen);
 }
 
+void OTRSP::sendCommand(QByteArray command)
+{
+    if (!OTRSPOpen) return;
+    OTRSPPort->write(command, command.length());
+}
+
 /*!
  * \brief OTRSP::switchRadios
  * switches both RX and TX focus to other radio

@@ -33,7 +33,7 @@
 //define DVK_ENABLE
 
 // ///////// version ///////////////
-const QByteArray Version = "1.4.0";
+const QByteArray Version = "1.4.1";
 
 #ifdef Q_OS_WIN
 // for some reason, can't access hamlib_version variable in MSVC
@@ -661,6 +661,9 @@ const float s_settings_cqrepeat_def=3.0;
 
 const QString s_settings_duelingcqdelay="main/duelingcqdelay";
 const float s_settings_duelingcqdelay_def=0.0;
+
+const QString s_settings_autosend_mode="main/autosendmode";
+const int s_settings_autosend_mode_def=0;
 
 const QString s_settings_autosend="main/autosend";
 const int s_settings_autosend_def=0;

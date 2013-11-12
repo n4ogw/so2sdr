@@ -1877,12 +1877,14 @@ void So2sdr::autoCQActivate (bool state) {
 }
 
 void So2sdr::autoSendActivate (bool state) {
-    if (settings->value(s_settings_autosend,s_settings_autosend_def).toInt() > 0) {
-        autoSend = state;
-    }
+    autoSend = state;
     if (autoSend) {
-        autoSendStatus->setText("<font color=#006699>AutoSend("
-            + QString::number(settings->value(s_settings_autosend,s_settings_autosend_def).toInt()) + ")</font>");
+        if (settings->value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt() == 0) { // semi-auto
+            autoSendStatus->setText("<font color=#006699>AutoSend(ESM)</font>");
+        } else {
+            autoSendStatus->setText("<font color=#006699>AutoSend("
+                + QString::number(settings->value(s_settings_autosend,s_settings_autosend_def).toInt()) + ")</font>");
+        }
     } else {
         autoSendStatus->clear();
     }
@@ -1929,60 +1931,73 @@ void So2sdr::duelingCQActivate (bool state) {
  */
 void So2sdr::autoSendExch() {
 
-    if (lineEditCall[activeRadio]->text().length() >= settings->value(s_settings_autosend,s_settings_autosend_def).toInt()
-            && !exchangeSent[activeRadio] && cqMode[activeRadio] && !activeR2CQ && !duelingCQMode && !toggleMode
-            && !(altDActive && altDActiveRadio == activeRadio) && activeTxRadio == activeRadio) {
-        int comp = QString::compare(tmpCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
-        if ( comp < 0) {
-            int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
-            tmpCall = lineEditCall[activeRadio]->text();
-            QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
-            send(callDiff.toAscii(), false);
-        } else if (comp > 0) {
-            winkey->cancelcw();
-            send(QByteArray("?"));
-            tmpCall = "";
-        } else { // calls equal
-            if (!winkey->isSending()) {
-                // duplicated from pieces of So2sdr::enter, {CALL_ENTERED} removed in Exch message macro
-                if (nrSent == nrReserved[activeRadio ^ 1]) {
-                    nrReserved[activeRadio] = nrSent + 1;
-                } else {
-                    nrReserved[activeRadio] = nrSent;
-                }
-                int m=(int)cat->modeType(activeTxRadio);
-                if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
-                    expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false,false);
-                } else {
-                    QByteArray tmpExch = csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray();
-                    tmpExch.replace("{CALL_ENTERED}", "");
-                    expandMacro(tmpExch,-1,false,false);
-                }
-                exchangeSent[activeRadio]    = true;
-                callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
-                origCallEntered[activeRadio] = qso[activeRadio]->call;
-                updateNrDisplay();
-                cqQsoInProgress[activeRadio] = true;
-                excMode[activeRadio] = true;
-                lineEditExchange[activeRadio]->show();
-                prefillExch(activeRadio);
-                lineEditExchange[activeRadio]->setFocus();
-                if (grab) {
-                    lineEditExchange[activeRadio]->grabKeyboard();
-                    lineEditExchange[activeRadio]->activateWindow();
-                }
-                grabWidget             = lineEditExchange[activeRadio];
-                callFocus[activeRadio] = false;
-                if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
-                    lineEditExchange[activeRadio]->clear();
-                } else {
-                    lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
-                }
+    if (autoSendTrigger && !autoSendPause) {
+        if (!exchangeSent[activeRadio] && cqMode[activeRadio] && !activeR2CQ && !duelingCQMode && !toggleMode
+                && !(altDActive && altDActiveRadio == activeRadio) && activeTxRadio == activeRadio) {
+            int comp = QString::compare(tmpCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
+            if ( comp < 0) {
+                int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
+                tmpCall = lineEditCall[activeRadio]->text();
+                QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
+                send(callDiff.toAscii(), false);
+            } else if (comp > 0) {
+                winkey->cancelcw();
+                //send(QByteArray("?"));
+                autoSendPause = true;
                 tmpCall.clear();
+            } else { // calls equal
+                if (!winkey->isSending()) { // wait until complete call is sent, then start exchange
+                    autoSendTrigger = false;
+                    autoSendPause = false;
+                    // duplicated from pieces of So2sdr::enter, {CALL_ENTERED} removed in Exch message macro
+                    if (nrSent == nrReserved[activeRadio ^ 1]) {
+                        nrReserved[activeRadio] = nrSent + 1;
+                    } else {
+                        nrReserved[activeRadio] = nrSent;
+                    }
+                    int m=(int)cat->modeType(activeTxRadio);
+                    if (qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
+                        expandMacro(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray(),-1,false,false);
+                    } else {
+                        QByteArray tmpExch = csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray();
+                        tmpExch.replace("{CALL_ENTERED}", "");
+                        expandMacro(tmpExch,-1,false,false);
+                    }
+                    exchangeSent[activeRadio]    = true;
+                    callSent[activeRadio]        = true; // set this true as well in case mode switched to S&P
+                    origCallEntered[activeRadio] = qso[activeRadio]->call;
+                    updateNrDisplay();
+                    cqQsoInProgress[activeRadio] = true;
+                    excMode[activeRadio] = true;
+                    lineEditExchange[activeRadio]->show();
+                    prefillExch(activeRadio);
+                    lineEditExchange[activeRadio]->setFocus();
+                    if (grab) {
+                        lineEditExchange[activeRadio]->grabKeyboard();
+                        lineEditExchange[activeRadio]->activateWindow();
+                    }
+                    grabWidget             = lineEditExchange[activeRadio];
+                    callFocus[activeRadio] = false;
+                    if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
+                        lineEditExchange[activeRadio]->clear();
+                    } else {
+                        lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
+                    }
+                    tmpCall.clear();
+                }
             }
+        } else {
+            tmpCall.clear();
         }
+
     } else {
-        tmpCall.clear();
+        if (settings->value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt() == 1
+                && lineEditCall[activeRadio]->text().length() >= settings->value(s_settings_autosend,s_settings_autosend_def).toInt()
+                && !autoSendPause && !lineEditCall[activeRadio]->text().contains("?")
+           )
+        {
+            autoSendTrigger = true;
+        }
     }
 }
 
@@ -3090,6 +3105,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
     int        tmp_wpm = wpm[activeTxRadio];
     QByteArray out     = "";
     QByteArray txt = "";
+    QByteArray command = "";
 
     // will not overwrite a dupe message that is present
     if (!statusBarDupe) So2sdrStatusBar->clearMessage();
@@ -3119,8 +3135,10 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                                        "BEST_CQ_R2",
                                        "CANCEL",
                                        "AUDIO",
-                                       "SWITCH_RADIOS"};
-    const int        n_token_names = 27;
+                                       "SWITCH_RADIOS",
+                                       "MCP"
+                                       "OTRSP"};
+    const int        n_token_names = 29;
 
     /*!
        cw/ssb message macros
@@ -3155,6 +3173,8 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
        - {CANCEL} cancel a winkey speed change
        - {AUDIO} message contains DVK audio
        - {SWITCH_RADIOS} same as alt-R
+       - {MCP}{/MCP} Microham Control Protocol commands
+       - {OTRSP}{/OTRSP} OTRSP Control Protocol commands
     */
     bool switchradio=true;
     bool first=true;
@@ -3317,6 +3337,18 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 26: // switch radios
                         switchRadios();
+                        break;
+                    case 27: // MCP
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        command.append("\r");
+                        microham->sendCommand(command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        break;
+                    case 28: // OTRSP
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        command.append("\r");
+                        otrsp->sendCommand(command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     }
                     break;
@@ -4071,6 +4103,8 @@ void So2sdr::initVariables()
     duelingCQMode = false;
     duelingCQWait = false;
     autoSend = false;
+    autoSendPause = false;
+    autoSendTrigger = false;
     sendLongCQ = true;
     tmpCall.clear();
     toggleFxKey = -1;

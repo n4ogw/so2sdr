@@ -47,6 +47,12 @@ bool MicroHam::MicroHamIsOpen() const
     return(MicroHamOpen);
 }
 
+void MicroHam::sendCommand(QByteArray command)
+{
+    if (!MicroHamOpen) return;
+    MicroHamPort->write(command, command.length());
+}
+
 void MicroHam::switchAudio(int nr)
 {
     if (!MicroHamOpen || nr<0 || nr>1) return;
