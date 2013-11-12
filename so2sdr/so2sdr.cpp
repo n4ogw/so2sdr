@@ -2198,20 +2198,20 @@ void So2sdr::switchTransmit(int r, int CWspeed)
         if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
             microham->switchTransmit(r);
         }
-        if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
-            if (r) {
-                TX1->setStyleSheet(clearLED);
-                TX2->setStyleSheet(redLED);
-            } else {
-                TX1->setStyleSheet(redLED);
-                TX2->setStyleSheet(clearLED);
-            }
-        }    else {
+    }
+    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
+        if (r) {
             TX1->setStyleSheet(clearLED);
+            TX2->setStyleSheet(redLED);
+        } else {
+            TX1->setStyleSheet(redLED);
             TX2->setStyleSheet(clearLED);
         }
-        activeTxRadio = r;
+    }    else {
+        TX1->setStyleSheet(clearLED);
+        TX2->setStyleSheet(clearLED);
     }
+    activeTxRadio = r;
 }
 
 /*!
@@ -3136,7 +3136,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                                        "CANCEL",
                                        "AUDIO",
                                        "SWITCH_RADIOS",
-                                       "MCP"
+                                       "MCP",
                                        "OTRSP"};
     const int        n_token_names = 29;
 
