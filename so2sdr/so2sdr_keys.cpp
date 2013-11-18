@@ -708,7 +708,7 @@ void So2sdr::backSlash()
             nqso[band[activeRadio]]++;
 
         updateBreakdown();
-        updateRate();
+        updateOffTime();
 
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
@@ -1160,6 +1160,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             cqMode[activeRadio]       = true;
             excMode[activeRadio]      = false;
             exchangeSent[activeRadio] = false;
+            autoSendPause = true;
         }
     }
 
@@ -1266,7 +1267,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             nqso[band[activeRadio]]++;
         }
         updateBreakdown();
-        updateRate();
+        updateOffTime();
         qso[activeRadio]->dupe = true;
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
@@ -1771,7 +1772,7 @@ expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toBy
             nqso[band[activeRadio ^ 1]]++;
         }
         updateBreakdown();
-        updateRate();
+        updateOffTime();
         qso[activeRadio ^ 1]->dupe = true;
         if (!cqMode[activeRadio ^ 1]) {
             // add to bandmap if in S&P mode
