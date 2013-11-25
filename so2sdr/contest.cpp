@@ -758,13 +758,14 @@ void Contest::determineMultType(Qso *qso)
         case ITUZone:
 
             // if exchange not known yet, assume call has a zone
-            if (qso->mult_name == "") {;
-                                       qso->isamult[ii] = true;
+            if (qso->mult_name == "") {
+                qso->isamult[ii] = true;
 
-                                       // fill in zone if known already from call
-                                       // subtract 1 since mult list indexed from 0
-                                       if (qso->zone) qso->mult[ii] = qso->zone - 1;
-                                       break; }
+                // fill in zone if known already from call
+                // subtract 1 since mult list indexed from 0
+                if (qso->zone) qso->mult[ii] = qso->zone - 1;
+                break;
+            }
             ok = false;
             i  = qso->mult_name.toInt(&ok, 10);
             if (ok) {

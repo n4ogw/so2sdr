@@ -128,9 +128,6 @@ bool CQWW::validateExchange(Qso *qso)
     if (!separateExchange(qso)) return(false);
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
-    // get the exchange
-    determineMultType(qso);
-
     if (qso->isMM) {
         qso->mult[0]    = -1;
         qso->isamult[0] = false;
@@ -146,6 +143,9 @@ bool CQWW::validateExchange(Qso *qso)
         finalExch[1] = exchElement[0];
         ok           = true;
     }
+    qso->mult_name = finalExch[1];
+    determineMultType(qso);
+
     copyFinalExch(ok, qso);
     return(ok);
 }
