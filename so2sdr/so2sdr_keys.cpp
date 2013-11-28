@@ -738,6 +738,7 @@ void So2sdr::backSlash()
         labelLPBearing[activeRadio]->clear();
         sunLabelPtr[activeRadio]->clear();
         qso[activeRadio]->prefill.clear();
+        qso[activeRadio]->zone=0;
 
         // advance qso numbers
         nrReserved[activeRadio] = 0;
@@ -1292,6 +1293,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         labelLPBearing[activeRadio]->clear();
         sunLabelPtr[activeRadio]->clear();
         qso[activeRadio]->prefill.clear();
+        qso[activeRadio]->zone=0;
 
         // advance qso numbers
         nrReserved[activeRadio] = 0;
@@ -1739,7 +1741,7 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         int m=(int)cat->modeType(activeRadio ^ 1);
         if (qso[activeRadio ^ 1]->call != origCallEntered[activeRadio ^ 1]) {
             if (mod != Qt::ShiftModifier)
-expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1,false);
+                expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray(),-1,false);
         } else {
             if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toByteArray(),-1,false);
         }
@@ -1804,6 +1806,7 @@ expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toBy
         labelLPBearing[activeRadio ^ 1]->clear();
         sunLabelPtr[activeRadio ^ 1]->clear();
         qso[activeRadio ^ 1]->prefill.clear();
+        qso[activeRadio]->zone=0;
 
         // advance qso numbers
         nrReserved[activeRadio ^ 1] = 0;
