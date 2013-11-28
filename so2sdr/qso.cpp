@@ -43,6 +43,7 @@ Qso::Qso(int n)
     modeType = CWType;
     band = 0;
     freq = 0;
+    zone=0;
     nr=0;
     n_exchange    = n;
     exchange_type = new FieldTypes[n_exchange];
