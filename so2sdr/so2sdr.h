@@ -194,6 +194,7 @@ private:
     bool                 exchangeSent[NRIG];
     bool                 excMode[NRIG];
     bool                 grab;
+    bool                 grabbing;
     bool                 initialized;
     bool                 keyInProgress;
     bool                 logSearchFlag;

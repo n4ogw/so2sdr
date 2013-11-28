@@ -225,17 +225,29 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(actionNewContest, SIGNAL(triggered()), newContest, SLOT(show()));
     connect(actionWinkey, SIGNAL(triggered()), winkeyDialog, SLOT(show()));
     connect(actionWinkey, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(winkeyDialog,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(winkeyDialog,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionStation, SIGNAL(triggered()), station, SLOT(show()));
     connect(actionStation, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(station,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(station,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionSettings, SIGNAL(triggered()), progsettings, SLOT(show()));
     connect(actionSettings, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(progsettings,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(progsettings,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionRadios, SIGNAL(triggered()), radios, SLOT(show()));
     connect(actionRadios, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(radios,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(radios,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionContestOptions, SIGNAL(triggered()), options, SLOT(show()));
     connect(actionContestOptions, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(options,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(options,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionSDR, SIGNAL(triggered()), sdr, SLOT(show()));
     connect(actionSDR, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    connect(sdr,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(sdr,SIGNAL(rejected()),this,SLOT(regrab()));
 
     //RTC 07/11/2012 disabled About Qt unless a solution is found
     // instead added Qt version number to So2sdr About dialog
@@ -252,6 +264,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options, SIGNAL(accepted()), this, SLOT(updateOptions()));
     connect(actionCW_Messages, SIGNAL(triggered()), cwMessage, SLOT(show()));
     connect(actionCW_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
+    connect(cwMessage,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(cwMessage,SIGNAL(rejected()),this,SLOT(regrab()));
+    connect(ssbMessage,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(ssbMessage,SIGNAL(rejected()),this,SLOT(regrab()));
 #ifdef DVK_ENABLE
     connect(actionSSB_Messages, SIGNAL(triggered()), ssbMessage, SLOT(show()));
     connect(actionSSB_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
@@ -627,6 +643,7 @@ void So2sdr::regrab()
         grabWidget->setFocus();
         grabWidget->activateWindow();
         grabWidget->grabKeyboard();
+        grabbing=true;
     }
 }
 
@@ -638,11 +655,13 @@ void So2sdr::setGrab(bool s)
         grab = true;
         grabLabel->show();
         grabWidget->grabKeyboard();
+        grabbing=true;
         grabWidget->setFocus();
         grabWidget->activateWindow();
     } else {
         grab = false;
         grabWidget->releaseKeyboard();
+        grabbing=false;
         grabLabel->hide();
     }
 }
@@ -652,6 +671,7 @@ void So2sdr::ungrab()
     if (grab) {
         grabWidget->releaseKeyboard();
         grabLabel->hide();
+        grabbing=false;
     }
 }
 
@@ -663,7 +683,7 @@ void So2sdr::setEntryFocus()
 {
     if (callFocus[activeRadio]) {
         lineEditCall[activeRadio]->setFocus();
-        if (grab) {
+        if (grabbing) {
             lineEditCall[activeRadio]->grabKeyboard();
             lineEditCall[activeRadio]->activateWindow();
             raise();
@@ -671,7 +691,7 @@ void So2sdr::setEntryFocus()
         grabWidget = lineEditCall[activeRadio];
     } else {
         lineEditExchange[activeRadio]->setFocus();
-        if (grab) {
+        if (grabbing) {
             lineEditExchange[activeRadio]->grabKeyboard();
             lineEditExchange[activeRadio]->activateWindow();
             raise();
@@ -971,8 +991,11 @@ bool So2sdr::setupContest()
 
     connect(actionADIF, SIGNAL(triggered()), this, SLOT(exportADIF()));
     connect(actionCabrillo, SIGNAL(triggered()), this, SLOT(showCabrillo()));
+    connect(actionCabrillo,SIGNAL(triggered()),this,SLOT(ungrab()));
     connect(cabrillo, SIGNAL(accepted()), this, SLOT(exportCabrillo()));
     connect(actionImport_Cabrillo, SIGNAL(triggered()), this, SLOT(importCabrillo()));
+    connect(cabrillo,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(cabrillo,SIGNAL(rejected()),this,SLOT(regrab()));
     nrSent = model->rowCount() + 1;
     updateNrDisplay();
     updateBreakdown();
@@ -4095,6 +4118,7 @@ void So2sdr::initVariables()
     cqQsoInProgress[0] = false;
     cqQsoInProgress[1] = false;
     grab               = false;
+    grabbing           = false;
     keyInProgress=false;
 
     cqTimer.start();

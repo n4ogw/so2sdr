@@ -35,7 +35,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     }
 
     // out-of-focus event: refocus line edits
-    if (grab && e->type()==QEvent::FocusOut) {
+    if (grabbing && e->type()==QEvent::FocusOut) {
         QFocusEvent* ev = static_cast<QFocusEvent*>(e);
         if (ev->reason()==Qt::MouseFocusReason || ev->reason()==Qt::ActiveWindowFocusReason) {
             setEntryFocus();
