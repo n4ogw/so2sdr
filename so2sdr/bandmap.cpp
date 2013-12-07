@@ -54,6 +54,8 @@ Bandmap::Bandmap(QSettings& s,QWidget *parent, Qt::WindowFlags f) : QWidget(pare
     connect(display, SIGNAL(mouseClick()),this,SIGNAL(mouseClick()));
     nrig        = 0;
     centerFreq  = 0;
+    endFreqs[0] = 0;
+    endFreqs[1] = 0;
     addOffset=0;
     audioReader = new AudioReaderPortAudio();
     audioReader->moveToThread(&audioThread);
@@ -578,13 +580,16 @@ void Bandmap::setDefaultCenter()
 void Bandmap::setFreq(int i, int b, const QList<BandmapEntry>& map)
 {
     centerFreq = i;
+    endFreqs[0] = centerFreq-48000-settings.value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt();
+    endFreqs[1] = centerFreq+48000-settings.value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt();
+    setWindowTitle("Bandmap "+bandName[b]+"m ["+QString::number(endFreqs[0]/1000)+"-"+QString::number(endFreqs[1]/1000)+"]");
     if (band != -1 && band != b) {
         // if band changed, clear all signals
         spectrumProcessor->clearSigs();
         spectrumProcessor->clearCQ();
     }
     band = b;
-    spectrumProcessor->setFreq(i, b);
+    spectrumProcessor->setFreq(i, b, endFreqs[0], endFreqs[1]);
     spectrumProcessor->resetAvg();
     makeFreqScaleAbsolute();
     FreqLabel->setPixmap(freqPixmap);

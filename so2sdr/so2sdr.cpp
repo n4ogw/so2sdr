@@ -2640,8 +2640,6 @@ bool So2sdr::enterFreqOrMode()
 
         if (bandmapOn[nr]) {
             bandmap[nr]->setFreq(f, band[nr], spotList[band[nr]]);
-            bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]]);
-
             // invert spectrum if needed
             bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
         }
@@ -2812,9 +2810,6 @@ void So2sdr::updateRadioFreq()
                 if (nDupesheet) {
                     populateDupesheet();
                 }
-            }
-            if (bandmapOn[i]) {
-                bandmap[i]->setWindowTitle("Bandmap:" + bandName[band[i]]);
             }
         }
         if (bandmapOn[i]) {

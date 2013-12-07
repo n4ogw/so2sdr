@@ -60,7 +60,7 @@ public:
     void resetAvg();
     void setAddOffset(int i);
     void stopSpectrum();
-    void setFreq(int, int);
+    void setFreq(int, int, int, int);
     void setInvert(bool);
     void setNrig(int);
     void setCalcError();
@@ -105,11 +105,12 @@ private:
     fftw_complex  *in;
     fftw_complex  *out;
     fftw_plan     plan;
-    int addOffset;
+    int           addOffset;
     int           band;
     int           bits;
     int           calibCnt;
     int           centerFreq;
+    int           endFreqs[2];
     int           findCQCnt;
     int           invert;
     int           nrig;

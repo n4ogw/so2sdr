@@ -113,7 +113,6 @@ void So2sdr::showBandmap(int nr, int checkboxState)
             connect(bandmap[nr], SIGNAL(findCQMessage(QString)), this, SLOT(showMessage(QString)));
         }
         bandmap[nr]->initialize(userDirectory(), nr, sdr->format(nr));
-        bandmap[nr]->setWindowTitle("Bandmap:" + bandName[band[nr]] + "m");
         if (windowBorderCheckBox->isChecked()) {
             bandmap[nr]->setWindowFlags(Qt::X11BypassWindowManagerHint);
         }

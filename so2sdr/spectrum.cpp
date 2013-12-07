@@ -155,6 +155,8 @@ Spectrum::Spectrum(QSettings& s,QObject *parent) : QObject(parent),settings(s)
     band           = 0;
     calibCnt       = 0;
     centerFreq     = 0;
+    endFreqs[0]    = 0;
+    endFreqs[1]    = 0;
 
     invert        = 1;
     iqPlotOpen    = false;
@@ -288,6 +290,11 @@ void Spectrum::findCQ()
     int findCQLimit[2];
     findCQLimit[0]=settings.value(s_sdr_cqlimit_low[band],cqlimit_default_low[band]).toInt();
     findCQLimit[1]=settings.value(s_sdr_cqlimit_high[band],cqlimit_default_high[band]).toInt();
+
+    // check to make sure limits are within freq range covered by bandmap; if not,
+    // adjust ends
+    if (findCQLimit[0]<endFreqs[0]) findCQLimit[0]=endFreqs[0];
+    if (findCQLimit[1]>endFreqs[1]) findCQLimit[1]=endFreqs[1];
 
     int indx = -1;
     for (int i = 0; i < SIG_MAX; i++) {
@@ -535,19 +542,16 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     }
 
     if (settings.value(s_sdr_click[nrig],s_sdr_click_def[nrig]).toBool()) {
-    //if (clickFilter) {
         clickRemove(bga, sigma, spec_tmp);
 
         // re-measure background since click removal changes it
         // measureBackgroundLog(bga,sigma,spec_tmp);
     }
 
-
     if (settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt() == 2) {
         interp2(spec_tmp, tmp4, bga); // expand by 2 using linear interpolation
     } else {
         // IF offset included here
-        // for (int i=0;i<sizes.display_length;i++) {
         double tmp = ((settings.value(s_sdr_offset[nrig],s_sdr_offset_def[nrig]).toInt()-addOffset) *
                       sizes.spec_length * settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt()) / (SAMPLE_FREQ * 1000.0);
         int offsetPix = -(int) tmp;
@@ -593,12 +597,14 @@ unsigned char Spectrum::bg()
    Set center frequency in Hz
     f=center freq
     b=band index
-
+    low, high=lowest, highest frequencies
  */
-void Spectrum::setFreq(int f, int b) {
+void Spectrum::setFreq(int f, int b, int low, int high) {
     centerFreq = f;
     band       = b;
     sigSpace   = 0;
+    endFreqs[0]=low;
+    endFreqs[1]=high;
 }
 
 void Spectrum::clickRemove(double bg, double dev, double spec[]) const

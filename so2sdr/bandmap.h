@@ -102,6 +102,7 @@ private:
     int                  cornerx;
     int                  cornery;
     int                  dragPos;
+    int                  endFreqs[2];
     int                  freqMax;
     int                  freqMin;
     int                  iqBin;
