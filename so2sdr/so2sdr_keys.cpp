@@ -246,12 +246,10 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             break;
         case Qt::Key_R:     // alt-R
             if (mod == Qt::AltModifier) {
-                if (autoCQMode) autoCQActivate(false);
                 if (duelingCQMode) duelingCQActivate(false);
                 switchRadios();
                 r = true;
             } else if (mod == Qt::ControlModifier) { // switchradios w/o killing cw
-                if (autoCQMode) autoCQActivate(false);
                 if (duelingCQMode) duelingCQActivate(false);
                 switchRadios(false);
                 r = true;
@@ -387,17 +385,33 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             r = true;
             break;
         case Qt::Key_F1:
-            if ((duelingCQMode || autoCQMode || toggleMode) && !excMode[activeRadio] && mod != Qt::ShiftModifier) { // pass fill request
+            if ((duelingCQMode || autoCQMode || toggleMode) && !excMode[activeRadio] && mod != Qt::ShiftModifier
+                    && !(altDActive > 2 && altDActiveRadio == activeRadio) && !autoCQModePause) { // pass fill request
                 sendLongCQ = true;
             } else {
+                if (altDActive > 2 && altDActiveRadio == activeRadio && activeTxRadio != activeRadio) {
+                    switchTransmit(altDActiveRadio);
+                }
+                if (autoCQMode) {
+                    sendLongCQ = true;
+                    autoCQModePause = false;
+                }
                 sendFunc(0, mod);
             }
             r = true;
             break;
         case Qt::Key_F2:
-            if ((duelingCQMode || autoCQMode || toggleMode) && !excMode[activeRadio] && mod != Qt::ShiftModifier) { // pass fill request
+            if ((duelingCQMode || autoCQMode || toggleMode) && !excMode[activeRadio] && mod != Qt::ShiftModifier
+                    && !(altDActive > 2 && altDActiveRadio == activeRadio) && !autoCQModePause) { // pass fill request
                 sendLongCQ = false;
             } else {
+                if (altDActive > 2 && altDActiveRadio == activeRadio && activeTxRadio != activeRadio) {
+                    switchTransmit(altDActiveRadio);
+                }
+                if (autoCQMode) {
+                    sendLongCQ = false;
+                    autoCQModePause = false;
+                }
                 sendFunc(1, mod);
             }
             r = true;
@@ -1307,6 +1321,9 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         qso[activeRadio]->dupe = false;
         qso[activeRadio]->valid = false;
         callSent[activeRadio]  = false;
+        if (mod != Qt::ShiftModifier) { // don't unpause autoCQ if silently logged
+            autoCQModePause = false;
+        }
     }
 
     // focus call field
@@ -1339,6 +1356,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
                     expandMacro(ssbMessage->cqF[0],0,false);
                     break;
                 }
+
+                autoCQModePause = false;
             }
             exchangeSent[activeRadio] = false;
         }
@@ -1931,7 +1950,7 @@ void So2sdr::esc()
 
     // define states
     if (first) {
-        escState[0][0][0][0] = 128 + 256 + 512 + 2048;
+        escState[0][0][0][0] = 128 + 256 + 512 + 2048 + 4096;
         escState[1][0][0][0] = 1 + 2 + 8 + 32 + 64 + 1024 + 2048;
         escState[0][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
         escState[1][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
@@ -1970,7 +1989,7 @@ void So2sdr::esc()
                       || (altDActive && lineEditCall[altDActiveRadio ^ 1]->text().isEmpty())
                     )
             ) {
-                autoCQActivate(false);
+                autoCQModePause = true;
             }
             if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
             if (autoSend) {
@@ -2060,6 +2079,7 @@ void So2sdr::esc()
             autoSendPause = false;
             autoSendTrigger = false;
         }
+        autoCQModePause = false;
     }
 
     // clear exchange field
@@ -2116,7 +2136,7 @@ void So2sdr::esc()
     }
 
     // clear alt-d state
-    if (x & 256) {
+    if ((x & 256) && !(autoCQMode && !autoCQModePause)) {
         if (altDActive) {
             QPalette palette(lineEditCall[altDActiveRadio]->palette());
             palette.setColor(QPalette::Base, CQ_COLOR);
@@ -2147,6 +2167,13 @@ void So2sdr::esc()
         clearLogSearch();
         LogTableView->clearSelection();
     }
+
+    // pause autoCQ
+    if (x & 4096) {
+        autoCQModePause = true;
+    }
+
+
     keyInProgress=false;
 }
 

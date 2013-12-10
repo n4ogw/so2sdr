@@ -179,6 +179,7 @@ private:
     bool                 aboutActive;
     bool                 activeR2CQ;
     bool                 autoCQMode;
+    bool                 autoCQModePause;
     bool                 autoSend;
     bool                 autoSendPause;
     bool                 autoSendTrigger;

@@ -1894,6 +1894,7 @@ void So2sdr::autoCQActivate (bool state) {
         }
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+        autoCQModePause = false;
     } else {
         autoCQStatus->clear();
     }
@@ -2040,11 +2041,14 @@ void So2sdr::autoCQ () {
     } else if (!cqMode[activeRadio ^ 1] && altDActive && altDActiveRadio == activeRadio) {
         setCqMode(activeRadio ^ 1);
     }
-    if ((!lineEditCall[activeRadio]->text().isEmpty() && !(altDActive && altDActiveRadio == activeRadio))
-            || (!lineEditCall[activeRadio ^ 1]->text().isEmpty() && altDActive && altDActiveRadio == activeRadio)
-            || (altDActive > 2 && altDActiveRadio == activeRadio) ) {
+    if (autoCQModePause) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
+    } else if ((!lineEditCall[activeRadio]->text().isEmpty() && !(altDActive && altDActiveRadio == activeRadio))
+            || (!lineEditCall[activeRadio ^ 1]->text().isEmpty() && altDActive && altDActiveRadio == activeRadio)
+            || (altDActive > 2 && altDActiveRadio == activeRadio)) {
+        if (!autoCQModePause) autoCQModePause = true;
+        cqTimer.restart();
     } else if (winkey->isSending()) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
@@ -3375,8 +3379,14 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
             if (first && switchradio) {
                 // the first element of most macros resets TX radio and speed
                 // TOGGLESTEREOPIN, R2, R2CQ do not
-                if (toggleMode || autoCQMode) {
+                if (toggleMode) {
                     switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
+                } else if (autoCQMode) {
+                    if (altDActive && activeRadio == altDActiveRadio && autoCQModePause) {
+                        switchTransmit(altDActiveRadio, tmp_wpm);
+                    } else {
+                        switchTransmit(activeTxRadio, tmp_wpm);
+                    }
                 } else {
                     switchTransmit(activeRadio, tmp_wpm);
                 }
@@ -3407,8 +3417,14 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
         }
     } else {
         // no macro present send as-is
-        if (toggleMode || autoCQMode) {
+        if (toggleMode) {
             switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
+        } else if (autoCQMode) {
+            if (altDActive && activeRadio == altDActiveRadio && autoCQModePause) {
+                switchTransmit(altDActiveRadio, tmp_wpm);
+            } else {
+                switchTransmit(activeTxRadio, tmp_wpm);
+            }
         } else {
             switchTransmit(activeRadio, tmp_wpm);
         }
@@ -4119,6 +4135,7 @@ void So2sdr::initVariables()
     cqTimer.start();
     toggleMode = false;
     autoCQMode = false;
+    autoCQModePause = false;
     duelingCQMode = false;
     duelingCQWait = false;
     autoSend = false;
