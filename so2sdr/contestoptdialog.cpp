@@ -1,4 +1,4 @@
-/*! Copyright 2010-2013 R. Torsten Clay N4OGW
+/*! Copyright 2010-2014 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -52,8 +52,11 @@ void ContestOptionsDialog::initialize(QSettings *s)
 void ContestOptionsDialog::setOptions()
 {
     MasterLineEdit->setText(settings->value(c_masterfile,c_masterfile_def).toString());
+    HistoryLineEdit->setText(settings->value(c_historyfile,c_historyfile_def).toString());
     MultiModeCheckBox->setChecked(settings->value(c_multimode,c_multimode_def).toBool());
     MasterCheckBox->setChecked(settings->value(c_mastermode,c_mastermode_def).toBool());
+    HistoryCheckBox->setChecked(settings->value(c_historymode,c_historymode_def).toBool());
+    HistoryUpdateCheckBox->setChecked(settings->value(c_historyupdate,c_historyupdate_def).toBool());
     ShowModeCheckBox->setChecked(settings->value(c_showmode,c_showmode_def).toBool());
     ShowMultsCheckBox->setChecked(settings->value(c_showmults,c_showmults_def).toBool());
     SprintCheckBox->setChecked(settings->value(c_sprintmode,c_sprintmode_def).toBool());
@@ -75,6 +78,7 @@ void ContestOptionsDialog::updateOptions()
 {
     // need to rescore log if dupe mode, multimode, or mults view change
     settings->setValue(c_masterfile,MasterLineEdit->text());
+    settings->setValue(c_historyfile,HistoryLineEdit->text());
 
     bool oldMultiMode=settings->value(c_multimode,c_multimode_def).toBool();
     bool newMultiMode=MultiModeCheckBox->isChecked();
@@ -82,6 +86,15 @@ void ContestOptionsDialog::updateOptions()
     if (oldMultiMode!=newMultiMode) emit(multiModeChanged());
 
     settings->setValue(c_mastermode,MasterCheckBox->isChecked());
+    if (HistoryLineEdit->text().isEmpty()) {
+        settings->setValue(c_historymode,false);
+        settings->setValue(c_historyupdate,false);
+        HistoryCheckBox->setChecked(false);
+        HistoryUpdateCheckBox->setChecked(false);
+    } else {
+        settings->setValue(c_historymode,HistoryCheckBox->isChecked());
+        settings->setValue(c_historyupdate,HistoryUpdateCheckBox->isChecked());
+    }
     settings->setValue(c_sprintmode,SprintCheckBox->isChecked());
     settings->setValue(c_showmode,ShowModeCheckBox->isChecked());
 

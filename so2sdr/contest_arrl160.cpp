@@ -1,4 +1,4 @@
-/*! Copyright 2010-2013 R. Torsten Clay N4OGW
+/*! Copyright 2010-2014 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 

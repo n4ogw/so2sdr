@@ -77,7 +77,8 @@ HEADERS += cwmessagedialog.h \
     otrsp.h \
     ssbmessagedialog.h \
     settingsdialog.h \
-    microham.h
+    microham.h \
+    history.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -151,7 +152,8 @@ SOURCES += cwmessagedialog.cpp \
     otrsp.cpp \
     ssbmessagedialog.cpp \
     settingsdialog.cpp \
-    microham.cpp
+    microham.cpp \
+    history.cpp
 unix { 
     include(../common.pri)
 

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2013 R. Torsten Clay N4OGW
+/*! Copyright 2010-2014 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -401,6 +401,7 @@ So2sdr::~So2sdr()
         model->clear();
         delete model;
     }
+    delete history;
     delete mylog;
     if (model) {
         QSqlDatabase::removeDatabase("QSQLITE");
@@ -512,47 +513,11 @@ void So2sdr::addQso(const Qso *qso)
     newqso.setValue(SQL_COL_FREQ, QVariant(qso->freq));
     newqso.setValue(SQL_COL_BAND, QVariant(qso->band));
     newqso.setValue(SQL_COL_MODE, QVariant(qso->mode));
-    for (int i = 0; i < 4; i++) {
-        if (i < contest->nExchange()) {
-            switch (i) {
-            case 0:
-                newqso.setValue(SQL_COL_SNT1, QVariant(qso->snt_exch[0]).toString());
-                newqso.setValue(SQL_COL_RCV1, QVariant(qso->rcv_exch[0]).toString());
-                break;
-            case 1:
-                newqso.setValue(SQL_COL_SNT2, QVariant(qso->snt_exch[1]).toString());
-                newqso.setValue(SQL_COL_RCV2, QVariant(qso->rcv_exch[1]).toString());
-                break;
-            case 2:
-                newqso.setValue(SQL_COL_SNT3, QVariant(qso->snt_exch[2]).toString());
-                newqso.setValue(SQL_COL_RCV3, QVariant(qso->rcv_exch[2]).toString());
-                break;
-            case 3:
-                newqso.setValue(SQL_COL_SNT4, QVariant(qso->snt_exch[3]).toString());
-                newqso.setValue(SQL_COL_RCV4, QVariant(qso->rcv_exch[3]).toString());
-                break;
-            }
-        } else {
-            switch (i) {
-            case 0:
-                newqso.setNull(SQL_COL_SNT1);
-                newqso.setNull(SQL_COL_RCV1);
-                break;
-            case 1:
-                newqso.setNull(SQL_COL_SNT2);
-                newqso.setNull(SQL_COL_RCV2);
-                break;
-            case 2:
-                newqso.setNull(SQL_COL_SNT3);
-                newqso.setNull(SQL_COL_RCV3);
-                break;
-            case 3:
-                newqso.setNull(SQL_COL_SNT4);
-                newqso.setNull(SQL_COL_RCV4);
-                break;
-            }
-        }
+
+    if (csettings->value(c_historyupdate,c_historyupdate_def).toBool()) {
+        history->addQso(qso,newqso);
     }
+
     newqso.setValue(SQL_COL_DATE, QVariant(qso->time.toUTC().toString("MMddyyyy")));
     newqso.setValue(SQL_COL_TIME, QVariant(qso->time.toUTC().toString("hhmm")));
     newqso.setValue(SQL_COL_VALID, QVariant(qso->valid));
@@ -797,6 +762,8 @@ void So2sdr::disableUI()
     actionSave->setEnabled(false);
     actionADIF->setEnabled(false);
     actionCabrillo->setEnabled(false);
+    actionHistory->setEnabled(false);
+    actionHistory->setText("Update history from log");
     grabCheckBox->setEnabled(false);
     actionImport_Cabrillo->setEnabled(false);
     dupesheetCheckBox[0]->setEnabled(false);
@@ -921,6 +888,20 @@ void So2sdr::updateOptions()
     updateMults(activeRadio);
     setEntryFocus();
     startMaster();
+    if (csettings->value(c_historymode,c_historymode_def).toBool()) {
+        history->startHistory();
+        if (history->isOpen()) {
+            actionHistory->setEnabled(true);
+            actionHistory->setText("Update History (" + csettings->value(c_historyfile,c_historyfile_def).toString() + ") from Log");
+        } else {
+            actionHistory->setEnabled(false);
+            actionHistory->setText("Update History from Log");
+        }
+    } else {
+        history->stopHistory();
+        actionHistory->setEnabled(false);
+        actionHistory->setText("Update History from Log");
+    }
 }
 
 
@@ -971,6 +952,19 @@ bool So2sdr::setupContest()
     master = new Master();
     connect(master, SIGNAL(masterError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     startMaster();
+    history = new History(*csettings,this);
+    connect(history,SIGNAL(message(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
+
+    if (csettings->value(c_historymode,c_historymode_def).toBool()) {
+        history->startHistory();
+        if (history->isOpen()) {
+            actionHistory->setEnabled(true);
+            actionHistory->setText("Update History (" + csettings->value(c_historyfile,c_historyfile_def).toString() + ") from Log");
+        } else {
+            actionHistory->setEnabled(false);
+            actionHistory->setText("Update History from Log");
+        }
+    }
     mylog = new log(*csettings,contest->nExchange(), this);
     connect(contest,SIGNAL(mobileDupeCheck(Qso*)),mylog,SLOT(mobileDupeCheck(Qso*)));
     connect(contest,SIGNAL(clearDupe()),So2sdrStatusBar,SLOT(clearMessage()));
@@ -996,6 +990,7 @@ bool So2sdr::setupContest()
     connect(actionImport_Cabrillo, SIGNAL(triggered()), this, SLOT(importCabrillo()));
     connect(cabrillo,SIGNAL(accepted()),this,SLOT(regrab()));
     connect(cabrillo,SIGNAL(rejected()),this,SLOT(regrab()));
+    connect(actionHistory, SIGNAL(triggered()), this, SLOT(updateHistory()));
     nrSent = model->rowCount() + 1;
     updateNrDisplay();
     updateBreakdown();
@@ -1285,6 +1280,37 @@ void So2sdr::startMaster()
         } else {
             errorBox->showMessage("ERROR: can't open file " + filename);
         }
+    }
+}
+
+/*!
+ * \brief So2sdr::updateHistory
+ * update the exchange history. RTC: why is this so slow?
+ *
+ */
+void So2sdr::updateHistory() {
+    if (csettings->value(c_historymode,c_historymode_def).toBool()) {
+        QSqlQueryModel log;
+        QString query_log = "SELECT call,rcv1,rcv2,rcv3,rcv4 from log where valid='true'";
+        log.setQuery(query_log, mylog->db);
+        while (log.canFetchMore()) log.fetchMore();
+        QProgressDialog progress("Updating history file (" + csettings->value(c_historyfile,c_historyfile_def).toString() + ") from current log" , "Cancel", 0, log.rowCount(), this);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.setMinimumDuration(0);
+        Qso tmpqso(contest->nExchange());
+        for (int i = 0; i < contest->nExchange(); i++) {
+            tmpqso.setExchangeType(i, contest->exchType(i));
+        }
+        QSqlRecord dummy;
+        for (int row = 0; row < log.rowCount() && !progress.wasCanceled(); row++) {
+            tmpqso.call=log.record(row).value("Call").toString().toAscii();
+            for (int i = 0; i < contest->nExchange(); i++) {
+                tmpqso.rcv_exch[i]=log.record(row).value(i+1).toString().toAscii();
+            }
+            history->addQso(&tmpqso,dummy);
+            progress.setValue(row);
+        }
+        progress.setValue(log.rowCount());
     }
 }
 
@@ -1778,7 +1804,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2013 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2014 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
 #ifdef Q_OS_WIN
@@ -3834,6 +3860,11 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
                            m.record(i).value(SQL_COL_RCV4).toString().toAscii();
             break;
         }
+    }
+
+    // fill exchange with history if not in log
+    if (qso->prefill.simplified().isEmpty() && csettings->value(c_historymode,c_historymode_def).toBool()) {
+        history->fillExchange(qso,part);
     }
 }
 

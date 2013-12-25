@@ -1,4 +1,4 @@
-/*! Copyright 2010-2013 R. Torsten Clay N4OGW
+/*! Copyright 2010-2014 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -71,6 +71,7 @@
 #ifdef Q_OS_LINUX
 #include "linux_pp.h"
 #endif
+#include "history.h"
 
 class QDir;
 class QString;
@@ -158,6 +159,7 @@ private slots:
     void speedDn(int nrig);
     void speedUp(int nrig);
     void startLogEdit();
+  //  void startHistory();
     void startMaster();
     void switchAudio(int r);
     void switchMultMode();
@@ -165,6 +167,7 @@ private slots:
     void switchTransmit(int r, int CWspeed = 0);
     void toggleStereo();
     void ungrab();
+    void updateHistory();
     void updateOptions();
     void updateRadioFreq();
     void windowBorders(bool t);
@@ -288,6 +291,8 @@ private:
     tableModel           *model;
     QSettings            *csettings;
     QSettings            *settings;
+    History              *history;
+    //QSqlDatabase         history;
     QString              contestDirectory;
     QString              fileName;
     QString              settingsFile;

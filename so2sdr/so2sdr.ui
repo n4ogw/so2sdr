@@ -2391,6 +2391,7 @@
     <addaction name="actionADIF"/>
     <addaction name="actionCabrillo"/>
     <addaction name="actionImport_Cabrillo"/>
+    <addaction name="actionHistory"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -2549,6 +2550,11 @@
   <action name="actionSettings">
    <property name="text">
     <string>&amp;General Settings</string>
+   </property>
+  </action>
+  <action name="actionHistory">
+   <property name="text">
+    <string>Update History from Log</string>
    </property>
   </action>
  </widget>

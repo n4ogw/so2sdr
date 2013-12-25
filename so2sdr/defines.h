@@ -1,4 +1,4 @@
-/*! Copyright 2010-2013 R. Torsten Clay N4OGW
+/*! Copyright 2010-2014 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -676,6 +676,15 @@ const bool c_mastermode_def=true;
 
 const QString c_masterfile="contest/masterfile";
 const QString c_masterfile_def="MASTER.DTA";
+
+const QString c_historyupdate="contest/historyupdate";
+const bool c_historyupdate_def=false;
+
+const QString c_historymode="contest/usehistory";
+const bool c_historymode_def=false;
+
+const QString c_historyfile="contest/historyfile";
+const QString c_historyfile_def="";
 
 const QString c_sprintmode="contest/sprintmode";
 const bool c_sprintmode_def=false;

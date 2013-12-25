@@ -16,29 +16,41 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#ifndef NOTEDIALOG_H
-#define NOTEDIALOG_H
 
-#include <QString>
-#include "ui_notedialog.h"
+#ifndef HISTORY_H
+#define HISTORY_H
+
+#include <QByteArray>
+#include <QObject>
+#include <QSqlDatabase>
+#include <QSettings>
+#include <QSqlRecord>
+#include "qso.h"
 
 /*!
-   Dialog to enter log notes
+ exchange history database
  */
-class NoteDialog : public QDialog, public Ui::NoteDialog
+class History : public QObject
 {
-Q_OBJECT
-
+    Q_OBJECT
 public:
-    NoteDialog(QWidget *parent = 0);
-    void enterNote(QString fname, QString dir, QString time, bool grab = false);
+    explicit History(QSettings& csettings,QObject *parent = 0);
+    ~History();
+    void fillExchange(Qso *qso,QByteArray part);
+    void startHistory();
+    void stopHistory();
+    void addQso(const Qso *qso,QSqlRecord& newqso);
+    bool isOpen();
 
-private slots:
-    void writeNotes();
+signals:
+    void message(const QString &,int);
+
+public slots:
 
 private:
-    QString noteDir;
-    QString noteFile;
+    QSqlDatabase         history;
+    QSettings&            csettings;
+
 };
 
-#endif
+#endif // HISTORY_H
