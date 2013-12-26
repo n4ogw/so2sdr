@@ -1464,8 +1464,7 @@ void So2sdr::importCabrillo()
     int         cnt = 0;
     progress.setValue(0);
     for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
-    Qso *qso;
-    qso = new Qso(contest->nExchange());
+    Qso *qso = new Qso(contest->nExchange());
     model->database().transaction();
     while (!file.atEnd() && !progress.wasCanceled()) {
         QString buffer;
@@ -1615,6 +1614,7 @@ void So2sdr::importCabrillo()
     }
     LogTableView->scrollToBottom();
     nrSent = model->rowCount() + 1;
+    delete qso;
     progress.setValue(maxLines);
 }
 
