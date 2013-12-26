@@ -502,7 +502,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     if (settings.value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool()) {
         for (int i = 0; i < sizes.sample_length; i++) {
             // correct IQ imbalance
-            int    j    = sizes.sample_length - i - 1;
+            int    j    = (sizes.sample_length - i) % sizes.sample_length;
             double real = out[i][0] + out[j][0] - (out[i][1] + out[j][1]) * errfunc[i][1] + (out[i][0] - out[j][0]) * errfunc[i][0];
             double imag = out[i][1] - out[j][1] + (out[i][1] + out[j][1]) * errfunc[i][0] + (out[i][0] - out[j][0]) * errfunc[i][1];
             spec_tmp[i] = real * real + imag * imag;
@@ -921,13 +921,13 @@ void Spectrum::measureIQError(double bg, double spec[])
     // cut level is 30 dB over background
     double cut_calib = bg * 1000.0;
 
-    for (int i = 0; i < sizes.sample_length; i++) {
+    for (int i = 1; i < sizes.sample_length; i++) {
         if (spec[i] > cut_calib) {
             int j = i / 8;
             a1[0] = out[i][0];
             a1[1] = out[i][1];
-            a2[0] = out[sizes.sample_length - i - 1][0];
-            a2[1] = out[sizes.sample_length - i - 1][1];
+            a2[0] = out[sizes.sample_length - i][0];
+            a2[1] = out[sizes.sample_length - i][1];
             complexMult(z, a1, a2);
             p     = a1[0] * a1[0] + a1[1] * a1[1] + a2[0] * a2[0] + a2[1] * a2[1];
             z[0] /= p;
