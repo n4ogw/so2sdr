@@ -1460,47 +1460,53 @@ void So2sdr::importCabrillo()
 
     QProgressDialog progress("Importing cabrillo", "Cancel", 0, maxLines, this);
     progress.setWindowModality(Qt::WindowModal);
+    progress.setMinimumDuration(1000);
     QDataStream s(&file);
     int         cnt = 0;
     progress.setValue(0);
     for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
-    Qso *qso = new Qso(contest->nExchange());
+    Qso qso(contest->nExchange());
+    contest->zeroScore();
     model->database().transaction();
+
+    QString buffer;
+    QStringList field;
+    QSqlRecord  newqso;
+    newqso.append(QSqlField("nr", QVariant::Int));
+    newqso.append(QSqlField("time", QVariant::String));
+    newqso.append(QSqlField("freq", QVariant::Int));
+    newqso.append(QSqlField("call", QVariant::String));
+    newqso.append(QSqlField("band", QVariant::Int));
+    newqso.append(QSqlField("date", QVariant::String));
+    newqso.append(QSqlField("mode", QVariant::Int));
+    newqso.append(QSqlField("snt1", QVariant::String));
+    newqso.append(QSqlField("snt2", QVariant::String));
+    newqso.append(QSqlField("snt3", QVariant::String));
+    newqso.append(QSqlField("snt4", QVariant::String));
+    newqso.append(QSqlField("rcv1", QVariant::String));
+    newqso.append(QSqlField("rcv2", QVariant::String));
+    newqso.append(QSqlField("rcv3", QVariant::String));
+    newqso.append(QSqlField("rcv4", QVariant::String));
+    newqso.append(QSqlField("pts", QVariant::Int));
+    newqso.append(QSqlField("valid", QVariant::Int));
+    for (int i = 0; i < SQL_N_COL; i++) newqso.setGenerated(i, true);
+
     while (!file.atEnd() && !progress.wasCanceled()) {
-        QString buffer;
         buffer = file.readLine();
         buffer = buffer.trimmed();
-        if (!buffer.contains("QSO:") && !buffer.contains("qso:")) continue;  // ignore header data
-        QStringList field = buffer.split(" ", QString::SkipEmptyParts);
+        if (!buffer.contains("QSO:") && !buffer.contains("qso:")) {
+            continue;  // ignore header data
+        }
+        field = buffer.split(" ", QString::SkipEmptyParts);
         int         nf    = field.size();
 
-        QSqlRecord  newqso;
-        newqso.append(QSqlField("nr", QVariant::Int));
-        newqso.append(QSqlField("time", QVariant::String));
-        newqso.append(QSqlField("freq", QVariant::Int));
-        newqso.append(QSqlField("call", QVariant::String));
-        newqso.append(QSqlField("band", QVariant::Int));
-        newqso.append(QSqlField("date", QVariant::String));
-        newqso.append(QSqlField("mode", QVariant::Int));
-        newqso.append(QSqlField("snt1", QVariant::String));
-        newqso.append(QSqlField("snt2", QVariant::String));
-        newqso.append(QSqlField("snt3", QVariant::String));
-        newqso.append(QSqlField("snt4", QVariant::String));
-        newqso.append(QSqlField("rcv1", QVariant::String));
-        newqso.append(QSqlField("rcv2", QVariant::String));
-        newqso.append(QSqlField("rcv3", QVariant::String));
-        newqso.append(QSqlField("rcv4", QVariant::String));
-        newqso.append(QSqlField("pts", QVariant::Int));
-        newqso.append(QSqlField("valid", QVariant::Int));
-        for (int i = 0; i < SQL_N_COL; i++) newqso.setGenerated(i, true);
-
         // Field1 = frequency in KHz
-        int f = field[1].toInt() * 1000;
+        int f = field.at(1).toInt() * 1000;
         newqso.setValue(SQL_COL_FREQ, QVariant(f));
 
         int b = getBand(f);
         newqso.setValue(SQL_COL_BAND, QVariant(b));
-        qso->band = b;
+        qso.band = b;
 
         // Field2 = mode
         int m;
@@ -1520,8 +1526,8 @@ void So2sdr::importCabrillo()
         } else {
             m = RIG_MODE_CW;
         }
-        qso->mode = (rmode_t) m;
-        qso->modeType=cat->getModeType(qso->mode);
+        qso.mode = (rmode_t) m;
+        qso.modeType=cat->getModeType(qso.mode);
         newqso.setValue(SQL_COL_MODE, QVariant(m));
         cnt++;
         newqso.setValue(SQL_COL_NR, QVariant(cnt));
@@ -1529,14 +1535,14 @@ void So2sdr::importCabrillo()
         // Field3 = date
         QDateTime time;
         time.setTimeSpec(Qt::UTC);
-        int       y = field[3].mid(0, 4).toInt();
+        int       y = field.at(3).mid(0, 4).toInt();
         m = field[3].mid(5, 2).toInt();
-        int       d = field[3].mid(8, 2).toInt();
+        int       d = field.at(3).mid(8, 2).toInt();
         time.setDate(QDate(y, m, d));
         newqso.setValue(SQL_COL_DATE, QVariant(time.toString("MMddyyyy").toAscii()));
 
         // Field4=time
-        newqso.setValue(SQL_COL_TIME, QVariant(field[4]));
+        newqso.setValue(SQL_COL_TIME, QVariant(field.at(4)));
 
         // Field5=station call. ignore this
 
@@ -1547,31 +1553,31 @@ void So2sdr::importCabrillo()
             switch (j) {
             case 0:
                 newqso.setValue(SQL_COL_SNT1, QVariant(field.at(i).toUpper()));
-                qso->snt_exch[0]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[0]=field.at(i).toAscii().toUpper();
                 break;
             case 1:
                 newqso.setValue(SQL_COL_SNT2, QVariant(field.at(i).toUpper()));
-                qso->snt_exch[1]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[1]=field.at(i).toAscii().toUpper();
                 break;
             case 2:
                 newqso.setValue(SQL_COL_SNT3, QVariant(field.at(i).toUpper()));
-                qso->snt_exch[2]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[2]=field.at(i).toAscii().toUpper();
                 break;
             case 3:
                 newqso.setValue(SQL_COL_SNT4, QVariant(field.at(i).toUpper()));
-                qso->snt_exch[3]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[3]=field.at(i).toAscii().toUpper();
                 break;
             }
         }
 
         // next field=call worked
         newqso.setValue(SQL_COL_CALL, QVariant(field.at(6 + contest->nExchange()).toUpper()));
-        qso->call = field.at(6 + contest->nExchange()).toAscii().toUpper();
+        qso.call = field.at(6 + contest->nExchange()).toAscii().toUpper();
         bool bb;
-        qso->country = cty->idPfx(qso, bb);
+        qso.country = cty->idPfx(&qso, bb);
 
         // next received report
-        qso->exch.clear();
+        qso.exch.clear();
         for (i = 7 + contest->nExchange(), j = 0; i < (7 + 2 * contest->nExchange()); i++, j++) {
             // some fields may be empty (flaw in Cabrillo spec?)
             if (i >= nf) {
@@ -1580,28 +1586,29 @@ void So2sdr::importCabrillo()
             switch (j) {
             case 0:
                 newqso.setValue(SQL_COL_RCV1, QVariant(field.at(i).toUpper()));
-                qso->exch = qso->exch + field.at(i).toAscii().toUpper();
-                qso->rcv_exch[0]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + field.at(i).toAscii().toUpper();
+                qso.rcv_exch[0]=field.at(i).toAscii().toUpper();
                 break;
             case 1:
                 newqso.setValue(SQL_COL_RCV2, QVariant(field.at(i).toUpper()));
-                qso->exch = qso->exch + " " + field.at(i).toAscii().toUpper();
-                qso->rcv_exch[1]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + " " + field.at(i).toAscii().toUpper();
+                qso.rcv_exch[1]=field.at(i).toAscii().toUpper();
                 break;
             case 2:
                 newqso.setValue(SQL_COL_RCV3, QVariant(field.at(i).toUpper()));
-                qso->exch = qso->exch + " " + field.at(i).toAscii().toUpper();
-                qso->rcv_exch[2]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + " " + field.at(i).toAscii().toUpper();
+                qso.rcv_exch[2]=field.at(i).toAscii().toUpper();
                 break;
             case 3:
                 newqso.setValue(SQL_COL_RCV4, QVariant(field.at(i).toUpper()));
-                qso->exch = qso->exch + " " + field.at(i).toAscii().toUpper();
-                qso->rcv_exch[3]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + " " + field.at(i).toAscii().toUpper();
+                qso.rcv_exch[3]=field.at(i).toAscii().toUpper();
                 break;
             }
         }
-        newqso.setValue(SQL_COL_PTS, QVariant(qso->pts));
+        newqso.setValue(SQL_COL_PTS, QVariant(qso.pts));
         newqso.setValue(SQL_COL_VALID, QVariant(true)); // set to valid
+        contest->addQso(&qso);
         model->insertRecord(-1, newqso);
         progress.setValue(cnt);
     }
@@ -1612,9 +1619,9 @@ void So2sdr::importCabrillo()
     while (model->canFetchMore()) {
         model->fetchMore();
     }
+
     LogTableView->scrollToBottom();
     nrSent = model->rowCount() + 1;
-    delete qso;
     progress.setValue(maxLines);
 }
 
