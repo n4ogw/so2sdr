@@ -45,7 +45,7 @@ History::~History()
  * \param qso
  * \param newqso
  */
-void History::addQso(const Qso *qso,QSqlRecord& newqso)
+void History::addQso(const Qso *qso)
 {
     if (!history.isOpen()) return;
 
@@ -53,10 +53,8 @@ void History::addQso(const Qso *qso,QSqlRecord& newqso)
     query.append("INSERT OR REPLACE INTO history (Call,General,DMult,Name,State,ARRLSection,Grid,Number) ");
     query.append("SELECT new.Call, old.General, old.DMult, old.Name, old.State, old.ARRLSection, old.Grid, old.Number ");
     query.append("FROM ( SELECT '" + QVariant(qso->call).toString() + "' AS Call");
-    for (int i = 0; i < 4; i++) {
-        if (i < qso->n_exchange) {
-
-            switch (qso->exchange_type[i]) {
+    for (int i = 0; i < qso->n_exchange; i++) {
+        switch (qso->exchange_type[i]) {
             case General:
                 query.replace(QString("old.General"), QString("new.General"));
                 query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS General");
@@ -87,45 +85,6 @@ void History::addQso(const Qso *qso,QSqlRecord& newqso)
                 break;
             default:
                 break;
-            }
-
-            switch (i) {
-            case 0:
-                newqso.setValue(SQL_COL_SNT1, QVariant(qso->snt_exch[0]).toString());
-                newqso.setValue(SQL_COL_RCV1, QVariant(qso->rcv_exch[0]).toString());
-                break;
-            case 1:
-                newqso.setValue(SQL_COL_SNT2, QVariant(qso->snt_exch[1]).toString());
-                newqso.setValue(SQL_COL_RCV2, QVariant(qso->rcv_exch[1]).toString());
-                break;
-            case 2:
-                newqso.setValue(SQL_COL_SNT3, QVariant(qso->snt_exch[2]).toString());
-                newqso.setValue(SQL_COL_RCV3, QVariant(qso->rcv_exch[2]).toString());
-                break;
-            case 3:
-                newqso.setValue(SQL_COL_SNT4, QVariant(qso->snt_exch[3]).toString());
-                newqso.setValue(SQL_COL_RCV4, QVariant(qso->rcv_exch[3]).toString());
-                break;
-            }
-        } else {
-            switch (i) {
-            case 0:
-                newqso.setNull(SQL_COL_SNT1);
-                newqso.setNull(SQL_COL_RCV1);
-                break;
-            case 1:
-                newqso.setNull(SQL_COL_SNT2);
-                newqso.setNull(SQL_COL_RCV2);
-                break;
-            case 2:
-                newqso.setNull(SQL_COL_SNT3);
-                newqso.setNull(SQL_COL_RCV3);
-                break;
-            case 3:
-                newqso.setNull(SQL_COL_SNT4);
-                newqso.setNull(SQL_COL_RCV4);
-                break;
-            }
         }
     }
     query.append(") AS new LEFT JOIN ( SELECT Call,General,DMult,Name,State,ARRLSection,Grid,Number FROM history ) AS old ON new.Call = old.Call");

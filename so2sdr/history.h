@@ -39,7 +39,7 @@ public:
     void fillExchange(Qso *qso,QByteArray part);
     void startHistory();
     void stopHistory();
-    void addQso(const Qso *qso,QSqlRecord& newqso);
+    void addQso(const Qso *qso);
     bool isOpen();
 
 signals:

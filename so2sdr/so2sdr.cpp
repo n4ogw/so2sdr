@@ -513,14 +513,56 @@ void So2sdr::addQso(const Qso *qso)
     newqso.setValue(SQL_COL_FREQ, QVariant(qso->freq));
     newqso.setValue(SQL_COL_BAND, QVariant(qso->band));
     newqso.setValue(SQL_COL_MODE, QVariant(qso->mode));
-
-    if (csettings->value(c_historyupdate,c_historyupdate_def).toBool()) {
-        history->addQso(qso,newqso);
+    for (int i = 0; i < 4; i++) {
+        if (i < contest->nExchange()) {
+            switch (i) {
+            case 0:
+                newqso.setValue(SQL_COL_SNT1, QVariant(qso->snt_exch[0]).toString());
+                newqso.setValue(SQL_COL_RCV1, QVariant(qso->rcv_exch[0]).toString());
+                break;
+            case 1:
+                newqso.setValue(SQL_COL_SNT2, QVariant(qso->snt_exch[1]).toString());
+                newqso.setValue(SQL_COL_RCV2, QVariant(qso->rcv_exch[1]).toString());
+                break;
+            case 2:
+                newqso.setValue(SQL_COL_SNT3, QVariant(qso->snt_exch[2]).toString());
+                newqso.setValue(SQL_COL_RCV3, QVariant(qso->rcv_exch[2]).toString());
+                break;
+            case 3:
+                newqso.setValue(SQL_COL_SNT4, QVariant(qso->snt_exch[3]).toString());
+                newqso.setValue(SQL_COL_RCV4, QVariant(qso->rcv_exch[3]).toString());
+                break;
+            }
+        } else {
+            switch (i) {
+            case 0:
+                newqso.setNull(SQL_COL_SNT1);
+                newqso.setNull(SQL_COL_RCV1);
+                break;
+            case 1:
+                newqso.setNull(SQL_COL_SNT2);
+                newqso.setNull(SQL_COL_RCV2);
+                break;
+            case 2:
+                newqso.setNull(SQL_COL_SNT3);
+                newqso.setNull(SQL_COL_RCV3);
+                break;
+            case 3:
+                newqso.setNull(SQL_COL_SNT4);
+                newqso.setNull(SQL_COL_RCV4);
+                break;
+            }
+        }
     }
-
     newqso.setValue(SQL_COL_DATE, QVariant(qso->time.toUTC().toString("MMddyyyy")));
     newqso.setValue(SQL_COL_TIME, QVariant(qso->time.toUTC().toString("hhmm")));
     newqso.setValue(SQL_COL_VALID, QVariant(qso->valid));
+
+    if (csettings->value(c_historyupdate,c_historyupdate_def).toBool()) {
+        history->addQso(qso);
+    }
+
+
     model->insertRecord(-1, newqso);
     model->submitAll();
     while (model->canFetchMore()) {
@@ -1301,13 +1343,12 @@ void So2sdr::updateHistory() {
         for (int i = 0; i < contest->nExchange(); i++) {
             tmpqso.setExchangeType(i, contest->exchType(i));
         }
-        QSqlRecord dummy;
         for (int row = 0; row < log.rowCount() && !progress.wasCanceled(); row++) {
             tmpqso.call=log.record(row).value("Call").toString().toAscii();
             for (int i = 0; i < contest->nExchange(); i++) {
                 tmpqso.rcv_exch[i]=log.record(row).value(i+1).toString().toAscii();
             }
-            history->addQso(&tmpqso,dummy);
+            history->addQso(&tmpqso);
             progress.setValue(row);
         }
         progress.setValue(log.rowCount());
