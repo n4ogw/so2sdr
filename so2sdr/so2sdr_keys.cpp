@@ -389,12 +389,15 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     && !(altDActive > 2 && altDActiveRadio == activeRadio) && !autoCQModePause) { // pass fill request
                 sendLongCQ = true;
             } else {
-                if (altDActive > 2 && altDActiveRadio == activeRadio && activeTxRadio != activeRadio) {
-                    switchTransmit(altDActiveRadio);
-                }
-                if (autoCQMode) {
-                    sendLongCQ = true;
-                    autoCQModePause = false;
+                if (altDActive > 2 && altDActiveRadio == activeRadio) {
+                    if (activeTxRadio != activeRadio) {
+                        switchTransmit(altDActiveRadio);
+                    }
+                } else {
+                    if (autoCQMode) {
+                        sendLongCQ = true;
+                        autoCQModePause = false;
+                    }
                 }
                 sendFunc(0, mod);
             }
@@ -405,12 +408,15 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     && !(altDActive > 2 && altDActiveRadio == activeRadio) && !autoCQModePause) { // pass fill request
                 sendLongCQ = false;
             } else {
-                if (altDActive > 2 && altDActiveRadio == activeRadio && activeTxRadio != activeRadio) {
-                    switchTransmit(altDActiveRadio);
-                }
-                if (autoCQMode) {
-                    sendLongCQ = false;
-                    autoCQModePause = false;
+                if (altDActive > 2 && altDActiveRadio == activeRadio) {
+                    if (activeTxRadio != activeRadio) {
+                        switchTransmit(altDActiveRadio);
+                    }
+                } else {
+                    if (autoCQMode) {
+                        sendLongCQ = false;
+                        autoCQModePause = false;
+                    }
                 }
                 sendFunc(1, mod);
             }
@@ -999,6 +1005,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             if (contest->newCall(tmp)) {
                 lineEditCall[activeRadio]->setText(tmp);
                 prefixCheck(activeRadio, tmp);
+                if (autoSend) autoSendPause = true;
             }
         }
         break;
