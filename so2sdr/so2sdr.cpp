@@ -2593,8 +2593,10 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
 
         // if Alt-D or 2nd radio CQ is active, display these on the other radio
         // if 2nd radio CQ and S/P on active radio, display on active radio
+        // RTC 01/12/14 : only do this when Alt-D is in state 1; if a call is already
+        // present on the second radio we don't want to clear displayed info.
         int nr = nrig;
-        if (altDActive || ( activeR2CQ && cqMode[activeRadio] ) ) {
+        if (altDActive==1 || ( activeR2CQ && cqMode[activeRadio] ) ) {
             nr = nr ^ 1;
         }
         labelCountry[nr]->clear();
