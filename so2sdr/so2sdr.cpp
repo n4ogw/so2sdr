@@ -1960,6 +1960,7 @@ void So2sdr::timerEvent(QTimerEvent *event)
 void So2sdr::autoCQActivate (bool state) {
     autoCQMode = state;
     if (autoCQMode) {
+        autoCQRadio = activeRadio;
         if (duelingCQMode) duelingCQActivate(false);
         activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);

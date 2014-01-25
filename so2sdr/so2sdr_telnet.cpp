@@ -267,7 +267,7 @@ void So2sdr::checkSpot(int nr)
             winkey->cancelcw();
             keyInProgress=false;
         }
-        if (autoCQMode && nr == activeTxRadio) {
+        if (autoCQMode && nr == autoCQRadio) {
             autoCQActivate(false);
         }
         if (duelingCQMode) {

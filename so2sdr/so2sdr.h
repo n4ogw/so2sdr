@@ -224,6 +224,7 @@ private:
     int                  altDActive;
     int                  altDActiveRadio;
     int                  altDOrigMode;
+    int                  autoCQRadio;
     int                  band[NRIG];
     int                  multMode;
     int                  nDupesheet;
