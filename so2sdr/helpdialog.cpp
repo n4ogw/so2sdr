@@ -26,6 +26,9 @@ HelpDialog::HelpDialog(QString fileName, QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     connect(pushButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(homeButton,SIGNAL(clicked()),this,SLOT(home()));
+    connect(backButton,SIGNAL(clicked()),HelpTextEdit,SLOT(backward()));
+    connect(forwardButton,SIGNAL(clicked()),HelpTextEdit,SLOT(forward()));
 
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -35,3 +38,7 @@ HelpDialog::HelpDialog(QString fileName, QWidget *parent) : QDialog(parent)
     file.close();
 }
 
+void HelpDialog::home()
+{
+    HelpTextEdit->scrollToAnchor("top");
+}

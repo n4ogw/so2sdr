@@ -32,7 +32,9 @@
 #include "notedialog.h"
 #include "dupesheet.h"
 #include "bandmap.h"
+#ifdef DVK_ENABLE
 #include "dvk.h"
+#endif
 #include "log.h"
 #include "logedit.h"
 #include "cty.h"
@@ -111,14 +113,18 @@ public slots:
     void showMessage(QString);
     void stationUpdate();
     void startWinkey();
+#ifdef DVK_ENABLE
     void updateDVK();
+#endif
     void updateOffTime();
     void updateRecord(QSqlRecord);
 
 signals:
+#ifdef DVK_ENABLE
     void playDvk(int,int);
     void recordDvk(int);
     void stopDvk();
+#endif
     void qsyExact(int, int);
     void setRigMode(int, rmode_t, pbwidth_t);
 
@@ -217,7 +223,9 @@ private:
     SSBMessageDialog      *ssbMessage;
     DetailedEdit         *detail;
     DupeSheet            *dupesheet[NRIG];
+#ifdef DVK_ENABLE
     DVK                  *dvk;
+#endif
     HelpDialog           *help;
     int                  activeRadio;
     int                  activeTxRadio;
@@ -293,7 +301,6 @@ private:
     QSettings            *csettings;
     QSettings            *settings;
     History              *history;
-    //QSqlDatabase         history;
     QString              contestDirectory;
     QString              fileName;
     QString              settingsFile;
@@ -302,7 +309,9 @@ private:
     QString              clearLED;
     QString              tmpCall;
     QThread              catThread;
+#ifdef DVK_ENABLE
     QThread              dvkThread;
+#endif
     QTime                cqTimer;
     Qt::KeyboardModifiers toggleFxKeyMod;
     QWidgetAction        *bandmapCheckAction[NRIG];

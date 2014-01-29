@@ -401,8 +401,8 @@ So2sdr::~So2sdr()
         model->clear();
         delete model;
     }
-    delete history;
-    delete mylog;
+    if (history) delete history;
+    if (mylog) delete mylog;
     if (model) {
         QSqlDatabase::removeDatabase("QSQLITE");
     }
@@ -421,7 +421,6 @@ So2sdr::~So2sdr()
     }
     delete dvk;
 #endif
-
     if (bandmapOn[0]) {
         bandmap[0]->close();
     }
@@ -447,8 +446,8 @@ So2sdr::~So2sdr()
     delete rLabelPtr[1];
     delete winkeyLabel;
     delete grabLabel;
-    delete master;
-    delete contest;
+    if (master) delete master;
+    if (contest) delete contest;
     delete dupesheetCheckBox[0];
     delete dupesheetCheckBox[1];
     delete dupesheetCheckAction[0];
@@ -474,8 +473,8 @@ So2sdr::~So2sdr()
     delete winkey;
     delete pport;
     delete otrsp;
-    delete qso[0];
-    delete qso[1];
+    if (qso[0]) delete qso[0];
+    if (qso[1]) delete qso[1];
     settings->sync();
     delete settings;
     delete csettings;
@@ -722,6 +721,7 @@ void So2sdr::quit()
     close();
 }
 
+#ifdef DVK_ENABLE
 void So2sdr::startDvk()
 {
     if (dvkThread.isRunning()) {
@@ -743,6 +743,7 @@ void So2sdr::updateDVK()
         dvk->stopLoopAudio();
     }
 }
+#endif
 
 void So2sdr::openRadios()
 {
@@ -1864,7 +1865,9 @@ void So2sdr::about()
                        + "<li>qextserialport-1.2 http://code.google.com/p/qextserialport/"
                        + "<li>QtSolutions_Telnet 2.1"
                        + "<li>"+QString(Pa_GetVersionText())+" http://portaudio.com"
+#ifdef DVK_ENABLE
                        + "<li>"+dvk->sndfile_version()+ " http://www.mega-nerd.com/libsndfile/"
+#endif
                        + "<li>Windows parallel port:  Inpout32.dll http://logix4u.net/"
                        + "<li>MASTER.DTA algorithm, IQ balancing: Alex Shovkoplyas VE3NEA, http://www.dxatlas.com</ul>"
                        + "<hr><p>SO2SDR is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License "
@@ -3006,12 +3009,14 @@ void So2sdr::speedUp(int nrig)
 {
     wpm[nrig] += 2;
     if (wpm[nrig] > 99) wpm[nrig] = 99;
-    if (winkey->isSending() && nrig == activeTxRadio)
-    {
-        // don't actually change speed if we are sending on other radio
-        winkey->setSpeed(wpm[nrig]);
-    }
     wpmLineEditPtr[nrig]->setText(QString::number(wpm[nrig]));
+
+    // don't actually change speed if we are sending on other radio
+    if (nrig != activeTxRadio)
+    {
+        return;
+    }
+    winkey->setSpeed(wpm[nrig]);
 }
 
 /*!
@@ -3023,12 +3028,14 @@ void So2sdr::speedDn(int nrig)
 {
     wpm[nrig] -= 2;
     if (wpm[nrig] < 5) wpm[nrig] = 5;
-    if (winkey->isSending() && nrig == activeTxRadio)
-    {
-        // don't actually change speed if we are sending on other radio
-        winkey->setSpeed(wpm[nrig]);
-    }
     wpmLineEditPtr[nrig]->setText(QString::number(wpm[nrig]));
+
+    // don't actually change speed if we are sending on other radio
+    if (nrig != activeTxRadio)
+    {
+        return;
+    }
+    winkey->setSpeed(wpm[nrig]);
 }
 
 /*!
@@ -3075,8 +3082,8 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
     } else {
         if (ok) {
             wpm[nrig] = w;
+            // don't actually change speed if we are sending on other radio
             if (nrig == activeTxRadio) {
-                // don't actually change speed if we are sending on other radio
                 winkey->setSpeed(wpm[nrig]);
             }
         }
@@ -3242,7 +3249,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
     /*!
        cw/ssb message macros
 
-       - {AUDIO}   play/record audio
        - {CALL}    insert callsign
        - {#}       insert qso number
        - {UP}      increase speed by 5
@@ -3269,7 +3275,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
        - {RIG2_FREQ} send current inactive rig freq in KHz
        - {BEST_CQ} qsy current radio to "best" CQ freq
        - {BEST_CQ_R2} qsy 2nd radio to "best" CQ freq
-       - {CANCEL} cancel a winkey speed change
        - {AUDIO} message contains DVK audio
        - {SWITCH_RADIOS} same as alt-R
        - {MCP}{/MCP} Microham Control Protocol commands
@@ -3686,7 +3691,7 @@ void So2sdr::showHelp()
 {
     if (help == 0) {
         // open help file and display it
-        directory->setCurrent(dataDirectory());
+        directory->setCurrent(dataDirectory()+"/help");
         help = new HelpDialog("so2sdrhelp.html", this);
         connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
         connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -4059,11 +4064,15 @@ void So2sdr::initPointers()
     sdr           = 0;
     winkey        = 0;
     winkeyDialog  = 0;
+    master        = 0;
     model         = 0;
+    history       = 0;
     dupesheet[0] = 0;
     dupesheet[1] = 0;
     bandmap[0]   = 0;
     bandmap[1]   = 0;
+    qso[0]       = 0;
+    qso[1]       = 0;
     dupesheetCheckBox[0] = 0;
     dupesheetCheckBox[1] = 0;
     dupesheetCheckAction[0] = 0;

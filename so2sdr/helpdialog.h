@@ -29,5 +29,8 @@ Q_OBJECT
 
 public:
     HelpDialog(QString fileName, QWidget *parent = 0);
+
+private slots:
+    void home();
 };
 #endif

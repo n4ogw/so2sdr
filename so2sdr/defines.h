@@ -666,7 +666,7 @@ const QString s_settings_autosend_mode="main/autosendmode";
 const int s_settings_autosend_mode_def=0;
 
 const QString s_settings_autosend="main/autosend";
-const int s_settings_autosend_def=0;
+const int s_settings_autosend_def=3;
 
 const QString c_multsband="contest/multsband";
 const bool c_multsband_def=true;

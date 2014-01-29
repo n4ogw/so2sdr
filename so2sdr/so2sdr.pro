@@ -73,7 +73,7 @@ HEADERS += cwmessagedialog.h \
     mytableview.h \
     contest_cqp.h \
     contest_kqp.h \
-    dvk.h \
+  #  dvk.h \
     otrsp.h \
     ssbmessagedialog.h \
     settingsdialog.h \
@@ -148,7 +148,7 @@ SOURCES += cwmessagedialog.cpp \
     mytableview.cpp \
     contest_cqp.cpp \
     contest_kqp.cpp \
-    dvk.cpp \
+  #  dvk.cpp \
     otrsp.cpp \
     ssbmessagedialog.cpp \
     settingsdialog.cpp \
@@ -158,7 +158,7 @@ unix {
     include(../common.pri)
 
     CONFIG += link_pkgconfig
-    PKGCONFIG += fftw3 hamlib portaudio-2.0 sndfile
+    PKGCONFIG += fftw3 hamlib portaudio-2.0 # sndfile
 
     QMAKE_CXXFLAGS += -O2 \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
@@ -182,9 +182,11 @@ unix {
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
+        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
         install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
         install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
         install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
+        install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
         install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
         install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png
     QMAKE_EXTRA_TARGETS += install
@@ -206,12 +208,12 @@ win32 {
         -lQtSolutions_Telnet-2.1
     LIBS += -L"../" \
         -llibfftw3-3
-    LIBS += -L"R:/so2sdr/work/sndfile" \
-         -llibsndfile-1
+ #   LIBS += -L"R:/so2sdr/work/sndfile" \
+ #       -llibsndfile-1
     LIBS += -L"R:/so2sdr/work/portaudio-win32-noasio/build/msvc/Win32/Release" \
         -lportaudio_x86
     INCLUDEPATH += R:/so2sdr/work/portaudio-win32-noasio/include
-    INCLUDEPATH += R:/so2sdr/work/hamlib-win32-1.2.15.3/include
+ #   INCLUDEPATH += R:/so2sdr/work/hamlib-win32-1.2.15.3/include
     INCLUDEPATH += R:/so2sdr/work/sndfile
     LIBS += -L"R:/so2sdr/work/hamlib-win32-1.2.15.3/lib/msvc" -llibhamlib-2
     RC_FILE = so2sdr.rc

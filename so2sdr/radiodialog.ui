@@ -162,7 +162,11 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QComboBox" name="Radio1PttComboBox"/>
+          <widget class="QComboBox" name="Radio1PttComboBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="label_18">
