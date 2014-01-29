@@ -19,7 +19,6 @@
 #include "defines.h"
 #include "serial.h"
 #include <stdio.h>
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QSettings>
@@ -483,7 +482,7 @@ void RigSerial::openRig()
             // ext param for RIT clear
             confParamsRIT[i] = rig_ext_lookup(rig[i], "ritclr");
         } else {
-            qDebug("radio %d not ok status=%d", i + 1, r);
+            emit(radioError("ERROR: radio "+QString::number(i+1)+" could not be opened"));
             radioOK[i] = false;
             rig_close(rig[i]);
         }

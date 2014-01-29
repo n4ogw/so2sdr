@@ -16,7 +16,6 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QDebug>
 #include <QSettings>
 #include "defines.h"
 #include "winkey.h"

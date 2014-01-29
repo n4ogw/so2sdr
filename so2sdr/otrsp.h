@@ -44,6 +44,8 @@ public:
     void switchTransmit(int nr);
     bool stereoActive() const;
     void sendCommand(QByteArray command);
+signals:
+    void otrspError(const QString &);
 
 public slots:
     void openOTRSP();

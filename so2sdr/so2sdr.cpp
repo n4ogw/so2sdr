@@ -146,6 +146,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     cat = new RigSerial(*settings);
     cat->moveToThread(&catThread);
     connect(&catThread, SIGNAL(started()), cat, SLOT(run()));
+    connect(cat, SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     options = new ContestOptionsDialog(this);
     connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -339,12 +340,14 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // otrsp device
     otrsp = new OTRSP(*settings);
     connect(radios,SIGNAL(setOTRSP()),otrsp,SLOT(openOTRSP()));
+    connect(otrsp, SIGNAL(otrspError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
         otrsp->openOTRSP();
     }
     // microHam device
     microham = new MicroHam(*settings);
     connect(radios,SIGNAL(setMicroHam()),microham,SLOT(openMicroHam()));
+    connect(microham, SIGNAL(microhamError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
         microham->openMicroHam();
     }
@@ -749,14 +752,12 @@ void So2sdr::openRadios()
 {
     if (catThread.isRunning()) {
         catThread.quit();
+        catThread.wait(100); // needed to wait for the thread to stop
     }
-
     cat->initialize();
-
     // Connect signals from functions in this class with slots in RigSerial class
     connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
     connect(this, SIGNAL(setRigMode(int, rmode_t, pbwidth_t)), cat, SLOT(setRigMode(int, rmode_t, pbwidth_t)));
-
     cat->openRig();
     catThread.start();
     for (int i = 0; i < N_BANDS; i++) {

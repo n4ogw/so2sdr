@@ -16,7 +16,6 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QDebug>
 #include <QSettings>
 #include "defines.h"
 #include "otrsp.h"
@@ -124,7 +123,7 @@ void OTRSP::openOTRSP()
 
     if (!OTRSPPort->isOpen()) {
         OTRSPOpen = false;
-        qDebug("ERROR: could not open otrsp device");
+        emit(otrspError("ERROR: could not open otrsp device"));
         return;
     }
     OTRSPOpen = true;

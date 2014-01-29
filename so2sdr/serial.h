@@ -92,6 +92,8 @@ public:
 
     static QList<hamlibmfg>        mfg;
     static QList<QByteArray>       mfgName;
+signals:
+    void radioError(const QString &);
 
 public slots:
     void setPtt(int nrig,int state);

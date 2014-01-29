@@ -16,7 +16,6 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QDebug>
 #include <QSettings>
 #include "defines.h"
 #include "microham.h"
@@ -118,7 +117,7 @@ void MicroHam::openMicroHam()
 
     if (!MicroHamPort->isOpen()) {
         MicroHamOpen = false;
-        qDebug("ERROR: could not open MicroHam device");
+        emit(microhamError("ERROR: could not open MicroHam device"));
         return;
     }
     MicroHamOpen = true;
