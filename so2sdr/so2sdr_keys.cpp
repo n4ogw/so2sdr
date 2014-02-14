@@ -394,7 +394,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                         switchTransmit(altDActiveRadio);
                     }
                 } else {
-                    if (autoCQMode) {
+                    if (autoCQMode && !excMode[autoCQRadio]) {
                         sendLongCQ = true;
                         autoCQModePause = false;
                     }
@@ -413,7 +413,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                         switchTransmit(altDActiveRadio);
                     }
                 } else {
-                    if (autoCQMode) {
+                    if (autoCQMode && !excMode[autoCQRadio]) {
                         sendLongCQ = false;
                         autoCQModePause = false;
                     }
