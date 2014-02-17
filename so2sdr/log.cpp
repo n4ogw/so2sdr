@@ -590,7 +590,6 @@ QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
     end=end.addSecs(-end.time().second()+60); // need to add 1 minute since end is time of last possible qso
 
     int totOffTime=0;
-    int cnt=0;
     QDateTime lastQsoTime=start;
     for (int i = 0; i < m.rowCount(); i++) {
         if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
@@ -603,19 +602,17 @@ QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
         QDateTime qsoTime=QDateTime(QDate(yr,mon,d),QTime(hr,min),Qt::UTC);
 
         if (qsoTime<start || qsoTime>end) continue; // qso not during contest
-        if (cnt>0) {
-            // calculate time difference from last qso
-            int diff=lastQsoTime.secsTo(qsoTime);
-            if (diff<0) continue; // probably means log is out of order, this will fail!
 
-            diff/=60;
-            diff--;
-            if (diff>=minOffTime) {
-                totOffTime+=diff;
-            }
+        // calculate time difference from last qso
+        int diff=lastQsoTime.secsTo(qsoTime);
+        if (diff<0) continue; // probably means log is out of order, this will fail!
+
+        diff/=60;
+        diff--;
+        if (diff>=minOffTime) {
+            totOffTime+=diff;
         }
         lastQsoTime=qsoTime;
-        cnt++;
     }
     // add any additional off time taken up to current time
     int extra=0;
