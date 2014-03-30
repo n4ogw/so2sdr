@@ -29,6 +29,9 @@
 #include <windows.h>
 #endif
 
+// need to define this internal hamlib function
+extern "C" HAMLIB_EXPORT(int) write_block(hamlib_port_t *p, const char *txbuffer, size_t count);
+
 // initialize statics
 QList<hamlibmfg> RigSerial::mfg;
 QList<QByteArray> RigSerial::mfgName;
@@ -521,4 +524,39 @@ void RigSerial::closeRig()
     rig_close(rig[1]);
     radioOK[0] = false;
     radioOK[1] = false;
+}
+
+/*! send a raw byte string to the radio: careful, there is no checking here!
+ */
+void RigSerial::sendRaw(int nrig, QByteArray cmd)
+{
+    if (!cmd.contains('<')) {
+        write_block(&rig[nrig]->state.rigport,cmd.data(),cmd.size());
+    } else {
+        // numbers inside "< >" will be interpreted as hexadecimal bytes
+        QByteArray data;
+        data.clear();
+        int i0=0,i1,i2;
+        do {
+            i1=cmd.indexOf("<",i0);
+            if (i1!=-1) {
+                data=data+cmd.mid(i0,i1-i0);
+            } else {
+                break;
+            }
+            i2=cmd.indexOf(">",i1);
+            if (i2==-1 || (i2-i1)!=3) break;
+            QByteArray hex=cmd.mid(i1+1,i2-i1-1);
+            bool ok=false;
+            char c=hex.toInt(&ok,16);
+            if (ok) {
+                data=data+c;
+            }
+            i0=i2+1;
+        } while (i0<cmd.size());
+        if ((i0+1)<cmd.size()) {
+            data=data+cmd.mid(i0,-1);
+        }
+        write_block(&rig[nrig]->state.rigport,data.data(),data.size());
+    }
 }

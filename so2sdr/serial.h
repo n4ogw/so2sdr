@@ -88,6 +88,7 @@ public:
     ModeTypes modeType(int nrig) const;
     void openRig();
     bool radioOpen(int nrig);
+    void sendRaw(int nrig,QByteArray cmd);
     void stopSerial();
 
     static QList<hamlibmfg>        mfg;

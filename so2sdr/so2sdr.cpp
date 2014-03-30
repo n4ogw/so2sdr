@@ -3244,8 +3244,12 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                                        "AUDIO",
                                        "SWITCH_RADIOS",
                                        "MCP",
-                                       "OTRSP"};
-    const int        n_token_names = 29;
+                                       "OTRSP",
+                                       "CAT",
+                                       "CATR2",
+                                       "CAT1",
+                                       "CAT2"};
+    const int        n_token_names = 33;
 
     /*!
        cw/ssb message macros
@@ -3280,6 +3284,10 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
        - {SWITCH_RADIOS} same as alt-R
        - {MCP}{/MCP} Microham Control Protocol commands
        - {OTRSP}{/OTRSP} OTRSP Control Protocol commands
+       - {CAT}{/CAT} raw serial port command to active radio
+       - {CATR2}{/CATR2} raw serial port command to second radio
+       - {CAT1}{/CAT1} raw serial port command to radio 1
+       - {CAT2}{/CAT2} raw serial port command to radio 2
     */
     bool switchradio=true;
     bool first=true;
@@ -3453,6 +3461,26 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
                         command.append("\r");
                         otrsp->sendCommand(command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        break;
+                    case 29: // CAT
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        cat->sendRaw(activeRadio,command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        break;
+                    case 30: // CATR2
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        cat->sendRaw(activeRadio ^ 1,command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        break;
+                    case 31: // CAT1
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        cat->sendRaw(0,command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        break;
+                    case 32: // CAT2
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        cat->sendRaw(1,command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     }
