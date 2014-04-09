@@ -213,7 +213,7 @@ win32 {
     LIBS += -L"R:/so2sdr/work/portaudio-win32-noasio/build/msvc/Win32/Release" \
         -lportaudio_x86
     INCLUDEPATH += R:/so2sdr/work/portaudio-win32-noasio/include
- #   INCLUDEPATH += R:/so2sdr/work/hamlib-win32-1.2.15.3/include
+    INCLUDEPATH += R:/so2sdr/work/hamlib-win32-1.2.15.3/include
     INCLUDEPATH += R:/so2sdr/work/sndfile
     LIBS += -L"R:/so2sdr/work/hamlib-win32-1.2.15.3/lib/msvc" -llibhamlib-2
     RC_FILE = so2sdr.rc

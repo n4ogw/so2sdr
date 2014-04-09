@@ -49,7 +49,8 @@ public:
     ~ParallelPort();
     void switchAudio(int r);
     void toggleStereoPin();
-    bool stereoPinStatus;
+    void switchTransmit(int r);
+    bool stereoActive() const;
 
 signals:
     void parallelPortError(const QString &);
@@ -58,19 +59,21 @@ public slots:
     void initialize();
 
 private:
-    void PinLow(int p);
-    void PinHigh(int p);
+    bool initialized;
+    bool stereoPinStatus;
+    void PinLow(const int p);
+    void PinHigh(const int p);
 
-	HINSTANCE hLib;
+    HINSTANCE hLib;
 
-// After successful initialization, these 2 variables
-// will contain function pointers.
-//
+    // After successful initialization, these 2 variables
+    // will contain function pointers.
+    //
     inpfuncPtr inp32fp;
     oupfuncPtr oup32fp;
     bool       initSuccess;
-// Wrapper functions for the function pointers
-// - call these functions to perform I/O.
+    // Wrapper functions for the function pointers
+    // - call these functions to perform I/O.
 
     short  Inp32(short portaddr);
     void  Out32(short portaddr, short datum);

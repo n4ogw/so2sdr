@@ -35,6 +35,8 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     }
 
     // out-of-focus event: refocus line edits
+	// on Windows, this eats all mouse presses into the bandmap!
+#ifdef Q_OS_LINUX
     if (grabbing && e->type()==QEvent::FocusOut) {
         QFocusEvent* ev = static_cast<QFocusEvent*>(e);
         if (ev->reason()==Qt::MouseFocusReason || ev->reason()==Qt::ActiveWindowFocusReason) {
@@ -42,6 +44,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             return true;
         }
     }
+#endif
 
     // set r true if this completely handles the key. Otherwise
     // it will be passed on to other widgets

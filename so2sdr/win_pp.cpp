@@ -37,6 +37,8 @@ void ParallelPort::Out32(short portaddr, short datum)
 ParallelPort::ParallelPort(QSettings &s) : settings(s)
 {
     port        = defaultParallelPort.toULong();
+    initialized = false;
+    stereoPinStatus=false;
     initSuccess = false;
 	stereoPinStatus=false;
     hLib        = LoadLibraryA("inpout32.dll");
@@ -70,7 +72,7 @@ ParallelPort::~ParallelPort()
     FreeLibrary(hLib);
 }
 
-void ParallelPort::PinLow(int p)
+void ParallelPort::PinLow(const int p)
 
 // set pin p (2:9) low
 {
@@ -85,7 +87,7 @@ void ParallelPort::PinLow(int p)
     }
 }
 
-void ParallelPort::PinHigh(int p)
+void ParallelPort::PinHigh(const int p)
 
 // set pin (2:9) high
 {
@@ -111,6 +113,7 @@ void ParallelPort::initialize()
         QString tmp = "port <" + pstring + "> invalid, using port "+defaultParallelPort;
         emit(parallelPortError(tmp));
     }
+	initialized=true;
 }
 
 /*!
@@ -168,4 +171,9 @@ void ParallelPort::toggleStereoPin()
         PinHigh(stereoPin);
         stereoPinStatus = true;
     }
+}
+
+bool ParallelPort::stereoActive() const
+{
+    return stereoPinStatus;
 }
