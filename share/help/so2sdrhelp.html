@@ -1,4 +1,4 @@
-<a name="top"><h2>SO2SDR help file version 1.4.1</h2></a>
+<a name="top"><h2>SO2SDR help file version 1.4.2</h2></a>
 <hr>
 
 <h3>Topics
@@ -9,7 +9,7 @@
 <li><a href="#station">Station settings</a>
 <li><a href="#contest">Contest settings</a>
 </ol>
-<li><a href="#v141">current version notes</a> 
+<li><a href="#v142">current version notes</a> 
 <li><a href="#opnotes">operating notes</a>
 <li><a href="#keys">key reference</a>
 <li><a href="#cw">CW macros</a>
@@ -497,6 +497,13 @@ Screenshot files are placed in the same directory as the log file.
 <li> | : insert 1/2 dit extra space
 <li> {MCP}{/MCP} : send Microham Control Protocol commands
 <li> {OTRSP}{/OTRSP} : send OTRSP Control Protocol commands
+<li> {CAT}{/CAT} : send raw string to radio. This can be used
+to trigger a variety of radio functions. Numbers placed inside of
+< and > will be interpreted as hexadecimal bytes. Example: {CAT}SWT25;{/CAT}
+will switch the RX antenna on the Elecraft K3.
+<li> {CATR2}/{/CATR2} : same, except send to inactive radio
+<li> {CAT1}/{/CAT1} : same, except send to radio 1
+<li> {CAT2}/{/CAT2} : same, except send to radio 2
 </ul>
 
 <br>
@@ -721,6 +728,22 @@ to call CQ on in this situation.
 <br>
 <a href="#top">Return to top</a> 
 <hr>
+
+<a name="v142"><h3>Version 1.4.2</h3></a> 
+
+<p>
+New features:
+</p>
+
+<ul>
+<li> New macro commands (CAT, CATR2, CAT1, CAT2) to send general string
+ to serial port.
+</ul>
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
+
 
 <a name="v141"><h3>Version 1.4.1</h3></a> 
 
