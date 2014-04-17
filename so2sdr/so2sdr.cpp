@@ -3248,8 +3248,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                                        "CAT",
                                        "CATR2",
                                        "CAT1",
-                                       "CAT2"};
-    const int        n_token_names = 33;
+                                       "CAT2",
+                                       "CALL_OK"};
+    const int        n_token_names = 34;
 
     /*!
        cw/ssb message macros
@@ -3288,6 +3289,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
        - {CATR2}{/CATR2} raw serial port command to second radio
        - {CAT1}{/CAT1} raw serial port command to radio 1
        - {CAT2}{/CAT2} raw serial port command to radio 2
+       - {CALL_OK} mark call in entry line as correct, so correct call msg will not be sent
     */
     bool switchradio=true;
     bool first=true;
@@ -3482,6 +3484,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
                         cat->sendRaw(1,command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        break;
+                    case 33: // CALL_OK
+                        origCallEntered[activeRadio]=qso[activeRadio]->call;
                         break;
                     }
                     break;
