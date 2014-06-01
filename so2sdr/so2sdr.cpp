@@ -4256,24 +4256,28 @@ void So2sdr::initVariables()
  * \brief So2sdr::screenShot
  * Take a screenshot of the bandmap windows
  *
- * creates a lag in the update. Any way to make faster?
  */
 void So2sdr::screenShot()
 {
     // main window
+    QCoreApplication::processEvents();
     QPixmap p=QPixmap::grabWindow(winId());
+    QCoreApplication::processEvents();
     QString format = "png";
     directory->setCurrent(contestDirectory);
     QString filename="screenshot-main-"+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
     p.save(filename,format.toAscii());
+    QCoreApplication::processEvents();
 
     // bandmap windows
     for (int i=0;i<NRIG;i++) {
         if (bandmapOn[i]) {
             QPixmap p=QPixmap::grabWindow(bandmap[i]->winId());
+            QCoreApplication::processEvents();
             QString format = "png";
             QString filename="screenshot-"+QString::number(i)+" "+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
             p.save(filename,format.toAscii());
+            QCoreApplication::processEvents();
         }
     }
     So2sdrStatusBar->showMessage("Saved screenshot", 3000);
