@@ -155,7 +155,7 @@ void So2sdr::updateDupesheet(QByteArray call,int nr)
 
     // if only one dupesheet is active, figure out which one it is
     if (nDupesheet==1) {
-        for (int i=0;i<2;i++) {
+        for (int i=0;i<NRIG;i++) {
             if (!dupesheet[i]) continue;
             if (dupesheet[i]->isVisible()) {
                 nr=i;
@@ -233,7 +233,7 @@ void So2sdr::populateDupesheet()
     int nr=0;
     if (nDupesheet==1) {
         oneactive=true;
-        for (int i=0;i<2;i++) {
+        for (int i=0;i<NRIG;i++) {
             if (!dupesheet[i]) continue;
             if (dupesheet[i]->isVisible()) {
                 nr=i;
@@ -241,7 +241,7 @@ void So2sdr::populateDupesheet()
             }
         }
     }
-    for (int id=0;id<2;id++) {
+    for (int id=0;id<NRIG;id++) {
         if (!dupesheet[id]) continue;
         int ib=id;
         if (oneactive) {
