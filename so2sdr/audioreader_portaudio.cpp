@@ -37,7 +37,9 @@ AudioReaderPortAudio::AudioReaderPortAudio(QObject *parent) : QObject(parent)
 
 AudioReaderPortAudio::~AudioReaderPortAudio()
 {
-    delete [] buff;
+    if (buff) {
+        delete [] buff;
+    }
 }
 
 bool AudioReaderPortAudio::checkError(PaError err)
