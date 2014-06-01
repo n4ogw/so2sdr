@@ -4236,7 +4236,6 @@ void So2sdr::initVariables()
     cqQsoInProgress[1] = false;
     grab               = false;
     grabbing           = false;
-    keyInProgress=false;
 
     cqTimer.start();
     toggleMode = false;

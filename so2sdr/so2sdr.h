@@ -204,7 +204,6 @@ private:
     bool                 grab;
     bool                 grabbing;
     bool                 initialized;
-    bool                 keyInProgress;
     bool                 logSearchFlag;
     bool                 sendLongCQ;
     bool                 spotListPopUp[NRIG];

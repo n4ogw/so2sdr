@@ -1040,7 +1040,6 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
  */
 void So2sdr::enter(Qt::KeyboardModifiers mod)
 {
-    keyInProgress=true;
     int                 i1;
     int                 i2;
     int                 i3;
@@ -1080,7 +1079,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
                 if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
                     MasterTextEdit->clear();
                 }
-                keyInProgress=false;
                 return; // qsy successful
             }
         }
@@ -1195,7 +1193,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         int m=(int)cat->modeType(activeTxRadio);
         if (lineEditCall[activeRadio]->text().contains("?") && (m == CWType || m == DigiType)) {
             expandMacro("{CALL_ENTERED}",-1,false);
-            keyInProgress=false;
             return; // prevent further processing
         } else {
             if (autoSend && !autoSendPause && settings->value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt() == 0) { // semi-auto
@@ -1418,8 +1415,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             break;
         }
     }
-
-    keyInProgress=false;
 }
 
 /*!
@@ -1491,7 +1486,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
        <li>q. send F9 (?)                  16=65536
        </ul>
     */
-    keyInProgress=true;
     // active radio states
     int                 i1;
     int                 i2;
@@ -1868,8 +1862,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
     toggleFxKey = -1;
     toggleFxKeyMod = Qt::NoModifier;
     toggleFxKeySend = false;
-
-    keyInProgress=false;
 }
 
 void So2sdr::prefillExch(int nr)
@@ -1928,7 +1920,6 @@ void So2sdr::esc()
     static bool         first     = true;
     bool                altdClear = true;
 
-    keyInProgress=true;
     ModeTypes mode=cat->modeType(activeTxRadio);
 
     // define states
@@ -1960,7 +1951,6 @@ void So2sdr::esc()
     {
         if (winkey->isSending()) {
             winkey->cancelcw();
-            keyInProgress=false;
             // de-activate dueling-CQ if call fields on both radios empty
             if (duelingCQMode && lineEditCall[activeRadio]->text().isEmpty() && lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
                 duelingCQActivate(false);
@@ -1987,7 +1977,6 @@ void So2sdr::esc()
 #ifdef DVK_ENABLE
         if (dvk->audioRunning()) {
             emit(stopDvk());
-            keyInProgress=false;
             return;
         }
 #endif
@@ -2155,9 +2144,6 @@ void So2sdr::esc()
     if (x & 4096) {
         autoCQModePause = true;
     }
-
-
-    keyInProgress=false;
 }
 
 /*!
