@@ -35,7 +35,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     }
 
     // out-of-focus event: refocus line edits
-	// on Windows, this eats all mouse presses into the bandmap!
+    // on Windows, this eats all mouse presses into the bandmap!
 #ifdef Q_OS_LINUX
     if (grabbing && e->type()==QEvent::FocusOut) {
         QFocusEvent* ev = static_cast<QFocusEvent*>(e);
@@ -225,17 +225,6 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 if (csettings->value(c_multimode,c_multimode_def).toBool()) {
                     // switch to next modeType if it is allowed
                     modeTypeShown=contest->nextModeType(modeTypeShown);
-                    /*switch (modeTypeShown) {
-                    case CWType:
-                        modeTypeShown=PhoneType;
-                        break;
-                    case PhoneType:
-                        modeTypeShown=DigiType;
-                        break;
-                    case DigiType:
-                        modeTypeShown=CWType;
-                        break;
-                    }*/
                     setSummaryGroupBoxTitle();
                 }
                 r=true;
@@ -516,7 +505,6 @@ void So2sdr::setSummaryGroupBoxTitle()
     } else {
         groupBox->setTitle("Summary:");
     }
-
 }
 
 /*!
@@ -555,7 +543,6 @@ void So2sdr::altd()
 {
     // wipe alt-d if already active (toggle off)
     // nothing if dueling CQ or Toggle Modes active
-    //if (altDActive || csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return;
     if (altDActive) {
         callFocus[altDActiveRadio] = true;
         lineEditCall[altDActiveRadio]->clear();
@@ -861,14 +848,7 @@ void So2sdr::spaceSprint()
         lineEditCall[activeRadio]->setModified(false);
         setEntryFocus();
         if (lineEditCall[activeRadio]->text().length() > 3) {
-
-// leaves exchange empty, even non-dupes.  prefill.clear in log.cpp
-/*
-            if (!dupeCheckDone) {
-                qso[activeRadio]->dupe = mylog->isDupe(qso[activeRadio], contest->dupeCheckingByBand(), true) &&
-                                         csettings->value(c_dupemode,c_dupemode_def).toInt() < NO_DUPE_CHECKING;
-            }
-*/
+            // leaves exchange empty, even non-dupes.  prefill.clear in log.cpp
             if (!qso[activeRadio]->dupe) {
                 callFocus[activeRadio] = false;
                 setEntryFocus();
@@ -1842,13 +1822,6 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         nrSent++;
         updateNrDisplay();
         cqQsoInProgress[activeRadio ^ 1] = false;
-        // already done upon entering toggle function
-        /*
-        if (altDActive && altDActiveRadio == activeRadio) {
-            // if doing an alt-D SO2R qso, reset counter
-            altDActive = 0;
-        }
-        */
         qso[activeRadio ^ 1]->dupe = false;
         qso[activeRadio ^ 1]->valid = false;
         callSent[activeRadio ^ 1]  = false;
@@ -2037,7 +2010,7 @@ void So2sdr::esc()
     } else {
         i1 = 0;
     }
-    if (!qso[activeRadio]->exch.simplified().isEmpty()) { // && !qso[activeRadio]->dupe) {
+    if (!qso[activeRadio]->exch.simplified().isEmpty()) {
         i2 = 1;
     } else {
         i2 = 0;

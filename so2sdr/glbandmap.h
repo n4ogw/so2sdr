@@ -63,11 +63,11 @@ private:
 // these are used only in the Linux version, where the drawn spectrum is
 // cached in a pixmap
 
-    int cornerx;
+    int     cornerx;
     int     cornery;
     QPixmap pixmap;
 #endif
-    bool cmap[MAX_H];
+    bool          cmap[MAX_H];
     bool          _invert;
     bool          mark;
     int           nrig;
