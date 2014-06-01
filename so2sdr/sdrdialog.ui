@@ -36,6 +36,9 @@
   <property name="windowTitle">
    <string>Sound Card setup</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTabWidget" name="tabWidget">
