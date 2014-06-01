@@ -4186,7 +4186,6 @@ void So2sdr::initVariables()
     spotListPopUp[1] = false;
     callSent[0]    = false;
     callSent[1]    = false;
-    aboutActive    = false;
     logSearchFlag  = false;
     statusBarDupe = false;
     multNameLabel[0]->clear();

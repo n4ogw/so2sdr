@@ -183,7 +183,6 @@ protected:
 
 private:
     Bandmap              *bandmap[NRIG];
-    bool                 aboutActive;
     bool                 activeR2CQ;
     bool                 autoCQMode;
     bool                 autoCQModePause;
