@@ -234,7 +234,6 @@ void Bandmap::initialize(QString dir, int nr,const PaStreamParameters &format)
     }
     sizes.spec_length    = sizes.sample_length;
     sizes.display_length = MAX_H;
-    sizes.spec_buff      = N_SPEC * sizes.display_length;
 
     int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
     display->setScale(scale);

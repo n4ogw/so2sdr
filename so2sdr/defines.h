@@ -297,13 +297,8 @@ typedef struct sampleSizes {
     unsigned long advance_size;  // bytes for one advance of spectrum
     int           spec_length;   // size in bytes of one displayed scanline
     int           display_length;
-    int           spec_buff;     // total buffer size, displayed spectrum
 } sampleSizes;
 Q_DECLARE_TYPEINFO(sampleSizes, Q_PRIMITIVE_TYPE);
-
-/*! finished spectrum scans buffer:
-   total number of spectrum scans to keep */
-const int N_SPEC=100;
 
 #ifdef Q_OS_WIN
 /*! Windows FFTW function pointers */
