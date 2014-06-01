@@ -29,7 +29,7 @@ GLBandmap::GLBandmap(QWidget *parent) : QWidget(parent)
 
 // : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-    setAttribute(Qt::WA_OpaquePaintEvent);
+    setAttribute(Qt::WA_NoSystemBackground);
     setAutoFillBackground(false);
     pixmap = QPixmap(MAX_W, MAX_H);
     QPainter p(&pixmap);
@@ -112,14 +112,15 @@ void GLBandmap::initialize(int nr, sampleSizes s)
  */
 void GLBandmap::plotSpectrum(unsigned char *data, unsigned char bg)
 {
+    int hgt=height();
     unsigned char cut;
     if (bg < 225) cut = bg + 30;
     else cut = bg;
-    pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), height()));
-    int      dy = height() / 2 - vfoPos;
+    pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), hgt));
+    int      dy = hgt / 2 - vfoPos;
     QPainter painter(&pixmap);
     if (!_invert) {
-        for (int i = (MAX_H - height()) / 2 - dy, j = (MAX_H + height()) / 2 - 1 + dy; j >= (MAX_H - height()) / 2 + dy; i++, j--) {
+        for (int i = (MAX_H - hgt) / 2 - dy, j = (MAX_H + hgt) / 2 - 1 + dy; j >= (MAX_H - hgt) / 2 + dy; i++, j--) {
             if (cmap[j] && data[i] > cut && mark) {
                 painter.setPen(qRgb(data[i], 0, data[i]));
             } else {
@@ -128,8 +129,8 @@ void GLBandmap::plotSpectrum(unsigned char *data, unsigned char bg)
             painter.drawPoint(MAX_W - 1, j);
         }
     } else {
-        for (int i = (MAX_H - height()) / 2 - dy, j = (MAX_H - height()) / 2 + dy; j < MAX_H; i++, j++) {
-            if (cmap[j] && data[i] > cut && mark) {
+        for (int i = (MAX_H - hgt) / 2 - dy, j = (MAX_H - hgt) / 2 + dy; j < MAX_H; i++, j++) {
+            if (mark && cmap[j] && data[i] > cut) {
                 painter.setPen(qRgb(data[i], 0, data[i]));
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));

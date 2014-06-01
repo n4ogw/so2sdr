@@ -284,13 +284,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         bandmapCheckAction[i]->setDefaultWidget(bandmapCheckBox[i]);
         menuWindows->addAction(bandmapCheckAction[i]);
     }
-    windowBorderCheckBox    = new QCheckBox("Borderless", menuWindows);
-    windowBorderCheckAction = new QWidgetAction(menuWindows);
-    windowBorderCheckAction->setDefaultWidget(windowBorderCheckBox);
-#ifdef Q_OS_LINUX
-    // this option only works on Linux/X11
-    menuWindows->addAction(windowBorderCheckAction);
-#endif
     grabCheckBox = new QCheckBox("Grab keyboard", menuWindows);
     grabCheckBox->setCheckState(Qt::Unchecked);
     grabAction = new QWidgetAction(menuWindows);
@@ -298,7 +291,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     menuWindows->addAction(grabAction);
     connect(bandmapCheckBox[0], SIGNAL(stateChanged(int)), this, SLOT(showBandmap1(int)));
     connect(bandmapCheckBox[1], SIGNAL(stateChanged(int)), this, SLOT(showBandmap2(int)));
-    connect(windowBorderCheckBox, SIGNAL(toggled(bool)), this, SLOT(windowBorders(bool)));
     connect(grabCheckBox, SIGNAL(toggled(bool)), this, SLOT(setGrab(bool)));
     connect(grabCheckBox, SIGNAL(clicked()), menuWindows, SLOT(close()));
     telnetCheckBox    = new QCheckBox("Telnet", menuWindows);
@@ -465,8 +457,6 @@ So2sdr::~So2sdr()
     delete bandmapCheckBox[1];
     delete bandmapCheckAction[0];
     delete bandmapCheckAction[1];
-    delete windowBorderCheckBox;
-    delete windowBorderCheckAction;
     delete grabCheckBox;
     delete grabAction;
     delete telnet;
@@ -812,7 +802,6 @@ void So2sdr::disableUI()
     actionImport_Cabrillo->setEnabled(false);
     dupesheetCheckBox[0]->setEnabled(false);
     dupesheetCheckBox[1]->setEnabled(false);
-    windowBorderCheckBox->setEnabled(false);
     telnetCheckBox->setEnabled(false);
     bandmapCheckBox[0]->setEnabled(false);
     bandmapCheckBox[1]->setEnabled(false);
@@ -844,8 +833,6 @@ void So2sdr::enableUI()
     dupesheetCheckBox[0]->setEnabled(true);
     dupesheetCheckBox[1]->setEnabled(true);
     telnetCheckBox->setEnabled(true);
-    windowBorderCheckBox->setEnabled(true);
-
     if (sdr->checkBox->isChecked()) bandmapCheckBox[0]->setEnabled(true);
     if (sdr->checkBox_2->isChecked()) bandmapCheckBox[1]->setEnabled(true);
     uiEnabled = true;
@@ -4110,7 +4097,6 @@ void So2sdr::initPointers()
     bandmapCheckBox[1] = 0;
     grabCheckBox = 0;
     telnetCheckBox = 0;
-    windowBorderCheckBox = 0;
     dupeCalls[0]=0;
     dupeCalls[1]=0;
     dupeCallsKey[0]=0;

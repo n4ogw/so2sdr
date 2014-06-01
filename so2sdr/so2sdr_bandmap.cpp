@@ -23,25 +23,6 @@
 // //// Bandmap stuff
 
 /*!
-   update borderless option for bandmap. Useful because without borders, clicking on the bandmap
-   won't take keyboard focus away from the main window
- */
-void So2sdr::windowBorders(bool t)
-{
-    for (int i = 0; i < 2; i++) {
-        if (bandmapOn[i]) {
-            if (t) {
-                bandmap[i]->setWindowFlags(Qt::X11BypassWindowManagerHint);
-                bandmap[i]->show();
-            } else {
-                bandmap[i]->setWindowFlags(Qt::Widget);
-                bandmap[i]->show();
-            }
-        }
-    }
-}
-
-/*!
    called when bandmap clicked; argument hz is offset from freq of radio nr
  */
 void So2sdr::mouseQSYevent(int nr, int hz)
@@ -113,9 +94,6 @@ void So2sdr::showBandmap(int nr, int checkboxState)
             connect(bandmap[nr], SIGNAL(findCQMessage(QString)), this, SLOT(showMessage(QString)));
         }
         bandmap[nr]->initialize(userDirectory(), nr, sdr->format(nr));
-        if (windowBorderCheckBox->isChecked()) {
-            bandmap[nr]->setWindowFlags(Qt::X11BypassWindowManagerHint);
-        }
 
         // invert spectrum if needed
         bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));

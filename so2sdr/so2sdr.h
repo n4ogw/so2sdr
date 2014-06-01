@@ -165,7 +165,6 @@ private slots:
     void speedDn(int nrig);
     void speedUp(int nrig);
     void startLogEdit();
-  //  void startHistory();
     void startMaster();
     void switchAudio(int r);
     void switchMultMode();
@@ -176,7 +175,6 @@ private slots:
     void updateHistory();
     void updateOptions();
     void updateRadioFreq();
-    void windowBorders(bool t);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -261,7 +259,6 @@ private:
     QCheckBox            *dupesheetCheckBox[NRIG];
     QCheckBox            *grabCheckBox;
     QCheckBox            *telnetCheckBox;
-    QCheckBox            *windowBorderCheckBox;
     QDir                 *directory;
     QErrorMessage        *errorBox;
     QPixmap              iconValid;
@@ -318,7 +315,6 @@ private:
     QWidgetAction        *dupesheetCheckAction[NRIG];
     QWidgetAction        *grabAction;
     QWidgetAction        *telnetCheckAction;
-    QWidgetAction        *windowBorderCheckAction;
     QWidget              *grabWidget;
     RadioDialog          *radios;
     RigSerial            *cat;
