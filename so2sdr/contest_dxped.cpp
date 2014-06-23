@@ -33,7 +33,7 @@ Dxped::Dxped()
     logFieldPrefill       = new bool[nExch];
     logFieldPrefill[0]    = true;
     logFieldPrefill[1]    = false;
-    prefill               = false;
+    prefill               = true;
     finalExch             = new QByteArray[nExch];
     exchange_type         = new FieldTypes[nExch];
     exchange_type[0]      = RST;          // RST
@@ -47,6 +47,16 @@ Dxped::~Dxped()
     delete[] logFieldPrefill;
     delete[] finalExch;
     delete[] exchange_type;
+}
+
+QByteArray Dxped::prefillExchange(Qso *qso)
+{
+    if (qso->mode == RIG_MODE_CW || qso->mode == RIG_MODE_CWR ||
+            qso->mode == RIG_MODE_RTTY || qso->mode == RIG_MODE_RTTYR) {
+        return "599";
+    } else {
+        return "59";
+    }
 }
 
 void Dxped::addQso(Qso *qso)

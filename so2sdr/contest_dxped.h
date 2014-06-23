@@ -38,6 +38,7 @@ public:
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     int Score() const;
+    QByteArray prefillExchange(Qso *qso);
 };
 
 #endif

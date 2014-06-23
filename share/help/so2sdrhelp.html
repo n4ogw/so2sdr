@@ -499,6 +499,9 @@ will switch the RX antenna on the Elecraft K3.
 <li> {CATR2}/{/CATR2} : same, except send to inactive radio
 <li> {CAT1}/{/CAT1} : same, except send to radio 1
 <li> {CAT2}/{/CAT2} : same, except send to radio 2
+<LI> {CALL_OK} : This will reset the check if the original call has been
+corrected. Used when repeating the exchange to a station, it will prevent
+the "Call Updated QSL" message from being sent when not needed.
 </ul>
 
 <br>
@@ -723,6 +726,29 @@ to call CQ on in this situation.
 <br>
 <a href="#top">Return to top</a> 
 <hr>
+<a name="v143"><h3>Version 1.4.3</h3></a> 
+
+<p>
+New features:
+</p>
+
+<ul>
+<li> New macro command {CALL_OK}
+</ul>
+
+<p>
+Bug fixes:
+</p>
+
+<ul>
+<li> Prefill RS(T) as the received exchange for general logging/dxpedition.
+Having a blank exchange here messed up the "Call updated QSL" message.
+</ul>
+
+
+<p>
+<a href="#top">Return to top</a> 
+</p>
 
 <a name="v143"><h3>Version 1.4.3</h3></a> 
 
