@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
+    <width>350</width>
     <height>150</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>805</width>
-    <height>1034</height>
+    <height>1400</height>
    </size>
   </property>
   <property name="contextMenuPolicy">
@@ -68,14 +68,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>95</width>
+         <width>75</width>
          <height>95</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>800</width>
-         <height>1024</height>
+         <height>1390</height>
         </size>
        </property>
       </widget>
@@ -97,7 +97,7 @@
        <property name="maximumSize">
         <size>
          <width>35</width>
-         <height>1024</height>
+         <height>1390</height>
         </size>
        </property>
        <property name="text">
@@ -122,7 +122,7 @@
        <property name="maximumSize">
         <size>
          <width>110</width>
-         <height>1024</height>
+         <height>1390</height>
         </size>
        </property>
        <property name="text">
