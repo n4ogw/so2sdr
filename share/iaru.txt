@@ -55,12 +55,14 @@ eara
 ears
 edr
 erau
+erasd
 fara
 fmre
 fra
 frc
 frr
 frra
+frs
 gara
 garc
 gars
@@ -75,7 +77,8 @@ irts
 jara
 jarl
 karl
-kfrr
+kars
+kffr
 labre
 lars
 lcra
@@ -85,6 +88,7 @@ lral
 lrem
 lrmd
 lrt
+marp
 mars
 marts
 mrasz
