@@ -1116,11 +1116,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         }
     }
 
-    // RTC 08-01-2014 Is this needed?
-    //if (!cqMode[activeRadio] && !callSent[activeRadio]) {
-    //    i2 = 0;
-    // }
-
     // ctrl+Enter logs without dupecheck or exchange validation
     if (mod == Qt::ControlModifier) {
         i2 = 1;

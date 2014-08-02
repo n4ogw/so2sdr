@@ -2486,12 +2486,12 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
     qso[nrig]->call = call.toAscii();
     qso[nrig]->call = qso[nrig]->call.toUpper();
     for (int ii = 0; ii < MMAX; ii++) qso[nrig]->mult[ii] = -1;
+    qso[nrig]->valid = false;
     // check/supercheck partial callsign fragment
     // don't do anything unless at least 2 chars entered
     if (qso[nrig]->call.size() > 1) {
         qso[nrig]->prefill.clear();
         qso[nrig]->dupe = false;
-        qso[nrig]->valid = false;
         qso[nrig]->mode = cat->mode(nrig);
         qso[nrig]->modeType = cat->modeType(nrig);
         qso[nrig]->freq = rigFreq[nrig];

@@ -128,24 +128,29 @@ bool CQWW::validateExchange(Qso *qso)
     if (!separateExchange(qso)) return(false);
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
-    if (qso->isMM) {
-        qso->mult[0]    = -1;
-        qso->isamult[0] = false;
-    }
-
     bool ok = false;
     if (exchElement.size() == 2) {
         finalExch[0] = exchElement[0];
         finalExch[1] = exchElement[1];
-        ok           = true;
     } else if (exchElement.size() == 1) {
         fillDefaultRST(qso);
         finalExch[1] = exchElement[0];
-        ok           = true;
     }
-    qso->mult_name = finalExch[1];
-    determineMultType(qso);
-
-    copyFinalExch(ok, qso);
+    int zone=finalExch[1].toInt(&ok);
+    if (ok) {
+        if (zone>0 && zone<41) {
+            qso->zone=zone;
+            qso->mult_name = finalExch[1];
+            determineMultType(qso);
+            // override for marine mobile stations: zone credit only
+            if (qso->isMM) {
+                qso->mult[0]    = -1;
+                qso->isamult[0] = false;
+            }
+            copyFinalExch(ok, qso);
+        } else {
+            ok=false;
+        }
+    }
     return(ok);
 }
