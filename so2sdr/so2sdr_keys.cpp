@@ -673,7 +673,7 @@ void So2sdr::tab()
 {
     if (cqMode[activeRadio]) {
         spMode(activeRadio);
-        prefillExch(activeRadio);
+        if (!lineEditCall[activeRadio]->text().simplified().isEmpty()) prefillExch(activeRadio);
         // redisplay band/mult info for this station
         updateWorkedDisplay(activeRadio,qso[activeRadio]->worked);
         updateWorkedMult(activeRadio);
@@ -1000,8 +1000,9 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
    <ul>
    <li>a. is there text in call field  (test().size!=0)(0=no, 1=yes)
    <li>b. exchange validated and not a dupe            (0=no, 1=yes)
+        (this is also set 0 if call has not been sent yet in S&P mode)
    <li>c. CQ or S&P mode                               (0=cq 1=sp)
-   <li>d. exchange sent
+   <li>d. exchange sent                                (0=no, 1=yes)
    </ul>
 
    --> [2][2][2][2] matrix of unsigned int (16 states)
@@ -1108,16 +1109,17 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         i3 = 1;
         // always check dupe status in S&P. NO_DUPE_CHECKING setting is
         // enforced in so2sdr.cpp where qso[activeRadio]->dupe is set
-        if (qso[activeRadio]->valid && !qso[activeRadio]->dupe) {
+        if (qso[activeRadio]->valid && !qso[activeRadio]->dupe && callSent[activeRadio]) {
             i2=1;
         } else {
             i2=0;
         }
     }
 
-    if (!cqMode[activeRadio] && !callSent[activeRadio]) {
-        i2 = 0;
-    }
+    // RTC 08-01-2014 Is this needed?
+    //if (!cqMode[activeRadio] && !callSent[activeRadio]) {
+    //    i2 = 0;
+    // }
 
     // ctrl+Enter logs without dupecheck or exchange validation
     if (mod == Qt::ControlModifier) {
@@ -1125,9 +1127,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         // so only one enter press will log
         exchangeSent[activeRadio] = true;
     }
-
-    i4 = exchangeSent[activeRadio];
-    if (i4 > 2) i4 = 0;
+    if (exchangeSent[activeRadio]) i4=1;
+    else i4=0;
 
     // test
     if (activeTxRadio != activeRadio) {
@@ -1568,8 +1569,8 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         // so only one enter press will log
         exchangeSent[activeRadio] = true;
     }
-    i4 = exchangeSent[activeRadio];
-    if (i4 > 2) i4 = 0;
+    if (exchangeSent[activeRadio]) i4=1;
+    else i4=0;
 
     // inactive radio
     if (!qso[activeRadio ^1]->call.isEmpty()) {
@@ -1907,6 +1908,7 @@ void So2sdr::prefillExch(int nr)
    <li> clear radio2 cq status          9=512
    <li> reset alt-D without deleting call 10=1024
    <li> clear log search                11=2048
+   <li> pause autoCQ                    12=4096
    </ol>
  */
 void So2sdr::esc()

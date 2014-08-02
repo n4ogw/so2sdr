@@ -2388,7 +2388,10 @@ void So2sdr::exchCheck2(const QString &exch)
  */
 void So2sdr::exchCheck(int nr,const QString &exch)
 {
-    if (qso[nr]->call.isEmpty()) return; // do nothing unless we have a callsign
+    if (qso[nr]->call.isEmpty()) {
+        qso[nr]->valid=false;
+        return; // do nothing unless we have a callsign
+    }
     // recopy call; needed in case call was changed by a previous
     // exchange edit
     qso[nr]->call=lineEditCall[nr]->text().toAscii();
@@ -2399,10 +2402,6 @@ void So2sdr::exchCheck(int nr,const QString &exch)
         validLabel[nr]->setPixmap(iconValid);
     } else {
         validLabel[nr]->clear();
-        // clear just mult status display
-        for (int ii=0;ii<MMAX;ii++) {
-      //      multWorkedLabel[nr][ii]->setText(multNameLabel[ii]->text());
-        }
     }
 }
 
