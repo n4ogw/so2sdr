@@ -472,6 +472,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (lineEditCall[activeRadio]->text().isEmpty()) {
                 autoSendTrigger = false;
                 autoSendPause = false;
+                tmpCall.clear();
             }
             break;
         default:
@@ -778,6 +779,7 @@ void So2sdr::backSlash()
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
+            tmpCall.clear();
         }
 
         // exit echange mode
@@ -1373,6 +1375,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
+            tmpCall.clear();
         }
     }
 
@@ -1962,7 +1965,7 @@ void So2sdr::esc()
                 autoCQModePause = true;
             }
             if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
-            if (autoSend) {
+            if (autoSend && !lineEditCall[activeRadio]->text().isEmpty()) {
                 autoSendPause = true;
             }
             return;
@@ -2047,6 +2050,7 @@ void So2sdr::esc()
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
+            tmpCall.clear();
         }
         autoCQModePause = false;
     }
