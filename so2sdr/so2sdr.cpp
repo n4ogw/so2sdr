@@ -3363,8 +3363,8 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         txt.append(settings->value(s_grid,s_grid_def).toByteArray());
                         break;
                     case 12: // call entered
-                        out.append(qso[activeTxRadio]->call);
-                        txt.append(qso[activeTxRadio]->call);
+                        out.append(qso[activeRadio]->call);
+                        txt.append(qso[activeRadio]->call);
                         break;
                     case 13: // togglestereopin
                         toggleStereo();
