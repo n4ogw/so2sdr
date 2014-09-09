@@ -3514,10 +3514,10 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
         out.append(0x1e);
         if (repeat) {
             send(lastMsg,stopcw);
-            if (!statusBarDupe && lastMsg.size() > 2) So2sdrStatusBar->showMessage(lastMsg.simplified());
+            if (!statusBarDupe && lastMsg.size()) So2sdrStatusBar->showMessage(lastMsg.simplified());
         } else {
             send(out,stopcw);
-            if (!statusBarDupe && txt.size() > 2) {
+            if (!statusBarDupe && txt.size()) {
                 txt.prepend(QByteArray::number(activeTxRadio + 1) + ":");
                 So2sdrStatusBar->showMessage(txt.simplified());
             }
@@ -3538,7 +3538,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
         out.append(msg);
         txt.append(msg);
         send(out,stopcw);
-        if (!statusBarDupe && txt.size() > 2) {
+        if (!statusBarDupe && txt.size()) {
             txt.prepend(QByteArray::number(activeTxRadio + 1) + ":");
             So2sdrStatusBar->showMessage(txt.simplified());
         }
