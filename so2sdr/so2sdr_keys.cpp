@@ -1002,7 +1002,6 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
    <ul>
    <li>a. is there text in call field  (test().size!=0)(0=no, 1=yes)
    <li>b. exchange validated and not a dupe            (0=no, 1=yes)
-        (this is also set 0 if call has not been sent yet in S&P mode)
    <li>c. CQ or S&P mode                               (0=cq 1=sp)
    <li>d. exchange sent                                (0=no, 1=yes)
    </ul>
@@ -1111,7 +1110,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         i3 = 1;
         // always check dupe status in S&P. NO_DUPE_CHECKING setting is
         // enforced in so2sdr.cpp where qso[activeRadio]->dupe is set
-        if (qso[activeRadio]->valid && !qso[activeRadio]->dupe && callSent[activeRadio]) {
+        if (qso[activeRadio]->valid && !qso[activeRadio]->dupe) {
             i2=1;
         } else {
             i2=0;
