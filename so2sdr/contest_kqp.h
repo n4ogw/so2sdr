@@ -29,6 +29,10 @@ public:
     {
         return("KQP");
     }
+    ContestType contestType() const
+    {
+        return Kqp_t;
+    }
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);

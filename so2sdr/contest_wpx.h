@@ -29,6 +29,10 @@ public:
     {
         return("CQ-WPX-CW");
     }
+    ContestType contestType() const
+    {
+        return Wpx_t;
+    }
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);

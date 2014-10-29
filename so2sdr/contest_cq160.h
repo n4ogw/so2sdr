@@ -30,6 +30,10 @@ public:
     {
         return("CQ-160-CW");
     }
+    ContestType contestType() const
+    {
+        return Cq160_t;
+    }
     QByteArray prefillExchange(Qso *qso);
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);

@@ -187,11 +187,9 @@ bool Sweepstakes::validateExchange(Qso *qso)
             }
         }
 
-        // qso number/check: take last number which is not 2 digits or first number
-        // check for last !=2 digit number
+        // qso number: take last number which is not 2 digits or is a single digit
         for (int i = exchElement.size() - 1; i >= 0; i--) {
             if (used[i]) continue;
-
             bool nrok = false;
             int  nr   = exchElement.at(i).toInt(&nrok, 10);
             if (nrok && nr > 99) {
@@ -206,9 +204,15 @@ bool Sweepstakes::validateExchange(Qso *qso)
                 used[i]      = true;
                 ok_part[0]   = true;
                 break;
-            } else if (nrok && (exchElement.at(i).size()==2)) {
-                // any other number must be a check if it
-                // is exactly two characters
+            }
+        }
+        // check: take last two-digit number
+        for (int i = exchElement.size() - 1; i >= 0; i--) {
+            if (used[i]) continue;
+            bool nrok = false;
+            int  nr   = exchElement.at(i).toInt(&nrok, 10);
+            Q_UNUSED(nr);
+            if (nrok && (exchElement.at(i).size()==2)) {
                 ok_part[2]   = true;
                 used[i]      = true;
                 finalExch[2] = exchElement.at(i);
@@ -216,27 +220,33 @@ bool Sweepstakes::validateExchange(Qso *qso)
             }
         }
 
-        // otherwise take first number
-        // mark all numbers as 'used'
-        for (int i = 0; i < exchElement.size(); i++) {
-            if (used[i]) continue;
+        // if still don't have a qso number, take the first number on the line
+        if (!ok_part[0]) {
+            for (int i = 0; i < exchElement.size(); i++) {
+                if (used[i]) continue;
 
-            bool ok;
-            int nr = exchElement.at(i).toInt(&ok, 10);
-            Q_UNUSED(nr);
-            if (ok && !ok_part[0]) {
-                finalExch[0] = exchElement.at(i);
-                ok_part[0]=true;
-                used[i]=true;
-            } else if (ok) {
-                used[i]      = true;
+                bool ok;
+                int nr = exchElement.at(i).toInt(&ok, 10);
+                Q_UNUSED(nr);
+                if (ok && !ok_part[0]) {
+                    finalExch[0] = exchElement.at(i);
+                    ok_part[0]=true;
+                    used[i]=true;
+                } else if (ok) {
+                    used[i]      = true;
+                }
             }
         }
-        // try to update callsign
+        // try to update callsign if there is a non-identified string
         if (ok_part[0] & ok_part[1] & ok_part[2] & ok_part[3]) {
             for (int i = exchElement.size() - 1; i >= 0; i--) {
                 if (!used[i]) {
-                    qso->call = exchElement.at(i);
+                    bool ok;
+                    int nr = exchElement.at(i).toInt(&ok, 10);
+                    Q_UNUSED(nr);
+                    if (!ok) {
+                        qso->call = exchElement.at(i);
+                    }
                     break;
                 }
             }

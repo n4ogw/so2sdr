@@ -32,6 +32,10 @@ public:
     {
         return("ARRL-160");
     }
+    ContestType contestType() const
+    {
+        return Arrl160_t;
+    }
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;

@@ -94,6 +94,27 @@ const QString defaultSerialPort[3] = {"COM1","COM2","COM3"};
 
 const int NRIG=2;
 
+// Contest types
+typedef enum ContestType {
+    Undefined= 0,
+    Arrl10_t  = 1,
+    Arrl160_t = 2,
+    Cq160_t   = 3,
+    Cqp_t     = 4,
+    Cqww_t    = 5,
+    Cwops_t   = 6,
+    Dxped_t   = 7,
+    Fd_t      = 8,
+    Iaru_t    = 9,
+    Kqp_t     = 10,
+    Naqp_t    = 11,
+    Sprint_t  = 12,
+    Stew_t    = 13,
+    Sweepstakes_t = 14,
+    Wpx_t     = 15,
+    Arrldx_t  = 16
+} ContestType;
+
 // ////////////// Contest/Log/country database
 
 const int MMAX=2;

@@ -30,6 +30,10 @@ public:
     {
         return("IARU-HF");
     }
+    ContestType contestType() const
+    {
+        return Iaru_t;
+    }
     int fieldWidth(int col) const;
     int numberField() const;
     QByteArray prefillExchange(int cntry, int zone);

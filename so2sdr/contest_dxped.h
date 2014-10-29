@@ -32,6 +32,10 @@ public:
     {
         return("DXPED");
     }
+    ContestType contestType() const
+    {
+        return Dxped_t;
+    }
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;

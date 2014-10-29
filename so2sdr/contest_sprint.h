@@ -29,6 +29,10 @@ public:
     {
         return("NA-SPRINT-CW");
     }
+    ContestType contestType() const
+    {
+        return Sprint_t;
+    }
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);

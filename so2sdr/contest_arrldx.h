@@ -32,6 +32,10 @@ public:
     {
         return("ARRL-DX");
     }
+    ContestType contestType() const
+    {
+        return Arrldx_t;
+    }
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;

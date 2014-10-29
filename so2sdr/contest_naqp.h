@@ -30,6 +30,10 @@ public:
     {
         return("NAQP-CW");
     }
+    ContestType contestType() const
+    {
+        return Naqp_t;
+    }
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);

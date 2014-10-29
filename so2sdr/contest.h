@@ -60,6 +60,7 @@ public:
     {
         return("");
     }
+    virtual ContestType contestType() const = 0;
     void copyFinalExch(bool validated, Qso *qso);
     void determineMultType(Qso *qso);
     bool dupe(int row) const;

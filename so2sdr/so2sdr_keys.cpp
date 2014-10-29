@@ -1235,7 +1235,9 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
             lineEditExchange[activeRadio]->clear();
         } else {
-            lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
+            if (contest->contestType()!=Sweepstakes_t) {
+                lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
+            }
         }
     }
 
@@ -1867,6 +1869,10 @@ void So2sdr::prefillExch(int nr)
     if (!qso[nr]->prefill.isEmpty()) {
         // prefill from log
         lineEditExchange[nr]->setText(qso[nr]->prefill.trimmed());
+        // in ARRL Sweepstakes, put cursor in correct position for qso #
+        if (contest->contestType()==Sweepstakes_t) {
+            lineEditExchange[nr]->setCursorPosition(0);
+        }
     } else if (contest->hasPrefill() && !contest->prefillExchange(qso[nr]).isEmpty()) {
         lineEditExchange[nr]->setText(contest->prefillExchange(qso[nr]));
     }

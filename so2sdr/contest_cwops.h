@@ -30,6 +30,10 @@ public:
     {
         return("CW-OPS");
     }
+    ContestType contestType() const
+    {
+        return Cwops_t;
+    }
     int fieldWidth(int col) const;
     int numberField() const;
     void setupContest(QByteArray MultFile[2], const Cty * cty);

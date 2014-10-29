@@ -30,6 +30,10 @@ public:
     {
         return("CQ-WW-CW");
     }
+    ContestType contestType() const
+    {
+        return Cqww_t;
+    }
     QByteArray prefillExchange(int cntry, int zone);
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);

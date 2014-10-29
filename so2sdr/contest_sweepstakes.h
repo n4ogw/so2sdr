@@ -29,6 +29,10 @@ public:
     {
         return("ARRL-SS-CW");
     }
+    ContestType contestType() const
+    {
+        return Sweepstakes_t;
+    }
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);
