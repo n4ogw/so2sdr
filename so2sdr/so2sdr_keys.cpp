@@ -772,6 +772,8 @@ void So2sdr::backSlash()
         lineEditCall[activeRadio]->clear();
         lineEditCall[activeRadio]->setModified(false);
         qso[activeRadio]->call.clear();
+        qso[activeRadio]->dupe = false;
+        qso[activeRadio]->valid = false;
         exchangeSent[activeRadio] = false;
         qso[activeRadio]->prefill.clear();
         origCallEntered[activeRadio].clear();
