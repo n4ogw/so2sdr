@@ -308,7 +308,7 @@ const int BANDMAP_FONT_PIX_SIZE=10;
  */
 const int BANDMAP_CALL_X=15;
 
-const int MAX_H=2049; // max pixmap height
+const int MAX_H=4097; // max pixmap height
 const int MAX_W=800; // max pixmap width
 const int SAMPLE_FREQ=96; // Sampling frequency in Khz
 
