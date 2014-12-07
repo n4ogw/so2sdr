@@ -141,11 +141,13 @@ void Telnet::showText(QString txt)
 {
     // is there a better way to recognize dx spot?
     if (txt.contains("DX de") || (txt.contains("<") && txt.contains(">"))) {
-        QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
-        QString call = txt.section(' ', 4, 4, QString::SectionSkipEmpty);
-        bool    ok;
-        double  x = freq.toDouble(&ok);
-        if (ok) {
+        QString call = txt.section(' ', 4, 4, QString::SectionSkipEmpty).toUpper();
+
+        // don't spot station callsign
+        if (call != settings.value(s_call,s_call_def)) {
+            bool ok;
+            QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
+            double  x = freq.toDouble(&ok);
             int f = (int) (x * 1000);
             emit(dxSpot(call.toAscii(), f));
         }
