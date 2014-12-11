@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,9 +24,11 @@
 #include <QString>
 #include <QFile>
 #include <QList>
+#include <QVariant>
 #include "cty.h"
 #include "defines.h"
 #include "qso.h"
+#include "log.h"
 
 /*! structure recording point and multiplier information for
    scoring each qso */
@@ -60,6 +62,7 @@ public:
     {
         return("");
     }
+    virtual QVariant columnName(int c) const;
     virtual ContestType contestType() const = 0;
     void copyFinalExch(bool validated, Qso *qso);
     void determineMultType(Qso *qso);

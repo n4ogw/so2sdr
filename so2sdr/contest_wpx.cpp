@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -44,6 +44,14 @@ WPX::~WPX()
     delete[] logFieldPrefill;
     delete[] finalExch;
     delete[] exchange_type;
+}
+
+QVariant WPX::columnName(int c) const
+{
+    switch (c) {
+    case SQL_COL_SNT2:return(QVariant("Sent#"));break;
+    }
+    return Contest::columnName(c);
 }
 
 /*! WPX add qso
@@ -98,13 +106,13 @@ int WPX::fieldWidth(int col) const
 {
     switch (col) {
     case 0:
-        return 45; // sent #
+        return 54; // sent #
         break;
     case 1:
         return 35; // RST
         break;
     case 2:
-        return 45;  // rcv #
+        return 38;  // rcv #
         break;
     default:
         return 35;

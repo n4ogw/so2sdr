@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -64,6 +64,80 @@ void Contest::initialize(QSettings *ss,QSettings *cs,const Cty *cty)
 QByteArray Contest::contestName() const
 {
     return(_contestName);
+}
+
+// Default column names displayed above log window. Not all
+// of these are used.
+QVariant Contest::columnName(int c) const
+{
+    switch (c) {
+    case SQL_COL_NR:return QVariant("#");break;
+    case SQL_COL_TIME:return QVariant("Time");break;
+    case SQL_COL_FREQ:return QVariant("Freq");break;
+    case SQL_COL_CALL:return QVariant("Call");break;
+    case SQL_COL_BAND:return QVariant("Band");break;
+    case SQL_COL_MODE:return QVariant("Mode");break;
+    case SQL_COL_DATE:return QVariant("Date");break;
+    case SQL_COL_VALID:return QVariant("Valid");break;
+    case SQL_COL_PTS:return QVariant("Pts");break;
+    case SQL_COL_RCV1:
+        if (nExch>0) {
+            return QVariant(FieldTypesNames[exchange_type[0]]);
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_RCV2:
+        if (nExch>1) {
+            return QVariant(FieldTypesNames[exchange_type[1]]);
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_RCV3:
+        if (nExch>2) {
+            return QVariant(FieldTypesNames[exchange_type[2]]);
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_RCV4:
+        if (nExch>3) {
+            return QVariant(FieldTypesNames[exchange_type[3]]);
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_SNT1:
+        if (nExch>0) {
+            return QVariant("Sent1");
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_SNT2:
+        if (nExch>1) {
+            return QVariant("Sent2");
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_SNT3:
+        if (nExch>2) {
+            return QVariant("Sent3");
+        } else {
+            return QVariant("");
+        }
+        break;
+    case SQL_COL_SNT4:
+        if (nExch>3) {
+            return QVariant("Sent4");
+        } else {
+            return QVariant("");
+        }
+        break;
+    default: return QVariant("");break;
+    }
 }
 
 void Contest::setContestName(QByteArray s)

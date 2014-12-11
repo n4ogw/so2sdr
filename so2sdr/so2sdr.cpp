@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -1735,8 +1735,9 @@ void So2sdr::updateRecord(QSqlRecord r)
 void So2sdr::initLogView()
 {
     LogTableView->setShowGrid(true);
-    LogTableView->horizontalHeader()->hide();
     LogTableView->verticalHeader()->hide();
+    LogTableView->verticalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    LogTableView->verticalHeader()->setClickable(false);
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
 
     model = new tableModel(this,mylog->db);
@@ -1748,19 +1749,19 @@ void So2sdr::initLogView()
         model->fetchMore();
     }
     LogTableView->setModel(model);
-    LogTableView->setColumnWidth(SQL_COL_NR, 42); // NR
-    LogTableView->setColumnWidth(SQL_COL_TIME, 43); // UTC
-    LogTableView->setColumnWidth(SQL_COL_FREQ, 52); // FREQ
-    LogTableView->setColumnWidth(SQL_COL_MODE, 35); // MODE
-    LogTableView->setColumnWidth(SQL_COL_CALL, 67); // CALL
-    LogTableView->setColumnWidth(SQL_COL_VALID, 20); // valid
+    int ncol=csettings->beginReadArray(c_col_width_group);
+    for (int i=0;i<SQL_N_COL;i++) {
+        if (ncol) csettings->setArrayIndex(i);
+        LogTableView->setColumnWidth(i,settings->value(c_col_width_item,c_col_width_def[i]).toInt());
+    }
+    csettings->endArray();
+
     logdel=new logDelegate(this,contest,&logSearchFlag,&searchList);
     connect(logdel,SIGNAL(startLogEdit()),this,SLOT(ungrab()));
     connect(logdel,SIGNAL(startLogEdit()),this,SLOT(startLogEdit()));
     connect(logdel,SIGNAL(closeEditor(QWidget*)),this,SLOT(clearEditSelection(QWidget*)));
     connect(logdel,SIGNAL(editLogRow(QModelIndex)),this,SLOT(editLogDetail(QModelIndex)));
-    // set item delegate for all columns except checkbox column
-    for (int i=0;i<SQL_COL_VALID;i++) {
+    for (int i=0;i < SQL_N_COL;i++) {
         LogTableView->setItemDelegateForColumn(i,logdel);
     }
     LogTableView->setEditTriggers(QAbstractItemView::DoubleClicked);
@@ -1770,6 +1771,7 @@ void So2sdr::initLogView()
         LogTableView->setColumnHidden(i, true);
     }
     LogTableView->setDragEnabled(false);
+    LogTableView->removeEventFilter(this);
 
     // 6 columns shown for all contests: qso #, time, call, freq, mode, valid flag
     LogTableView->setColumnHidden(SQL_COL_NR, false);
@@ -1829,7 +1831,11 @@ void So2sdr::initLogView()
         LogTableView->setColumnHidden(SQL_COL_PTS, false);
         LogTableView->setColumnWidth(SQL_COL_PTS, 30);
     }
-
+    for (int i=0;i<SQL_N_COL;i++) {
+        model->setHeaderData(i,Qt::Horizontal,contest->columnName(i),Qt::DisplayRole);
+        model->setHeaderData(i,Qt::Horizontal,Qt::AlignLeft,Qt::TextAlignmentRole);
+    }
+    LogTableView->horizontalHeader()->setStretchLastSection(true);
     LogTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     LogTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     LogTableView->scrollToBottom();
@@ -1841,7 +1847,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2014 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2015 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
 #ifdef Q_OS_WIN
@@ -3970,6 +3976,22 @@ void So2sdr::readStationSettings()
 }
 
 /*!
+  update settings to contest .cfg file
+  */
+void So2sdr::writeContestSettings()
+{
+    if (!csettings) return;
+
+    // log column widths
+    csettings->beginWriteArray(c_col_width_group);
+    for (int i=0;i<SQL_N_COL;i++) {
+        csettings->setArrayIndex(i);
+        csettings->setValue(c_col_width_item,LogTableView->columnWidth(i));
+    }
+    csettings->endArray();
+}
+
+/*!
   update settings to station .ini file
   */
 void So2sdr::writeStationSettings()
@@ -4001,6 +4023,7 @@ void So2sdr::writeStationSettings()
 
 void So2sdr::closeEvent(QCloseEvent *event)
 {
+    writeContestSettings();
     writeStationSettings();
     event->accept();
 }

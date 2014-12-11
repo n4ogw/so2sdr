@@ -221,13 +221,13 @@
           <property name="minimumSize">
            <size>
             <width>310</width>
-            <height>100</height>
+            <height>108</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>310</width>
-            <height>100</height>
+            <height>108</height>
            </size>
           </property>
           <property name="font">
@@ -1076,13 +1076,13 @@
           <property name="minimumSize">
            <size>
             <width>335</width>
-            <height>80</height>
+            <height>108</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>420</width>
-            <height>100</height>
+            <height>108</height>
            </size>
           </property>
           <property name="font">
@@ -2372,7 +2372,7 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

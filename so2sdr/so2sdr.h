@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -395,6 +395,7 @@ private:
     void updateRate();
     void updateWorkedDisplay(int nr,unsigned int worked);
     void updateWorkedMult(int nr);
+    void writeContestSettings();
     void writeNote();
     void writeStationSettings();
     void autoCQ();

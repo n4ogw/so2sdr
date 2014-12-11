@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -44,6 +44,14 @@ FD::~FD()
     delete[] exchange_type;
 }
 
+QVariant FD::columnName(int c) const
+{
+    switch (c) {
+    case SQL_COL_RCV1:return(QVariant("Class"));break;
+    }
+    return Contest::columnName(c);
+}
+
 void FD::addQso(Qso *qso)
 
 // determine qso point value, increase nqso, update score
@@ -80,7 +88,7 @@ int FD::fieldWidth(int col) const
 // width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(35); break; // rcv class
+    case 0: return(49); break; // rcv class
     case 1: return(35); break; // rcv section
     default: return(35);
     }

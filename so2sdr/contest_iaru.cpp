@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -79,7 +79,7 @@ int IARU::fieldWidth(int col) const
         return 35; // RST
         break;
     case 1:
-        return 65; //  zone/HQ
+        return 60; //  zone/HQ
         break;
     default:
         return 35;

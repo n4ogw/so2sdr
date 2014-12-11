@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -17,6 +17,7 @@
 
  */
 #include <QKeyEvent>
+#include <QSqlRecord>
 #include "logedit.h"
 
 /*!
@@ -72,20 +73,23 @@ Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
   */
 QVariant tableModel::data( const QModelIndex& index, int role ) const
 {
-    if (index.column()==SQL_COL_VALID && role==Qt::CheckStateRole) {
-        Qt::CheckState state;
-        if (index.data().toBool()) {
-            state=Qt::Checked;
-        } else {
-            state=Qt::Unchecked;
+    if (index.column()==SQL_COL_VALID) {
+        if (role==Qt::CheckStateRole) {
+            bool b=record(index.row()).value(SQL_COL_VALID).toBool();
+            if (b) {
+                return Qt::Checked;
+            } else {
+                return Qt::Unchecked;
+            }
+        } else if (role==Qt::DisplayRole) {
+            return QVariant();
         }
-        return(QVariant(state));
     }
     return QSqlTableModel::data(index,role);
 }
 
 /*!
-  only SQL_COL_VALID is a special case: translate CheckState into integer 0/1
+  only SQL_COL_VALID is a special case: translate CheckState into boolean
   */
 bool tableModel::setData( const QModelIndex& index, const QVariant&value, int role )
 {
@@ -124,14 +128,31 @@ bool logDelegate::editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOpti
     Q_UNUSED(option)
     Q_UNUSED(index)
 
+    int col=index.column();
     // this is for "inline" editing of a single cell
-    if (e->type()==QEvent::MouseButtonDblClick) {
+    if (e->type()==QEvent::MouseButtonDblClick && col!=SQL_COL_VALID) {
         currentlyEditingIndex=index;
         emit(startLogEdit());
+        return false;
+    }
+    // handle clicks in valid column
+    if (e->type() == QEvent::MouseButtonRelease  && col==SQL_COL_VALID) {
+        // make sure that we have a check state
+        QVariant value = index.data(Qt::CheckStateRole);
+        if (!value.isValid()) {
+            return false;
+        }
+        bool b=index.data(Qt::CheckStateRole).toBool();
+        if (b) {
+            m->setData(index,QVariant(Qt::Unchecked),Qt::CheckStateRole);
+        } else {
+            m->setData(index,QVariant(Qt::Checked),Qt::CheckStateRole);
+        }
     }
     // this is needed before control-E is pressed
     if (e->type()==QEvent::MouseButtonPress) {
         currentlyEditingIndex=index;
+        return false;
     }
     if (e->type()==QEvent::KeyPress) {
         // return true to prevent default column search when typing letter
@@ -150,6 +171,9 @@ QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewIte
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
+
+    // no editor for checkbox
+    if (index.column()==SQL_COL_VALID) return 0;
 
     QLineEdit *le=new LogQLineEdit(parent);
     le->installEventFilter(le);
@@ -179,9 +203,20 @@ void logDelegate::startDetailedEdit()
  */
 void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // for qso valid column, use default implementation
+    // for qso valid column draw a checkbox
     if (index.column()==SQL_COL_VALID) {
-        return QStyledItemDelegate::paint(painter,option,index);
+        bool data=index.data(Qt::CheckStateRole).toBool();
+        QStyleOptionButton checkboxstyle;
+        QRect checkbox_rect = QApplication::style()->subElementRect(QStyle::SE_CheckBoxIndicator, &checkboxstyle);
+        checkboxstyle.rect = option.rect;
+        checkboxstyle.rect.setLeft(option.rect.x() + option.rect.width()/2 - checkbox_rect.width()/2);
+        if (data) {
+            checkboxstyle.state = QStyle::State_On|QStyle::State_Enabled;
+        } else {
+            checkboxstyle.state = QStyle::State_Off|QStyle::State_Enabled;
+        }
+        QApplication::style()->drawControl(QStyle::CE_CheckBox, &checkboxstyle, painter);
+        return;
     }
     // get the real row for this qso. When a log search is performed, index.row() gives the
     // row within the restricted filter, and not the true row. The true row is needed to
@@ -228,7 +263,7 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
             s = "AM";
             break;
         default:
-            break;  // Just show the mode number otherwise--fix later, ha!
+            break;
         }
     }
 

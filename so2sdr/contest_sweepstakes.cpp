@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -43,6 +43,16 @@ Sweepstakes::~Sweepstakes()
     delete[] logFieldPrefill;
     delete[] finalExch;
     delete[] exchange_type;
+}
+
+QVariant Sweepstakes::columnName(int c) const
+{
+    switch (c) {
+    case SQL_COL_RCV1:return(QVariant("#"));break;
+    case SQL_COL_RCV2:return(QVariant("Pr"));break;
+    case SQL_COL_RCV3:return(QVariant("Ck"));break;
+    }
+    return Contest::columnName(c);
 }
 
 void Sweepstakes::addQso(Qso *qso)

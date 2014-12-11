@@ -1,4 +1,4 @@
-/*! Copyright 2010-2014 R. Torsten Clay N4OGW
+/*! Copyright 2010-2015 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -26,26 +26,6 @@
 #include "defines.h"
 #include "qso.h"
 #include "serial.h"
-
-// column numbers in SQL log
-const int SQL_COL_NR    =  0;    // ID number (SQL primary key)
-const int SQL_COL_TIME  =  1;    // time HHMM  (string)
-const int SQL_COL_FREQ  =  2;    // freq in Hz (int)
-const int SQL_COL_CALL  =  3;    // call (string)
-const int SQL_COL_BAND  =  4;    // band (int)
-const int SQL_COL_DATE  =  5;    // date MMddyyyy (string)
-const int SQL_COL_MODE  =  6;    // mode (int)
-const int SQL_COL_SNT1  =  7;    // sent exchange field 1 (string)
-const int SQL_COL_SNT2  =  8;    // sent exchange field 2 (string)
-const int SQL_COL_SNT3  =  9;    // sent exchange field 3 (string)
-const int SQL_COL_SNT4  =  10;   // sent exchange field 4 (string)
-const int SQL_COL_RCV1  =  11;   // rcv exchange field 1 (string)
-const int SQL_COL_RCV2  =  12;   // rcv exchange field 2 (string)
-const int SQL_COL_RCV3  =  13;   // rcv exchange field 3 (string)
-const int SQL_COL_RCV4  =  14;   // rcv exchange field 4 (string)
-const int SQL_COL_PTS   =  15;   // qso points (int)
-const int SQL_COL_VALID =  16;   // valid flag (int) if 0, qso not exported to cabrillo
-const int SQL_N_COL     =  17;   // total number of columns
 
 /*!
    class defining log database structure and related functions
