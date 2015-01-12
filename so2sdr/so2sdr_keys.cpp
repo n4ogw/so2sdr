@@ -673,6 +673,7 @@ void So2sdr::keyCtrlDn()
 void So2sdr::tab()
 {
     if (cqMode[activeRadio]) {
+        autoCQActivate(false);
         spMode(activeRadio);
         if (!lineEditCall[activeRadio]->text().simplified().isEmpty()) prefillExch(activeRadio);
         // redisplay band/mult info for this station
