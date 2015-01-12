@@ -3843,21 +3843,26 @@ void So2sdr::logSearch()
     QByteArray searchFrag=lineEditCall[activeRadio]->text().toAscii();
     if (searchFrag.size()<2) return;
 
-    logSearchFlag=true;
     So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\"");
     model->setFilter("CALL LIKE '%"+searchFrag+"%'");
     model->select();
     while (model->canFetchMore()) {
         model->fetchMore();
     }
-    // save a list of rows found by the search
-    searchList.clear();
-    for (int i=0;i<model->rowCount();i++) {
-        searchList.append(model->record(i).value(SQL_COL_NR).toInt()-1);
-    }
-    LogTableView->scrollToBottom();
     if (model->rowCount()==0) {
         So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\" : NOT FOUND");
+        model->setFilter("");
+        model->select();
+        while (model->canFetchMore())
+            model->fetchMore();
+    } else {
+        // save a list of rows found by the search
+        searchList.clear();
+        for (int i=0;i<model->rowCount();i++) {
+            searchList.append(model->record(i).value(SQL_COL_NR).toInt()-1);
+        }
+        LogTableView->scrollToBottom();
+        logSearchFlag=true;
     }
 }
 
