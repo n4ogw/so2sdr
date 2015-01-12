@@ -716,6 +716,7 @@ void So2sdr::backSlash()
         expandMacro(csettings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toByteArray(),-1,false);
 
         // log qso
+        clearLogSearch();
         if (!qso[activeRadio]->dupe && qso[activeRadio]->valid)
             nqso[band[activeRadio]]++;
 
@@ -1262,6 +1263,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // log qso
     if (enterState[i1][i2][i3][i4] & 8) {
+        clearLogSearch();
         fillSentExch(activeRadio);
         qso[activeRadio]->mode = cat->mode(activeRadio);
         contest->addQso(qso[activeRadio]);
@@ -1768,6 +1770,7 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
 
     // log qso
     if (enterStateTX & 8) {
+        clearLogSearch();
         if (duelingCQMode) {
             duelingCQWait = true; // prevent premature dueling CQ takeover until QSL message is complete
         }

@@ -3873,6 +3873,7 @@ void So2sdr::clearLogSearch()
             model->fetchMore();
         LogTableView->scrollToBottom();
         logSearchFlag=false;
+        So2sdrStatusBar->clearMessage();
     }
 }
 
