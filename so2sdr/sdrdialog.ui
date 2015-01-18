@@ -141,6 +141,18 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="OffsetLineEdit">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>difference between radio IF frequency and LO frequency</string>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_2">
            <property name="font">
@@ -153,15 +165,10 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="OffsetLineEdit">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>difference between radio IF frequency and LO frequency</string>
+         <item row="5" column="1">
+          <widget class="QCheckBox" name="checkBoxSwap1">
+           <property name="text">
+            <string>Swap I and Q channels</string>
            </property>
           </widget>
          </item>
@@ -280,6 +287,13 @@
            </property>
            <property name="toolTip">
             <string>difference between radio IF frequency and LO frequency</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QCheckBox" name="checkBoxSwap2">
+           <property name="text">
+            <string>Swap I and Q channels</string>
            </property>
           </widget>
          </item>

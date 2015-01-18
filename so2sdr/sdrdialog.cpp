@@ -29,6 +29,8 @@ SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
     DeviceCombo[0]       = SoundCard1ComboBox;
     DeviceCombo[1]       = SoundCard2ComboBox;
     DeviceCombo[2]       = SoundCardDVKComboBox;
+    SwapCheckBox[0]      = checkBoxSwap1;
+    SwapCheckBox[1]      = checkBoxSwap2;
 
     APICombo[0]          = API1ComboBox;
     APICombo[1]          = API2ComboBox;
@@ -56,6 +58,9 @@ SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
     BitsCombo[1] = Bits2ComboBox;
     BitsCombo[0]->setEnabled(false);
     BitsCombo[1]->setEnabled(false);
+
+    SwapCheckBox[0]->setChecked(false);
+    SwapCheckBox[1]->setChecked(false);
 
     for (int i = 0; i < NRIG; i++) {
         BitsCombo[i]->insertItem(0, "16");
@@ -169,6 +174,7 @@ void SDRDialog::updateFromSettings()
         n=settings.value(s_sdr_device[i],s_sdr_device_def[i]).toInt();
         if (n>(DeviceCombo[i]->maxCount())) n=0;
         DeviceCombo[i]->setCurrentIndex(n);
+        SwapCheckBox[i]->setChecked(settings.value(s_sdr_swapiq[i],s_sdr_swapiq_def[i]).toBool());
     }
 #ifdef DVK_ENABLE
     Checkbox[2]->setChecked(settings.value(s_dvk_enabled,s_dvk_enabled_def).toBool());
@@ -277,6 +283,7 @@ void SDRDialog::updateSDR()
         settings.setValue(s_sdr_enabled[i],Checkbox[i]->isChecked());
         settings.setValue(s_sdr_api[i],APICombo[i]->currentIndex());
         settings.setValue(s_sdr_device[i],DeviceCombo[i]->currentIndex());
+        settings.setValue(s_sdr_swapiq[i],SwapCheckBox[i]->isChecked());
     }
 #ifdef DVK_ENABLE
     settings.setValue(s_dvk_enabled,Checkbox[2]->isChecked());

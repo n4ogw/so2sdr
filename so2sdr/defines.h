@@ -620,6 +620,9 @@ const int s_dvk_rec_devindex_def=0;
 const QString s_sdr_offset[NRIG]={"sdr/offset1","sdr/offset2"};
 const int s_sdr_offset_def[NRIG]={0,0};
 
+const QString s_sdr_swapiq[NRIG]={"sdr/swapiq1","sdr/swapiq2"};
+const bool s_sdr_swapiq_def[NRIG]={false,false};
+
 const QString s_sdr_scale[NRIG]={"sdr/scale1","sdr/scale2"};
 const int s_sdr_scale_def[NRIG]={1,1};
 

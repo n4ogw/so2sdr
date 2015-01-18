@@ -483,8 +483,14 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             tmpi = 0.;
             break;
         }
-        in[i][0] = tmpr * window[i];
-        in[i][1] = tmpi * window[i];
+        if (!settings.value(s_sdr_swapiq[nrig],s_sdr_swapiq_def[nrig]).toBool()) {
+            in[i][0] = tmpr * window[i];
+            in[i][1] = tmpi * window[i];
+        } else {
+            in[i][0] = tmpi * window[i];
+            in[i][1] = tmpr * window[i];
+        }
+
         if (j == sizes.chunk_size) {
             // make buffer circular
             j   = 0;

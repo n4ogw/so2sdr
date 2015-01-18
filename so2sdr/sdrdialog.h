@@ -59,6 +59,7 @@ private:
     int                *nApiDevices;
     PaStreamParameters Format[NRIG];
     QCheckBox          *Checkbox[NRIG+1];
+    QCheckBox          *SwapCheckBox[NRIG];
     QComboBox          *APICombo[NRIG+1]; // extra for DVK
     QComboBox          *BitsCombo[NRIG];
     QComboBox          *DeviceCombo[NRIG+1]; // extra for DVK
