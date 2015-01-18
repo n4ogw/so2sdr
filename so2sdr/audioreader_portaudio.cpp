@@ -85,29 +85,6 @@ bool AudioReaderPortAudio::initialize(const PaStreamParameters &format, sampleSi
         emit(PortAudioError("ERROR: PortAudio found no audio devices"));
         return(false);
     }
-    int b;
-    switch (inputParameters.sampleFormat) {
-    case paInt24:
-
-        // 24 bits packed in 32bit size
-        b = 6;
-        break;
-    case paInt32:
-
-        // 32 bits; 8 bytes/frame
-        b = 8;
-        break;
-    case paInt16:
-
-        // 16 bits; 4 bytes/frame
-        b = 4;
-        break;
-    default:
-        b = 4;
-    }
-
-    // number of frames to read per scanline of spectrum
-    readFrames = sizes.advance_size / b;
 
     // check we have a stereo device
     if (Pa_GetDeviceInfo(inputParameters.device)->maxInputChannels < 2) {

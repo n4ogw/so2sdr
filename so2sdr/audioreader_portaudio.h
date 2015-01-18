@@ -60,7 +60,6 @@ private:
     unsigned int       bpmax;
     unsigned int       bptr;
     unsigned long      periodSize;
-    unsigned long      readFrames;
 
     void emitAudioReady();
     bool checkError(PaError err);
