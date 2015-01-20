@@ -60,6 +60,7 @@ Bandmap::Bandmap(QSettings& s,QWidget *parent, Qt::WindowFlags f) : QWidget(pare
     audioReader = new AudioReaderPortAudio();
     audioReader->moveToThread(&audioThread);
     spectrumProcessor = new Spectrum(s);
+    spectrumProcessor->moveToThread(&spectrumThread);
 
     _invert   = false;
     iqDialog  = 0;
@@ -371,7 +372,6 @@ void Bandmap::makeFreqScale()
 void Bandmap::makeFreqScaleAbsolute()
 {
     int dy = (height() - 20) / 2 - vfoPos;
-    spectrumProcessor->yOffset = dy;
     int scale= settings.value(s_sdr_scale[nrig],s_sdr_scale_def[nrig]).toInt();
     freqMin = centerFreq - (MAX_H / 2 + dy) * SAMPLE_FREQ * 1000 / (scale * sizes.spec_length);
     int      bottom_start      = (freqMin / 1000 + 1) * 1000;
@@ -654,6 +654,9 @@ void Bandmap::setScaleX2()
  */
 bool Bandmap::start()
 {
+    if (!spectrumThread.isRunning()) {
+        spectrumThread.start();
+    }
     if (!audioThread.isRunning()) {
         audioThread.start();
     }
@@ -671,6 +674,10 @@ void Bandmap::stop()
     if (audioThread.isRunning()) {
         audioThread.quit();
         audioThread.wait();
+    }
+    if (spectrumThread.isRunning()) {
+        spectrumThread.quit();
+        spectrumThread.wait();
     }
     disconnect(audioReader, SIGNAL(audioReady(unsigned char*, unsigned char)), spectrumProcessor, SLOT(processData(unsigned char*, unsigned char)));
     disconnect(spectrumProcessor, SIGNAL(spectrumReady(unsigned char*, unsigned char)), display, SLOT(plotSpectrum(unsigned char*, unsigned char)));

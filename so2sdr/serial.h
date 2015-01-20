@@ -25,7 +25,6 @@
 #include <QMap>
 #include <QObject>
 #include <QSettings>
-#include <QThread>
 #include <QTimer>
 #include <QTimerEvent>
 #include <QMutex>

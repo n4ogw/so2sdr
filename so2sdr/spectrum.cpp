@@ -168,7 +168,6 @@ Spectrum::Spectrum(QSettings& s,QObject *parent) : QObject(parent),settings(s)
     }
     sigCQ      = 0;
     sigSpace   = 0;
-    yOffset    = 0;
     peakAvgCnt = 0;
 }
 

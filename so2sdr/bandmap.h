@@ -119,6 +119,7 @@ private:
     QStatusBar           *statusBar;
     QString              userDirectory;
     QThread              audioThread;
+    QThread              spectrumThread;
     QVBoxLayout          *newLayout;
     sampleSizes          sizes;
     Spectrum             *spectrumProcessor;

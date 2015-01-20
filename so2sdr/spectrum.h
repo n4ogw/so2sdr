@@ -120,7 +120,6 @@ private:
     int           *sigOnCnt;
     int           sigSpace;
     int           sizeIQ;
-    int           yOffset;
     QString       userDirectory;
     sampleSizes   sizes;
     Signal        sigListCQ[SIG_MAX];
