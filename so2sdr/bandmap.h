@@ -32,7 +32,6 @@
 #include <QStatusBar>
 #include <QString>
 #include <QThread>
-#include <QVBoxLayout>
 #include <QWidget>
 
 class QAction;
@@ -96,7 +95,7 @@ private:
     bool                 stopping;
     double               pix_per_hz;
     double               pix_per_khz;
-    int addOffset;
+    int                  addOffset;
     int                  band;
     int                  centerFreq;
     int                  cornerx;
@@ -105,7 +104,6 @@ private:
     int                  endFreqs[2];
     int                  freqMax;
     int                  freqMin;
-    int                  iqBin;
     int                  mouse_y;
     int                  nrig;
     int                  vfoPos;
@@ -120,7 +118,6 @@ private:
     QString              userDirectory;
     QThread              audioThread;
     QThread              spectrumThread;
-    QVBoxLayout          *newLayout;
     sampleSizes          sizes;
     Spectrum             *spectrumProcessor;
     unsigned long        chunk_size;
