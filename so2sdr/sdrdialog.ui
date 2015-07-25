@@ -34,7 +34,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Sound Card setup</string>
+   <string>Bandscope setup</string>
   </property>
   <property name="modal">
    <bool>true</bool>

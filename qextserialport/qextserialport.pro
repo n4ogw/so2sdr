@@ -1,7 +1,7 @@
 ############################### *User Config* ###############################
 
 # Uncomment following line if you want to build a static library
-#CONFIG += qesp_static
+# CONFIG += qesp_static
 
 # Uncomment following line if you want to build framework for mac
 # macx:CONFIG += qesp_mac_framework

@@ -169,8 +169,13 @@ unix {
 
 #flags for building with i686-w64-mingw32 compiler in MXE environment
 win32 {
-   include(../qextserialport/src/qextserialport.pri)
    include(../qttelnet/src/qttelnet.pri)
+
+   #
+   # most recent github qextserialport doesn't compile on Windows;
+   # have to use older version
+
+   include(../qextserialport_1.2.0_win/src/qextserialport.pri)
 
    #CONFIG += console   #adding this to see console debug messages
    HEADERS += win_pp.h glbandmap_win.h

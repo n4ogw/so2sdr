@@ -19,19 +19,15 @@ VS_VERSION_INFO VERSIONINFO
 	BEGIN
 		BLOCK "StringFileInfo"
 		BEGIN
-			BLOCK "040904b0"
+			BLOCK "040904B0"
 			BEGIN
 				VALUE "CompanyName", "\0"
 				VALUE "FileDescription", "\0"
 				VALUE "FileVersion", "1.2.0.0\0"
 				VALUE "LegalCopyright", "\0"
-				VALUE "OriginalFilename", "qextserialport1.dll\0"
-				VALUE "ProductName", "qextserialport\0"
+				VALUE "OriginalFilename", "qextserialportd1.dll\0"
+				VALUE "ProductName", "qextserialportd\0"
 			END
-		END
-		BLOCK "VarFileInfo"
-		BEGIN
-			VALUE "Translation", 0x0409, 1200
 		END
 	END
 /* End of Version info */
