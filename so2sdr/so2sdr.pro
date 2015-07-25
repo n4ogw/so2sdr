@@ -147,8 +147,8 @@ unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += fftw3 hamlib portaudio-2.0
     QMAKE_CXXFLAGS += -O2 -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
-    HEADERS += linux_pp.h glbandmap.h #./qttelnet/src/qttelnet.h
-    SOURCES += linux_pp.cpp  glbandmap.cpp #../qttelnet/src/qttelnet.cpp 
+    HEADERS += linux_pp.h glbandmap.h 
+    SOURCES += linux_pp.cpp  glbandmap.cpp 
     QMAKE_LFLAGS += -Wl,--as-needed
     
     install.target = install
