@@ -10,22 +10,9 @@
 # You should have received a copy of the GNU General Public License
 # along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 #
-# change to vcapp to generate MSVC files
-# generate VS solutions with the following from the top-level directory
-#
-# qmake -tp vc -r
-#
-#TEMPLATE = vcapp
 TEMPLATE = app
 TARGET = so2sdr
-
-# needed for qttelnet
 QT += network sql
-DEPENDPATH += ../qextserialport/build \
-    ../qttelnet/lib \
-    ../portaudio-win32/lib
-INCLUDEPATH += ../qttelnet/src \
-    ../qextserialport
 HEADERS += cwmessagedialog.h \
     serial.h \
     so2sdr.h \
@@ -73,7 +60,6 @@ HEADERS += cwmessagedialog.h \
     mytableview.h \
     contest_cqp.h \
     contest_kqp.h \
-  #  dvk.h \
     otrsp.h \
     ssbmessagedialog.h \
     settingsdialog.h \
@@ -148,34 +134,23 @@ SOURCES += cwmessagedialog.cpp \
     mytableview.cpp \
     contest_cqp.cpp \
     contest_kqp.cpp \
-  #  dvk.cpp \
     otrsp.cpp \
     ssbmessagedialog.cpp \
     settingsdialog.cpp \
     microham.cpp \
-    history.cpp
+    history.cpp 
 unix { 
-    include(../common.pri)
+    include(../qextserialport/src/qextserialport.pri)
+    include(../qttelnet/src/qttelnet.pri)
 
+    SO2SDR_INSTALL_DIR = /usr/local
     CONFIG += link_pkgconfig
-    PKGCONFIG += fftw3 hamlib portaudio-2.0 # sndfile
-
-    QMAKE_CXXFLAGS += -O2 \
-        -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
-    HEADERS += linux_pp.h \
-         glbandmap.h \
-        ../qextserialport/qextserialport_global.h \
-        ../qextserialport/qextserialport.h \
-        ../qextserialport/qextserialenumerator.h \
-        ../qttelnet/src/qttelnet.h
-    SOURCES += linux_pp.cpp \
-        ../qttelnet/src/qttelnet.cpp \
-         glbandmap.cpp
-    SOURCES += ../qextserialport/qextserialenumerator_unix.cpp \
-        ../qextserialport/qextserialport.cpp \
-        ../qextserialport/posix_qextserialport.cpp
-
+    PKGCONFIG += fftw3 hamlib portaudio-2.0
+    QMAKE_CXXFLAGS += -O2 -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
+    HEADERS += linux_pp.h glbandmap.h #./qttelnet/src/qttelnet.h
+    SOURCES += linux_pp.cpp  glbandmap.cpp #../qttelnet/src/qttelnet.cpp 
     QMAKE_LFLAGS += -Wl,--as-needed
+    
     install.target = install
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
         install -d $$SO2SDR_INSTALL_DIR/share/applications; \
@@ -192,29 +167,14 @@ unix {
     QMAKE_EXTRA_TARGETS += install
 }
 
-win32 { 
-#set flags for MSVC compiler/linker options
-    QMAKE_CXXFLAGS_RELEASE += "/O2 /Oi /Ot /Oy /GL /Gy /arch:SSE2 /fp:fast"
-    QMAKE_LFLAGS_RELEASE += "/ltcg"
-    CONFIG += release
-    HEADERS += win_pp.h \
-              glbandmap_win.h
-    SOURCES += win_pp.cpp \
-              glbandmap_win.cpp
-    DEFINES += WINVER=0x0501 # needed for mingw to pull in appropriate dbt business...probably a better way to do this
-    LIBS += -L"R:/so2sdr/work/qextserialport/build" \
-        -lqextserialport1
-    LIBS += -L"R:/so2sdr/work/qttelnet/lib" \
-        -lQtSolutions_Telnet-2.1
-    LIBS += -L"../" \
-        -llibfftw3-3
- #   LIBS += -L"R:/so2sdr/work/sndfile" \
- #       -llibsndfile-1
-    LIBS += -L"R:/so2sdr/work/portaudio-win32-noasio/build/msvc/Win32/Release" \
-        -lportaudio_x86
-    INCLUDEPATH += R:/so2sdr/work/portaudio-win32-noasio/include
-    INCLUDEPATH += R:/so2sdr/work/hamlib-win32-1.2.15.3/include
-    INCLUDEPATH += R:/so2sdr/work/sndfile
-    LIBS += -L"R:/so2sdr/work/hamlib-win32-1.2.15.3/lib/msvc" -llibhamlib-2
-    RC_FILE = so2sdr.rc
+#flags for building with i686-w64-mingw32 compiler in MXE environment
+win32 {
+   include(../qextserialport/src/qextserialport.pri)
+   include(../qttelnet/src/qttelnet.pri)
+
+   #CONFIG += console   #adding this to see console debug messages
+   HEADERS += win_pp.h glbandmap_win.h
+   SOURCES += win_pp.cpp glbandmap_win.cpp
+   LIBS +=  -lhamlib -lfftw3 -lportaudio -lhid -lsetupapi
+   RC_FILE = so2sdr.rc
 }

@@ -25,7 +25,7 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-#include "pa_asio.h"
+//#include "pa_asio.h"
 #endif
 
 AudioReaderPortAudio::AudioReaderPortAudio(QObject *parent) : QObject(parent)
@@ -75,9 +75,9 @@ bool AudioReaderPortAudio::initialize(const PaStreamParameters &format, sampleSi
 
 #ifndef Q_OS_LINUX
     // show ASIO control panel if using ASIO
-    if (Pa_GetHostApiInfo(Pa_GetDeviceInfo(format.device)->hostApi)->type == paASIO) {
-        PaAsio_ShowControlPanel(inputParameters.device, NULL);
-    }
+    //    if (Pa_GetHostApiInfo(Pa_GetDeviceInfo(format.device)->hostApi)->type == paASIO) {
+    //        PaAsio_ShowControlPanel(inputParameters.device, NULL);
+    //    }
 #endif
 
     int numDevices = Pa_GetDeviceCount();

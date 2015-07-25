@@ -52,17 +52,16 @@ public slots:
 private slots:
     void launchUpdateDeviceList0(int);
     void launchUpdateDeviceList1(int);
-    void launchUpdateDeviceList2(int);
 
 private:
     int                nAPI;
     int                *nApiDevices;
     PaStreamParameters Format[NRIG];
-    QCheckBox          *Checkbox[NRIG+1];
+    QCheckBox          *Checkbox[NRIG];
     QCheckBox          *SwapCheckBox[NRIG];
-    QComboBox          *APICombo[NRIG+1]; // extra for DVK
+    QComboBox          *APICombo[NRIG];
     QComboBox          *BitsCombo[NRIG];
-    QComboBox          *DeviceCombo[NRIG+1]; // extra for DVK
+    QComboBox          *DeviceCombo[NRIG];
     QIcon              iconNOK;
     QIcon              iconOK;
     QLineEdit          *OffsetLineEditPtr[NRIG];

@@ -112,7 +112,7 @@ void ParallelPort::initialize()
  */
 void ParallelPort::PinLow(const int p)
 {
-    if (!initialized | (p < 2) | (p > 9)) return;
+    if (!initialized || (p < 2) || (p > 9)) return;
 
     char data = 0;
     int  err  = ioctl(parallelFD, PPRDATA, &data); // read port data
@@ -137,7 +137,7 @@ void ParallelPort::PinLow(const int p)
  */
 void ParallelPort::PinHigh(const int p)
 {
-    if (!initialized | (p < 2) | (p > 9)) return;
+    if (!initialized || (p < 2) || (p > 9)) return;
 
     char data = 0;
     int  err  = ioctl(parallelFD, PPRDATA, &data); // read port data

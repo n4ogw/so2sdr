@@ -38,14 +38,14 @@ QList<QByteArray> RigSerial::mfgName;
 
 /*! comparison for radio manufacturer class. Compare by name
  */
-bool hamlibmfg::operator<(const hamlibmfg other) const
+bool hamlibmfg::operator<(const hamlibmfg &other) const
 {
     return (mfg_name<other.mfg_name);
 }
 
 /*! comparison for rig models within a manufacturer. Alphabetize by name
  */
-bool hamlibModel::operator<(const hamlibModel other) const
+bool hamlibModel::operator<(const hamlibModel &other) const
 {
     return (model_name<other.model_name);
 }
@@ -536,15 +536,15 @@ void RigSerial::sendRaw(int nrig, QByteArray cmd)
         // numbers inside "< >" will be interpreted as hexadecimal bytes
         QByteArray data;
         data.clear();
-        int i0=0,i1,i2;
+        int i0=0;
         do {
-            i1=cmd.indexOf("<",i0);
+            int i1=cmd.indexOf("<",i0);
             if (i1!=-1) {
                 data=data+cmd.mid(i0,i1-i0);
             } else {
                 break;
             }
-            i2=cmd.indexOf(">",i1);
+            int i2=cmd.indexOf(">",i1);
             if (i2==-1 || (i2-i1)!=3) break;
             QByteArray hex=cmd.mid(i1+1,i2-i1-1);
             bool ok=false;

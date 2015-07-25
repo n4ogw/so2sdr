@@ -51,7 +51,6 @@ signals:
 
 private:
     bool               initialized;
-    bool               running;
     PaError            err;
     PaStreamParameters inputParameters;
     PaStream           *stream;

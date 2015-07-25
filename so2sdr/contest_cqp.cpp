@@ -197,19 +197,19 @@ bool CQP::validateExchange(Qso *qso)
     }
 
     // only copy into log if exchange is validated
-    if (ok_part[0] & ok_part[1]) {
+    if (ok_part[0] && ok_part[1]) {
         for (int i = 0; i < nExch; i++) {
             qso->rcv_exch[i] = finalExch[i];
         }
     }
     // if exchange is ok and a mobile, we need a mobile dupe check
-    if (qso->isMobile & ok_part[0] & ok_part[1]) {
+    if (qso->isMobile && ok_part[0] && ok_part[1]) {
         emit(mobileDupeCheck(qso));
         if (!qso->dupe) {
             emit(clearDupe());
         }
     }
-    return(ok_part[0] & ok_part[1]);
+    return(ok_part[0] && ok_part[1]);
 }
 
 /*!

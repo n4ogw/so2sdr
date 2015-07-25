@@ -72,7 +72,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>11</pointsize>
          </font>
         </property>
         <property name="title">
@@ -113,7 +113,8 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Consolas</family>
+             <pointsize>11</pointsize>
             </font>
            </property>
            <property name="readOnly">
@@ -149,7 +150,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>11</pointsize>
          </font>
         </property>
         <property name="title">
@@ -185,7 +186,8 @@
            <property name="font">
             <font>
              <family>Consolas</family>
-             <pointsize>10</pointsize>
+             <pointsize>11</pointsize>
+             <italic>false</italic>
             </font>
            </property>
            <property name="readOnly">
@@ -219,18 +221,18 @@
           <property name="minimumSize">
            <size>
             <width>310</width>
-            <height>100</height>
+            <height>108</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>310</width>
-            <height>100</height>
+            <height>108</height>
            </size>
           </property>
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <pointsize>11</pointsize>
            </font>
           </property>
           <property name="styleSheet">
@@ -251,77 +253,12 @@
              <property name="spacing">
               <number>2</number>
              </property>
-             <item row="3" column="3">
-              <widget class="QLabel" name="mult40Label2">
-               <property name="font">
-                <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="4">
-              <widget class="QLabel" name="mult20Label2">
-               <property name="font">
-                <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="7">
-              <widget class="QLabel" name="label_13">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Tot</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QLabel" name="label_160">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -336,8 +273,8 @@
               <widget class="QLabel" name="label_80">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -352,8 +289,8 @@
               <widget class="QLabel" name="label_40">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -368,8 +305,8 @@
               <widget class="QLabel" name="label_20">
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -402,8 +339,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -436,8 +373,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Monospace</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -470,8 +407,11 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
+                 <weight>50</weight>
+                 <italic>false</italic>
+                 <bold>false</bold>
                 </font>
                </property>
                <property name="text">
@@ -504,8 +444,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -538,8 +478,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -572,8 +512,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -606,8 +546,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -640,12 +580,45 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
                 <string>0</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="7">
+              <widget class="QLabel" name="label_13">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Tot</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -674,8 +647,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -708,8 +681,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -742,8 +715,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -776,8 +749,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -810,8 +783,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -844,8 +817,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -878,8 +851,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -912,8 +885,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -928,8 +901,8 @@
               <widget class="QLabel" name="mult160Label2">
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -944,8 +917,40 @@
               <widget class="QLabel" name="mult80Label2">
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QLabel" name="mult40Label2">
+               <property name="font">
+                <font>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="4">
+              <widget class="QLabel" name="mult20Label2">
+               <property name="font">
+                <font>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -960,8 +965,8 @@
               <widget class="QLabel" name="mult15Label2">
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -976,8 +981,8 @@
               <widget class="QLabel" name="mult10Label2">
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1010,8 +1015,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>MS Shell Dlg 2</family>
-                 <pointsize>10</pointsize>
+                 <family>Consolas</family>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1026,7 +1031,7 @@
               <widget class="QLabel" name="label_7">
                <property name="font">
                 <font>
-                 <pointsize>10</pointsize>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1038,7 +1043,7 @@
               <widget class="QLabel" name="multName">
                <property name="font">
                 <font>
-                 <pointsize>10</pointsize>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1050,7 +1055,7 @@
               <widget class="QLabel" name="multName2">
                <property name="font">
                 <font>
-                 <pointsize>10</pointsize>
+                 <pointsize>11</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1074,19 +1079,19 @@
           <property name="minimumSize">
            <size>
             <width>335</width>
-            <height>80</height>
+            <height>108</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>420</width>
-            <height>100</height>
+            <height>108</height>
            </size>
           </property>
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>10</pointsize>
+            <pointsize>11</pointsize>
            </font>
           </property>
           <property name="tabKeyNavigation">
@@ -1148,598 +1153,6 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <item row="4" column="8">
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>50</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEditExchange1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Consolas</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="maxLength">
-           <number>32</number>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>2</width>
-            <height>17</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEditCall1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Consolas</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="maxLength">
-           <number>16</number>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="4">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>30</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="4" column="4">
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>30</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="6">
-         <widget class="QLineEdit" name="lineEditCall2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Consolas</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="6">
-         <widget class="QLineEdit" name="lineEditExchange2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>180</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Consolas</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="6">
-         <layout class="QHBoxLayout" name="horizontalLayout"/>
-        </item>
-        <item row="5" column="4">
-         <widget class="QLabel" name="labelBearing1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="8">
-         <widget class="QLabel" name="labelBearing2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="TimeDisplay">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Monospace</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>0000 23:23:23</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="Mult1Label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>MS Shell Dlg 2</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>M:160 80 40 20 15 10</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="6">
-         <widget class="QLabel" name="Mult2Label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>MS Shell Dlg 2</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>M:160 80 40 20 15 10</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="Qso1Label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>MS Shell Dlg 2</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Q:160 80 40 20 15 10</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="6">
-         <widget class="QLabel" name="Qso2Label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>170</width>
-            <height>13</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>MS Shell Dlg 2</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Q:160 80 40 20 15 10</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <property name="spacing">
-           <number>3</number>
-          </property>
-          <property name="leftMargin">
-           <number>3</number>
-          </property>
-          <property name="rightMargin">
-           <number>3</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="RateLabel">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Rate=</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>10</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="HourRateLabel">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>/hr</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="ScoreLabel">
-          <property name="font">
-           <font>
-            <family>Monospace</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>0 Points</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <property name="spacing">
-           <number>1</number>
-          </property>
-          <property name="rightMargin">
-           <number>2</number>
-          </property>
-          <item>
-           <widget class="QLineEdit" name="WPMLineEdit">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="maxLength">
-             <number>2</number>
-            </property>
-            <property name="frame">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="SpeedDisplay">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>35</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>35</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>WPM</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>5</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="NumLabel">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>45</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>45</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Monospace</family>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>0000</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
         <item row="4" column="5">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <property name="spacing">
@@ -1770,7 +1183,8 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="maxLength">
@@ -1803,7 +1217,8 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1846,8 +1261,8 @@
             </property>
             <property name="font">
              <font>
-              <family>Monospace</family>
-              <pointsize>10</pointsize>
+              <family>Consolas</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1884,7 +1299,8 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1914,7 +1330,8 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1948,7 +1365,8 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1978,7 +1396,8 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1992,6 +1411,7 @@
          <widget class="QLabel" name="Sun2Label">
           <property name="font">
            <font>
+            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2006,26 +1426,372 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="Sun1Label">
+        <item row="6" column="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <property name="leftMargin">
+           <number>3</number>
+          </property>
+          <property name="rightMargin">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="RateLabel">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Rate=</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="HourRateLabel">
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>/hr</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="ScoreLabel">
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <family>Consolas</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>0 Points</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="WPMLineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="maxLength">
+             <number>2</number>
+            </property>
+            <property name="frame">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="SpeedDisplay">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>35</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>35</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>WPM</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>5</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="NumLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Consolas</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>0000</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="4" column="4">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>30</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="6">
+         <widget class="QLineEdit" name="lineEditCall2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="6">
+         <widget class="QLineEdit" name="lineEditExchange2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="6">
+         <layout class="QHBoxLayout" name="horizontalLayout"/>
+        </item>
+        <item row="5" column="4">
+         <widget class="QLabel" name="labelBearing1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>11</pointsize>
            </font>
           </property>
           <property name="text">
            <string/>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </widget>
+        </item>
+        <item row="5" column="8">
+         <widget class="QLabel" name="labelBearing2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="margin">
-           <number>1</number>
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="Mult1Label2">
+        <item row="6" column="0">
+         <widget class="QLabel" name="TimeDisplay">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>0000 23:23:23</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="Mult1Label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -2046,12 +1812,105 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
-            <pointsize>9</pointsize>
+            <family>Consolas</family>
+            <pointsize>11</pointsize>
            </font>
           </property>
           <property name="text">
-           <string/>
+           <string>M:160 80 40 20 15 10</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="6">
+         <widget class="QLabel" name="Mult2Label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>M:160 80 40 20 15 10</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="Qso1Label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Q:160 80 40 20 15 10</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <widget class="QLabel" name="Qso2Label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Q:160 80 40 20 15 10</string>
           </property>
          </widget>
         </item>
@@ -2077,12 +1936,62 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
-            <pointsize>9</pointsize>
+            <family>Consolas</family>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
            <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="Mult1Label2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>170</width>
+            <height>13</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="Sun1Label">
+          <property name="font">
+           <font>
+            <family>Tahoma</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="margin">
+           <number>1</number>
           </property>
          </widget>
         </item>
@@ -2108,6 +2017,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2138,6 +2048,7 @@
           </property>
           <property name="font">
            <font>
+            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2168,7 +2079,8 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <family>Tahoma</family>
+            <pointsize>11</pointsize>
            </font>
           </property>
           <property name="text">
@@ -2198,7 +2110,8 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <family>Tahoma</family>
+            <pointsize>11</pointsize>
            </font>
           </property>
           <property name="text">
@@ -2244,6 +2157,230 @@
           </property>
          </widget>
         </item>
+        <item row="4" column="8">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>50</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="1">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>2</width>
+            <height>17</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLineEdit" name="lineEditExchange1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="maxLength">
+           <number>32</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLineEdit" name="lineEditCall1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>180</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Consolas</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="maxLength">
+           <number>16</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="4">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>30</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="3">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="TX1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>8</horstretch>
+              <verstretch>8</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="RX1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>8</horstretch>
+              <verstretch>8</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="7">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="TX2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>8</horstretch>
+              <verstretch>8</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="RX2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>8</horstretch>
+              <verstretch>8</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>8</width>
+              <height>8</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </item>
      </layout>
@@ -2256,8 +2393,14 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Tahoma</family>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <property name="nativeMenuBar">
     <bool>true</bool>
@@ -2275,6 +2418,7 @@
     <addaction name="actionADIF"/>
     <addaction name="actionCabrillo"/>
     <addaction name="actionImport_Cabrillo"/>
+    <addaction name="actionHistory"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -2286,6 +2430,7 @@
      <string>&amp;Config</string>
     </property>
     <addaction name="actionStation"/>
+    <addaction name="actionSettings"/>
     <addaction name="actionRadios"/>
     <addaction name="actionWinkey"/>
     <addaction name="actionSDR"/>
@@ -2330,30 +2475,60 @@
    <property name="text">
     <string>&amp;Quit</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionStation">
    <property name="text">
     <string>&amp;Station</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionWinkey">
    <property name="text">
     <string>&amp;Winkey</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionCW_Messages">
    <property name="text">
     <string>&amp;CW Messages</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionOpen">
    <property name="text">
     <string>&amp;Open Contest</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionRadios">
    <property name="text">
     <string>&amp;Radios/SO2R</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionContest">
@@ -2365,6 +2540,11 @@
    <property name="text">
     <string>&amp;About SO2SDR</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionAbout_Qt">
    <property name="text">
@@ -2373,17 +2553,32 @@
   </action>
   <action name="actionSDR">
    <property name="text">
-    <string>&amp;Bandscope/DVK</string>
+    <string>&amp;Bandscope</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionContestOptions">
    <property name="text">
     <string>Contest &amp;Options</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionNewContest">
    <property name="text">
     <string>&amp;New Contest</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionSave">
@@ -2395,10 +2590,20 @@
    <property name="text">
     <string>Export &amp;ADIF</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionCabrillo">
    <property name="text">
     <string>Export &amp;Cabrillo</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionDupesheet">
@@ -2415,10 +2620,20 @@
    <property name="text">
     <string>&amp;Import Cabrillo</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionHelp">
    <property name="text">
     <string>&amp;Help</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionSSB_Messages">
@@ -2428,8 +2643,30 @@
    <property name="text">
     <string>SSB Messages</string>
    </property>
-   <property name="toolTip">
-    <string>SSB Messages</string>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>&amp;General Settings</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="actionHistory">
+   <property name="text">
+    <string>Update History from Log</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
   </action>
  </widget>

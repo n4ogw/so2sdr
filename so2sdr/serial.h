@@ -43,7 +43,7 @@ class hamlibModel
 public:
     QByteArray model_name;
     int        model_nr;
-    bool operator<(const hamlibModel other) const;
+    bool operator<(const hamlibModel &other) const;
 };
 
 class hamlibmfg
@@ -51,7 +51,7 @@ class hamlibmfg
 public:
     QByteArray         mfg_name;
     QList<hamlibModel> models;
-    bool operator<(const hamlibmfg other) const;
+    bool operator<(const hamlibmfg &other) const;
 };
 
 // this has to match the modes defined in hamlib rig.h, enum rmode_t

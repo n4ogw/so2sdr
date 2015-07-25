@@ -1161,7 +1161,6 @@ bool Contest::separateExchange(Qso *qso)
     }
 
     // check for next callsign (begins with "/")
-    i1 = -1;
     nextCall.clear();
     for (int i = 0; i < exchElement.size(); i++) {
         if (exchElement.at(i).left(1) == "/") {
@@ -1318,7 +1317,6 @@ bool Contest::valExch_nr_name_state(int ii, int &mult_indx)
         return(false);
     }
 
-    int k;
     int dm_indx = exchElement.size() - 1;
     for (int i = exchElement.size() - 1; i >= 0; i--) {
         // number: take LAST number element in exchange
@@ -1348,7 +1346,7 @@ bool Contest::valExch_nr_name_state(int ii, int &mult_indx)
 
     // name must match the DMult list; take the next non-nr element before the mult
     if (!ok[1]) {
-        for (k = dm_indx - 1; k >= 0; k--) {
+        for (int k = dm_indx - 1; k >= 0; k--) {
             if (!nr_indx[k]) {
                 finalExch[1] = exchElement[k];
                 ok[1]        = true;

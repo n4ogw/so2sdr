@@ -24,6 +24,10 @@
 #include <windows.h>
 #endif
 
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+#endif
+
 /*!
    WinkeyDevice : serial port of device
  */

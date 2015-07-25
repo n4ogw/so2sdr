@@ -35,20 +35,6 @@ void Spectrum::initialize(sampleSizes s, PaSampleFormat b, int nr, QString dir)
     sizes         = s;
     sizeIQ        = sizes.sample_length / 8; // 512 IQ phase/gain bins
     // initialize FFTW
-#ifdef Q_OS_WIN
-    if (!fftwWinInit()) {
-        return;
-    }
-    if (in) (fftw_freep) (in);
-    if (out) (fftw_freep) (out);
-    if (errfunc) (fftw_freep) (errfunc);
-    if (plan) (fftw_destroy_planp) (plan);
-
-    in      = (fftw_complex *) (fftw_mallocp) (sizeof(fftw_complex) * sizes.sample_length);
-    out     = (fftw_complex *) (fftw_mallocp) (sizeof(fftw_complex) * sizes.sample_length);
-    errfunc = (fftw_complex *) (fftw_mallocp) (sizeof(fftw_complex) * sizes.sample_length);
-    plan    = (fftw_plan_dft_1dp) (sizes.sample_length, in, out, FFTW_FORWARD, FFTW_MEASURE);
-#else
     if (in) fftw_free(in);
     if (out) fftw_free(out);
     if (errfunc) fftw_free(errfunc);
@@ -58,7 +44,7 @@ void Spectrum::initialize(sampleSizes s, PaSampleFormat b, int nr, QString dir)
     out     = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * sizes.sample_length);
     errfunc = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * sizes.sample_length);
     plan    = fftw_plan_dft_1d(sizes.sample_length, in, out, FFTW_FORWARD, FFTW_MEASURE);
-#endif
+
     switch (b) {
     case paInt16:
         bits = 16;
@@ -174,17 +160,11 @@ Spectrum::Spectrum(QSettings& s,QObject *parent) : QObject(parent),settings(s)
 
 Spectrum::~Spectrum()
 {
-#ifdef Q_OS_WIN
-    (fftw_destroy_planp) (plan);
-    (fftw_freep) (in);
-    (fftw_freep) (out);
-    (fftw_freep) (errfunc);
-#else
     fftw_destroy_plan(plan);
     fftw_free(in);
     fftw_free(out);
     fftw_free(errfunc);
-#endif
+
     for (int i = 0; i < SIG_N_AVG; i++) {
         delete[] peakAvg[i];
     }
@@ -499,11 +479,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
 
     // done reading raw data, emit signal so audioReader can procede
     emit(done());
-#ifdef Q_OS_WIN
-    (fftw_executep) (plan);
-#else
     fftw_execute(plan);
-#endif
     if (settings.value(s_sdr_iqcorrect[nrig],s_sdr_iqcorrect_def[nrig]).toBool()) {
         for (int i = 0; i < sizes.sample_length; i++) {
             // correct IQ imbalance
@@ -1191,46 +1167,6 @@ void Spectrum::measureBackgroundLog(double &background, double &sigma, double sp
     }
 }
 
-
-#ifdef Q_OS_WIN
-bool Spectrum::fftwWinInit()
-
-// initialize FFTW DLL under windows
-{
-    HINSTANCE hLib = LoadLibraryA("libfftw3-3.dll");
-
-    if (hLib == NULL) {
-        qDebug("LoadLibrary libfftw3-3.dll failed");
-        return(false);
-    }
-    fftw_mallocp = (fftw_malloc_ptr) GetProcAddress(hLib, "fftw_malloc");
-    if (fftw_mallocp == NULL) {
-        qDebug("GetProcAddress for fftw_malloc Failed.");
-        return(false);
-    }
-    fftw_freep = (fftw_free_ptr) GetProcAddress(hLib, "fftw_free");
-    if (fftw_freep == NULL) {
-        qDebug("GetProcAddress for fftw_free Failed.");
-        return(false);
-    }
-    fftw_plan_dft_1dp = (fftw_plan_dft_1d_ptr) GetProcAddress(hLib, "fftw_plan_dft_1d");
-    if (fftw_plan_dft_1dp == NULL) {
-        qDebug("GetProcAddress for fftw_plan_dft_1d Failed.");
-        return(false);
-    }
-    fftw_destroy_planp = (fftw_destroy_plan_ptr) GetProcAddress(hLib, "fftw_destroy_plan");
-    if (fftw_destroy_planp == NULL) {
-        qDebug("GetProcAddress for fftw_destroy_plan Failed.");
-        return(false);
-    }
-    fftw_executep = (fftw_destroy_plan_ptr) GetProcAddress(hLib, "fftw_execute");
-    if (fftw_executep == NULL) {
-        qDebug("GetProcAddress for fftw_execute Failed.");
-        return(false);
-    }
-    return(true);
-}
-#endif
 
 /*! calculate FFT window coefficients (Nuttall)
  */

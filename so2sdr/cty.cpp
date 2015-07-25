@@ -198,7 +198,6 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
 
         // do prefix check on each piece
         int *p   = new int[parts.size()];
-        int *s   = new int[parts.size()];
         Qso *tmp = new Qso[parts.size()]();
         for (int i = 0; i < parts.size(); i++) {
             tmp[i].call = parts.at(i);
@@ -233,7 +232,6 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
             }
         }
         delete[] p;
-        delete[] s;
         if (ok) {
             qso->country      = ip;
             qso->country_name = tmp[indx].country_name;
@@ -263,8 +261,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
 int Cty::idPfx2(Qso *qso, int sz) const
 {
     // is it an exception call?
-    int indx = -1;
-    indx = checkException(qso->call, qso->zone);
+    int indx = checkException(qso->call, qso->zone);
     if (indx != -1) {
         qso->country      = indx;
         qso->country_name = countryList[indx]->name;

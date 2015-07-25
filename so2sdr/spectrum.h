@@ -131,14 +131,6 @@ private:
     unsigned long chunk_size;
     QSettings&    settings;
 
-#ifdef Q_OS_WIN
-    fftw_malloc_ptr       fftw_mallocp;
-    fftw_free_ptr         fftw_freep;
-    fftw_plan_dft_1d_ptr  fftw_plan_dft_1dp;
-    fftw_destroy_plan_ptr fftw_destroy_planp;
-    fftw_destroy_plan_ptr fftw_executep;
-#endif
-
     void clickRemove(double bg, double dev, double spec[]) const;
     void complexMult(double a[], double b[], double c[]) const;
     void detectPeaks(double bg, double sigma, double spec[]);

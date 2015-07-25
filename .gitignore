@@ -4,10 +4,10 @@
 
 # Qt Creator generated project file
 so2sdr.pro.user*
-
+object_script*
 
 # Build system generated files
-Makefile
+Makefile*
 qextserialport/build/
 qextserialport/tmp/
 qttelnet/buildlib/moc_qttelnet.cpp
@@ -17,6 +17,8 @@ so2sdr/moc_*.cpp
 so2sdr/qttelnet.moc
 so2sdr/so2sdr
 so2sdr/ui_*.h
+so2sdr*exe
+so2sdr/release
 
 
 # Binary files
@@ -32,3 +34,6 @@ doc/*.html
 doc/*.pdf
 doc/so2sdr.xml
 so2sdr/doc/*
+
+#others
+*.bak

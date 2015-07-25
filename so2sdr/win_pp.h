@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include <windows.h>
-#include <qDebug>
+#include <QDebug>
 #include <QSettings>
 #include "defines.h"
 
