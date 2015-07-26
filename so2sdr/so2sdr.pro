@@ -12,7 +12,7 @@
 #
 TEMPLATE = app
 TARGET = so2sdr
-QT += network sql opengl
+QT += network sql 
 HEADERS += cwmessagedialog.h \
     serial.h \
     so2sdr.h \
