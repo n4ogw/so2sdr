@@ -9,6 +9,7 @@ DirText "This will install so2sdr on your computer. Choose a directory"
 Section "" ;No components page, name is not important
 SetOutPath $INSTDIR
   File so2sdr/release/so2sdr.exe
+  File so2sdr/inpout32.dll
   File share/arrl10.cfg
   File share/arrl10.txt
   File share/arrl160.cfg
@@ -80,6 +81,7 @@ Section "Uninstall"
 
 Delete $INSTDIR\Uninstall.exe
 Delete $INSTDIR\so2sdr.exe
+Delete $INSTDIR\inpout32.dll
 
 Delete $INSTDIR\arrl10.cfg
 Delete $INSTDIR\arrl10.txt

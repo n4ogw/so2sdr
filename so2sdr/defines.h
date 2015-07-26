@@ -343,14 +343,6 @@ typedef struct sampleSizes {
 } sampleSizes;
 Q_DECLARE_TYPEINFO(sampleSizes, Q_PRIMITIVE_TYPE);
 
-#ifdef Q_OS_WIN
-/*! Windows FFTW function pointers */
-typedef void* (*fftw_malloc_ptr)(int n);
-typedef void* (*fftw_free_ptr)(void* ptr);
-typedef fftw_plan (*fftw_plan_dft_1d_ptr)(int n, void *ptr_in, void* ptr_out, int i1, int i2);
-typedef void (*fftw_destroy_plan_ptr)(fftw_plan plan);
-#endif
-
 // /////// Misc stuff
 
 // DVK max message length (seconds)

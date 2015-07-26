@@ -26,8 +26,6 @@
 #include "spectrum.h"
 
 GLBandmap::GLBandmap(QWidget *parent) : QWidget(parent)
-
-// : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     setAttribute(Qt::WA_NoSystemBackground);
     setAutoFillBackground(false);

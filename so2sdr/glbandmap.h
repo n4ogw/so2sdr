@@ -30,8 +30,6 @@
 
  */
 class GLBandmap : public QWidget
-
-// class GLBandmap : public QGLWidget
 {
 Q_OBJECT
 
@@ -59,14 +57,9 @@ protected:
     void mousePressEvent(QMouseEvent * event);
 
 private:
-#ifdef Q_OS_LINUX
-// these are used only in the Linux version, where the drawn spectrum is
-// cached in a pixmap
-
     int     cornerx;
     int     cornery;
     QPixmap pixmap;
-#endif
     bool          cmap[MAX_H];
     bool          _invert;
     bool          mark;

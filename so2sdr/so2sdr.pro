@@ -12,7 +12,7 @@
 #
 TEMPLATE = app
 TARGET = so2sdr
-QT += network sql
+QT += network sql opengl
 HEADERS += cwmessagedialog.h \
     serial.h \
     so2sdr.h \
@@ -30,6 +30,7 @@ HEADERS += cwmessagedialog.h \
     notedialog.h \
     dupesheet.h \
     bandmap.h \
+    glbandmap.h \
     winkey.h \
     contest_wpx.h \
     spectrum.h \
@@ -103,6 +104,7 @@ SOURCES += cwmessagedialog.cpp \
     dupesheet.cpp \
     so2sdr_dupesheet.cpp \
     bandmap.cpp \
+    glbandmap.cpp \
     winkey.cpp \
     contest_wpx.cpp \
     spectrum.cpp \
@@ -147,10 +149,9 @@ unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += fftw3 hamlib portaudio-2.0
     QMAKE_CXXFLAGS += -O2 -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
-    HEADERS += linux_pp.h glbandmap.h 
-    SOURCES += linux_pp.cpp  glbandmap.cpp 
-    QMAKE_LFLAGS += -Wl,--as-needed
-    
+    HEADERS += linux_pp.h
+    SOURCES += linux_pp.cpp
+
     install.target = install
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
         install -d $$SO2SDR_INSTALL_DIR/share/applications; \
@@ -177,9 +178,9 @@ win32 {
 
    include(../qextserialport_1.2.0_win/src/qextserialport.pri)
 
-   #CONFIG += console   #adding this to see console debug messages
-   HEADERS += win_pp.h glbandmap_win.h
-   SOURCES += win_pp.cpp glbandmap_win.cpp
+   #CONFIG += console   #add this to see console debug messages
+   HEADERS += win_pp.h
+   SOURCES += win_pp.cpp
    LIBS +=  -lhamlib -lfftw3 -lportaudio -lhid -lsetupapi
    RC_FILE = so2sdr.rc
 }

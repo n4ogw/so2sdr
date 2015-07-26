@@ -1850,19 +1850,12 @@ void So2sdr::about()
     QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2015 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
-#ifdef Q_OS_WIN
-                       + "<li>hamlib http://www.hamlib.org " + so2sdr_hamlib_version
-#endif
-#ifdef Q_OS_LINUX
-                       + "<li>hamlib http://www.hamlib.org " + hamlib_version
-#endif
-                       + "<li>qextserialport-1.2 http://code.google.com/p/qextserialport/"
+                       + "<li>qextserialport https://github.com/qextserialport/qextserialport"
                        + "<li>QtSolutions_Telnet 2.1"
                        + "<li>"+QString(Pa_GetVersionText())+" http://portaudio.com"
-#ifdef DVK_ENABLE
-                       + "<li>"+dvk->sndfile_version()+ " http://www.mega-nerd.com/libsndfile/"
+#ifdef Q_OS_WIN
+                       + "<li>Windows parallel port:  InpOut32.dll http://www.highrez.co.uk/"
 #endif
-                       + "<li>Windows parallel port:  Inpout32.dll http://logix4u.net/"
                        + "<li>MASTER.DTA algorithm, IQ balancing: Alex Shovkoplyas VE3NEA, http://www.dxatlas.com</ul>"
                        + "<hr><p>SO2SDR is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License "
                        + "as published by the Free Software Foundation, either version 3 of the License, or any later version, http://www.gnu.org/licenses/</p>");

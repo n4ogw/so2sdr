@@ -46,9 +46,7 @@ Bandmap::Bandmap(QSettings& s,QWidget *parent, Qt::WindowFlags f) : QWidget(pare
     vfoPos          = display->height() / 2;
     dragPos         = vfoPos;
     display->vfoPos = vfoPos;
-#ifdef Q_OS_LINUX
     display->cornery = MAX_H / 2 - vfoPos;
-#endif
 
     connect(display, SIGNAL(GLBandmapMouseQSY(int, int)), this, SIGNAL(mouseQSY(int, int)));
     connect(display, SIGNAL(mouseClick()),this,SIGNAL(mouseClick()));
@@ -426,9 +424,7 @@ void Bandmap::mouseMoveEvent(QMouseEvent *event)
             if (tmp > 0 && tmp < (height() - 21)) {
                 vfoPos          = tmp;
                 display->vfoPos = vfoPos;
-#ifdef Q_OS_LINUX
                 display->cornery = MAX_H / 2 - vfoPos;
-#endif
                 makeFreqScaleAbsolute();
                 FreqLabel->setPixmap(freqPixmap);
                 FreqLabel->update();
@@ -532,9 +528,7 @@ void Bandmap::resizeEvent(QResizeEvent * event)
     if (vfoPos > (height() - 21)) {
         vfoPos          = height() - 21;
         display->vfoPos = vfoPos;
-#ifdef Q_OS_LINUX
         display->cornery = MAX_H / 2 - vfoPos;
-#endif
         makeFreqScaleAbsolute();
         FreqLabel->setPixmap(freqPixmap);
         FreqLabel->update();
@@ -568,9 +562,7 @@ void Bandmap::setDefaultCenter()
 {
     vfoPos          = display->height() / 2;
     display->vfoPos = vfoPos;
-#ifdef Q_OS_LINUX
     display->cornery = MAX_H / 2 - vfoPos;
-#endif
 }
 
 /*!
