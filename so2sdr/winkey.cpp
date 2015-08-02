@@ -129,6 +129,9 @@ void Winkey::cancelcw()
         winkeyOpen = false;
     }
 
+    // remove "TX" indicator if it is present on bandmap
+    emit(markSignals(true, rigNum));
+
     sendBuff.resize(0);
     nchar = 0;
 }

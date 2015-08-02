@@ -346,7 +346,6 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     return(r);
                 }
             }
-            //if (altDActive && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
             // toggle mode
             if (duelingCQMode &&
                     lineEditCall[activeRadio]->text().isEmpty() && lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
@@ -940,6 +939,11 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
         enter(mod); // in case called incorrectly
         break;
     case 1:
+        // in case user switched to other radio in the middle of alt-D sequence
+        if (activeRadio != altDActiveRadio) {
+            enter(mod);
+            return;
+        }
         qso[activeRadio]->freq = rigFreq[activeRadio];
         addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
         if (qso[activeRadio]->dupe || lineEditCall[activeRadio]->text().isEmpty()) {
@@ -2182,7 +2186,6 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
         // assume Exch mode for all fills
         excModeTmp = true;
     }
-
     ModeTypes mode=cat->modeType(activeRadioTmp);
     int m=(int)mode;
 
@@ -2193,7 +2196,6 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
             return;
         }
     }
-
     switch (mod) {
     case Qt::NoModifier:
         if (i == 1 && csettings->value(c_sprintmode,c_sprintmode_def).toBool() && cqQsoInProgress[activeRadioTmp]) {

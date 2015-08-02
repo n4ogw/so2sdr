@@ -33,7 +33,7 @@
 //define DVK_ENABLE
 
 // ///////// version ///////////////
-const QByteArray Version = "1.5.1";
+const QByteArray Version = "1.5.2";
 
 #ifdef Q_OS_WIN
 // for some reason, can't access hamlib_version variable in MSVC
