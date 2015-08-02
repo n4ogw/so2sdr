@@ -246,6 +246,33 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 switchRadios(false);
                 r = true;
             }
+            // if radio switched during alt-D process, clear altD unless
+            // an alt-d qso is in progress (altDActive==3)
+            if (mod == Qt::AltModifier || mod == Qt::ControlModifier) {
+                if (altDActive==1 || altDActive==2) {
+                    QPalette palette(lineEditCall[altDActiveRadio]->palette());
+                    palette.setColor(QPalette::Base, CQ_COLOR);
+                    lineEditCall[altDActiveRadio]->setPalette(palette);
+                    lineEditCall[altDActiveRadio]->clear();
+                    lineEditCall[altDActiveRadio]->setModified(false);
+                    lineEditExchange[altDActiveRadio]->setPalette(palette);
+                    lineEditExchange[altDActiveRadio]->clear();
+                    qso[altDActiveRadio]->call.clear();
+                    exchangeSent[altDActiveRadio] = false;
+                    qso[altDActiveRadio]->prefill.clear();
+                    origCallEntered[altDActiveRadio].clear();
+                    labelCountry[altDActiveRadio]->clear();
+                    labelBearing[altDActiveRadio]->clear();
+                    labelLPBearing[altDActiveRadio]->clear();
+                    sunLabelPtr[altDActiveRadio]->clear();
+                    clearWorked(altDActiveRadio);
+                    cqMode[altDActiveRadio]=true;
+                    qso[altDActiveRadio]->dupe = false;
+                    altDActive             = 0;
+                    So2sdrStatusBar->clearMessage();
+                    r=true;
+                }
+            }
             break;
         case Qt::Key_S:
             // alt-S
@@ -569,7 +596,7 @@ void So2sdr::altd()
         if (altDActiveRadio == activeRadio) {
             switchRadios(false);
         }
-        return;
+        //return;
     }
     if (duelingCQMode || toggleMode) {
         So2sdrStatusBar->showMessage("Disable Dueling CQ or Toggle",2000);
@@ -2040,6 +2067,21 @@ void So2sdr::esc()
 
             // do not clear call/exchange field in this case
             altdClear = false;
+        } else if (altDActive == 2 && activeRadio == altDActiveRadio) {
+            QPalette palette(lineEditCall[altDActiveRadio]->palette());
+            palette.setColor(QPalette::Base, CQ_COLOR);
+            lineEditCall[altDActiveRadio]->setPalette(palette);
+            lineEditCall[altDActiveRadio]->clear();
+            lineEditExchange[altDActiveRadio]->setPalette(palette);
+            lineEditExchange[altDActiveRadio]->clear();
+            labelCountry[altDActiveRadio]->clear();
+            labelBearing[altDActiveRadio]->clear();
+            labelLPBearing[altDActiveRadio]->clear();
+            sunLabelPtr[altDActiveRadio]->clear();
+            clearWorked(altDActiveRadio);
+            qso[altDActiveRadio]->call.clear();
+            altDActive = 0;
+            callSent[altDActiveRadio] = false;
         }
     }
 
@@ -2068,6 +2110,10 @@ void So2sdr::esc()
             tmpCall.clear();
         }
         autoCQModePause = false;
+        for (int ii = 0; ii < MMAX; ii++) {
+            qso[activeRadio]->mult[ii]=-1;
+        }
+        qso[activeRadio]->worked=0;
     }
 
     // clear exchange field

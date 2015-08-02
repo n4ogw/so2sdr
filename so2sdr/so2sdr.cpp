@@ -2581,12 +2581,9 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             MasterTextEdit->clear();
         }
 
-        // if Alt-D or 2nd radio CQ is active, display these on the other radio
-        // if 2nd radio CQ and S/P on active radio, display on active radio
-        // RTC 01/12/14 : only do this when Alt-D is in state 1; if a call is already
-        // present on the second radio we don't want to clear displayed info.
+        // if 2nd radio CQ is active, display these on the other radio
         int nr = nrig;
-        if (altDActive==1 || ( activeR2CQ && cqMode[activeRadio] ) ) {
+        if (activeR2CQ && cqMode[activeRadio]) {
             nr = nr ^ 1;
         }
         labelCountry[nr]->clear();
@@ -2643,7 +2640,6 @@ void So2sdr::updateWorkedMult(int nr)
         if (!csettings->value(c_multsband,c_multsband_def).toBool()) {
             if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
                 // mult already worked
-                //tmp = tmp + "<font color=#000000>160 80 40 20 15 10</font>";
                 if (qso[nr]->isamult[nr])
                     tmp = tmp + "<font color=#000000>      WORKED      </font>";
                 else
@@ -2654,7 +2650,6 @@ void So2sdr::updateWorkedMult(int nr)
                     tmp = tmp + "<font color=#CC0000>      NEEDED      </font>";
                 else
                     tmp.clear();
-                //tmp = tmp + "<font color=#AAAAAA>160 80 40 20 15 10</font>";
             }
         } else {
             for (int i = 0; i < N_BANDS; i++) {
@@ -3120,13 +3115,15 @@ void So2sdr::spMode(int i)
 {
     cqQsoInProgress[i] = false;
     cqMode[i]          = false;
-    if (altDActive != 2) {
+    if (!altDActive || i!=altDActiveRadio) {
         QPalette palette(lineEditCall[i]->palette());
         palette.setColor(QPalette::Base, SP_COLOR);
         lineEditCall[i]->setPalette(palette);
         lineEditExchange[i]->setPalette(palette);
     }
-    lineEditExchange[i]->show();
+    if (altDActive!=1 || i!=altDActiveRadio) {
+        lineEditExchange[i]->show();
+    }
 }
 
 /*!
