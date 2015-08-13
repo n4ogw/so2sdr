@@ -29,12 +29,7 @@
 RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialog(parent),settings(s),catptr(cat)
 {
     setupUi(this);
-#ifdef Q_OS_WIN
-    hamlibVersionLabel->setText(QString(so2sdr_hamlib_version));
-#endif
-#ifdef Q_OS_LINUX
     hamlibVersionLabel->setText(QString(hamlib_version));
-#endif
     radioBaudComboBox[0]  = Radio1BaudComboBox;
     radioBaudComboBox[1]  = Radio2BaudComboBox;
     radioMfgComboBox[0]   = Radio1MfgComboBox;

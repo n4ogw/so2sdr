@@ -1850,6 +1850,7 @@ void So2sdr::about()
     QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2015 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
+		       + "<li>hamlib: "+ hamlib_version
                        + "<li>qextserialport https://github.com/qextserialport/qextserialport"
                        + "<li>QtSolutions_Telnet 2.1"
                        + "<li>"+QString(Pa_GetVersionText())+" http://portaudio.com"

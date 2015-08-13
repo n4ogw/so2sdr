@@ -35,11 +35,6 @@
 // ///////// version ///////////////
 const QByteArray Version = "1.5.2";
 
-#ifdef Q_OS_WIN
-// for some reason, can't access hamlib_version variable in MSVC
-const QByteArray so2sdr_hamlib_version="hamlib-1.2.15.3";
-#endif
-
 // //////// colors ////////////////
 // all of form (R,G,B)
 const QColor CQ_COLOR(255, 255, 255);  // color in CQ mode; white

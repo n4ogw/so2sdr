@@ -270,6 +270,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     qso[altDActiveRadio]->dupe = false;
                     altDActive             = 0;
                     So2sdrStatusBar->clearMessage();
+                    spotListPopUp[altDActiveRadio]=false;
                     r=true;
                 }
             }
@@ -2082,6 +2083,7 @@ void So2sdr::esc()
             qso[altDActiveRadio]->call.clear();
             altDActive = 0;
             callSent[altDActiveRadio] = false;
+            spotListPopUp[altDActiveRadio]=false;
         }
     }
 
@@ -2194,6 +2196,7 @@ void So2sdr::esc()
                 spMode(altDActiveRadio);
             }
             callSent[altDActiveRadio] = false;
+            spotListPopUp[altDActiveRadio]=false;
         }
     }
     // clear log search

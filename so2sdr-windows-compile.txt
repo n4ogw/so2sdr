@@ -88,10 +88,10 @@ NSIS also applies some compression to the executable.
 upx --best release/so2sdr.exe
 
 
-8. Make Windows installer package:
+8. Make Windows installer package: 
 
 cd ..
-i686-w64-mingw32.static/bin/makensis so2sdr-nsis-1.5.1
+i686-w64-mingw32.static/bin/makensis -X"SetCompressor /FINAL lzma" so2sdr-nsis-1.5.1
 
 This is a very basic NSIS installer. To uninstall, run the "uninstall" in the
 directory so2sdr is installed into. Nothing in the registry is modified.
