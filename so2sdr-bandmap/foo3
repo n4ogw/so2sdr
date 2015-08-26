@@ -1,0 +1,23 @@
+ALSA lib /tmp/portage/media-libs/alsa-lib-1.0.29/work/alsa-lib-1.0.29/src/pcm/pcm.c:2267:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib /tmp/portage/media-libs/alsa-lib-1.0.29/work/alsa-lib-1.0.29/src/pcm/pcm.c:2267:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib /tmp/portage/media-libs/alsa-lib-1.0.29/work/alsa-lib-1.0.29/src/pcm/pcm.c:2267:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib /tmp/portage/media-libs/alsa-lib-1.0.29/work/alsa-lib-1.0.29/src/pcm/pcm_route.c:867:(find_matching_chmap) Found no matching channel map
+ALSA lib /tmp/portage/media-libs/alsa-lib-1.0.29/work/alsa-lib-1.0.29/src/pcm/pcm_route.c:867:(find_matching_chmap) Found no matching channel map
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+Expression 'parameters->channelCount <= maxChans' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1513
+Expression 'ValidateParameters( inputParameters, hostApi, StreamDirection_In )' failed in '/tmp/portage/media-libs/portaudio-19_pre20140130/work/portaudio/src/hostapi/alsa/pa_linux_alsa.c', line: 1837
+cornerx=387 cornery=1795 width=413 height=917
+cornerx=387 cornery=1795 width=413 height=917
+cornerx=387 cornery=1795 width=413 height=917
+WARNING: Child process terminated by signal 6

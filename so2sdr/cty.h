@@ -34,7 +34,7 @@ class Cty : public QObject
 Q_OBJECT
 
 public:
-    Cty(QSettings& s);
+    explicit Cty(QSettings& s);
     ~Cty();
 
     int findPfx(QByteArray prefix, int& zone, Cont &continent, bool &o) const;

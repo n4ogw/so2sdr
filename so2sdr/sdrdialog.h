@@ -19,14 +19,11 @@
 #ifndef SDRDIALOG_H
 #define SDRDIALOG_H
 
-#include <portaudio.h>
-#include <QList>
+#include <QLabel>
 #include <QSettings>
-#include <QString>
 #include "defines.h"
 #include "ui_sdrdialog.h"
 
-class QComboBox;
 class QCheckBox;
 
 /*!
@@ -39,37 +36,28 @@ Q_OBJECT
 public:
     SDRDialog(QSettings& s,QWidget *parent = 0);
     ~SDRDialog();
-    PaStreamParameters &format(int nrig);
 
 signals:
     void updateCQLimits();
-    void updateDVK();
 
 public slots:
     void updateSDR();
     void rejectChanges();
 
 private slots:
-    void launchUpdateDeviceList0(int);
-    void launchUpdateDeviceList1(int);
+    void findExeFile1();
+    void findExeFile2();
+    void findConfig1();
+    void findConfig2();
 
 private:
-    int                nAPI;
-    int                *nApiDevices;
-    PaStreamParameters Format[NRIG];
-    QCheckBox          *Checkbox[NRIG];
-    QCheckBox          *SwapCheckBox[NRIG];
-    QComboBox          *APICombo[NRIG];
-    QComboBox          *BitsCombo[NRIG];
-    QComboBox          *DeviceCombo[NRIG];
-    QIcon              iconNOK;
-    QIcon              iconOK;
-    QLineEdit          *OffsetLineEditPtr[NRIG];
-    QList<bool>        *deviceOK;
-    QList<QString>     audioDevices;
-    QList<QString>     *nApiDeviceNames;
-    QSettings&           settings;
-    void updateDeviceList(int, int);
+    void fileGetter(QString msg,QString path,QString files,QString key,QLabel *label);
+    QString shortName(QString s);
     void updateFromSettings();
+    QLabel             *pathLabel[NRIG];
+    QLineEdit          *ipPtr[NRIG];
+    QLineEdit          *portPtr[NRIG];
+    QLabel             *configLabel[NRIG];
+    QSettings&         settings;
 };
 #endif

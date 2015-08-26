@@ -26,14 +26,10 @@
 #include <QString>
 #include <QtGlobal>
 #include <QVariant>
-#include "fftw3.h"
 #include "hamlib/rig.h"
 
-// enable building DVK features
-//define DVK_ENABLE
-
 // ///////// version ///////////////
-const QByteArray Version = "1.5.2";
+const QByteArray Version = "2.0.0";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -251,44 +247,12 @@ const QString FieldTypesNames[10]={"","RST","Mult","Z","#","Name","St","Sec","Gr
 
 // //////////////// Bandscope defines //////////////////
 
-// the fit order is currently fixed (4==cubic a0 + a1*x +a2*x*x + a3*x*x*x),
-// may want to make this adjustable in the future.
-const int FIT_ORDER=4;
+typedef struct BandmapShared {
+    int        freq;
+    bool       tx;
+} BandmapShared;
+Q_DECLARE_TYPEINFO(BandmapShared, Q_PRIMITIVE_TYPE);
 
-// Signal (peak detection) parameters
-
-/*!  max number of detected signals
- */
-const int SIG_MAX=4096;
-
-/*! minimum delta over background, as a fraction of the background level
- */
-const double SIG_DELTA_BG=0.2;
-
-/*! minimum delta over background, for signals used to calibrate gain/phase
- */
-const double SIG_DELTA_CALIB=5.0;
-
-/*! frequency of measuring calibration data, in units of spectrum sweeps
- */
-const int SIG_CALIB_FREQ=5;
-
-/*! bins near zero freq not used for IQ balance data
- */
-const int SIG_CALIB_SKIP=400;
-const int SIG_CALIB_SPACE=100;
-
-/*! min peak width
- */
-const int SIG_PEAK_MIN_WIDTH=2;
-
-/*! max peak width
- */
-const int SIG_PEAK_MAX_WIDTH=12;
-
-/*! number of scans averaged together before peak detection
- */
-const int SIG_N_AVG=10;
 
 /*!
    min tolerance for signal separation (Hz)
@@ -325,56 +289,19 @@ const int BANDMAP_FONT_PIX_SIZE=10;
  */
 const int BANDMAP_CALL_X=15;
 
-const int MAX_H=4096; // max pixmap height
-const int MAX_W=800; // max pixmap width
-const int SAMPLE_FREQ=96; // Sampling frequency in Khz
-
-typedef struct sampleSizes {
-    int           sample_length; // FFT length
-    unsigned long chunk_size;    // FFT length * size of 1 frame (L+R channel samples)
-    unsigned long advance_size;  // bytes for one advance of spectrum
-    int           spec_length;   // size in bytes of one displayed scanline
-    int           display_length;
-} sampleSizes;
-Q_DECLARE_TYPEINFO(sampleSizes, Q_PRIMITIVE_TYPE);
 
 // /////// Misc stuff
-
-// DVK max message length (seconds)
-const int DVK_MAX_LEN=20;
-
-// DVK busy time
-const int DVK_BUSY_TIMER=200;
-
-// message numbers for DVK:
-//  0..11 are CQ F keys.
-const int ssnbr_cq=0;
-// 12..23 are exchange F keys
-const int ssnbr_exc=12;
-// 24..35 are Ctrl+F
-const int ssnbr_ctrl=24;
-// 36..47 are Shft+f
-const int ssnbr_shft=36;
-
-// further messages:
-const int ssbnr_cq_exc=48;
-const int ssnbr_sp_exc=49;
-const int ssbnr_qsl_msg=50;
-const int ssbnr_dupe_msg=51;
-const int ssbnr_qqsl_msg=52;
-const int ssbnr_call_updated_msg=53;
 
 // number of F-keys
 const int N_FUNC=12;
 
 // timers
-const int N_TIMERS=4;
+const int N_TIMERS=3;
 
 // default frequency for various things (all in milliseconds)
 const int timerSettings[]={
     1000,  // clock update
     300, // radio/serial update
-    10000, // IQ plot update
     100 // auto-CQ, dueling CQ resolution
 };
 
@@ -565,68 +492,26 @@ const QString c_col_width_group="column";
 const QString c_col_width_item="width";
 const int c_col_width_def[SQL_N_COL]={37,39,46,85,0,0,40,40,40,40,40,40,40,40,40,30,57};
 
+const QString s_sdr_path[NRIG]={"sdr/path1","sdr/path2"};
+const QString s_sdr_path_def[NRIG]={"/usr/local/bin/so2sdr-bandmap","/usr/local/bin/so2sdr-bandmap"};
+
+const QString s_sdr_config[NRIG]={"sdr/config1","sdr/config2"};
+const QString s_sdr_config_def[NRIG]={"~/.so2sdr/so2sdr-bandmap1.ini","~/.so2sdr/so2sdr-bandmap2.ini"};
+
+const QString s_sdr_ip[NRIG]={"sdr/ip1","sdr/ip2"};
+const QString s_sdr_ip_def[NRIG]={"localhost","localhost"};
+
+const QString s_sdr_port[NRIG]={"sdr/port1","sdr/port2"};
+const int s_sdr_port_def[NRIG]={5001,5002};
+
+const QString s_sdr_udp="sdr/udp";
+const int s_sdr_udp_def=45454;
+
 const QString s_sdr_changeclick="sdr/changeclick";
 const bool s_sdr_changeclick_def=false;
 
-const QString s_sdr_enabled[NRIG]={"sdr/enabled1","sdr/enabled2"};
-const bool s_sdr_enabled_def[NRIG]={false,false};
-
-const QString s_dvk_enabled="dvk/enabled";
-const bool s_dvk_enabled_def=false;
-
 const QString s_sdr_spotcalls="sdr/spotcalls";
 const bool s_sdr_spotcalls_def=true;
-
-const QString s_sdr_bits[NRIG]={"sdr/bits1","sdr/bits2"};
-const int s_sdr_bits_def[NRIG]={24,24};
-
-const QString s_sdr_api[NRIG]={"sdr/api1","sdr/api2"};
-const int s_sdr_api_def[NRIG]={0,0};
-
-const QString s_dvk_api="dvk/api";
-const int s_dvk_api_def=0;
-
-const QString s_sdr_device[NRIG]={"sdr/device1","sdr/device2"};
-const int s_sdr_device_def[NRIG]={0,0};
-
-const QString s_dvk_device="dvk/device";
-const int s_dvk_device_def=0;
-
-const QString s_dvk_rec_device="dvk/recdevice";
-const int s_dvk_rec_device_def=0;
-
-const QString s_dvk_loop="dvk/loop";
-const bool s_dvk_loop_def=false;
-
-const QString s_dvk_play_devindex="dvk/playdev";
-const int s_dvk_play_devindex_def=0;
-
-const QString s_dvk_rec_devindex="dvk/recdev";
-const int s_dvk_rec_devindex_def=0;
-
-const QString s_sdr_offset[NRIG]={"sdr/offset1","sdr/offset2"};
-const int s_sdr_offset_def[NRIG]={0,0};
-
-const QString s_sdr_swapiq[NRIG]={"sdr/swapiq1","sdr/swapiq2"};
-const bool s_sdr_swapiq_def[NRIG]={false,false};
-
-const QString s_sdr_scale[NRIG]={"sdr/scale1","sdr/scale2"};
-const int s_sdr_scale_def[NRIG]={1,1};
-
-const QString s_sdr_peakdetect[NRIG]={"sdr/peakdetect1","sdr/peakdetect2"};
-const bool s_sdr_peakdetect_def[NRIG]={true,true};
-
-const QString s_sdr_iqdata[NRIG]={"sdr/iqdata1","sdr/iqdata2"};
-const bool s_sdr_iqdata_def[NRIG]={true,true};
-
-const QString s_sdr_iqcorrect[NRIG]={"sdr/iqcorrect1","sdr/iqcorrect2"};
-const bool s_sdr_iqcorrect_def[NRIG]={true,true};
-
-const QString s_sdr_click[NRIG]={"sdr/click1","sdr/click2"};
-const bool s_sdr_click_def[NRIG]={false,false};
-
-const QString s_sdr_cqtime="sdr/cqtime";
-const int s_sdr_cqtime_def=15;
 
 const QString s_sdr_spottime="sdr/spottime";
 const int s_sdr_spottime_def=1800;

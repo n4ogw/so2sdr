@@ -38,10 +38,9 @@ ParallelPort::ParallelPort(QSettings &s) : settings(s)
 {
     port        = defaultParallelPort.toULong();
     initialized = false;
-    stereoPinStatus=false;
     initSuccess = false;
-	stereoPinStatus=false;
-    hLib        = LoadLibraryA("InpOut32.DLL");
+    stereoPinStatus=false;
+    hLib        = LoadLibraryA("inpout32.dll");
 
     if (hLib == NULL) {
         QString tmp = "LoadLibrary inpout32.dll failed";

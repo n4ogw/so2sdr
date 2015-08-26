@@ -47,7 +47,7 @@ public:
 
 signals:
     void version(int ver);
-    void markSignals(bool, int);
+    void winkeyTx(bool, int);
 
 public slots:
     void cancelcw();

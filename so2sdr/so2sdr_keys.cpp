@@ -270,7 +270,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     qso[altDActiveRadio]->dupe = false;
                     altDActive             = 0;
                     So2sdrStatusBar->clearMessage();
-                    spotListPopUp[altDActiveRadio]=false;
+		    spotListPopUp[altDActiveRadio]=false;
                     r=true;
                 }
             }
@@ -558,7 +558,7 @@ void So2sdr::markDupe(int nrig)
     if (isaSpot(f, band[nrig])) {
         removeSpotFreq(f, band[nrig]);
     } else {
-        addSpot("*", cat->getRigFreq(nrig), true);
+        addSpot(nrig,"*", cat->getRigFreq(nrig), true);
     }
 }
 
@@ -597,7 +597,7 @@ void So2sdr::altd()
         if (altDActiveRadio == activeRadio) {
             switchRadios(false);
         }
-        //return;
+       // return;
     }
     if (duelingCQMode || toggleMode) {
         So2sdrStatusBar->showMessage("Disable Dueling CQ or Toggle",2000);
@@ -645,9 +645,8 @@ void So2sdr::keyCtrlUp()
     if (cqMode[activeRadio] && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
         nr = nr ^ 1;
     }
-    if (bandmapOn[nr]) {
-        int f = bandmap[nr]->nextFreq(true);
-        if (f) qsy(nr, f, true);
+    if (bandmap->bandmapon(nr)) {
+        bandmap->nextFreq(nr,true);
     }
 }
 
@@ -683,9 +682,9 @@ void So2sdr::keyCtrlDn()
     if (cqMode[activeRadio] && !csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
         nr = nr ^ 1;
     }
-    if (bandmapOn[nr]) {
-        int f = bandmap[nr]->nextFreq(false);
-        if (f) qsy(nr, f, true);
+
+    if (bandmap->bandmapon(nr)) {
+        bandmap->nextFreq(nr,false);
     }
 }
 
@@ -753,7 +752,7 @@ void So2sdr::backSlash()
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
-            addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
+            addSpot(activeRadio,qso[activeRadio]->call, qso[activeRadio]->freq, true);
             spotListPopUp[activeRadio] = true;
         } else {
             // remove any spot that is on freq, update other spots if in CQ mode
@@ -922,7 +921,7 @@ void So2sdr::spaceSP(int nrig)
 
     // put call on bandmap
     qso[nrig]->freq = rigFreq[nrig];
-    addSpot(qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
+    addSpot(nrig,qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
     // if dupe, clear call field
     if (qso[nrig]->dupe) {
         lineEditCall[nrig]->clear();
@@ -973,7 +972,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             return;
         }
         qso[activeRadio]->freq = rigFreq[activeRadio];
-        addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
+        addSpot(activeRadio,qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
         if (qso[activeRadio]->dupe || lineEditCall[activeRadio]->text().isEmpty()) {
             // call is a dupe- clear everything
             QPalette palette(lineEditCall[activeRadio]->palette());
@@ -1310,7 +1309,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
-            addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
+            addSpot(activeRadio,qso[activeRadio]->call, qso[activeRadio]->freq, true);
             spotListPopUp[activeRadio]=true; // this prevents the call from immediately popping up
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
@@ -1820,7 +1819,7 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         if (!cqMode[activeRadio ^ 1]) {
             // add to bandmap if in S&P mode
             qso[activeRadio ^ 1]->freq = rigFreq[activeRadio ^ 1];
-            addSpot(qso[activeRadio ^ 1]->call, qso[activeRadio ^ 1]->freq, true);
+            addSpot(activeRadio ^ 1,qso[activeRadio ^ 1]->call, qso[activeRadio ^ 1]->freq, true);
             spotListPopUp[activeRadio ^ 1] = true;
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
@@ -2083,7 +2082,7 @@ void So2sdr::esc()
             qso[altDActiveRadio]->call.clear();
             altDActive = 0;
             callSent[altDActiveRadio] = false;
-            spotListPopUp[altDActiveRadio]=false;
+	    spotListPopUp[altDActiveRadio]=false;
         }
     }
 
@@ -2196,7 +2195,7 @@ void So2sdr::esc()
                 spMode(altDActiveRadio);
             }
             callSent[altDActiveRadio] = false;
-            spotListPopUp[altDActiveRadio]=false;
+	    spotListPopUp[altDActiveRadio]=false;
         }
     }
     // clear log search
@@ -2235,6 +2234,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
         // assume Exch mode for all fills
         excModeTmp = true;
     }
+
     ModeTypes mode=cat->modeType(activeRadioTmp);
     int m=(int)mode;
 
@@ -2245,6 +2245,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
             return;
         }
     }
+
     switch (mod) {
     case Qt::NoModifier:
         if (i == 1 && csettings->value(c_sprintmode,c_sprintmode_def).toBool() && cqQsoInProgress[activeRadioTmp]) {
@@ -2254,7 +2255,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
              */
             switch (mode) {
             case CWType:case DigiType:
-                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),ssbnr_cq_exc,false);
+                expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);
                 break;
             case PhoneType:
                 expandMacro(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray(),-1,false);

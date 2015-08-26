@@ -197,7 +197,7 @@ void CabrilloDialog::writeHeader(QFile *cbrFile,int score)
             cbrFile->write("SOAPBOX: " + tmppart[i].toAscii() + "\n");
         }
     }
-    //QByteArray exch[MAX_EXCH_FIELDS];
-    //for (int i = 0; i < MAX_EXCH_FIELDS; i++) exch[i] = sent[i]->text().toAscii();
+    QByteArray exch[MAX_EXCH_FIELDS];
+    for (int i = 0; i < MAX_EXCH_FIELDS; i++) exch[i] = sent[i]->text().toAscii();
 }
 

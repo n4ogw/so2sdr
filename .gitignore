@@ -17,9 +17,10 @@ so2sdr/moc_*.cpp
 so2sdr/qttelnet.moc
 so2sdr/so2sdr
 so2sdr/ui_*.h
-so2sdr*exe
 so2sdr/release
-
+so2sdr/debug
+so2sdr-bandmap/release
+so2sdr-bandmap/debug
 
 # Binary files
 *.o

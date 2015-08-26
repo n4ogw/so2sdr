@@ -128,7 +128,7 @@ void So2sdr::showTelnet(int checkboxState)
 
 /*! add a spot. Checks to see if it is a dupe first
  */
-void So2sdr::addSpot(QByteArray call, int f)
+void So2sdr::addSpot(int nr,QByteArray call, int f)
 {
     // * is a special case, used to mark freq without callsign
     bool d = true;
@@ -139,14 +139,14 @@ void So2sdr::addSpot(QByteArray call, int f)
         tmp.band = getBand(f);
         d        = mylog->isDupe(&tmp, contest->dupeCheckingByBand(), false);
     }
-    addSpot(call, f, d);
+    addSpot(nr,call, f, d);
 }
 
 
 /*!
    add a callsign spot
  */
-void So2sdr::addSpot(QByteArray call, int f, bool d)
+void So2sdr::addSpot(int nr,QByteArray call, int f, bool d)
 {
     BandmapEntry spot;
     spot.call = call;
@@ -196,19 +196,21 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
 
         if (dupe) {
             // replace previous spot, reset timer
+            if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                bandmap->removeSpot(nr,spotList[b][idupe]);
+            }
             spotList[b][idupe].call = call;
             spotList[b][idupe].f    = f;
             spotList[b][idupe].createdTime = t;
             spotList[b][idupe].dupe = d;
+            if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                bandmap->addSpot(nr,spotList[b][idupe]);
+            }
         } else {
             spotList[b].append(spot);
-        }
-        // check frequency against peak-detected signals
-        if (bandmapOn[0]) {
-            spotList[b][idupe].f=bandmap[0]->closestFreq(spotList[b][idupe].f);
-        }
-        if (bandmapOn[1]) {
-            spotList[b][idupe].f=bandmap[1]->closestFreq(spotList[b][idupe].f);
+            if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                bandmap->addSpot(nr,spot);
+            }
         }
     }
 }
@@ -349,7 +351,14 @@ void So2sdr::removeSpot(QByteArray call, int band)
             break;
         }
     }
-    if (indx != -1) spotList[band].removeAt(indx);
+    if (indx != -1) {
+        for (int i=0;i<NRIG;i++) {
+            if (bandmap->bandmapon(i) && bandmap->currentBand(i)==band) {
+                bandmap->removeSpot(i,spotList[band].at(indx));
+            }
+        }
+        spotList[band].removeAt(indx);
+    }
 }
 
 /*! remove a spot at freq f
@@ -363,7 +372,14 @@ void So2sdr::removeSpotFreq(int f, int band)
             break;
         }
     }
-    if (indx != -1) spotList[band].removeAt(indx);
+    if (indx != -1) {
+        for (int i=0;i<NRIG;i++) {
+            if (bandmap->bandmapon(i) && bandmap->currentBand(i)==band) {
+                bandmap->removeSpot(i,spotList[band].at(indx));
+            }
+        }
+        spotList[band].removeAt(indx);
+    }
 }
 
 /*! returns true if there is a call spotted at this freq
@@ -386,8 +402,18 @@ void So2sdr::updateBandmapDupes(const Qso *qso)
 {
     for (int i = 0; i < spotList[qso->band].size(); i++) {
         if (spotList[qso->band].at(i).call == qso->call) {
+            for (int j=0;j<NRIG;j++) {
+                if (bandmap->bandmapon(j) && bandmap->currentBand(j)==qso->band) {
+                    bandmap->removeSpot(j,spotList[qso->band].at(i));
+                }
+            }
             spotList[qso->band][i].dupe = qso->dupe;
             spotList[qso->band][i].f    = qso->freq;
+            for (int j=0;j<NRIG;j++) {
+                if (bandmap->bandmapon(j) && bandmap->currentBand(j)==qso->band) {
+                    bandmap->addSpot(j,spotList[qso->band].at(i));
+                }
+            }
         }
     }
 }
@@ -402,8 +428,34 @@ void So2sdr::decaySpots()
         while (j.hasNext()) {
             BandmapEntry tmp = j.next();
             if ((tmp.createdTime+settings->value(s_sdr_spottime,s_sdr_spottime_def).toInt()*1000)<currentTime) {
+                for (int k=0;k<NRIG;k++) {
+                    if (bandmap->bandmapon(k) && bandmap->currentBand(k)==i)
+                    {
+                        bandmap->removeSpot(k,tmp);
+                    }
+                }
                 j.remove();
             }
         }
     }
+}
+
+/* the follow slots get called when the bandmap TCP
+ * connection succeeds. sendCalls then send the list
+ * of bandmap spots to the bandmap through BandmapInterface */
+
+void So2sdr::sendCalls1(bool b)
+{
+    if (b) sendCalls(0);
+}
+
+void So2sdr::sendCalls2(bool b)
+{
+    if (b) sendCalls(1);
+}
+
+void So2sdr::sendCalls(int nr)
+{
+    int b=getBand(cat->getRigFreq(nr));
+    bandmap->syncCalls(nr,spotList[b]);
 }

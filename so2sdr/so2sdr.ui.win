@@ -72,7 +72,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="title">
@@ -150,7 +150,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>10</pointsize>
          </font>
         </property>
         <property name="title">
@@ -232,7 +232,7 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="styleSheet">
@@ -408,10 +408,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
-                 <weight>50</weight>
-                 <italic>false</italic>
-                 <bold>false</bold>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -445,7 +442,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -479,7 +476,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -513,7 +510,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -547,7 +544,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -581,7 +578,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -614,7 +611,7 @@
                </property>
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -648,7 +645,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -682,7 +679,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -716,7 +713,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -750,7 +747,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -784,7 +781,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -818,7 +815,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -852,7 +849,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -886,7 +883,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -902,7 +899,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -918,7 +915,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -934,7 +931,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -950,7 +947,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -966,7 +963,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -982,7 +979,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1016,7 +1013,7 @@
                <property name="font">
                 <font>
                  <family>Consolas</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1031,7 +1028,7 @@
               <widget class="QLabel" name="label_7">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1043,7 +1040,7 @@
               <widget class="QLabel" name="multName">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1055,7 +1052,7 @@
               <widget class="QLabel" name="multName2">
                <property name="font">
                 <font>
-                 <pointsize>11</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1183,8 +1180,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="maxLength">
@@ -1217,8 +1213,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1262,7 +1257,7 @@
             <property name="font">
              <font>
               <family>Consolas</family>
-              <pointsize>12</pointsize>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1299,8 +1294,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1330,8 +1324,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1365,8 +1358,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1396,8 +1388,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1411,7 +1402,6 @@
          <widget class="QLabel" name="Sun2Label">
           <property name="font">
            <font>
-            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -1441,8 +1431,7 @@
            <widget class="QLabel" name="RateLabel">
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1470,8 +1459,7 @@
            <widget class="QLabel" name="HourRateLabel">
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1524,8 +1512,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="autoFillBackground">
@@ -1564,8 +1551,7 @@
             </property>
             <property name="font">
              <font>
-              <family>Tahoma</family>
-              <pointsize>12</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1609,7 +1595,7 @@
             <property name="font">
              <font>
               <family>Consolas</family>
-              <pointsize>12</pointsize>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -1661,7 +1647,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>14</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
          </widget>
@@ -1689,7 +1675,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>14</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
          </widget>
@@ -1719,8 +1705,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1750,8 +1735,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1781,7 +1765,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
+            <family>Consolas</family>
             <pointsize>11</pointsize>
            </font>
           </property>
@@ -1813,7 +1797,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1844,7 +1828,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1875,7 +1859,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1906,7 +1890,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -1980,7 +1964,6 @@
          <widget class="QLabel" name="Sun1Label">
           <property name="font">
            <font>
-            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2017,7 +2000,6 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2048,7 +2030,6 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -2079,8 +2060,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -2110,8 +2090,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Tahoma</family>
-            <pointsize>11</pointsize>
+            <pointsize>10</pointsize>
            </font>
           </property>
           <property name="text">
@@ -2212,7 +2191,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>14</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
           <property name="maxLength">
@@ -2243,7 +2222,7 @@
           <property name="font">
            <font>
             <family>Consolas</family>
-            <pointsize>14</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
           <property name="maxLength">
@@ -2393,14 +2372,8 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Tahoma</family>
-     <pointsize>10</pointsize>
-    </font>
    </property>
    <property name="nativeMenuBar">
     <bool>true</bool>
@@ -2475,60 +2448,30 @@
    <property name="text">
     <string>&amp;Quit</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionStation">
    <property name="text">
     <string>&amp;Station</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
   <action name="actionWinkey">
    <property name="text">
     <string>&amp;Winkey</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionCW_Messages">
    <property name="text">
     <string>&amp;CW Messages</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
   <action name="actionOpen">
    <property name="text">
     <string>&amp;Open Contest</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionRadios">
    <property name="text">
     <string>&amp;Radios/SO2R</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
   <action name="actionContest">
@@ -2540,11 +2483,6 @@
    <property name="text">
     <string>&amp;About SO2SDR</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionAbout_Qt">
    <property name="text">
@@ -2553,32 +2491,17 @@
   </action>
   <action name="actionSDR">
    <property name="text">
-    <string>&amp;Bandscope</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
+    <string>&amp;Bandmap</string>
    </property>
   </action>
   <action name="actionContestOptions">
    <property name="text">
     <string>Contest &amp;Options</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionNewContest">
    <property name="text">
     <string>&amp;New Contest</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
   <action name="actionSave">
@@ -2590,20 +2513,10 @@
    <property name="text">
     <string>Export &amp;ADIF</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionCabrillo">
    <property name="text">
     <string>Export &amp;Cabrillo</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
   <action name="actionDupesheet">
@@ -2620,20 +2533,10 @@
    <property name="text">
     <string>&amp;Import Cabrillo</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionHelp">
    <property name="text">
     <string>&amp;Help</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
   <action name="actionSSB_Messages">
@@ -2643,30 +2546,18 @@
    <property name="text">
     <string>SSB Messages</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionSettings">
    <property name="text">
     <string>&amp;General Settings</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </action>
   <action name="actionHistory">
    <property name="text">
     <string>Update History from Log</string>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
    </property>
   </action>
  </widget>

@@ -28,7 +28,7 @@ class DupeSheet : public QDialog, public Ui::Dupesheet
 Q_OBJECT
 
 public:
-    DupeSheet(QWidget *parent = 0);
+    explicit DupeSheet(QWidget *parent = 0);
     ~DupeSheet();
 
 protected:

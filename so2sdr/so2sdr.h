@@ -19,7 +19,10 @@
 #ifndef SO2SDR_H
 #define SO2SDR_H
 
+#include <QSqlRecord>
 #include "ui_so2sdr.h"
+#include "bandmapentry.h"
+#include "bandmapinterface.h"
 #include "cabrillodialog.h"
 #include "winkeydialog.h"
 #include "cwmessagedialog.h"
@@ -31,10 +34,6 @@
 #include "settingsdialog.h"
 #include "notedialog.h"
 #include "dupesheet.h"
-#include "bandmap.h"
-#ifdef DVK_ENABLE
-#include "dvk.h"
-#endif
 #include "log.h"
 #include "logedit.h"
 #include "cty.h"
@@ -74,11 +73,12 @@
 #include "linux_pp.h"
 #endif
 #include "history.h"
+#include <QThread>
+
 
 class QDir;
 class QString;
 class QByteArray;
-class QThread;
 class QTimer;
 class QCheckBox;
 class QPixmap;
@@ -101,30 +101,20 @@ public:
     bool so2sdrOk() const;
 
 public slots:
-    void addSpot(QByteArray call, int f);
-    void addSpot(QByteArray call, int f, bool d);
-    void qsyEvent(int nr, int hz);
+    void addSpot(int nr,QByteArray call, int f);
+    void addSpot(int nr,QByteArray call, int f, bool d);
     void removeSpot(QByteArray call, int band);
     void removeSpotFreq(int f, int band);
     void rescore();
-    void setBandmapTxStatus(bool, int);
     void setEntryFocus();
     void settingsUpdate();
     void showMessage(QString);
     void stationUpdate();
     void startWinkey();
-#ifdef DVK_ENABLE
-    void updateDVK();
-#endif
     void updateOffTime();
     void updateRecord(QSqlRecord);
 
 signals:
-#ifdef DVK_ENABLE
-    void playDvk(int,int);
-    void recordDvk(int);
-    void stopDvk();
-#endif
     void qsyExact(int, int);
     void setRigMode(int, rmode_t, pbwidth_t);
 
@@ -143,7 +133,6 @@ private slots:
     void launch_WPMDialog();
     void launch_enterCWSpeed(const QString &text);
     void logEdited(const QModelIndex & topLeft, const QModelIndex & bottomRight);
-    void mouseQSYevent(int nr, int hz);
     void openFile();
     void openRadios();
     void prefixCheck1(const QString &call);
@@ -152,6 +141,8 @@ private slots:
     void regrab();
     void screenShot();
     void send(QByteArray text, bool stopcw = true);
+    void sendCalls1(bool);
+    void sendCalls2(bool);
     void setGrab(bool);
     void setSummaryGroupBoxTitle();
     void setupNewContest(int result);
@@ -182,7 +173,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    Bandmap              *bandmap[NRIG];
     bool                 activeR2CQ;
     bool                 autoCQMode;
     bool                 autoCQModePause;
@@ -190,7 +180,6 @@ private:
     bool                 autoSendPause;
     bool                 autoSendTrigger;
     bool                 bandInvert[NRIG][N_BANDS];
-    bool                 bandmapOn[NRIG];
     bool                 callFocus[NRIG];
     bool                 callSent[NRIG];
     bool                 cqMode[NRIG];
@@ -219,9 +208,6 @@ private:
     SSBMessageDialog      *ssbMessage;
     DetailedEdit         *detail;
     DupeSheet            *dupesheet[NRIG];
-#ifdef DVK_ENABLE
-    DVK                  *dvk;
-#endif
     HelpDialog           *help;
     int                  activeRadio;
     int                  activeTxRadio;
@@ -292,7 +278,9 @@ private:
     QList<QByteArray>    excludeMults[MMAX];
     QList<int>           searchList;
     Qso                  *qso[NRIG];
+    QSqlRecord           origRecord;
     tableModel           *model;
+    BandmapInterface     *bandmap;
     QSettings            *csettings;
     QSettings            *settings;
     History              *history;
@@ -304,9 +292,6 @@ private:
     QString              clearLED;
     QString              tmpCall;
     QThread              catThread;
-#ifdef DVK_ENABLE
-    QThread              dvkThread;
-#endif
     QTime                cqTimer;
     Qt::KeyboardModifiers toggleFxKeyMod;
     QWidgetAction        *bandmapCheckAction[NRIG];
@@ -323,6 +308,7 @@ private:
     WinkeyDialog         *winkeyDialog;
     Winkey               *winkey;
 
+    void bandmapSetFreq(int f,int nr);
     void addQso(const Qso *qso);
     void altd();
     void altDEnter(int level, Qt::KeyboardModifiers mod);
@@ -368,10 +354,10 @@ private:
     void searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QList<unsigned int>& worked, QList<int>& mult1, QList<int>& mult2);
     void selectContest(QByteArray name);
     void selectContest2();
+    void sendCalls(int);
     void sendFunc(int i, Qt::KeyboardModifiers mode);
     bool setupContest();
     void setDefaultFreq(int nrig);
-    void showBandmap(int nr, int checkboxState);
     void showDupesheet(int nr, int checkboxState);
     void spaceAltD();
     void spaceBar();
@@ -379,7 +365,6 @@ private:
     void spaceSprint();
     void spMode(int i);
     void sprintMode();
-    void startDvk();
     void startTimers();
     void stopTimers();
     void superPartial(QByteArray partial);

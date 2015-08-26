@@ -1,0 +1,169 @@
+Name "so2sdr-2.0.0"
+
+OutFile "so2sdr-2.0.0.exe"
+InstallDir $PROGRAMFILES\so2sdr
+
+DirText "This will install so2sdr on your computer. Choose a directory"
+
+
+Section "" ;No components page, name is not important
+SetOutPath $INSTDIR
+  File so2sdr/release/so2sdr.exe
+  File so2sdr-bandmap/release/so2sdr-bandmap.exe
+  File so2sdr/inpout32.dll
+  File share/arrl10.cfg
+  File share/arrl10.txt
+  File share/arrl160.cfg
+  File share/arrl160dx.cfg
+  File share/arrldx.cfg
+  File share/arrldx-dx.cfg
+  File share/arrldx.txt
+  File share/arrl.txt
+  File share/check.png
+  File share/contest_list.dat
+  File share/countries.dat
+  File share/cq160.cfg
+  File share/cq160.txt
+  File share/cqp_ca.cfg
+  File share/cqp_ca.txt
+  File share/cqp.cfg
+  File share/cqp_county.txt
+  File share/cqww.cfg
+  File share/cq_zone_latlong.dat
+  File share/cwops.cfg
+  File share/dxped.cfg
+  File share/exclude_iaru.txt
+  File share/fd.cfg
+  File share/iaru.cfg
+  File share/iaru.txt
+  File share/icon24x24.png
+  File share/icon48x48.png
+  File share/itu_zone_latlong.dat
+  File share/kqp.cfg
+  File share/kqp_county.txt
+  File share/kqp_ks.cfg
+  File share/kqp_ks.txt
+  File share/license.html
+  File share/MASTER.DTA
+  File share/MASTERDX.DTA
+  File share/MASTERSS.DTA
+  File share/MASUSVE.DTA
+  File share/naqp.cfg
+  File share/naqp.txt
+  File share/nasprint.cfg
+  File share/ns.cfg
+  File share/ns.txt
+  File share/sprint.txt
+  File share/ss.cfg
+  File share/stew.cfg
+  File share/wl_cty.dat
+  File share/wl_cty-ns.dat
+  File share/wpx.cfg
+  File share/x.png
+
+SetOutPath $INSTDIR\help
+  File share/help/bandscope_dialog.png
+  File share/help/contest_options.png
+  File share/help/cw_messages.png
+  File share/help/new_contest_dialog.png
+  File share/help/radio_dialog.png
+  File share/help/settings_dialog.png
+  File share/help/so2sdrhelp.html
+  File share/help/station_dialog.png
+  File share/help/winkey_dialog.png
+
+SetOutPath $INSTDIR\so2sdr-bandmap-help
+  File share/so2sdr-bandmap-help/afedri-setup.png
+  File share/so2sdr-bandmap-help/bandmap-controls.png
+  File share/so2sdr-bandmap-help/network-setup.png
+  File share/so2sdr-bandmap-help/so2sdr-bandmap-help.html
+  File share/so2sdr-bandmap-help/so2sdr-bandmap-setup.png
+  File share/so2sdr-bandmap-help/soundcard-setup.png
+
+WriteUninstaller $INSTDIR\Uninstall.exe
+CreateDirectory "$SMPROGRAMS\N4OGW"
+CreateShortCut "$SMPROGRAMS\N4OGW\SO2SDR.lnk" "$INSTDIR\so2sdr.exe"
+CreateShortCut "$SMPROGRAMS\N4OGW\SO2SDR-Bandmap.lnk" "$INSTDIR\so2sdr-bandmap.exe"
+SectionEnd
+
+Section "Uninstall"
+
+Delete $INSTDIR\Uninstall.exe
+Delete $INSTDIR\so2sdr.exe
+Delete $INSTDIR\so2sdr-bandmap.exe
+Delete $INSTDIR\inpout32.dll
+Delete $INSTDIR\arrl10.cfg
+Delete $INSTDIR\arrl10.txt
+Delete $INSTDIR\arrl160.cfg
+Delete $INSTDIR\arrl160dx.cfg
+Delete $INSTDIR\arrldx.cfg
+Delete $INSTDIR\arrldx-dx.cfg
+Delete $INSTDIR\arrldx.txt
+Delete $INSTDIR\arrl.txt
+Delete $INSTDIR\check.png
+Delete $INSTDIR\contest_list.dat
+Delete $INSTDIR\countries.dat
+Delete $INSTDIR\cq160.cfg
+Delete $INSTDIR\cq160.txt
+Delete $INSTDIR\cqp_ca.cfg
+Delete $INSTDIR\cqp_ca.txt
+Delete $INSTDIR\cqp.cfg
+Delete $INSTDIR\cqp_county.txt
+Delete $INSTDIR\cqww.cfg
+Delete $INSTDIR\cq_zone_latlong.dat
+Delete $INSTDIR\cwops.cfg
+Delete $INSTDIR\dxped.cfg
+Delete $INSTDIR\exclude_iaru.txt
+Delete $INSTDIR\fd.cfg
+Delete $INSTDIR\iaru.cfg
+Delete $INSTDIR\iaru.txt
+Delete $INSTDIR\icon24x24.png
+Delete $INSTDIR\icon48x48.png
+Delete $INSTDIR\itu_zone_latlong.dat
+Delete $INSTDIR\kqp.cfg
+Delete $INSTDIR\kqp_county.txt
+Delete $INSTDIR\kqp_ks.cfg
+Delete $INSTDIR\kqp_ks.txt
+Delete $INSTDIR\license.html
+Delete $INSTDIR\MASTER.DTA
+Delete $INSTDIR\MASTERDX.DTA
+Delete $INSTDIR\MASTERSS.DTA
+Delete $INSTDIR\MASUSVE.DTA
+Delete $INSTDIR\naqp.cfg
+Delete $INSTDIR\naqp.txt
+Delete $INSTDIR\nasprint.cfg
+Delete $INSTDIR\ns.cfg
+Delete $INSTDIR\ns.txt
+Delete $INSTDIR\sprint.txt
+Delete $INSTDIR\ss.cfg
+Delete $INSTDIR\stew.cfg
+Delete $INSTDIR\wl_cty.dat
+Delete $INSTDIR\wl_cty-ns.dat
+Delete $INSTDIR\wpx.cfg
+Delete $INSTDIR\x.png
+
+Delete $INSTDIR\help\bandscope_dialog.png
+Delete $INSTDIR\help\contest_options.png
+Delete $INSTDIR\help\cw_messages.png
+Delete $INSTDIR\help\new_contest_dialog.png
+Delete $INSTDIR\help\radio_dialog.png
+Delete $INSTDIR\help\settings_dialog.png
+Delete $INSTDIR\help\so2sdrhelp.html
+Delete $INSTDIR\help\station_dialog.png
+Delete $INSTDIR\help\winkey_dialog.png
+RMDir  $INSTDIR\help
+
+Delete $INSTDIR\so2sdr-bandmap-help
+Delete $INSTDIR\so2sdr-bandmap-help\afedri-setup.png
+Delete $INSTDIR\so2sdr-bandmap-help\bandmap-controls.png
+Delete $INSTDIR\so2sdr-bandmap-help\network-setup.png
+Delete $INSTDIR\so2sdr-bandmap-help\so2sdr-bandmap-help.html
+Delete $INSTDIR\so2sdr-bandmap-help\so2sdr-bandmap-setup.png
+Delete $INSTDIR\so2sdr-bandmap-help\soundcard-setup.png
+
+RMDIR $INSTDIR
+Delete "$SMPROGRAMS\N4OGW\SO2SDR.lnk"
+Delete "$SMPROGRAMS\N4OGW\SO2SDR-Bandmap.lnk"
+RMDIR "$SMPROGRAMS\N4OGW"
+
+SectionEnd 

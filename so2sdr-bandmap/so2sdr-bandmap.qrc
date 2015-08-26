@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>exit.png</file>
+    <file>stock_properties.png</file>
+    <file>player_stop.png</file>
+    <file>player_play.png</file>
+  </qresource>
+</RCC>

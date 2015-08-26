@@ -20,12 +20,12 @@
 #include "defines.h"
 #include "winkey.h"
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
-
 #ifdef Q_OS_LINUX
 #include <unistd.h>
+#endif
+
+#ifdef Q_OS_WIN
+#include <windows.h>
 #endif
 
 /*!
@@ -78,10 +78,10 @@ void Winkey::receive()
             // Status byte: currently sending CW?
             if (wkbyte & 4) {
                 sending = true;
-                emit(markSignals(false, rigNum));
+                emit(winkeyTx(true, rigNum));
             } else {
                 sending = false;
-                emit(markSignals(true, rigNum));
+                emit(winkeyTx(false, rigNum));
             }
         // Pushbutton status only sent to host in WK2 mode by admin command, (0x00, 11)
         } else if ((wkbyte & 0xc0) == 0x80) {
@@ -128,9 +128,6 @@ void Winkey::cancelcw()
     } else {
         winkeyOpen = false;
     }
-
-    // remove "TX" indicator if it is present on bandmap
-    emit(markSignals(true, rigNum));
 
     sendBuff.resize(0);
     nchar = 0;

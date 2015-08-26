@@ -10,9 +10,12 @@
 # You should have received a copy of the GNU General Public License
 # along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 TEMPLATE = app
 TARGET = so2sdr
-QT += network sql 
+
+QT += network sql
+
 HEADERS += cwmessagedialog.h \
     serial.h \
     so2sdr.h \
@@ -29,11 +32,8 @@ HEADERS += cwmessagedialog.h \
     newcontestdialog.h \
     notedialog.h \
     dupesheet.h \
-    bandmap.h \
-    glbandmap.h \
     winkey.h \
     contest_wpx.h \
-    spectrum.h \
     master.h \
     defines.h \
     contest_naqp.h \
@@ -47,8 +47,6 @@ HEADERS += cwmessagedialog.h \
     signal.h \
     bandmapentry.h \
     cabrillodialog.h \
-    iqbalance.h \
-    audioreader_portaudio.h \
     contest_sweepstakes.h \
     contest_stew.h \
     utils.h \
@@ -65,7 +63,8 @@ HEADERS += cwmessagedialog.h \
     ssbmessagedialog.h \
     settingsdialog.h \
     microham.h \
-    history.h
+    history.h \
+    bandmapinterface.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -76,11 +75,9 @@ FORMS += cwmessagedialog.ui \
     newcontestdialog.ui \
     notedialog.ui \
     dupesheet.ui \
-    bandmap.ui \
     telnet.ui \
     helpdialog.ui \
     cabrillo.ui \
-    iqbalance.ui \
     detailededit.ui \
     ssbmessagedialog.ui \
     settingsdialog.ui
@@ -103,17 +100,13 @@ SOURCES += cwmessagedialog.cpp \
     notedialog.cpp \
     dupesheet.cpp \
     so2sdr_dupesheet.cpp \
-    bandmap.cpp \
-    glbandmap.cpp \
     winkey.cpp \
     contest_wpx.cpp \
-    spectrum.cpp \
     master.cpp \
     contest_naqp.cpp \
     contest_iaru.cpp \
     telnet.cpp \
     so2sdr_telnet.cpp \
-    so2sdr_bandmap.cpp \
     qso.cpp \
     contest_cwops.cpp \
     contest_fd.cpp \
@@ -122,8 +115,6 @@ SOURCES += cwmessagedialog.cpp \
     signal.cpp \
     bandmapentry.cpp \
     cabrillodialog.cpp \
-    iqbalance.cpp \
-    audioreader_portaudio.cpp \
     contest_sweepstakes.cpp \
     contest_stew.cpp \
     contest_arrl160.cpp \
@@ -140,17 +131,20 @@ SOURCES += cwmessagedialog.cpp \
     ssbmessagedialog.cpp \
     settingsdialog.cpp \
     microham.cpp \
-    history.cpp 
-unix { 
-    include(../qextserialport/src/qextserialport.pri)
-    include(../qttelnet/src/qttelnet.pri)
+    history.cpp \
+    bandmapinterface.cpp
 
-    SO2SDR_INSTALL_DIR = /usr/local
+ unix { 
+    include (../common.pri)
+    include (../qextserialport/src/qextserialport.pri)
+    include (../qttelnet/src/qttelnet.pri)
+
     CONFIG += link_pkgconfig
-    PKGCONFIG += fftw3 hamlib portaudio-2.0
-    QMAKE_CXXFLAGS += -O2 -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
-    HEADERS += linux_pp.h
-    SOURCES += linux_pp.cpp
+    PKGCONFIG += hamlib
+    QMAKE_CXXFLAGS += -O2 \
+        -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
+    HEADERS += linux_pp.h 
+    SOURCES += linux_pp.cpp 
 
     install.target = install
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
@@ -168,19 +162,14 @@ unix {
     QMAKE_EXTRA_TARGETS += install
 }
 
-#flags for building with i686-w64-mingw32 compiler in MXE environment
+#Windows flags for i686-w64-ming32 cross-compile
 win32 {
-   include(../qttelnet/src/qttelnet.pri)
+    include (../qextserialport/src/qextserialport.pri)
+    include (../qttelnet/src/qttelnet.pri)
 
-   #
-   # most recent github qextserialport doesn't compile on Windows;
-   # have to use older version
-
-   include(../qextserialport_1.2.0_win/src/qextserialport.pri)
-
-   #CONFIG += console   #add this to see console debug messages
-   HEADERS += win_pp.h
-   SOURCES += win_pp.cpp
-   LIBS +=  -lhamlib -lfftw3 -lportaudio -lhid -lsetupapi
-   RC_FILE = so2sdr.rc
+    CONFIG += release
+    HEADERS += win_pp.h
+    SOURCES += win_pp.cpp
+    LIBS += -lhamlib
+    RC_FILE = so2sdr.rc
 }

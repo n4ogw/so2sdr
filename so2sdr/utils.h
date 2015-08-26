@@ -27,7 +27,7 @@
 class UpperValidator : public QValidator
 {
 public:
-    UpperValidator(QObject *parent = 0);
+    explicit UpperValidator(QObject *parent = 0);
     QValidator::State validate(QString &input, int &pos) const;
 };
 
@@ -37,7 +37,7 @@ public:
 class TimeValidator : public QValidator
 {
 public:
-    TimeValidator(QObject *parent = 0);
+    explicit TimeValidator(QObject *parent = 0);
     void fixup ( QString & input ) const;
     QValidator::State validate(QString &input, int &pos) const;
 };

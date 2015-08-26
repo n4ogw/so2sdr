@@ -18,6 +18,8 @@
  */
 #include <QComboBox>
 #include <QDebug>
+#include <QDir>
+#include <QFileDialog>
 #include <QSettings>
 #include "defines.h"
 #include "sdrdialog.h"
@@ -26,134 +28,78 @@
 SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    DeviceCombo[0]       = SoundCard1ComboBox;
-    DeviceCombo[1]       = SoundCard2ComboBox;
-    SwapCheckBox[0]      = checkBoxSwap1;
-    SwapCheckBox[1]      = checkBoxSwap2;
-
-    APICombo[0]          = API1ComboBox;
-    APICombo[1]          = API2ComboBox;
-    Checkbox[0]          = checkBox;
-    Checkbox[1]          = checkBox_2;
-
-    for (int i=0;i<NRIG;i++) {
-        DeviceCombo[i]->setEnabled(false);
-        APICombo[i]->setEnabled(false);
-    }
-
-    OffsetLineEditPtr[0] = OffsetLineEdit;
-    OffsetLineEditPtr[1] = Offset2LineEdit;
-    OffsetLineEditPtr[0]->setEnabled(false);
-    OffsetLineEditPtr[1]->setEnabled(false);
-
-    iconOK               = QIcon("check.png");
-    iconNOK              = QIcon("x.png");
-
-    // bit sizes
-    BitsCombo[0] = Bits1ComboBox;
-    BitsCombo[1] = Bits2ComboBox;
-    BitsCombo[0]->setEnabled(false);
-    BitsCombo[1]->setEnabled(false);
-
-    SwapCheckBox[0]->setChecked(false);
-    SwapCheckBox[1]->setChecked(false);
-
-    for (int i = 0; i < NRIG; i++) {
-        BitsCombo[i]->insertItem(0, "16");
-        BitsCombo[i]->insertItem(1, "24");
-        BitsCombo[i]->insertItem(2, "32");
-    }
-    // find audio devices
-    // have to start Portaudio to get the device list
-    Pa_Initialize();
-    nAPI            = Pa_GetHostApiCount();
-    nApiDevices     = new int[nAPI];
-    nApiDeviceNames = new QList<QString>[nAPI];
-    deviceOK        = new QList<bool>[nAPI];
-    for (int i = 0; i < nAPI; i++) {
-        deviceOK[i].clear();
-        nApiDevices[i] = 0;
-        nApiDeviceNames[i].clear();
-        APICombo[0]->insertItem(i, Pa_GetHostApiInfo(i)->name);
-        APICombo[1]->insertItem(i, Pa_GetHostApiInfo(i)->name);
-    }
-    connect(APICombo[0], SIGNAL(currentIndexChanged(int)), this, SLOT(launchUpdateDeviceList0(int)));
-    connect(APICombo[1], SIGNAL(currentIndexChanged(int)), this, SLOT(launchUpdateDeviceList1(int)));
-      audioDevices.clear();
-    int numDevices = Pa_GetDeviceCount();
-    if (numDevices < 0) {
-        numDevices = 0;
-    }
-    const PaDeviceInfo *deviceInfo;
-    PaStreamParameters testFormat;
-    testFormat.channelCount              = 2;
-    testFormat.sampleFormat              = paInt16;
-    testFormat.suggestedLatency          = 0;
-    testFormat.hostApiSpecificStreamInfo = NULL;
-    for (int i = 0; i < numDevices; i++) {
-        deviceInfo = Pa_GetDeviceInfo(i);
-        int api = deviceInfo->hostApi;
-        nApiDevices[api]++;
-        audioDevices.append(deviceInfo->name);
-        nApiDeviceNames[api].append(deviceInfo->name);
-
-        // check to see if this device will work
-        bool ok = true;
-        testFormat.device           = i;
-        testFormat.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency;
-
-        // check for stereo support
-        if (Pa_GetDeviceInfo(i)->maxInputChannels < 2) {
-            ok = false;
-        }
-
-        // test for support of 96 KHz sampling
-        int err = Pa_IsFormatSupported(&testFormat, NULL, 96000);
-        if (err != paNoError) ok = false;
-        if (ok) {
-            DeviceCombo[0]->insertItem(i, iconOK, audioDevices[i]);
-            DeviceCombo[1]->insertItem(i, iconOK, audioDevices[i]);
-        } else {
-            DeviceCombo[0]->insertItem(i, iconNOK, audioDevices[i]);
-            DeviceCombo[1]->insertItem(i, iconNOK, audioDevices[i]);
-        }
-
-        deviceOK[api].append(ok);
-    }
-
-    // terminate once we have the list
-    Pa_Terminate();
-    updateDeviceList(0, 0);
-    updateDeviceList(1, 0);
-    for (int i = 0; i < NRIG; i++) {
-        Format[i].device                    = 0;
-        Format[i].suggestedLatency          = 0;
-        Format[i].channelCount              = 2;
-        Format[i].sampleFormat              = paInt24;
-        Format[i].hostApiSpecificStreamInfo = NULL;
-    }
+    pathLabel[0] = labelExe1;
+    pathLabel[1] = labelExe2;
+    ipPtr[0]           = lineEditIP1;
+    ipPtr[1]           = lineEditIP2;
+    portPtr[0]         = lineEditPort1;
+    portPtr[1]         = lineEditPort2;
+    configLabel[0]       = labelConfig1;
+    configLabel[1]       = labelConfig2;
+    connect(buttonExe1,SIGNAL(clicked()),this,SLOT(findExeFile1()));
+    connect(buttonExe2,SIGNAL(clicked()),this,SLOT(findExeFile2()));
+    connect(buttonConfig1,SIGNAL(clicked()),this,SLOT(findConfig1()));
+    connect(buttonConfig2,SIGNAL(clicked()),this,SLOT(findConfig2()));
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSDR()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     updateFromSettings();
 }
 
+void SDRDialog::fileGetter(QString msg,QString path,QString files,QString key,QLabel *label)
+{
+    QString fileName = QFileDialog::getOpenFileName(this,msg, path,files);
+    if (fileName.isNull()) {
+        return;
+    }
+    settings.setValue(key,fileName);
+    label->setText(shortName(fileName));
+}
+
+QString SDRDialog::shortName(QString s)
+{
+    QString str=s;
+    int len=s.length();
+    if (len>25) {
+        str.remove(0,len-25);
+        str="... " + str;
+    }
+    return str;
+}
+
+void SDRDialog::findConfig1()
+{
+    fileGetter("So2sdr-bandmap config file",userDirectory()+"/so2sdr.ini",
+            "ini files (*.ini)",s_sdr_config[0],labelConfig1);
+}
+
+void SDRDialog::findConfig2()
+{
+    fileGetter("So2sdr-bandmap config file",userDirectory()+"/so2sdr.ini",
+            "ini files (*.ini)",s_sdr_config[1],labelConfig2);
+}
+
+void SDRDialog::findExeFile1()
+{
+    fileGetter("So2sdr-bandmap executable",settings.value(s_sdr_path[0],s_sdr_path[0]).toString(),
+            "All files (*)",s_sdr_path[0],labelExe1);
+}
+
+void SDRDialog::findExeFile2()
+{
+    fileGetter("So2sdr-bandmap executable",settings.value(s_sdr_path[1],s_sdr_path[1]).toString(),
+            "All files (*)",s_sdr_path[1],labelExe2);
+}
 void SDRDialog::updateFromSettings()
 {
     SpotTimeoutLineEdit->setText(settings.value(s_sdr_spottime,s_sdr_spottime_def).toString());
+    lineEditUDP->setText(settings.value(s_sdr_udp,s_sdr_udp_def).toString());
     for (int i = 0; i < NRIG; i++) {
-        Checkbox[i]->setChecked(settings.value(s_sdr_enabled[i],s_sdr_enabled_def[i]).toBool());
-        OffsetLineEditPtr[i]->setText(settings.value(s_sdr_offset[i],s_sdr_offset_def[i]).toString());
-        BitsCombo[i]->setCurrentIndex(settings.value(s_sdr_bits[i],s_sdr_bits_def[i]).toInt());
-        int n=settings.value(s_sdr_api[i],0).toInt();
-        if (n>nAPI) n=0;
-        APICombo[i]->setCurrentIndex(n);
-        n=settings.value(s_sdr_device[i],s_sdr_device_def[i]).toInt();
-        if (n>(DeviceCombo[i]->maxCount())) n=0;
-        DeviceCombo[i]->setCurrentIndex(n);
-        SwapCheckBox[i]->setChecked(settings.value(s_sdr_swapiq[i],s_sdr_swapiq_def[i]).toBool());
+        pathLabel[i]->setText(shortName(settings.value(s_sdr_path[i],s_sdr_path_def[i]).toString()));
+        configLabel[i]->setText(shortName(settings.value(s_sdr_config[i],s_sdr_config_def[i]).toString()));
+        ipPtr[i]->setText(settings.value(s_sdr_ip[i],s_sdr_ip_def[i]).toString());
+        portPtr[i]->setText(settings.value(s_sdr_port[i],s_sdr_port_def[i]).toString());
     }
     ChangeRadioClickCheckBox->setChecked(settings.value(s_sdr_changeclick,s_sdr_changeclick_def).toBool());
-    lineEditIntegTime->setText(settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
     lineEdit160low->setText(settings.value(s_sdr_cqlimit_low[0],cqlimit_default_low[0]).toString());
     lineEdit160high->setText(settings.value(s_sdr_cqlimit_high[0],cqlimit_default_high[0]).toString());
     lineEdit80low->setText(settings.value(s_sdr_cqlimit_low[1],cqlimit_default_low[1]).toString());
@@ -168,84 +114,17 @@ void SDRDialog::updateFromSettings()
     lineEdit10high->setText(settings.value(s_sdr_cqlimit_high[5],cqlimit_default_high[5]).toString());
 }
 
-void SDRDialog::launchUpdateDeviceList0(int i)
-{
-    updateDeviceList(0, i);
-}
-
-void SDRDialog::launchUpdateDeviceList1(int i)
-{
-    updateDeviceList(1, i);
-}
-
-void SDRDialog::updateDeviceList(int nr, int indx)
-{
-    if (nr < 0 || nr > NRIG) return;
-
-    DeviceCombo[nr]->clear();
-    for (int i = 0; i < nApiDeviceNames[indx].size(); i++) {
-        if (deviceOK[indx][i]) {
-            DeviceCombo[nr]->insertItem(i, iconOK, nApiDeviceNames[indx].at(i));
-        } else {
-            DeviceCombo[nr]->insertItem(i, iconNOK, nApiDeviceNames[indx].at(i));
-        }
-    }
-    DeviceCombo[nr]->setCurrentIndex(0);
-}
-
 SDRDialog::~SDRDialog()
 {
-    delete[] nApiDevices;
-    delete[] nApiDeviceNames;
-    delete[] deviceOK;
-}
-
-/*!
- * \brief SDRDialog::format
- * \param nrig either 0 or 1
- * \return Returns PaStreamParameters format for bandscope displays
- */
-PaStreamParameters& SDRDialog::format(int nrig)
-{
-    int nr;
-    if (nrig < 0 || nrig >= NRIG) {
-        nr = 0;
-    } else {
-        nr = nrig;
-    }
-    switch (settings.value(s_sdr_bits[nr],s_sdr_bits_def[nr]).toInt()) {
-    case 0:
-        Format[nr].sampleFormat = paInt16;
-        break;
-    case 1:
-        Format[nr].sampleFormat = paInt24;
-        break;
-    case 2:
-        Format[nr].sampleFormat = paInt32;
-        break;
-    }
-
-    // calculate device index
-    int indx = 0;
-    for (int i = 0; i < settings.value(s_sdr_api[nr],s_sdr_api_def[nr]).toInt(); i++) indx += nApiDevices[i];
-
-    indx += settings.value(s_sdr_device[nr],0).toInt();
-    Format[nr].device = indx;
-    return(Format[nr]);
 }
 
 void SDRDialog::updateSDR()
 {
     for (int i = 0; i < NRIG; i++) {
-        settings.setValue(s_sdr_bits[i],BitsCombo[i]->currentIndex());
-        settings.setValue(s_sdr_offset[i],OffsetLineEditPtr[i]->text().toInt());
-        settings.setValue(s_sdr_enabled[i],Checkbox[i]->isChecked());
-        settings.setValue(s_sdr_api[i],APICombo[i]->currentIndex());
-        settings.setValue(s_sdr_device[i],DeviceCombo[i]->currentIndex());
-        settings.setValue(s_sdr_swapiq[i],SwapCheckBox[i]->isChecked());
+        settings.setValue(s_sdr_ip[i],ipPtr[i]->text());
+        settings.setValue(s_sdr_port[i],portPtr[i]->text().toInt());
     }
-
-    settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
+    settings.setValue(s_sdr_udp,lineEditUDP->text().toInt());
     settings.setValue(s_sdr_spottime,SpotTimeoutLineEdit->text().toInt());
     settings.setValue(s_sdr_changeclick,ChangeRadioClickCheckBox->isChecked());
     settings.setValue(s_sdr_cqlimit_low[0],lineEdit160low->text().toInt());
@@ -262,9 +141,6 @@ void SDRDialog::updateSDR()
     settings.setValue(s_sdr_cqlimit_high[5],lineEdit10high->text().toInt());
     settings.sync();
     emit(updateCQLimits());
-#ifdef DVK_ENABLE
-    if (updatedvk) emit(updateDVK());
-#endif
 }
 
 void SDRDialog::rejectChanges()

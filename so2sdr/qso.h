@@ -28,7 +28,7 @@
 class Qso
 {
 public:
-    Qso(int n = 1);
+    explicit Qso(int n = 1);
     ~Qso();
     void         setExchangeType(int, FieldTypes);
 

@@ -1,0 +1,349 @@
+<p><a name="top"></a></p>
+
+<h2>So2sdr-bandmap Help</h2>
+
+<ul>
+<li><a href="#controls">Controls</a></li>
+<li><a href="#bandmap_setup">So2sdr-bandmap setup</a></li>
+<li><a href="#tcp">TCP interface details</a></li>
+<li><a href="#changes">Changes</a></li>
+</ul>
+
+<hr />
+
+<p>So2sdr-bandmap provides a "visual bandmap" that shows the activity on
+the band for nearby frequencies. To use it you will need a SDR
+receiver connected to the IF of your contesting radio. With this type
+of setup, the SDR front end is automatically protected from
+transmitted RF and gains the benefit of the main radio's front end
+tuned circuits. There is also no need to tune the SDR frequency as the
+radio is tuned; the SDR stays tuned at the IF frequency of the host
+radio.</p>
+
+<p>So2sdr-bandmap has been tested with the following SDR hardware:</p>
+
+<ul>
+<li>Softrock SDR receiver</li>
+<li>LP-PAN</li>
+<li>Afedri SDR, interfaced both via USB as a sound card, and via
+ethernet.</li>
+</ul>
+
+<p>Other SDR's may work if they supply an I/Q stream over the sound card interface
+or via ethernet with the SDR-IP protocol. The program has been tested most with the
+Elecraft K3.</p>
+
+<p><strong>Important for SO2R:</strong> For SO2R usage, you need to provide two
+different configurations for so2sdr-bandmap, with different bandmap ID
+numbers (see below).  Test each radio's bandmap separately, and then
+copy the .ini file so2sdr-bandmap.ini to a separate copy for that
+bandmap, such as so2sdr-bandmap1.ini and so2sdr-bandmap2.ini.  So2sdr
+has a setting to use different so2sdr-bandmap.ini files for each
+radio.  You can also make a separate desktop shortcut to start the
+bandmap for each radio, and so2sdr will detect when each has been
+started.</p>
+
+<p><a href="#top">Return to Menu</a></p>
+
+<hr />
+
+<p><a name="controls"></a></p>
+
+<h3>Bandmap controls</h3>
+
+<p><img src="./bandmap-controls.png" alt="Bandmap controls" /></p>
+
+<p>Controls from left to right:</p>
+
+<ul>
+<li>start button</li>
+<li>stop button</li>
+<li>setup button</li>
+<li>quit buton</li>
+<li>Mark signals: if checked, so2sdr-bandmap will peak-detect signals,
+placing a dot by each detected signal. This can be used to automatically
+tune the radio to the next signal or find the largest open space
+between signals.</li>
+<li>Gain slider: this controls the gain of the peak-detect algorithm.
+Typically it does not need to be adjusted often, although sometimes
+with heavy QRN you may want to decrease the gain. Moving the slider
+to the right makes the algorithm #less# sensitive (like a
+squelch control).</li>
+<li>Help menu</li>
+</ul>
+
+<p>Other controls:</p>
+
+<ul>
+<li>Mouse:
+<ul>
+<li>Left clicking on the bandmap signals will tune the radio to
+this frequency.</li>
+<li>In the frequency scale: holding down the left mouse button and
+drag to  move
+the center marker.</li>
+<li>Right click brings up several options: an option to hide the
+upper toolbar; zoom (scale) setting; call delete function (if
+near a callsign); and IQ balance status dialog.</li>
+</ul></li>
+</ul>
+
+<p><a href="#top">Return to Menu</a></p>
+
+<hr />
+
+<p><a name="bandmap_setup"></a></p>
+
+<h3>Setting up So2sdr-bandmap</h3>
+
+<p>When the program starts, click the "wrench" icon. The main setup dialog opens:</p>
+
+<p><img src="./so2sdr-bandmap-setup.png" alt="so2sdr-bandmap setup" /></p>
+
+<ul>
+<li>Bandmap ID number corresponds to the radio number in so2sdr; 1 or 2.</li>
+<li>TCP port: this is the TCP port number used to control the bandmap. If running SO2R,
+each needs a different port number.</li>
+<li>UDP broadcast port: So2sdr-bandmap sends broadcast messages to this UDP port
+after mouse clicks and other evens. Two copies of the program can share the same UDP port.</li>
+<li>N1MM+ : if this option is selected, So2sdr-bandmap will listen for UDP broadcasts
+from N1MM+ logger and use them to set the center frequency. Fill in the port number
+below.</li>
+<li>SDR type: the type of SDR receiver. Click configure for further details.</li>
+<li>CQ Finder time (in seconds): the length of time the program waits to determine if
+a frequency is "empty."  This should be set to roughly the length of a typical
+qso in the contest being operated. With longer exchanges (like in the
+ARRL Sweepstakes) a longer time should be used here. Typically you should use a
+value less than 30 seconds.</li>
+</ul>
+
+<h4>Soundcard SDR setup</h4>
+
+<p><img src="./soundcard-setup.png" alt="Soundcard setup" /></p>
+
+<ul>
+<li>Type: for Linux there is only one option, ALSA. In Windows there are several
+different sound API's.</li>
+<li>Device: So2sdr-bandmap tries to test which available sound devices
+will work with the program, and puts a checkmark next to these. This
+check is not 100% effective however. Normally you want to use the line
+input.</li>
+<li>Speed: controls the scroll speed of the bandmap.</li>
+<li>Sample Rate: for sound cards, 48, 96, and 192 KHz are supported.</li>
+<li>Bits: most sound cards support 24 bit sampling; very few will
+support 32 bits.</li>
+<li>IF offset: this must be adjusted so that signals when zero beat
+on the receiver appear centered on the red line (center of bandmap).</li>
+<li>Swap IQ: reverse I and Q channels. Try this if the spectrum is
+inverted.</li>
+<li>IQ Correction: corrects for imbalance in the I and Q channels.
+If I and Q are imbalanced, image signals will be present on the
+display.</li>
+<li>Collect IQ correction data: so2sdr-bandmap will use strong signals
+to measure and correct IQ balance.</li>
+</ul>
+
+<p>Setup hints:</p>
+
+<ul>
+<li><p>On some linux systems so2sdr-bandmap may not be able to open
+the sound card. A workaround is to use #pasuspender# to suspend
+pulseaudio:</p>
+
+<pre><code>pasuspender -- so2sdr-bandmap
+</code></pre></li>
+<li><p>Windows: the audio API used by so2sdr-bandmap, portaudio,
+provides several Windows sound API's. Some may provide better
+performance than others.</p></li>
+</ul>
+
+<h4>SDR-IP (Network) SDR</h4>
+
+<p>This is a generic interface for network-based SDR's using the
+SDR-IP protocol.</p>
+
+<p><img src="./network-setup.png" alt="Network setup" /></p>
+
+<h4>Afedri Net SDR</h4>
+
+<p>This is an interface for the Afedri SDR using the network
+interface. Note that it can also be used via the Soundcard
+interface.</p>
+
+<p><img src="./afedri-setup.png" alt="Afedri setup" /></p>
+
+<ol>
+<li><p>For single-receiver Afedri SDR: fill in IP address, TCP
+and UDP ports. Set Multichannel to "Single", Channel to 1,
+and fill in Freq. 1. Make sure that Broadcast is set to off.
+In my testing, "swap IQ" needed to be checked. Note that
+not all sample rates are supported by the Afedri hardware
+(check documentation). If a sample rate is entered that is
+not supported, the SDR will use the nearest available sample
+rate, which will cause frequency inaccuracies in the bandmap
+display.</p></li>
+<li><p>Multi-channel Afedri SDR: so2sdr-bandmap also supports the
+multi-channel Afedri SDR's. In this mode, a single unit can be used to
+provide bandmaps for two radios. The broadcast option of the Afedri is
+set so that two copies of so2sdr-bandmap can receive the SDR data.
+One copy of so2sdr-bandmap should run as "Master" and one as "Slave".
+The Master bandmap controls the frequency for both SDR receivers.
+Start the Master bandmap first followed by the Slave.</p>
+
+<p>This mode is somewhat experimental. Sometimes the 2nd SDR receiver
+does not start; a workaround seems to be to stop the Master
+bandmap (square "stop" button) and then restart it again.</p></li>
+</ol>
+
+<p><a href="#top">Return to Menu</a></p>
+
+<hr />
+
+<p><a name="tcp"></a></p>
+
+<h3>TCP interface</h3>
+
+<p>So2sdr-bandmap uses TCP/UDP as the most portable and flexible option.
+So2sdr-bandmap accepts commands via TCP using a very simple
+protocol. Commands are sent to so2sdr-bandmap as a string of bytes
+(little-endian for multiple byte data):</p>
+
+<p>byte 1  : command</p>
+
+<p>byte 2  : length in bytes (up to 255) of following data packet. 
+            minimum length is 0 if no data follows.</p>
+
+<p>following bytes: data (optional), format depends on command</p>
+
+<h4>General commands</h4>
+
+<ul>
+<li><p>Set Center Frequency: 'f' 0x66 dec 102
+followed by ascii characters giving frequency in Hz</p></li>
+<li><p>Exit program: 'q' 0x71 dec 113
+No data follows (length=0). Using this command before terminating
+the  bandmap process allows the bandmap to shut down properly and
+update its config files.</p></li>
+<li><p>Set TX state: 't' 0x74 dec 116
+No data follows (length=0). If transmit state is set, the bandmap will stop   peak detecting signals and display the red "TX" icon.</p></li>
+<li><p>Set RX state: 'r' 0x72 dec 114 Cancels transmit state (see 0x74)</p></li>
+<li><p>Find open frequency: 'g' 0x67 dec 103 Finds an open frequency on the bandmap. This will only function after the center frequency has been set. The found frequency will be returned via UDP (see below).</p></li>
+<li><p>Set freq finder lower limit: 'l' 0x6C dec 108
+Set lower limit frequency for "Find open freq"
+followed by ascii characters giving frequency in Hz</p></li>
+<li><p>Set freq finder upper limit: 'u' 0x75 dec 117
+Set upper limit frequency for "Find open freq"
+followed by ascii characters giving frequency in Hz</p></li>
+<li><p>Set bandmap offset: 'o' 0x6f dec 111
+Set offset in Hz between frequency displayed and actual center freq.
+Followed by ascii characters giving offset in Hz.</p></li>
+<li><p>Set bandmap invert: 'i'  0x69 dec 105
+If turned on, spectrum will be inverted. Useful for CW-reverse mode
+and some radios that have inverted IF on certain bands.
+Followed by single byte- if 0x00, sets invert off, any other byte
+sets invert on.</p></li>
+<li><p>Qsy to next higher signal:  'U' 0x55 dec 85
+Length zero. Qsy's to next higher marked signal (black dot) on band. The new frequency is returned to the controlling program via UDP.</p></li>
+<li><p>Qsy to next lower signal:  'D' 0x44 dec 68
+Length zero. Qsy's to next lower marked signal (black dot) on band. The new frequency  is returned to the controlling program via UDP.</p></li>
+</ul>
+
+<h4>Call marking</h4>
+
+<p>So2sdr-bandmap can display callsigns and optionally highlight the
+actual CW signal of a station with a specific color. The program
+stores a list of callsigns and frequencies that are currently being
+displayed.  TCP commands are used to manage this list. The program is
+not designed to intelligently manage this list (for example finding
+dupes or removing calls after a set time), this is left up to the
+managing TCP connection.</p>
+
+<ol>
+<li><p>Add callsign: 'a' 0x61 dec 97
+followed by</p>
+
+<ul>
+<li>command string length byte</li>
+<li><p>command string:</p>
+
+<p>callsign,frequency,R1G1B1R2G2B2flag</p>
+
+<ul>
+<li>callsign = ASCII callsign data</li>
+<li>frequency = frequency in Hz</li>
+<li>R1 = byte giving red color value (0:255) for call</li>
+<li>G1 = byte giving green color value (0:255) for call</li>
+<li>B1 = byte giving blue color value (0:255) for call</li>
+<li>R2 = byte giving red color byte for signal: 0 or 1</li>
+<li>G2 = byte giving green color byte for signal: 0 or 1</li>
+<li>B2 = byte giving blue color byte for signal: 0 or 1</li>
+<li>flag = 0x00 means no highlight, any other value means highlight</li>
+</ul></li>
+</ul>
+
+<p>example: puts N4OGW on bandmap at 14035100 Hz, callsign in magenta
+and signal higlighted in magenta:</p></li>
+</ol>
+
+<p><code>
+    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
+</code></p>
+
+<ol>
+<li><p>Delete callsign: 'd'  0x64 dec 100
+followed by</p>
+
+<ul>
+<li>length byte</li>
+<li>callsign</li>
+</ul></li>
+<li><p>Clear all calls: 'x' 0x78 dec 120
+command length 0</p></li>
+</ol>
+
+<h4>UDP broadcasts</h4>
+
+<p>So2sdr-bandmap sends out UDP packets in response to several types
+of events:</p>
+
+<ul>
+<li><p>clicking on the bandmap or a marked signal. The UDP packet contains
+the new frequency:</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;So2sdr&gt;
+&lt;bandmap RadioNr="1" freq="14037726"/&gt;
+&lt;/So2sdr&gt;
+</code></pre></li>
+</ul>
+
+<p>RadioNr is the bandmap ID number. A similar packet is broadcast in
+response to a request to find an open frequency. Note that the frequency
+is given in Hz.</p>
+
+<ul>
+<li><p>deleting a call with the mouse. The right-click menu gives the option
+to delete a call. The bandmap itself does not delete the call from its
+list, this should be done by the controlling program in response to
+the UDP packet.</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;So2sdr&gt;
+&lt;bandmap RadioNr="1" freq="14022977" call="N4OGW" operation="delete"/&gt;
+&lt;/So2sdr&gt;
+</code></pre></li>
+</ul>
+
+<p><a href="#top">Return to Menu</a></p>
+
+<hr />
+
+<p><a name="changes"></a></p>
+
+<h3>Changelog</h3>
+
+<ul>
+<li>version 2.0.0 First release of so2sdr-bandmap</li>
+</ul>
+
+<p><a href="#top">Return to Menu</a></p>

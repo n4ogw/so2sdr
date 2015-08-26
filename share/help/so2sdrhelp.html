@@ -1,4 +1,4 @@
-<a name="top"><h2>SO2SDR help file version 1.5.2</h2></a>
+<a name="top"><h2>SO2SDR help file version 2.0.0</h2></a>
 <hr>
 
 <h3>Topics
@@ -9,10 +9,10 @@
 <li><a href="#station">Station settings</a>
 <li><a href="#contest">Contest settings</a>
 </ol>
-<li><a href="#v152">current version notes</a> 
+<li><a href="#v151">current version notes</a> 
 <li><a href="#opnotes">operating notes</a>
 <li><a href="#keys">key reference</a>
-<li><a href="#cw">CW macros</a>
+<li><a href="#cw">CW/SSB macros</a>
 </ol>
 </h3>
 <hr>
@@ -38,10 +38,9 @@ change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri
 <h3>Windows</h3>
 
 <p>
-Run the installer. All program and data 
+Run the msi installer. All program and data 
 files are in the chosen install directory,
-no registry changes are made. To remove, run the "uninstall"
-in the program directory.
+no registry changes are made.
 </p>
 
 <a name="configuring"><h3>Configuring SO2SDR</h3></a> 
@@ -336,7 +335,7 @@ to adjust the exchange. Some special considerations:
 <li> Other: several special messages for exchange sent while CQing,
 etc.
 </ul>
-<li> See full list of available <a href="#cw">CW macros</a>.
+<li> See full list of available <a href="#cw">CW/SSB macros</a>.
 </ul>
 
 <li>
@@ -459,7 +458,14 @@ Screenshot files are placed in the same directory as the log file.
 <hr>
 
 
-<a name="cw"><h3>CW Message macros</h3></a>
+<a name="cw"><h3>CW/SSB Message macros</h3></a>
+
+<p>
+Two separate sets of macros are stored by the program, one for CW
+and one for SSB. So2sdr currently doesn't have a built-in way to record voice
+messages, but external devices can be used with CAT or OTRSP
+macros (see below).
+</p>
 
 <ul>
    <li> {CALL} :     callsign
@@ -722,25 +728,6 @@ on 80M. If you have the bandmaps running, using the {BEST_CQ} or
 to call CQ on in this situation.
 </p>
 
-<a name="v152"><h3>Version 1.5.2</h3></a>
-
-<ul>
-<li> fixed several bugs in the alt-D code. Some slight change
-in how alt-D works- now if the radio is changed (alt-R or ctrl-R),
-and alt-D call will be cleared, unless the alt-D qso is already in
-progress (exchange entered). 
-<li> fix qso and mult info being shown on wrong radio with alt-D
-<li> Call window has call, ESC pressed; was not clearing the mult
-and worked information, entering S&P mode afterwards would show these
-for the last call even with no entered callsign.
-<li> fixed bandmap TX status bug: changing radios while CW was sending
-would prevent TX icon from turning off. Now turns off TX also  whenever
-CW is canceled.
-</ul>
-
-<p>
-<a href="#top">Return to top</a>
-</p>
 
 <a name="v151"><h3>Version 1.5.1</h3></a> 
 

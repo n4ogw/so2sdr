@@ -36,7 +36,7 @@ class CabrilloDialog : public QDialog, public Ui::CabrilloDialog
 Q_OBJECT
 
 public:
-    CabrilloDialog(QWidget *parent = 0);
+    explicit CabrilloDialog(QWidget *parent = 0);
     void initialize(QSettings *s1,QSettings *s2);
     void updateExch();
     void writeHeader(QFile *cbrFile,int score);

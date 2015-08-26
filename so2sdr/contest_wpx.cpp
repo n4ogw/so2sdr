@@ -154,9 +154,7 @@ unsigned int WPX::sntFieldShown() const
 bool WPX::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
-//    qso->mult[0]    = -1;
     qso->isamult[0] = true;
-  //  qso->mult[1]    = -1;
     qso->isamult[1] = false;
 
     // RST NR

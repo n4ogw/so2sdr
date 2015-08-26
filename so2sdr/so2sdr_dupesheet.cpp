@@ -140,6 +140,7 @@ void So2sdr::showDupesheet(int nr, int checkboxState)
             dupesheet[nr]->resize(settings->value("size", QSize(750, 366)).toSize());
             dupesheet[nr]->move(settings->value("pos", QPoint(400, 400)).toPoint());
             settings->endGroup();
+            dupesheet[nr]->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
         }
         nDupesheet++;
         populateDupesheet();

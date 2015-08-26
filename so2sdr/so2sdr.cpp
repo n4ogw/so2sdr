@@ -29,6 +29,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
+#include <QHostAddress>
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -196,19 +197,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
 
-    //DVK
-#ifdef DVK_ENABLE
-    dvk = new DVK(*settings);
-    connect(sdr,SIGNAL(updateDVK()),this,SLOT(updateDVK()));
-    connect(this,SIGNAL(playDvk(int,int)),dvk,SLOT(playMessage(int,int)));
-    connect(this,SIGNAL(recordDvk(int)),dvk,SLOT(recordMessage(int)));
-    connect(this,SIGNAL(stopDvk()),dvk,SLOT(cancelMessage()));
-    connect(dvk,SIGNAL(ptt(int,int)),cat,SLOT(setPtt(int,int)));
-    connect(ssbMessage,SIGNAL(startRecording(int)),dvk,SLOT(recordMessage(int)));
-    connect(ssbMessage,SIGNAL(stopRecording(int)),dvk,SLOT(recordMessage(int)));
-    dvk->moveToThread(&dvkThread);
-    startDvk();
-#endif
+    bandmap=new BandmapInterface(*settings,this);
+    connect(bandmap,SIGNAL(removeCall(QByteArray,int)),this,SLOT(removeSpot(QByteArray,int)));
+    connect(bandmap,SIGNAL(qsy(int,int)),cat,SLOT(qsyExact(int,int)));
+    connect(bandmap,SIGNAL(sendMsg(QString)),So2sdrStatusBar,SLOT(showMessage(QString)));
     notes = new NoteDialog(this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(notes, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -279,6 +271,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     menuWindows->addSeparator();
     bandmapCheckBox[0] = new QCheckBox("Bandmap 1", menuWindows);
     bandmapCheckBox[1] = new QCheckBox("Bandmap 2", menuWindows);
+    connect(bandmap,SIGNAL(bandmap1state(bool)),bandmapCheckBox[0],SLOT(setChecked(bool)));
+    connect(bandmap,SIGNAL(bandmap2state(bool)),bandmapCheckBox[1],SLOT(setChecked(bool)));
+    connect(bandmap,SIGNAL(bandmap1state(bool)),this,SLOT(sendCalls1(bool)));
+    connect(bandmap,SIGNAL(bandmap2state(bool)),this,SLOT(sendCalls2(bool)));
+
     for (int i = 0; i < NRIG; i++) {
         bandmapCheckAction[i] = new QWidgetAction(menuWindows);
         bandmapCheckAction[i]->setDefaultWidget(bandmapCheckBox[i]);
@@ -356,6 +353,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // start serial comm
     winkey = new Winkey(*settings,this);
     connect(winkey, SIGNAL(version(int)), winkeyDialog, SLOT(setWinkeyVersionLabel(int)));
+    connect(winkey, SIGNAL(winkeyTx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
     connect(winkeyDialog, SIGNAL(startWinkey()), this, SLOT(startWinkey()));
     connect(winkey->winkeyPort, SIGNAL(readyRead()), winkey, SLOT(receive()));
     connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
@@ -407,23 +405,6 @@ So2sdr::~So2sdr()
         catThread.wait();
     }
     delete cat;
-    // stop dvk thread
-#ifdef DVK_ENABLE
-    emit(stopDvk());
-    if (dvkThread.isRunning()) {
-        dvkThread.quit();
-        dvkThread.wait();
-    }
-    delete dvk;
-#endif
-    if (bandmapOn[0]) {
-        bandmap[0]->close();
-    }
-    if (bandmapOn[1]) {
-        bandmap[1]->close();
-    }
-    delete bandmap[0];
-    delete bandmap[1];
     delete cabrillo;
     delete detail;
     delete radios;
@@ -466,6 +447,8 @@ So2sdr::~So2sdr()
     delete winkey;
     delete pport;
     delete otrsp;
+    delete bandmap;
+
     if (qso[0]) delete qso[0];
     if (qso[1]) delete qso[1];
     settings->sync();
@@ -617,8 +600,6 @@ void So2sdr::settingsUpdate()
 void So2sdr::cleanup()
 {
     saveSpots();
-    if (bandmapOn[0]) bandmap[0]->closeIQ();
-    if (bandmapOn[1]) bandmap[1]->closeIQ();
     quit();
 }
 
@@ -702,10 +683,6 @@ void So2sdr::setEntryFocus()
 void So2sdr::quit()
 {
     for (int i = 0; i < NRIG; i++) {
-        if (bandmapOn[i]) {
-            bandmap[i]->close();
-            bandmapOn[i]=false;
-        }
         if (telnetOn) {
             telnet->close();
             telnetOn=false;
@@ -714,29 +691,6 @@ void So2sdr::quit()
     close();
 }
 
-#ifdef DVK_ENABLE
-void So2sdr::startDvk()
-{
-    if (dvkThread.isRunning()) {
-        dvkThread.quit();
-    }
-    dvk->initializeAudio();
-    dvkThread.start();
-}
-
-/*!
- * \brief So2sdr::updateDVK
-  update live audio when checkbox in sdrdialog changes
-  */
-void So2sdr::updateDVK()
-{
-    if (settings->value(s_dvk_loop,s_dvk_loop_def).toBool()) {
-        dvk->loopAudio();
-    } else {
-        dvk->stopLoopAudio();
-    }
-}
-#endif
 
 void So2sdr::openRadios()
 {
@@ -816,6 +770,8 @@ void So2sdr::enableUI()
     for (int i = 0; i < NRIG; i++) {
         lineEditCall[i]->setEnabled(true);
         lineEditExchange[i]->setEnabled(true);
+        bandmapCheckBox[i]->setEnabled(true);
+        dupesheetCheckBox[i]->setEnabled(true);
     }
     cwMessage->setEnabled(true);
 #ifdef DVK_ENABLE
@@ -830,16 +786,10 @@ void So2sdr::enableUI()
     actionCabrillo->setEnabled(true);
     grabCheckBox->setEnabled(true);
     actionImport_Cabrillo->setEnabled(true);
-    dupesheetCheckBox[0]->setEnabled(true);
-    dupesheetCheckBox[1]->setEnabled(true);
     telnetCheckBox->setEnabled(true);
-    if (sdr->checkBox->isChecked()) bandmapCheckBox[0]->setEnabled(true);
-    if (sdr->checkBox_2->isChecked()) bandmapCheckBox[1]->setEnabled(true);
     uiEnabled = true;
     callFocus[activeRadio]=true;
     setEntryFocus();
-    connect(sdr->checkBox, SIGNAL(toggled(bool)), bandmapCheckBox[0], SLOT(setEnabled(bool)));
-    connect(sdr->checkBox_2, SIGNAL(toggled(bool)), bandmapCheckBox[1], SLOT(setEnabled(bool)));
 }
 
 
@@ -1032,14 +982,6 @@ bool So2sdr::setupContest()
     So2sdrStatusBar->showMessage("Read " + fileName, 3000);
     setSummaryGroupBoxTitle();
     if (csettings->value(c_off_time_enable,c_off_time_enable_def).toBool()) updateOffTime();
-#ifdef DVK_ENABLE
-    if (settings->value(s_dvk_enabled,s_dvk_enabled_def).toBool()) {
-        dvk->loadMessages(fileName,settings->value(s_call,s_call_def).toString());
-    }
-    if (settings->value(s_dvk_loop,s_dvk_loop_def).toBool()) {
-        dvk->loopAudio();
-    }
-#endif
     return(true);
 }
 
@@ -1694,6 +1636,7 @@ void So2sdr::startLogEdit()
 void So2sdr::editLogDetail(QModelIndex index)
 {
     QSqlRecord rec = model->record(index.row());
+    origRecord = model->record(index.row());
     detail->loadRecord(rec,contest->nExchange());
     detail->show();
     detail->callLineEdit->setFocus();
@@ -1727,6 +1670,17 @@ void So2sdr::updateRecord(QSqlRecord r)
     while (model->canFetchMore()) {
         model->fetchMore();
     }
+    // update spot list; replace orig call/freq/dupe status
+    int b=origRecord.value(SQL_COL_BAND).toInt();
+    QByteArray call=origRecord.value(SQL_COL_CALL).toByteArray();
+    for (int i=0;i<spotList[b].size();i++) {
+        if (call==spotList[b].at(i).call) {
+            spotList[b][i].call=r.value(SQL_COL_CALL).toByteArray();
+            spotList[b][i].f=r.value(SQL_COL_FREQ).toInt();
+            /*! @todo dupe status */
+        }
+    }
+
 }
 
 /*!
@@ -1849,13 +1803,11 @@ void So2sdr::about()
     ungrab();
     QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2015 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
-                       + "<br><hr>Credits:<ul><li>FFTW http://fftw.org"
-		       + "<li>hamlib: "+ hamlib_version
+                       + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>qextserialport https://github.com/qextserialport/qextserialport"
                        + "<li>QtSolutions_Telnet 2.1"
-                       + "<li>"+QString(Pa_GetVersionText())+" http://portaudio.com"
 #ifdef Q_OS_WIN
-                       + "<li>Windows parallel port:  InpOut32.dll http://www.highrez.co.uk/"
+                       + "<li>Parallel port access:  InpOut32.dll http://www.highrez.co.uk/"
 #endif
                        + "<li>MASTER.DTA algorithm, IQ balancing: Alex Shovkoplyas VE3NEA, http://www.dxatlas.com</ul>"
                        + "<hr><p>SO2SDR is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License "
@@ -1914,12 +1866,11 @@ void So2sdr::updateOffTime() {
  */
 void So2sdr::timerEvent(QTimerEvent *event)
 {
-
-    if (event->timerId() == timerId[3]) {
-            // auto-CQ, dueling CQ, autoSend triggers, 100 ms resolution
-            if (autoCQMode) autoCQ();
-            if (duelingCQMode) duelingCQ();
-            if (autoSend) autoSendExch();
+    if (event->timerId() == timerId[2]) {
+        // auto-CQ, dueling CQ, autoSend triggers, 100 ms resolution
+        if (autoCQMode) autoCQ();
+        if (duelingCQMode) duelingCQ();
+        if (autoSend) autoSendExch();
     } else if (event->timerId() == timerId[1]) {
         // radio updates; every 300 mS
         // (the actual serial poll time is set in serial.cpp and may be different)
@@ -1938,13 +1889,8 @@ void So2sdr::timerEvent(QTimerEvent *event)
         if (QDateTime::currentDateTimeUtc().time().second()==0 && contest) {
             updateRate();
         }
-    } else if (event->timerId() == timerId[2]) {
-        // update IQ plot every 10 seconds
-        for (int i=0;i<NRIG;i++) {
-            if (bandmapOn[i]) {
-                bandmap[i]->calc();
-            }
-        }
+        // check bandmap tcp connection
+        bandmap->connectTcp();
     }
 }
 
@@ -2322,11 +2268,6 @@ void So2sdr::switchRadios(bool switchcw)
     switchAudio(activeRadio);
     if (switchcw) {
         switchTransmit(activeRadio);
-
-#ifdef DVK_ENABLE
-        dvk->setLiveChannel(activeRadio);
-#endif
-
     }
     setEntryFocus();
     if (callFocus[activeRadio]) {
@@ -2582,7 +2523,7 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             MasterTextEdit->clear();
         }
 
-        // if 2nd radio CQ is active, display these on the other radio
+        // if 2nd radio CQ and S/P on active radio, display on active radio
         int nr = nrig;
         if (activeR2CQ && cqMode[activeRadio]) {
             nr = nr ^ 1;
@@ -2701,13 +2642,17 @@ bool So2sdr::enterFreqOrMode()
 
         int b;
         if ((b = getBand(f)) != -1) {
+            // if band change, update bandmap calls
+            if (b!=band[nr] && bandmap->bandmapon(nr)) {
+                bandmap->syncCalls(nr,spotList[b]);
+            }
             band[nr] = b;
         }
-
-        if (bandmapOn[nr]) {
-            bandmap[nr]->setFreq(f, band[nr], spotList[band[nr]]);
+        if (bandmap->bandmapon(nr)) {
+            bandmap->bandmapSetFreq(f,nr);
+            bandmap->setAddOffset(cat->ifFreq(nr),nr);
             // invert spectrum if needed
-            bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
+            // bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
         }
 
     } else if (rx.indexIn(qso[activeRadio]->call) == 0) {
@@ -2866,10 +2811,15 @@ void So2sdr::updateRadioFreq()
         int b = getBand(rigFreq[i]);
 
         if (b != -1) {
+            if (b!=band[i] && bandmap->bandmapon(i)) {
+                bandmap->syncCalls(i,spotList[band[i]]);
+            }
             band[i] = b;
         }
 
         // band change event
+        // note: entering the frequency from the keyboard will not
+        // register as a band change here, but in enterFreqOrMode
         if (contest && tmp[i] != band[i]) {
             if (i == activeRadio) {
                 updateMults(i);
@@ -2877,14 +2827,12 @@ void So2sdr::updateRadioFreq()
                     populateDupesheet();
                 }
             }
-        }
-        if (bandmapOn[i]) {
-            //add additional offset if specified by radio (like K3)
-            bandmap[i]->setAddOffset(cat->ifFreq(i));
-            bandmap[i]->setFreq(rigFreq[i], band[i], spotList[band[i]]);
 
-            // invert spectrum if needed
-            bandmap[i]->setInvert(bandInvert[i][band[i]] ^ (cat->mode(i) == RIG_MODE_CWR));
+        }
+        if (bandmap->bandmapon(i)) {
+            bandmap->bandmapSetFreq(rigFreq[i],i);
+            //add additional offset if specified by radio (like K3)
+            bandmap->setAddOffset(cat->ifFreq(i),i);
         }
         double f = rigFreq[i] / 1000.0;
         if (cat->radioOpen(i)) {
@@ -3414,15 +3362,18 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         txt.append(QByteArray::number(qRound(rigFreq[activeRadio ^ 1] / 1000.0)));
                         break;
                     case 22: // best cq
-                        if (bandmapOn[activeRadio]) {
-                            bandmap[activeRadio]->getCQFreq();
-                        }
+                        bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[band[activeRadio]],
+                                               cqlimit_default_low[band[activeRadio]]).toInt(),
+                                settings->value(s_sdr_cqlimit_high[band[activeRadio]],
+                                cqlimit_default_high[band[activeRadio]]).toInt());
+                        bandmap->findFreq(activeRadio);
                         break;
                     case 23: // best cq radio2
-                        if (bandmapOn[activeRadio ^ 1]) {
-                            bandmap[activeRadio ^ 1]->getCQFreq();
-                        }
-
+                        bandmap->setFreqLimits(activeRadio^1,settings->value(s_sdr_cqlimit_low[band[activeRadio^1]],
+                                cqlimit_default_low[band[activeRadio]]).toInt(),
+                                settings->value(s_sdr_cqlimit_high[band[activeRadio^1]],
+                                cqlimit_default_high[band[activeRadio^1]]).toInt());
+                        bandmap->findFreq(activeRadio ^ 1);
                         // return immediately to avoid stopping cw on current radio
                         return;
                         break;
@@ -3807,6 +3758,7 @@ void So2sdr::stopTimers()
     }
 }
 
+
 /*! validates freq entered in Khz, returns freq in Hz
    if exact=true, no validation (freq should be in Hz in this case)
  */
@@ -4020,6 +3972,9 @@ void So2sdr::writeStationSettings()
 
 void So2sdr::closeEvent(QCloseEvent *event)
 {
+    for (int i=0;i<NRIG;i++) {
+        bandmap->closeBandmap(i);
+    }
     writeContestSettings();
     writeStationSettings();
     event->accept();
@@ -4114,10 +4069,9 @@ void So2sdr::initPointers()
     history       = 0;
     dupesheet[0] = 0;
     dupesheet[1] = 0;
-    bandmap[0]   = 0;
-    bandmap[1]   = 0;
     qso[0]       = 0;
     qso[1]       = 0;
+    bandmap      = 0;
     dupesheetCheckBox[0] = 0;
     dupesheetCheckBox[1] = 0;
     dupesheetCheckAction[0] = 0;
@@ -4159,6 +4113,9 @@ void So2sdr::initPointers()
     multWorkedLabel[0][1] = Mult1Label2;
     multWorkedLabel[1][0] = Mult2Label;
     multWorkedLabel[1][1] = Mult2Label2;
+    //bandmapProcess[0]     = 0;
+    //bandmapProcess[1]     = 0;
+
     // the following is needed to get a monospace font under Windows
     for (int i=0;i<NRIG;i++) {
         QFont font("Monospace");
@@ -4233,8 +4190,6 @@ void So2sdr::initVariables()
     ratePtr = 0;
     for (int i = 0; i < 60; i++) rateCount[i] = 0;
     nDupesheet   = 0;
-    bandmapOn[0] = false;
-    bandmapOn[1] = false;
     telnetOn          = false;
     for (int i = 0; i < MMAX; i++) {
         excludeMults[i].clear();
@@ -4299,15 +4254,27 @@ void So2sdr::screenShot()
     QCoreApplication::processEvents();
 
     // bandmap windows
+    // this could be handled by sending a TCP message to the
+    // bandmap process telling it to take a screenshot
+    /*
     for (int i=0;i<NRIG;i++) {
-        if (bandmapOn[i]) {
-            QPixmap p=QPixmap::grabWindow(bandmap[i]->winId());
-            QCoreApplication::processEvents();
-            QString format = "png";
-            QString filename="screenshot-"+QString::number(i)+" "+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
-            p.save(filename,format.toAscii());
-            QCoreApplication::processEvents();
+        if (bandmap->bandmapon(i)) {
+
         }
     }
+    */
     So2sdrStatusBar->showMessage("Saved screenshot", 3000);
+}
+
+
+void So2sdr::showBandmap1(int checkboxState)
+{
+    menuWindows->hide();
+    bandmap->showBandmap(0,checkboxState);
+}
+
+void So2sdr::showBandmap2(int checkboxState)
+{
+    menuWindows->close();
+    bandmap->showBandmap(1,checkboxState);
 }

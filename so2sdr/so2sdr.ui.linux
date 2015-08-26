@@ -113,7 +113,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Monospace</family>
+             <family>Bitstream Vera Sans Mono</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -185,7 +185,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Monospace</family>
+             <family>Bitstream Vera Sans Mono</family>
              <pointsize>10</pointsize>
              <italic>false</italic>
             </font>
@@ -1087,7 +1087,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -1646,7 +1646,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -1674,7 +1674,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -1796,7 +1796,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -1827,7 +1827,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -1858,7 +1858,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -1889,7 +1889,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>9</pointsize>
            </font>
           </property>
@@ -2190,7 +2190,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -2221,7 +2221,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Bitstream Vera Sans Mono</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -2491,7 +2491,7 @@
   </action>
   <action name="actionSDR">
    <property name="text">
-    <string>&amp;Bandscope</string>
+    <string>&amp;Bandmap</string>
    </property>
   </action>
   <action name="actionContestOptions">
@@ -2545,6 +2545,9 @@
    </property>
    <property name="text">
     <string>SSB Messages</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionSettings">

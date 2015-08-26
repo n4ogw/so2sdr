@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>afedriSetup</class>
+ <widget class="QDialog" name="afedriSetup">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>292</width>
+    <height>510</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>292</width>
+    <height>510</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>292</width>
+    <height>510</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Afedri Net SDR</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>IP Address</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="tcpipaddressLineEdit">
+       <property name="toolTip">
+        <string>IP address of Afedri SDR</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>TCP port</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="tcpportLineEdit">
+       <property name="toolTip">
+        <string>TCP port number. Default often 50000.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>UDP port</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="udpportLineEdit">
+       <property name="toolTip">
+        <string>UDP port number. Default often 50000.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>Multichannel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="multiChannelComboBox">
+       <property name="toolTip">
+        <string>Allows dual or quad reception if supported by Afedri hardware.</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Single</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Dual</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quad</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Channel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="channelComboBox">
+       <property name="toolTip">
+        <string>Channel number. Channels above 1 require dual or quad hardware.</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Freq. 1 (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="lineEditFreq1">
+       <property name="toolTip">
+        <string>Center frequency for SDR</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Freq. 2 (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="lineEditFreq2">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Center frequency, second receiver.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Freq. 3 (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLineEdit" name="lineEditFreq3">
+       <property name="toolTip">
+        <string>Center frequency, third receiver</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Freq. 4 (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="lineEditFreq4">
+       <property name="toolTip">
+        <string>Center frequency, fourth receiver.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>IF Offset (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="lineEditOffset">
+       <property name="toolTip">
+        <string>IF offset: difference in Hz from SDR center frequency and center of display.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Sample Rate (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QLineEdit" name="sampleFreqLineEdit">
+       <property name="toolTip">
+        <string>Sample rate of SDR. Not all values can be set with Afedri, see Afedri docs.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QCheckBox" name="checkBoxSwap">
+       <property name="toolTip">
+        <string>Invert I/Q channels. Use if spectrum is inverted.</string>
+       </property>
+       <property name="text">
+        <string>swap IQ</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Broadcast</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QRadioButton" name="broadcastMasterButton">
+       <property name="toolTip">
+        <string>Turn on UDP broadcast option. Master controls the SDR.</string>
+       </property>
+       <property name="text">
+        <string>Master</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">broadcastButtonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="14" column="1">
+      <widget class="QRadioButton" name="broadcastSlaveButton">
+       <property name="toolTip">
+        <string>Connect to UDP broadcast as Slave. Cannot change any SDR parameters. Use for multichannel SDR's.</string>
+       </property>
+       <property name="text">
+        <string>Slave</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">broadcastButtonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="15" column="1">
+      <widget class="QRadioButton" name="broadcastOffButton">
+       <property name="toolTip">
+        <string>Do not use UDP broadcast protocol.</string>
+       </property>
+       <property name="text">
+        <string>Off</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">broadcastButtonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Speed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QComboBox" name="fftComboBox">
+       <item>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1/2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1/4</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>tcpipaddressLineEdit</tabstop>
+  <tabstop>tcpportLineEdit</tabstop>
+  <tabstop>udpportLineEdit</tabstop>
+  <tabstop>multiChannelComboBox</tabstop>
+  <tabstop>channelComboBox</tabstop>
+  <tabstop>lineEditFreq1</tabstop>
+  <tabstop>lineEditFreq2</tabstop>
+  <tabstop>lineEditFreq3</tabstop>
+  <tabstop>lineEditFreq4</tabstop>
+  <tabstop>lineEditOffset</tabstop>
+  <tabstop>fftComboBox</tabstop>
+  <tabstop>sampleFreqLineEdit</tabstop>
+  <tabstop>checkBoxSwap</tabstop>
+  <tabstop>broadcastMasterButton</tabstop>
+  <tabstop>broadcastSlaveButton</tabstop>
+  <tabstop>broadcastOffButton</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>afedriSetup</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>afedriSetup</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="broadcastButtonGroup"/>
+ </buttongroups>
+</ui>
