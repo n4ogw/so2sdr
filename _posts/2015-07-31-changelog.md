@@ -24,7 +24,7 @@ date: 2015-07-31 08:53:50
 
             pasuspender -- so2sdr
    
-    or if running so2sdr-bandmap separately,
+        or if running so2sdr-bandmap separately,
 
             pasuspender -- so2sdr-bandmap
 
