@@ -13,15 +13,15 @@ qextserialport/tmp/
 qttelnet/buildlib/moc_qttelnet.cpp
 qttelnet/buildlib/qttelnet.moc
 qttelnet/lib/
-so2sdr/moc_*.cpp
+moc_*.cpp
 so2sdr/qttelnet.moc
 so2sdr/so2sdr
-so2sdr/ui_*.h
+ui_*.h
 so2sdr/release
 so2sdr/debug
 so2sdr-bandmap/release
 so2sdr-bandmap/debug
-
+so2sdr-bandmap/qrc_so2sdr-bandmap.cpp
 # Binary files
 *.o
 
