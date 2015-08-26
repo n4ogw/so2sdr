@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+
+        <title>So2sdr : Linux</title>
+        <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div id="header" class="col-sm-12">
+                    <h4><a class="brand" href="/">So2sdr</a>
+    <small>Amateur Radio contest logging with software-defined radio features</small>
+</h4>
+
+                </div>
+            </div>
+
+            <div class="row">
+                
+                
+                    <div id="navigation" class="col-sm-2">
+                        <ul class="nav nav-list">
+    <li><a href="/">Home</a></li>
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">Changes</li>
+            
+            <li data-order=""><a href="/changes/changelog.html">Changelog</a></li>
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">Install</li>
+            
+            <li data-order="2"><a href="/install/windows.html">Windows</a></li>
+        
+            
+            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">Documentation</li>
+            
+            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+        
+            
+            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
+        
+            
+            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">Support</li>
+            
+            <li data-order=""><a href="/support/support.html">Contacts</a></li>
+        
+    
+<!-- List additional links. It is recommended to add a divider
+    e.g. <li class="divider"></li> first to break up the content. -->
+</ul>
+
+                    </div>
+
+                    <div id="content" class="col-sm-10">
+                        <div class="page-header">
+    <h2>Linux
+        
+    </h2>
+</div>
+
+<p>You will need the following development libraries installed: Qt4, FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. </p>
+
+<ol>
+<li><p>Clone the git repository to your local machine:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">git clone git://github.com/n4ogw/so2sdr.git
+</code></pre></div></li>
+<li><p>By default, so2sdr will be installed in /usr/local/bin, and associated
+data files will be placed in /usr/local/share/so2sdr. If you want to
+change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri</p></li>
+<li><p>In the directory so2sdr, </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">qmake
+make
+</code></pre></div>
+<p><code>make -j 2</code>  will use 2 cores and go faster.
+Subdirectory Makefiles are created from the top level Makefile.</p></li>
+<li><p>(as superuser) </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">make install
+</code></pre></div></li>
+<li><p>Test and contribute!</p></li>
+</ol>
+
+
+                    </div>
+                
+            </div>
+
+            
+
+            <div class="row">
+                <div id="footer" class="col-sm-12">
+                    Documentation for <a href="https://github.com/n4ogw/so2sdr">So2sdr</a>
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function orderNav() {
+                var list,
+                    section,
+                    header,
+                    sections = [],
+                    lists = {},
+                    headers = {};
+
+                var navUl = document.querySelectorAll('#navigation ul')[0],
+                    navLis = document.querySelectorAll('#navigation ul li');
+
+                if (!navUl) return;
+
+                for (var i = 0; i < navLis.length; i++) {
+                    var order, li = navLis[i];
+
+                    if (li.classList.contains('nav-header')) {
+                        section = li.textContent || li.innerText;
+                        sections.push(section);
+                        headers[section] = li;
+                        continue;
+                    }
+
+                    if (!lists[section]) {
+                        lists[section] = [];
+                    }
+
+                    order = parseFloat(li.getAttribute('data-order'))
+                    lists[section].push([order, li]);
+                }
+
+                for (var i = 0; i < sections.length; i++) {
+                    section = sections[i];
+                    list = lists[section].sort(function(a, b) {
+                        return a[0] - b[0];
+                    });
+
+                    if (header = headers[section]) {
+                        navUl.appendChild(header);
+                    }
+                    for (var j = 0; j < list.length; j++) {
+                        navUl.appendChild(list[j][1]);
+                    }
+                }
+            }
+
+            if (document.querySelectorAll) orderNav();
+        </script>
+        
+        <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+        
+    </body>
+</html>

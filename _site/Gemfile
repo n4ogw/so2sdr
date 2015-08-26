@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+gem 'github-pages'
+gem 'toml'
+gem 'blankslate'
+gem 'coffee-script'
+gem 'listen'
