@@ -14,22 +14,17 @@ date: 2015-07-31 08:53:50
   be used with other programs (see Documentation for use with 
   N1MM).
 * known problems:
-    + control of Afedri SDR does not completely work for dual-receiver
-    models. Under linux, the work-around is to use the sdr_commander 
-    program to set the dual-receiver mode and frequency of the second SDR.
-    Afedri in single-radio mode seems to work under Windows, but dual
-    receiver mode does not.
+    + control of Afedri SDRs is somewhat buggy for dual-receiver
+    models (when using both receivers).
 
-    + sometimes a radio can get stuck in second-radio-cq mode that ESC
-    will not exit. One way to get out is to switch to and from S&P mode.
-    + under some Linux distributions  the program may have trouble 
+    + under some Linux distributions  so2sdr-bandmap may have trouble 
     accessing the sound card if Pulseaudio is in use. A workaround is to
     use the pasuspender utility to stop Pulseaudio while so2sdr is
-    running:
+    running. If starting the bandmap from so2sdr, do this
 
             pasuspender -- so2sdr
    
-    or
+    or if running so2sdr-bandmap separately,
 
             pasuspender -- so2sdr-bandmap
 
