@@ -110,7 +110,7 @@ protocol. Commands are sent to so2sdr-bandmap as a string of bytes
 
 <p>following bytes: data (optional), format depends on command</p>
 
-<h3 id="general-commands">General commands</h3>
+<h3 id="toc_0">General commands</h3>
 
 <hr>
 
@@ -145,7 +145,7 @@ Length zero. Qsy&#39;s to next higher marked signal (black dot) on band. The new
 Length zero. Qsy&#39;s to next lower marked signal (black dot) on band. The new frequency  is returned to the controlling program via UDP.</p></li>
 </ul>
 
-<h3 id="call-marking">Call marking</h3>
+<h3 id="toc_1">Call marking</h3>
 
 <hr>
 
@@ -178,12 +178,12 @@ followed by</p>
 <li>B2 = byte giving blue color byte for signal: 0 or 1</li>
 <li>flag = 0x00 means no highlight, any other value means highlight</li>
 </ul></li>
-</ul></li>
-</ol>
+</ul>
 
 <p>example: puts N4OGW on bandmap at 14035100 Hz, callsign in magenta
-and signal higlighted in magenta:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
+and signal higlighted in magenta:</p></li>
+</ol>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
 </code></pre></div>
 <ol>
 <li><p>Delete callsign: &#39;d&#39;  0x64 dec 100
@@ -197,7 +197,7 @@ followed by</p>
 command length 0</p></li>
 </ol>
 
-<h3 id="udp-broadcasts">UDP broadcasts</h3>
+<h3 id="toc_2">UDP broadcasts</h3>
 
 <hr>
 
@@ -207,7 +207,7 @@ of events:</p>
 <ul>
 <li><p>clicking on the bandmap or a marked signal. The UDP packet contains
 the new frequency:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;So2sdr&gt;
 &lt;bandmap RadioNr=&quot;1&quot; freq=&quot;14037726&quot;/&gt;
 &lt;/So2sdr&gt;
@@ -223,7 +223,7 @@ is given in Hz.</p>
 to delete a call. The bandmap itself does not delete the call from its
 list, this should be done by the controlling program in response to
 the UDP packet.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;So2sdr&gt;
 &lt;bandmap RadioNr=&quot;1&quot; freq=&quot;14022977&quot; call=&quot;N4OGW&quot; operation=&quot;delete&quot;/&gt;
 &lt;/So2sdr&gt;
