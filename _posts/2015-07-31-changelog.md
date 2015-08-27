@@ -3,7 +3,12 @@ layout: page
 title: "Changelog"
 category: changes
 date: 2015-07-31 08:53:50
+order: 1
 ---
+
+## version 2.0.1
+
+* update help files
 
 ## version 2.0.0
 
