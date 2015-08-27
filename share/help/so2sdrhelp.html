@@ -7,6 +7,10 @@
 <li><a href="#install">Installation</a></li>
 <li><a href="#so2sdr_setup">Setup: so2sdr</a></li>
 <li><a href="#bandmap_setup">Setup: So2sdr-bandmap setup</a></li>
+<li><a href="#keyref">Key Reference</a></li>
+<li><a href="#macros">Message macros</a></li>
+<li><a href="#notes">Operating notes</a></li>
+<li><a href="#issues">Known issues</a></li>
 <li><a href="#changes">Changelog</a></li>
 </ul>
 
@@ -338,7 +342,7 @@ to adjust the exchange. Some special considerations:</p>
 <li>Other: several special messages for exchange sent while CQing,
 etc.</li>
 </ul></li>
-<li>See full list of available <a href="#cw">CW/SSB macros</a>.</li>
+<li>See full list of available <a href="#macros">CW/SSB macros</a>.</li>
 </ul>
 
 <hr />
@@ -548,6 +552,333 @@ Start the Master bandmap first followed by the Slave.</p>
 does not start; a workaround seems to be to stop the Master
 bandmap (square "stop" button) and then restart it again.</p></li>
 </ol>
+
+<p><a href="#top">Return to top</a></p>
+
+<hr />
+
+<p><a name="keyref"></a></p>
+
+<h3>Key reference</h3>
+
+<ul>
+<li>Radio QSY: enter a number corresponding to a frequency in
+KHz in the callsign window. If the number is followed by a semicolon
+(like 14005;), the frequency change will apply to the inactive radio.</li>
+<li>ctrl+Enter : logs qso with no dupe checking or exchange validation (be
+careful). The qso may not be scored correctly.</li>
+<li>shift+Enter : logs qso without sending CW</li>
+<li>alt+Enter : start toggle mode. In this mode, each enter press toggles
+back and forth between the two radios. Use this to call alternating cq's on
+both radios.</li>
+<li>Backslash : log qso and send Quick QSL message</li>
+<li>PdDn : decrease CW speed</li>
+<li>PgUp : increase CW speed </li>
+<li>ctrl+PdDn : decrease CW speed on inactive radio</li>
+<li>ctrl+PgUp : increase CW speed  on inactive radio</li>
+<li>alt+PgDn : in Auto CQ mode, decrease delay</li>
+<li>alt+PgUp : in Auto CQ mode, increase delay</li>
+<li>up/down arrow : switch between call and exchange windows</li>
+<li>ctrl+up : In S&amp;P mode, tune to next higher detected signal on bandmap. 
+In CQ mode  tune to the next higher signal on the INACTIVE radio.</li>
+<li>ctrl+down : In S&amp;P mode, tune to next lower detected signal on bandmap. 
+In CQ mode  tune to the next lower signal on the INACTIVE radio.</li>
+<li>ctrl+- : (Ctrl-Minus) Activates Dueling-CQ mode.</li>
+<li>alt+- : (Alt-Minus) Activates auto-send mode.</li>
+<li>Tab : enter S&amp;P mode</li>
+<li>Esc : exit S&amp;P mode; clear logging fields; reset Alt-D status</li>
+<li>minus (-) : mark frequency on active radio as a dupe, or clear
+the current mark</li>
+<li>equals (=) : mark frequency on inactive radio as a dupe, or clear
+the current mark</li>
+<li>left quote (`) : toggle audio stereo mode (split/non-split)</li>
+<li>alt+C : bring up Config menu</li>
+<li>alt+D : dupe check on 2nd radio</li>
+<li>ctrl+E : when QSO row is selected with the mouse, brings up
+QSO edit dialog.</li>
+<li>alt+F : bring up File menu</li>
+<li>ctrl+F : search log for callsign fragment. ESC clears search results.</li>
+<li>alt+H : bring up Help menu</li>
+<li>alt+M : switch mult display mode</li>
+<li>ctrl+N : make a note</li>
+<li>alt+Q : start auto (repeating) CQ mode. While in Auto CQ, Alt-PageUp
+and Alt-PageDn adjust the delay time between CQ's. Auto CQ sends F1 by default;
+pressing F1 or F2 will change the message that is repeating. ESC or alt+Q
+exits Auto CQ mode.</li>
+<li>alt+R : Switch radios</li>
+<li>ctrl+R : switch radios without killing cw.</li>
+<li>alt+S : Set CW speed. Followed by two numeric digits.</li>
+<li>ctrl+alt+S : take screenshot of main and bandmap windows.
+Screenshot files are placed in the same directory as the log file.</li>
+<li>alt+W : bring up Windows menu</li>
+<li>ctrl+Z (in call/exchange entry field) : undo</li>
+</ul>
+
+<hr />
+
+<p><a name="macros"></a></p>
+
+<h3>CW/SSB Message macros</h3>
+
+<p>Two separate sets of macros are stored by the program, one for CW
+and one for SSB. So2sdr currently doesn't have a built-in way to record voice
+messages, but external devices can be used with CAT or OTRSP
+macros (see below).</p>
+
+<ul>
+<li>{CALL} :     callsign</li>
+<li>{#} :        qso number</li>
+<li>{UP} :       increase speed by 5 WPM</li>
+<li>{DN} :       decrease speed by 5 WPM</li>
+<li>{CANCEL} :   cancel any previous speed change</li>
+<li>{R2} :       send on other radio</li>
+<li>{R2CQ} :     send on other radio, marked as CQ. If a call is entered, program will switch to other radio to answer CQ. ESC or a F1 CQ will clear this state.</li>
+<li>{STATE} :    state</li>
+<li>{SECTION} :  ARRL section</li>
+<li>{NAME} :     name</li>
+<li>{CQZ} :      CQ zone</li>
+<li>{ITUZ} :     ITU zone</li>
+<li>{GRID} :     grid</li>
+<li>{CALL_ENTERED} :  contents of call entry window</li>
+<li>{TOGGLESTEREOPIN} :  toggle parallel port pin for audio control. This macro should be used alone and will not work with other CW macros</li>
+<li>{CQMODE} :   switch to CQ mode</li>
+<li>{SPMODE} :   switch to SP mode</li>
+<li>{SWAP<em>RADIOS} :  swap frequencies between radios
+<li> {SWITCH</em>RADIOS} : same as alt-R</li>
+<li>{REPEAT_LAST} :  repeats previously sent message</li>
+<li>{REPEAT_NR} :  if the call entry line is not empty, send current qso #. If call entry line is empty, sends number sent for last logged qso.</li>
+<li>{CLEAR_RIT} : clear the RIT</li>
+<li>{RIG_FREQ} : send frequency of radio rounded to nearest KHz</li>
+<li>{RIG2_FREQ} : send frequency of 2nd radio rounded to nearest KHz</li>
+<li>{BEST_CQ} qsy current radio to "best" CQ freq</li>
+<li>{BEST<em>CQ</em>R2} qsy 2nd radio to "best" CQ freq</li>
+<li>| : insert 1/2 dit extra space</li>
+<li>{MCP}{/MCP} : send Microham Control Protocol commands</li>
+<li>{OTRSP}{/OTRSP} : send OTRSP Control Protocol commands</li>
+<li>{CAT}{/CAT} : send raw string to radio. This can be used
+to trigger a variety of radio functions. Numbers placed inside of
+&lt; and &gt; will be interpreted as hexadecimal bytes. Example: {CAT}SWT25;{/CAT}
+will switch the RX antenna on the Elecraft K3.</li>
+<li>{CATR2}/{/CATR2} : same, except send to inactive radio</li>
+<li>{CAT1}/{/CAT1} : same, except send to radio 1</li>
+<li>{CAT2}/{/CAT2} : same, except send to radio 2</li>
+<li>{CALL_OK} : This will reset the check if the original call has been
+corrected. Used when repeating the exchange to a station, it will prevent
+the "Call Updated QSL" message from being sent when not needed.</li>
+</ul>
+
+<p><a href="#top">Return to top</a></p>
+
+<hr />
+
+<p><a name="notes"></a></p>
+
+<h3>Operating notes</h3>
+
+<h4>Running stations</h4>
+
+<p>SO2SDR uses the "Enter sends message" approach used by many other logging programs:</p>
+
+<ol>
+<li>Enter callsign, press enter. The CQ exchange is sent</li>
+<li>Enter exchange, press enter. The QSL message is sent</li>
+<li>repeat</li>
+</ol>
+
+<p>The program tries to be intelligent in interpreting the entered
+exchange. There needs to be a space between exchange elements in
+most cases (123a is acceptable in Sweepstakes for the number/prec).
+In most cases, you do not need to backspace to correct
+an exchange mistake- the program will take the last valid exchange
+on the line.</p>
+
+<p>That the exchange must be "validated", or enter will not log
+the qso. In case there is a problem, it is possible to "force log"
+the qso- press ctrl-Enter instead of just enter. Be careful with
+these cases, the number and position of exchange elements has to
+match exactly in this case. These qso's may also be scored
+incorrectly</p>
+
+<p>Shift-Enter instead of Enter will also log the qso without sending any CW.</p>
+
+<p>The Backslash key ("\") will log the qso and send the "Quick QSL"
+message instead of the usual QSL message.</p>
+
+<h4>S&amp;P</h4>
+
+<p>TAB enters S&amp;P mode.</p>
+
+<ol>
+<li>type callsign. When enter is pressed, your call is sent</li>
+<li>enter exchange. When enter is pressed, you exchange is sent</li>
+<li>press enter again to log the qso. I am planning on making
+this extra enter optional.</li>
+</ol>
+
+<h4>Using the bandmap</h4>
+
+<p>In the bandmap, the radio frequency is in the center at the red
+line. A right mouse click will bring up several options:</p>
+
+<ul>
+<li>Zoom X1, Zoom X2: set scale of bandmap.</li>
+<li>Delete call: use to remove a call from the bandmap. Note that
+the "-" and "=" keys can be used to remove a call.</li>
+<li>IQ Balance: open the IQ balance dialog. The bandmap uses strong
+signals to correct gain and phase errors in the SDR hardware. 
+This correction will be saved when quitting the program.
+If the "IQ" box is checked, the correction is applied; if the "IQ Data"
+box is checked, new signals are used to improve the correction.</li>
+</ul>
+
+<p>Options at the bottom of the bandmap window:</p>
+
+<ul>
+<li>Mark signals: this uses a peak detection algorithm to
+try to determine where signals are on the band. This does not decode
+any CW. Each detected peak is marked with a small black dot; clicking
+on it will tune the radio to that signal. Ctrl-up and Ctrl-down
+arrows can be used to tune the radio to the next signal up or down the 
+band. In S&amp;P mode, they will tune the active radio; otherwise they apply to
+the inactive radio.</li>
+<li>Signal level slider: adjusts sensitivity of peak detection 
+algorithm.</li>
+<li>IQ: correct I-Q balance errors</li>
+<li>IQ Data: collect data from received signals to improve I-Q balance</li>
+</ul>
+
+<p>Left click: this will tune the radio to this frequency.</p>
+
+<p>Left Click+drag in frequency scale: moves center of the display</p>
+
+<p>When in S&amp;P mode, pressing Space after typing a callsign will add
+it to the bandmap. If the call is a dupe, it will be highlighted
+in color on the bandmap. Using this trick, new signals become obvious
+on the bandmap. It is of course possible that a station can be
+replaced by another on exactly the same frequency. However, in practice
+this does not happen very often--it is a much more probable that
+unhighlighted signals are unworked stations. The Spot Timeout
+setting is also critical here.</p>
+
+<h4>Editing log information</h4>
+
+<p>Previous qso's can be edited in the log window by clicking on 
+a field, editing the information, and pressing enter. Pressing escape
+instead cancels the changes. The following fields
+are editable: time, callsign, sent exchange, and received exchange. The
+qso points (if displayed for that contest) will be recalculated 
+automatically. </p>
+
+<p>To search for a call (or partial call) in the log, enter a call
+fragment in the callsign window and press ctrl-F. ESC clears the 
+search results.</p>
+
+<p>Marking qso's as invalid: there is no way to delete qso's from the
+log. However, for each qso there is a checkbox. If this is unchecked, the
+qso is marked as invalid and 
+completely removed from dupe checking and scoring, and will not
+appear in the final Cabrillo output.</p>
+
+<h4>SO2R</h4>
+
+<p>For working stations on a second band while CQing on a different
+band SO2SDR uses a system similar to TRLOG:</p>
+
+<ol>
+<li>Tune in a station on the second radio. By clicking on a
+signal or using ctrl-up/down this is very easy to do.</li>
+<li>Press alt-D ; enter the callsign- it will show in the
+2nd radio callsign window. The color is changed to indicate
+this will be a second radio qso.</li>
+<li>When ready to call the station, hit Space. Now work
+the station as usual. You may want to define function
+keys to send messages on the other radio during the 2nd radio
+qso.</li>
+<li>The program will return to the original radio when the
+2nd radio qso is logged.</li>
+</ol>
+
+<p>Note that if you tune by a station you are sure you have worked,
+you can use the "-" or "=" keys to mark that frequency as a dupe
+without having to enter the whole callsign. This can save a lot
+of typing and allow one to check a 2nd band for new stations
+very quickly.</p>
+
+<h4>Sprint/Sprint+SO2R</h4>
+
+<p>SO2SDR emulates the behavior of DOS TRLOG for the Sprint contest. This
+behavior is enabled when the Contest Options->Sprint Mode is
+checked. <i>Note that in sprint mode, alt-D is disabled. The method of
+SO2R used for the sprint does not use alt-D.</i></p>
+
+<p>The Sprint is operated "backwards". This means that the <i>active</i>
+radio is used to tune for stations (S&amp;P), while the inactive radio is
+used for calling CQ. I recommend reading the TRLOG description of
+Sprint operating by N6TR, SO2SDR operates in the same manner.  The
+default CW macros are set up in the way described below if North
+American Sprint or NCCC Sprint is selected as a contest.</p>
+
+<p>To do S&amp;P, leave the active radio in <i>CQ mode</i>, not S&amp;P mode. It
+is helpful to open one bandmap, which will automatically follow the
+active band. When you find a station you want to
+call, type the call and simply hit Space.  The program will send your
+call and switch to exchange mode. Copy the exchange and hit enter to
+send your exchange. After the qso is logged, you will be back in CQ
+mode, ready to send CQ when you press enter.</p>
+
+<p>During the Sprint, the second radio is typically used to call CQ while you
+are receiving the exchange on the active radio. This is set up by default 
+in macros F7 and F8. For example, F7 should be defined something like:</p>
+
+<p><code>
+{R2CQ}TEST {CALL}
+</code></p>
+
+<p>Suppose 80M is the active radio (frequency in bold) and you call CQ on 40M.
+The color of the second radio entry box changes color to remind you that a
+2nd-radio CQ is in effect. If someone answers the CQ, enter their call in
+<i>the 80M entry box</i>. Do not change radios first: when the 2nd
+radio CQ is active, the program will take the call from the "wrong"
+radio, transfer it to the new radio, and switch radios. Now you
+continue as before.  During this qso you can again press F7 to call CQ
+on 80M. If you have the bandmaps running, using the {BEST<em>CQ} or
+{BEST</em>CQ_R2} macro is very helpful to quickly find an open frequency
+to call CQ on in this situation.</p>
+
+<p><a href="#top">Return to top</a></p>
+
+<hr />
+
+<p><a name="issues"></a></p>
+
+<h2>Known issues</h2>
+
+<ul>
+<li><p>Windows: the program may not run on Windows XP. In my testing, so2sdr ran
+on one XP system but not another. So2sdr-bandmap ran on both systems. This
+is related to differences in Microsoft DLL's which are not handled by
+the mingw compiler.</p></li>
+<li><p>Windows: radio serial communications does not work with the virtual
+serial ports of LP-Bridge (tested with LP-Bridge_09985 and hamlib-git
+08/2015). This is because LP-Bridge does not fully reproduce the
+serial commands of the K3. While initializing the K3 interface, hamlib
+sends several requests to the K3 requesting information on what
+version of the Elecraft serial protocol the radio supports. These
+commands are ignored by LP-Bridge and hamlib assumes the serial
+connection is broken.</p></li>
+<li><p>Linux: soundcard SDR's may not start on certain systems with an
+error "Audio device does not support stereo." A workaround is to use
+the pasuspender utility to stop Pulseaudio. If starting the bandmap
+from so2sdr, do this</p>
+
+<pre><code>    pasuspender -- so2sdr
+</code></pre>
+
+<p>or if running so2sdr-bandmap separately,</p>
+
+<pre><code>    pasuspender -- so2sdr-bandmap
+</code></pre></li>
+</ul>
 
 <p><a href="#top">Return to top</a></p>
 

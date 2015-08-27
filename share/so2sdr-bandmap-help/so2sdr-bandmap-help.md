@@ -4,6 +4,7 @@
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
 * [TCP interface details](#tcp)
+* [Issues](#issues)
 * [Changes](#changes)
 
 ---
@@ -38,7 +39,7 @@ radio.  You can also make a separate desktop shortcut to start the
 bandmap for each radio, and so2sdr will detect when each has been
 started.
 
-[Return to Menu](#top)
+[Return to top](#top)
 
 ---
 <a name="controls"></a>
@@ -76,7 +77,7 @@ Other controls:
 	upper toolbar; zoom (scale) setting; call delete function (if
 	near a callsign); and IQ balance status dialog.
 
-[Return to Menu](#top)
+[Return to top](#top)
 
 ---
 
@@ -175,7 +176,7 @@ Start the Master bandmap first followed by the Slave.
     does not start; a workaround seems to be to stop the Master
     bandmap (square "stop" button) and then restart it again.
 
-[Return to Menu](#top)
+[Return to top](#top)
 
 ---
 
@@ -313,13 +314,62 @@ the UDP packet.
 
 
 
-[Return to Menu](#top)
+[Return to top](#top)
+
+---
+
+<a name="issues"></a>
+
+## Known issues
+
+* Windows: the program may not run on Windows XP. In my testing, so2sdr ran
+on one XP system but not another. So2sdr-bandmap ran on both systems. This
+is related to differences in Microsoft DLL's which are not handled by
+the mingw compiler.
+
+* Linux: soundcard SDR's may not start on certain systems with an
+error "Audio device does not support stereo." A workaround is to use
+the pasuspender utility to stop Pulseaudio. If starting the bandmap
+from so2sdr, do this
+
+            pasuspender -- so2sdr
+   
+    or if running so2sdr-bandmap separately,
+
+            pasuspender -- so2sdr-bandmap
+
+[Return to top](#top)
 
 ---
 
 <a name="changes"></a>
-### Changelog
 
-* version 2.0.0 First release of so2sdr-bandmap
+## version 2.0.1
 
-[Return to Menu](#top)
+* update help files in so2sdr and so2sdr-bandmap
+
+## version 2.0.0
+
+* add network interface SDRs and Afedri SDR
+* some unfinished features removed for the moment (click filter and
+  DVK setup)
+* rewrite of SDR bandmap; it is now a separate executable and can
+  be used with other programs (see Documentation for use with 
+  N1MM).
+* known problems:
+    + control of Afedri SDRs is somewhat buggy for dual-receiver
+    models (when using both receivers).
+
+    + under some Linux distributions  so2sdr-bandmap may have trouble 
+    accessing the sound card if Pulseaudio is in use. A workaround is to
+    use the pasuspender utility to stop Pulseaudio while so2sdr is
+    running. If starting the bandmap from so2sdr, do this
+
+            pasuspender -- so2sdr
+   
+        or if running so2sdr-bandmap separately,
+
+            pasuspender -- so2sdr-bandmap
+
+
+[Return to top](#top)

@@ -1,0 +1,55 @@
+Name "so2sdr-bandmap-2.0.1"
+
+OutFile "so2sdr-bandmap-2.0.1.exe"
+InstallDir $PROGRAMFILES\so2sdr
+
+DirText "This will install so2sdr-bandmap on your computer. Choose a directory"
+
+
+Section "" ;No components page, name is not important
+SetOutPath $INSTDIR
+  File so2sdr-bandmap/release/so2sdr-bandmap.exe
+  File share/check.png
+  File share/icon24x24.png
+  File share/icon48x48.png
+  File share/license.html
+  File share/x.png
+
+SetOutPath $INSTDIR\so2sdr-bandmap-help
+  File share/so2sdr-bandmap-help/afedri-setup.png
+  File share/so2sdr-bandmap-help/bandmap-controls.png
+  File share/so2sdr-bandmap-help/network-setup.png
+  File share/so2sdr-bandmap-help/so2sdr-bandmap-help.html
+  File share/so2sdr-bandmap-help/so2sdr-bandmap-setup.png
+  File share/so2sdr-bandmap-help/soundcard-setup.png
+
+
+WriteUninstaller $INSTDIR\Uninstall.exe
+CreateDirectory "$SMPROGRAMS\N4OGW"
+CreateShortCut "$SMPROGRAMS\N4OGW\SO2SDR-Bandmap.lnk" "$INSTDIR\so2sdr-bandmap.exe"
+
+SectionEnd
+
+Section "Uninstall"
+
+Delete $INSTDIR\Uninstall.exe
+Delete $INSTDIR\so2sdr-bandmap.exe
+Delete $INSTDIR\check.png
+Delete $INSTDIR\icon24x24.png
+Delete $INSTDIR\icon48x48.png
+Delete $INSTDIR\license.html
+Delete $INSTDIR\x.png
+
+Delete $INSTDIR\so2sdr-bandmap-help
+Delete $INSTDIR\so2sdr-bandmap-help\afedri-setup.png
+Delete $INSTDIR\so2sdr-bandmap-help\bandmap-controls.png
+Delete $INSTDIR\so2sdr-bandmap-help\network-setup.png
+Delete $INSTDIR\so2sdr-bandmap-help\so2sdr-bandmap-help.html
+Delete $INSTDIR\so2sdr-bandmap-help\so2sdr-bandmap-setup.png
+Delete $INSTDIR\so2sdr-bandmap-help\soundcard-setup.png
+
+RMDIR $INSTDIR
+Delete "$SMPROGRAMS\N4OGW\SO2SDR-Bandmap.lnk"
+RMDIR "$SMPROGRAMS\N4OGW"
+
+SectionEnd 
