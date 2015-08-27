@@ -16,6 +16,7 @@ qttelnet/lib/
 moc_*.cpp
 so2sdr/qttelnet.moc
 so2sdr/so2sdr
+so2sdr-bandmap/so2sdr-bandmap
 ui_*.h
 so2sdr/release
 so2sdr/debug
