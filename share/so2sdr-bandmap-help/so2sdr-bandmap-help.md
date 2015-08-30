@@ -344,6 +344,10 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
+## version 2.0.3
+
+* remove line leftover from testing preventing callsign clearing on radio 2
+
 ## version 2.0.2
 
 * fix some bugs related to setting the config file for so2sdr-bandmap,

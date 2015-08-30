@@ -227,7 +227,6 @@ void So2sdr::addSpot(int nr,QByteArray call, int f, bool d)
  */
 void So2sdr::checkSpot(int nr)
 {
-    if (nr==1) return;
     static int lastFreq[2] = { 0, 0 };
     // initialize last freq
     if (lastFreq[nr] == 0) {
