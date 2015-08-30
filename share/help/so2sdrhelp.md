@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.2
+## SO2SDR Help file version 2.0.3
 
 * [Overview](#overview)
 * [Installation](#install)

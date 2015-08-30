@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.0.2
+## So2sdr-bandmap Help Version 2.0.3
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
