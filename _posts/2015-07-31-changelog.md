@@ -6,6 +6,13 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+## version 2.0.2
+
+* fix some bugs related to setting the config file for so2sdr-bandmap,
+and choosing the executable for the bandmap in so2sdr.
+* hopefully fix some bugs related to S&P mode
+
+
 ## version 2.0.1
 
 * update help files

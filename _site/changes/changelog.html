@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="/css/syntax.css">
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
+        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="/">So2sdr</a>
+                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="/">Home</a></li>
+    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
     
         
         
@@ -43,7 +43,10 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order=""><a href="/changes/changelog.html">Changelog</a></li>
+            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
+        
+            
+            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -53,10 +56,10 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="/install/windows.html">Windows</a></li>
+            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
         
             
-            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -66,13 +69,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
         
     
         
@@ -82,7 +85,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -98,7 +101,21 @@
     </h2>
 </div>
 
-<h2 id="toc_0">version 2.0.0</h2>
+<h2 id="toc_0">version 2.0.2</h2>
+
+<ul>
+<li>fix some bugs related to setting the config file for so2sdr-bandmap,
+and choosing the executable for the bandmap in so2sdr.</li>
+<li>hopefully fix some bugs related to S&amp;P mode</li>
+</ul>
+
+<h2 id="toc_1">version 2.0.1</h2>
+
+<ul>
+<li>update help files</li>
+</ul>
+
+<h2 id="toc_2">version 2.0.0</h2>
 
 <ul>
 <li>add network interface SDRs and Afedri SDR</li>
@@ -110,27 +127,21 @@ N1MM).</li>
 <li><p>known problems:</p>
 
 <ul>
-<li>control of Afedri SDR does not completely work for dual-receiver
-models. Under linux, the work-around is to use the sdr_commander 
-program to set the dual-receiver mode and frequency of the second SDR.
-Afedri in single-radio mode seems to work under Windows, but dual
-receiver mode does not.</li>
-<li>sometimes a radio can get stuck in second-radio-cq mode that ESC
-will not exit. One way to get out is to switch to and from S&amp;P mode.</li>
-<li><p>under some Linux distributions  the program may have trouble 
+<li>control of Afedri SDRs is somewhat buggy for dual-receiver
+models (when using both receivers).</li>
+<li><p>under some Linux distributions  so2sdr-bandmap may have trouble 
 accessing the sound card if Pulseaudio is in use. A workaround is to
 use the pasuspender utility to stop Pulseaudio while so2sdr is
-running:</p>
+running. If starting the bandmap from so2sdr, do this</p>
 <div class="highlight"><pre><code class="text language-text" data-lang="text">pasuspender -- so2sdr
+</code></pre></div>
+<p>or if running so2sdr-bandmap separately,</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">pasuspender -- so2sdr-bandmap
 </code></pre></div></li>
+</ul></li>
 </ul>
 
-<p>or</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">    pasuspender -- so2sdr-bandmap
-</code></pre></div></li>
-</ul>
-
-<h2 id="toc_1">version 1.5.2</h2>
+<h2 id="toc_3">version 1.5.2</h2>
 
 <ul>
 <li>fixed several bugs in the alt-D code. Some slight change in how alt-D
@@ -146,7 +157,7 @@ would prevent TX icon from turning off. Now turns off TX also whenever
  CW is canceled.</li>
 </ul>
 
-<h2 id="toc_2">version 1.5.1</h2>
+<h2 id="toc_4">version 1.5.1</h2>
 
 <ul>
 <li>Some minor bug fixes and code cleanup</li>

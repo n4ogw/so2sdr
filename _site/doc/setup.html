@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="/css/syntax.css">
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
+        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="/">So2sdr</a>
+                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="/">Home</a></li>
+    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
     
         
         
@@ -43,7 +43,10 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order=""><a href="/changes/changelog.html">Changelog</a></li>
+            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
+        
+            
+            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -53,10 +56,10 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="/install/windows.html">Windows</a></li>
+            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
         
             
-            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -66,13 +69,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
         
     
         
@@ -82,7 +85,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -198,6 +201,7 @@ Typically it does not need to be adjusted often, although sometimes
 with heavy QRN you may want to decrease the gain.  Moving the slider
 to the right makes the algorithm #less# sensitive (like a
 squelch control).</li>
+<li>Help</li>
 </ul>
 
 <p>Other controls:</p>
@@ -454,7 +458,7 @@ so2sdr via TCP and UDP.</p>
 <p><img src="../images/bandscope_dialog.png" alt="Bandscope Dialog" title="Bandscope Dialog"></p>
 
 <ul>
-<li>UDP port</li>
+<li>UDP port: this must match the UDP broadcast port defined in so2sdr-bandmap</li>
 <li>Spot timeout : the length of time callsigns are displayed
 on the bandmap. Callsigns are either entered by the 
 operator or can be read from the telnet interface to
