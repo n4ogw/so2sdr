@@ -164,7 +164,7 @@ SOURCES += cwmessagedialog.cpp \
 
 #Windows flags for i686-w64-ming32 cross-compile
 win32 {
-    include (../qextserialport/src/qextserialport.pri)
+    include (../qextserialport_1.2.0_win/src/qextserialport.pri)
     include (../qttelnet/src/qttelnet.pri)
 
     CONFIG += release

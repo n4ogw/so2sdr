@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.1
+## SO2SDR Help file version 2.0.2
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -843,6 +843,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.2
+
+* fix some bugs related to setting the config file for so2sdr-bandmap,
+and choosing the executable for the bandmap in so2sdr.
+* hopefully fix some bugs related to S&P mode
 
 ## version 2.0.1
 

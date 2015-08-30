@@ -19,6 +19,7 @@
 #include <QColor>
 #include <QDebug>
 #include <QDir>
+#include <QFileInfo>
 #include <QIcon>
 #include <QMenu>
 #include <QMessageBox>
@@ -55,11 +56,43 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
 
     // check for optional command argument giving station config file name
     if (args.size() > 1) {
-        settingsFile = args[1];
+        settingsFile = args[1].trimmed();
+        // Qt doesn't understand that ~/... implies home directory...
+        if (settingsFile.left(1)=="~") {
+            if (settingsFile.left(2)=="~/") {
+                settingsFile=QDir::homePath()+settingsFile.right(settingsFile.size()-1);
+            } else {
+                // for cases like ~name : no easy way to parse, give up
+                QMessageBox msgBox;
+                msgBox.setText("Please use the complete path to the settings file.");
+                msgBox.setInformativeText(settingsFile);
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                close();
+            }
+        }
+    }
+    QFileInfo fi(settingsFile);
+    if (!fi.exists()) {
+        QMessageBox msgBox;
+        msgBox.setText("The settings file "+settingsFile+" does not exist.");
+        msgBox.setInformativeText("Do you want to create it?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+        if (msgBox.exec()==QMessageBox::Cancel) {
+            close();
+        }
+        firstTime=true;
     }
     settings = new  QSettings(settingsFile,QSettings::IniFormat,this);
     if (settings->status()!=QSettings::NoError) {
         errorBox.showMessage("ERROR: problem starting qsettings");
+    }
+    // if run the first time with default settings file for second radio,
+    // set second radio
+    if (firstTime && settingsFile.right(19)=="so2sdr-bandmap2.ini") {
+        settings->setValue(s_sdr_nrig,1);
     }
     // restore window size and position
     QString tmp="BandmapWindow";
@@ -848,6 +881,7 @@ void So2sdrBandmap::initVariables()
     addOffset =   0;
     _invert   =   false;
     bandMapName="So2sdrBandmap1";
+    firstTime=false;
 }
 
 void So2sdrBandmap::quit()
@@ -867,24 +901,25 @@ bool So2sdrBandmap::checkUserDirectory()
     QDir dir;
     if (dir.exists(userDirectory())) return(true);
 
-    QMessageBox *msg= new QMessageBox(this);
-    msg->setWindowTitle("Error");
-    msg->setText("User data directory " + userDirectory() + " does not exist.");
-    msg->setInformativeText("Create it?");
-    msg->setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    msg->setDefaultButton(QMessageBox::Yes);
-    int ret = msg->exec();
+    QMessageBox msg;
+    //QMessageBox *msg= new QMessageBox(this);
+    msg.setWindowTitle("Error");
+    msg.setText("User data directory " + userDirectory() + " does not exist.");
+    msg.setInformativeText("Create it?");
+    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    msg.setDefaultButton(QMessageBox::Yes);
+    int ret = msg.exec();
     switch (ret) {
     case QMessageBox::Yes:
 
         // create directory
         if (dir.mkdir(userDirectory())) {
-            msg->deleteLater();
+           // msg->deleteLater();
             return(true);
         } else {
-            msg->setText("Could not create directory <" + userDirectory() + ">");
-            msg->exec();
-            msg->deleteLater();
+            msg.setText("Could not create directory <" + userDirectory() + ">");
+            msg.exec();
+            //msg->deleteLater();
             return(false);
         }
         break;
@@ -895,7 +930,7 @@ bool So2sdrBandmap::checkUserDirectory()
         // never reached
         break;
     }
-    msg->deleteLater();
+    //msg->deleteLater();
     return(false);
 }
 

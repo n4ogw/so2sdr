@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.1";
+const QByteArray Version = "2.0.2";
 
 typedef enum SdrType {
     soundcard_t=0,
@@ -148,9 +148,6 @@ typedef struct sampleSizes {
     unsigned long advance_size;  // bytes for one advance of spectrum
 } sampleSizes;
 Q_DECLARE_TYPEINFO(sampleSizes, Q_PRIMITIVE_TYPE);
-
-// powers of 2
-const unsigned int bits[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768 };
 
 // band limits: used for automatic qsy between signals
 const int band_limits[N_BANDS][2] = {{   1800000,  1900000 }, {  3500000,  3600000 }, { 7000000, 7125000 }, { 14000000, 14150000 },

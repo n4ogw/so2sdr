@@ -365,6 +365,9 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
  */
 bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 {
+    // if called with no call, abort
+    if (qso->call.isEmpty()) return false;
+
     bool dupe = false;
     qso->worked = 0;
     qso->prefill.clear();

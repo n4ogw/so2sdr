@@ -113,6 +113,7 @@ private:
     QByteArray           bandMapName;
     SdrDataSource        *sdrSource;
     QString              bandName;
+    bool                 firstTime;
     bool                 initialized;
     bool                 _invert;
     bool                 tx;

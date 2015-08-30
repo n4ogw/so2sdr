@@ -17,6 +17,7 @@
 
  */
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
@@ -47,7 +48,8 @@ SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
 
 void SDRDialog::fileGetter(QString msg,QString path,QString files,QString key,QLabel *label)
 {
-    QString fileName = QFileDialog::getOpenFileName(this,msg, path,files);
+//    QString fileName = QFileDialog::getOpenFileName(this,msg, path,files);
+    QString fileName = QFileDialog::getSaveFileName(this,msg, path,files,0,QFileDialog::DontConfirmOverwrite);
     if (fileName.isNull()) {
         return;
     }
@@ -68,33 +70,51 @@ QString SDRDialog::shortName(QString s)
 
 void SDRDialog::findConfig1()
 {
-    fileGetter("So2sdr-bandmap config file",userDirectory()+"/so2sdr.ini",
+    fileGetter("So2sdr-bandmap config file",userDirectory()+"/so2sdr-bandmap1.ini",
             "ini files (*.ini)",s_sdr_config[0],labelConfig1);
 }
 
 void SDRDialog::findConfig2()
 {
-    fileGetter("So2sdr-bandmap config file",userDirectory()+"/so2sdr.ini",
+    fileGetter("So2sdr-bandmap config file",userDirectory()+"/so2sdr-bandmap2.ini",
             "ini files (*.ini)",s_sdr_config[1],labelConfig2);
 }
 
 void SDRDialog::findExeFile1()
 {
-    fileGetter("So2sdr-bandmap executable",settings.value(s_sdr_path[0],s_sdr_path[0]).toString(),
-            "All files (*)",s_sdr_path[0],labelExe1);
+#ifdef Q_OS_LINUX
+    fileGetter("So2sdr-bandmap executable",QCoreApplication::applicationDirPath(),
+               "so2sdr-bandmap",s_sdr_path[0],labelExe1);
+#endif
+#ifdef Q_OS_WIN
+    fileGetter("So2sdr-bandmap executable",QCoreApplication::applicationDirPath(),
+               "so2sdr-bandmap.exe",s_sdr_path[0],labelExe1);
+#endif
 }
 
 void SDRDialog::findExeFile2()
 {
-    fileGetter("So2sdr-bandmap executable",settings.value(s_sdr_path[1],s_sdr_path[1]).toString(),
-            "All files (*)",s_sdr_path[1],labelExe2);
+#ifdef Q_OS_LINUX
+    fileGetter("So2sdr-bandmap executable",QCoreApplication::applicationDirPath(),
+               "so2sdr-bandmap",s_sdr_path[1],labelExe2);
+#endif
+#ifdef Q_OS_WIN
+    fileGetter("So2sdr-bandmap executable",QCoreApplication::applicationDirPath(),
+               "so2sdr-bandmap.exe",s_sdr_path[1],labelExe2);
+#endif
 }
+
 void SDRDialog::updateFromSettings()
 {
     SpotTimeoutLineEdit->setText(settings.value(s_sdr_spottime,s_sdr_spottime_def).toString());
     lineEditUDP->setText(settings.value(s_sdr_udp,s_sdr_udp_def).toString());
     for (int i = 0; i < NRIG; i++) {
-        pathLabel[i]->setText(shortName(settings.value(s_sdr_path[i],s_sdr_path_def[i]).toString()));
+#ifdef Q_OS_LINUX
+        pathLabel[i]->setText(settings.value(s_sdr_path[i],QCoreApplication::applicationDirPath()+"so2sdr-bandmap").toString());
+#endif
+#ifdef Q_OS_WIN
+        pathLabel[i]->setText(settings.value(s_sdr_path[i],QCoreApplication::applicationDirPath()+"so2sdr-bandmap.exe").toString());
+#endif
         configLabel[i]->setText(shortName(settings.value(s_sdr_config[i],s_sdr_config_def[i]).toString()));
         ipPtr[i]->setText(settings.value(s_sdr_ip[i],s_sdr_ip_def[i]).toString());
         portPtr[i]->setText(settings.value(s_sdr_port[i],s_sdr_port_def[i]).toString());

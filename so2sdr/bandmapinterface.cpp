@@ -501,9 +501,13 @@ void BandmapInterface::showBandmap(int nr, int checkboxState)
     if (checkboxState == Qt::Checked) {
         if (!bandmapOn[nr]) {
             QStringList args;
-            //QString config=QDir::homePath()+"/.so2sdr/"+settings.value(s_sdr_config[nr],s_sdr_config_def[nr]).toString();
             args <<  settings.value(s_sdr_config[nr],s_sdr_config_def[nr]).toString();
-            bandmapProcess[nr].start(settings.value(s_sdr_path[nr],s_sdr_path[nr]).toString(),args);
+#ifdef Q_OS_LINUX
+            bandmapProcess[nr].start(settings.value(s_sdr_path[nr],QCoreApplication::applicationDirPath()+"/so2sdr-bandmap").toString(),args);
+#endif
+#ifdef Q_OS_WIN
+            bandmapProcess[nr].start(settings.value(s_sdr_path[nr],QCoreApplication::applicationDirPath()+"/so2sdr-bandmap.exe").toString(),args);
+#endif
             bandmapProcess[nr].waitForStarted();
         }
     } else if (checkboxState == Qt::Unchecked) {

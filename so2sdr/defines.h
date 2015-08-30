@@ -21,6 +21,7 @@
 #include <QApplication>
 #include <QByteArray>
 #include <QColor>
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QString>
@@ -29,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.1";
+const QByteArray Version = "2.0.2";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -493,10 +494,20 @@ const QString c_col_width_item="width";
 const int c_col_width_def[SQL_N_COL]={37,39,46,85,0,0,40,40,40,40,40,40,40,40,40,30,57};
 
 const QString s_sdr_path[NRIG]={"sdr/path1","sdr/path2"};
-const QString s_sdr_path_def[NRIG]={"/usr/local/bin/so2sdr-bandmap","/usr/local/bin/so2sdr-bandmap"};
+//
+// RTC this can't be set here, because QCoreApplication::applicationDirPath doesn't get set until
+// qcoreapplication is created.
+//
+//const QString s_sdr_path_def[NRIG]={QCoreApplication::applicationDirPath(),QCoreApplication::applicationDirPath()};
 
 const QString s_sdr_config[NRIG]={"sdr/config1","sdr/config2"};
-const QString s_sdr_config_def[NRIG]={"~/.so2sdr/so2sdr-bandmap1.ini","~/.so2sdr/so2sdr-bandmap2.ini"};
+#ifdef Q_OS_LINUX
+const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/.so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/.so2sdr/so2sdr-bandmap2.ini"};
+#endif
+#ifdef Q_OS_WIN
+const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/so2sdr/so2sdr-bandmap2.ini"};
+#endif
+
 
 const QString s_sdr_ip[NRIG]={"sdr/ip1","sdr/ip2"};
 const QString s_sdr_ip_def[NRIG]={"localhost","localhost"};

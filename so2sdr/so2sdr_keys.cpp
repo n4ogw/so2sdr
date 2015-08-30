@@ -547,16 +547,24 @@ void So2sdr::controlE()
 }
 
 /*! Toggles current freq on bandmap as a dupe, placing "*" as callsign
-
-   radio2=true : marks on inactive radio bandmap
-        =false: marks on active radio bandmap
-
+ *
  */
 void So2sdr::markDupe(int nrig)
 {
     int f = cat->getRigFreq(nrig);
     if (isaSpot(f, band[nrig])) {
+        // remove spot and reset status
         removeSpotFreq(f, band[nrig]);
+        callSent[nrig]=false;
+        exchangeSent[nrig]=false;
+        qso[nrig]->dupe=false;
+        qso[nrig]->call.clear();
+        qso[nrig]->valid=false;
+        lineEditCall[nrig]->clear();
+        lineEditExchange[nrig]->clear();
+        statusBarDupe=false;
+        So2sdrStatusBar->clearMessage();
+        validLabel[nrig]->clear();
     } else {
         addSpot(nrig,"*", cat->getRigFreq(nrig), true);
     }
@@ -924,6 +932,7 @@ void So2sdr::spaceSP(int nrig)
     addSpot(nrig,qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
     // if dupe, clear call field
     if (qso[nrig]->dupe) {
+        spotListPopUp[nrig]=false;
         lineEditCall[nrig]->clear();
         lineEditCall[nrig]->setModified(false);
         lineEditExchange[nrig]->clear();
@@ -1089,7 +1098,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         enterState[0][1][0][0] = 0;
         enterState[0][1][1][0] = 1;
         enterState[1][0][0][0] = 2 + 4 + 1024 + 8192 + 16384;
-        enterState[1][0][1][0] = 4 + 1 + 1024 + 8192;
+        enterState[1][0][1][0] = 1 + 1024 + 8192 + 4;
         enterState[1][1][0][0] = 2 + 4 + 1024;
         enterState[0][0][0][1] = 0;
         enterState[0][0][1][1] = 0;
@@ -1101,10 +1110,14 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         enterState[1][1][1][1] = 8 + 32 + 64 + 128 + 2048;
         first                  = false;
     }
-    if (settings->value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool()) {
-        enterState[1][1][1][0] = 8 + 16 + 32 + 64 + 128 + 2048;
+    if (callSent[activeRadio]) {
+        if (settings->value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool()) {
+            enterState[1][1][1][0] = 8 + 16 + 32 + 64 + 128 + 2048;
+        } else {
+            enterState[1][1][1][0] = 16;
+        }
     } else {
-        enterState[1][1][1][0] = 16;
+        enterState[1][1][1][0] = 1 + 1024 + 8192 + 4;
     }
 
     // is it an entered frequency or mode?
@@ -1158,14 +1171,15 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         // so only one enter press will log
         exchangeSent[activeRadio] = true;
     }
-    if (exchangeSent[activeRadio]) i4=1;
-    else i4=0;
-
+    if (exchangeSent[activeRadio]) {
+        i4=1;
+    } else {
+        i4=0;
+    }
     // test
     if (activeTxRadio != activeRadio) {
         switchTransmit(activeRadio);
     }
-
     // change radios
     /*!
        @todo make actions below separate functions; some are duplicated elsewhere (backslash,...)
@@ -1264,7 +1278,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     }
 
     // focus exchange
-    if ((enterState[i1][i2][i3][i4] & 4) && (!autoSendTrigger || autoSendPause)) {
+    if ((enterState[i1][i2][i3][i4] & 4) && (!autoSendTrigger || autoSendPause) && !qso[activeRadio]->dupe) {
         callFocus[activeRadio] = false;
         setEntryFocus();
         if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {

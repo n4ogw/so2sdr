@@ -148,6 +148,8 @@ void So2sdr::addSpot(int nr,QByteArray call, int f)
  */
 void So2sdr::addSpot(int nr,QByteArray call, int f, bool d)
 {
+    if (call.isEmpty()) return;
+
     BandmapEntry spot;
     spot.call = call;
     spot.f    = f;
@@ -225,8 +227,8 @@ void So2sdr::addSpot(int nr,QByteArray call, int f, bool d)
  */
 void So2sdr::checkSpot(int nr)
 {
+    if (nr==1) return;
     static int lastFreq[2] = { 0, 0 };
-
     // initialize last freq
     if (lastFreq[nr] == 0) {
         lastFreq[nr] = cat->getRigFreq(nr);
@@ -242,7 +244,6 @@ void So2sdr::checkSpot(int nr)
         lastFreq[nr] = f;
         return;
     }
-
     // search list of spots for one matching current freq
     bool found = false;
     for (int i = 0; i < spotList[band[nr]].size(); i++) {
@@ -301,6 +302,7 @@ void So2sdr::checkSpot(int nr)
         }
         qso[nr]->call.clear();
         qso[nr]->valid=false;
+        qso[nr]->dupe=false;
         lineEditCall[nr]->clear();
         lineEditCall[nr]->setModified(false);
         lineEditCall[nr]->setCursorPosition(0);
@@ -314,6 +316,8 @@ void So2sdr::checkSpot(int nr)
         So2sdrStatusBar->clearMessage();
         updateNrDisplay();
         callSent[nr] = false;
+        exchangeSent[nr] = false;
+        validLabel[nr]->clear();
         if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
             if ( lineEditCall[nr ^ 1]->text().simplified().isEmpty() && lineEditExchange[nr ^ 1]->text().simplified().isEmpty()
                  && nr != activeRadio && !activeR2CQ && !winkey->isSending()) {
