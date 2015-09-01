@@ -844,6 +844,19 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
+* If already in a S/P QSO, call and exch fields populated, keyboard focus on
+ exchange field, but QSY before logging.  QSO is wiped but Sprint space no
+ longer works, required hitting ESC to restore. Added extra cleanups to 'qso'
+ object, et.al., and set focus to call field when QSYing. (NO3M)
+
+* When QSYing active radio before a QSO was logged, and active radio was
+ also the active TX radio (last to transmit),  activeR2CQ was set to false
+ but inactive radio callsign field remained "CQCQCQ"/colorized.  Fixed
+ activeR2CQ check during QSY to always match inactive radio as QSYing radio
+ before clearing R2CQ status. R2CQ radio should always be inactive since
+ making that radio active requires [CNTRL/ALT]-R or mouse click focus, which
+ all clear R2CQ status. (NO3M)
+
 * add option to scroll to the right in so2sdr-bandmap (NO3M)
 
 * check for a standard contest config file in the user directory

@@ -274,8 +274,9 @@ void So2sdr::checkSpot(int nr)
         if (duelingCQMode) {
             duelingCQActivate(false);
         }
-        if (activeR2CQ && nr == activeTxRadio) {
+        if (activeR2CQ && nr == (activeRadio ^ 1)) {
             activeR2CQ = false;
+            clearR2CQ(nr);
             setCqMode(nr);
         }
         if (altDActive && nr == altDActiveRadio) {
@@ -302,6 +303,16 @@ void So2sdr::checkSpot(int nr)
         qso[nr]->call.clear();
         qso[nr]->valid=false;
         qso[nr]->dupe=false;
+        qso[nr]->prefill.clear();
+        qso[nr]->exch.clear();
+        qso[nr]->worked=0;
+        for (int ii = 0; ii < MMAX; ii++) {
+            qso[nr]->mult[ii]=-1;
+        }
+        callFocus[nr] = true;
+        setEntryFocus();
+        MasterTextEdit->clear();
+        statusBarDupe = false;
         lineEditCall[nr]->clear();
         lineEditCall[nr]->setModified(false);
         lineEditCall[nr]->setCursorPosition(0);
