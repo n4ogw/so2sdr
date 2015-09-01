@@ -6,6 +6,10 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+* check for a standard contest config file in the user directory
+(i.e. ~/.sosdr) when starting a new contest. If this file exists,
+it will be used instead of the program default from share/so2sdr (NO3M)
+
 ## version 2.0.3
 
 * remove line leftover from testing preventing callsign clearing on radio 2
