@@ -6,6 +6,8 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+* add option to scroll to the right in so2sdr-bandmap (NO3M)
+
 * check for a standard contest config file in the user directory
 (i.e. ~/.sosdr) when starting a new contest. If this file exists,
 it will be used instead of the program default from share/so2sdr (NO3M)
