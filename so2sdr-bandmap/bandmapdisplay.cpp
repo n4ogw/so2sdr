@@ -142,7 +142,11 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
     unsigned char cut;
     if (bg < 225) cut = bg + 30;
     else cut = bg;
-    pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), hgt));
+    if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+        pixmap.scroll(1, 0, QRect(cornerx, cornery, width(), hgt));
+    } else {
+        pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), hgt));
+    }
     int      dy = hgt / 2 - vfoPos;
     QPainter painter(&pixmap);
     if (!_invert) {
@@ -158,7 +162,11 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));
             }
-            painter.drawPoint(MAX_W - 1, j);
+            if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+                painter.drawPoint(MAX_W - width(), j);
+            } else {
+                painter.drawPoint(MAX_W - 1, j);
+            }
         }
     } else {
         for (int i = (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - hgt) / 2 - dy, j = (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - hgt) / 2 + dy; j < settings->value(s_sdr_fft,s_sdr_fft_def).toInt(); i++, j++) {
@@ -173,7 +181,11 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));
             }
-            painter.drawPoint(MAX_W - 1, j);
+            if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+                painter.drawPoint(MAX_W - width(), j);
+            } else {
+                painter.drawPoint(MAX_W - 1, j);
+            }
         }
     }
     painter.end();

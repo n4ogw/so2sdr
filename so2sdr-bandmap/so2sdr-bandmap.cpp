@@ -103,6 +103,16 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
 
     directory.setCurrent(dataDirectory());
     setWindowIcon(QIcon("icon24x24.png"));
+
+    if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+        horizontalLayout->removeWidget(CallLabel);
+        horizontalLayout->removeWidget(FreqLabel);
+        horizontalLayout->removeWidget(display);
+        horizontalLayout->insertWidget(0,CallLabel);
+        horizontalLayout->insertWidget(1,FreqLabel);
+        horizontalLayout->insertWidget(2,display);
+    }
+
     freqPixmap      = QPixmap(FreqLabel->width(), settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
     callPixmap      = QPixmap(CallLabel->width(), settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
 
@@ -400,6 +410,18 @@ void So2sdrBandmap::setSdrType()
         setScaleX2();
         break;
     }
+    horizontalLayout->removeWidget(CallLabel);
+    horizontalLayout->removeWidget(FreqLabel);
+    horizontalLayout->removeWidget(display);
+    if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+        horizontalLayout->insertWidget(0,CallLabel);
+        horizontalLayout->insertWidget(1,FreqLabel);
+        horizontalLayout->insertWidget(2,display);
+    } else {
+        horizontalLayout->insertWidget(0,display);
+        horizontalLayout->insertWidget(1,FreqLabel);
+        horizontalLayout->insertWidget(2,CallLabel);
+    }
     freqPixmap      = QPixmap(FreqLabel->width(), settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
     callPixmap      = QPixmap(CallLabel->width(), settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
     makeFreqScaleAbsolute();
@@ -535,7 +557,13 @@ void So2sdrBandmap::makeCall()
         pix_offset = (callList.at(i).freq - freqMin) * pix_per_hz;
         y          = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - pix_offset;
         // BANDMAP_FONT_PIX_SIZE/3 is fudge factor to center callsign
-        p.drawText(BANDMAP_CALL_X, y+ BANDMAP_FONT_PIX_SIZE / 3, callList.at(i).call);
+        if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+            QFontMetrics fm(font);
+            p.drawText(callPixmap.width() - SIG_SYMBOL_RAD - BANDMAP_CALL_X - fm.width(callList.at(i).call),
+                       y+ BANDMAP_FONT_PIX_SIZE / 3, callList.at(i).call);
+        } else {
+            p.drawText(BANDMAP_CALL_X, y+ BANDMAP_FONT_PIX_SIZE / 3, callList.at(i).call);
+        }
     }
     p.setPen(Qt::black);
 
@@ -551,7 +579,11 @@ void So2sdrBandmap::makeCall()
                 if (y < 0 || y >= settings->value(s_sdr_fft,s_sdr_fft_def).toInt()) {
                     continue;
                 }
-                p.drawEllipse(SIG_SYMBOL_X, y, SIG_SYMBOL_RAD, SIG_SYMBOL_RAD);
+                if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+                    p.drawEllipse(callPixmap.width() - SIG_SYMBOL_RAD - SIG_SYMBOL_X, y, SIG_SYMBOL_RAD, SIG_SYMBOL_RAD);
+                } else {
+                    p.drawEllipse(SIG_SYMBOL_X, y, SIG_SYMBOL_RAD, SIG_SYMBOL_RAD);
+                }
             }
         }
     }
@@ -582,7 +614,11 @@ void So2sdrBandmap::makeFreqScaleAbsolute()
     i = i0;
     int     k = 1;
     while (i > 0) {
-        p.drawLine(0, i, 5, i);
+        if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+            p.drawLine(freqPixmap.width() -6, i, freqPixmap.width()-1, i);
+        } else {
+            p.drawLine(0, i, 5, i);
+        }
         // if center freq never set, don't make negative freq labels
         int jj;
         if (centerFreq==0) jj=abs(j);

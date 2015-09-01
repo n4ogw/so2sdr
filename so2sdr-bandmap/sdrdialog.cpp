@@ -84,6 +84,7 @@ void SDRDialog::updateFromSettings()
     comboBoxSdrType->setCurrentIndex(settings.value(s_sdr_type,s_sdr_type).toInt());
     lineEditIntegTime->setText(settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
     comboBoxIDNumber->setCurrentIndex(settings.value(s_sdr_nrig,s_sdr_nrig_def).toInt());
+    reverseScrollCheckBox->setChecked(settings.value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool());
     switch ((SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt()) {
     case soundcard_t:
         settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());
@@ -120,6 +121,7 @@ void SDRDialog::updateSDR()
     SdrType old=(SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt();
     settings.setValue(s_sdr_type,comboBoxSdrType->currentIndex());
     settings.setValue(s_sdr_nrig,comboBoxIDNumber->currentIndex());
+    settings.setValue(s_sdr_reverse_scroll,reverseScrollCheckBox->isChecked());
     switch ((SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt()) {
     case soundcard_t:
         settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());

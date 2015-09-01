@@ -308,6 +308,9 @@ const bool s_sdr_n1mm_def=false;
 const QString s_sdr_n1mm_port="n1mm_port";
 const int s_sdr_n1mm_port_def=12060;
 
+const QString s_sdr_reverse_scroll="reverse_scroll";
+const bool s_sdr_reverse_scroll_def=false;
+
 const int cqlimit_default_low[N_BANDS]={1805000,3505000,7005000,14005000,21005000,28005000, 5330500, 10100000,
                                        18068000, 24890000, 50000000, 144000000, 420000000,222000000,902000000,1240000000};
 
