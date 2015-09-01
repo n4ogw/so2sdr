@@ -838,7 +838,14 @@ void So2sdr::setupNewContest(int result)
         }
     }
     // copy standard config to contest directory
-    QFile stdFile(dataDirectory()+"/"+fname);
+    // check for local copy
+    QFileInfo userStdFile(userDirectory()+"/"+fname);
+    QFile stdFile;
+    if (userStdFile.exists()) {
+        stdFile.setFileName(userDirectory()+"/"+fname);
+    } else {
+        stdFile.setFileName(dataDirectory()+"/"+fname);
+    }
     stdFile.copy(newfname);
     fileName=newfname;
     if (setupContest()) {
