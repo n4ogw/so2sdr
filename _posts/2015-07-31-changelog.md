@@ -6,6 +6,11 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+* Bug fix for autosend: if CNTRL-R is pressed before the callsign is
+ done being sent in Autosend mode, the CW pauses for as long as focus
+ is on the other radio, and then starts sending the callsign from the
+ begnning if CNTRL-R back to the original radio. (NO3M)
+
 * If already in a S/P QSO, call and exch fields populated, keyboard focus on
  exchange field, but QSY before logging.  QSO is wiped but Sprint space no
  longer works, required hitting ESC to restore. Added extra cleanups to 'qso'
