@@ -387,6 +387,7 @@ private:
     void duelingCQ();
     void duelingCQActivate(bool state = false);
     void autoSendExch();
+    void autoSendExch_exch();
     void autoSendActivate(bool state = false);
     void autoCQdelay(bool incr = true);
     void autoCQActivate(bool state = false);

@@ -1241,7 +1241,10 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             expandMacro("{CALL_ENTERED}",-1,false);
             return; // prevent further processing
         } else {
-            if (autoSend && !autoSendPause && settings->value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt() == 0) { // semi-auto
+            if (autoSend && !autoSendPause &&
+                    (settings->value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt() == 0
+                       || csettings->value(c_sprintmode,c_sprintmode_def).toBool() )
+                ) { // semi-auto
                 autoSendTrigger = true;
             } else {
                 // check to see if this qso number already taken
