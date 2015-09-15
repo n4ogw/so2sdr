@@ -6,6 +6,11 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+## version 2.0.4
+
+* Bug fix: when cancelling CW (for example when switch radios), the
+"TX" indicator on the bandmap should be turned off.
+
 * Bug fix for autosend: if CNTRL-R is pressed before the callsign is
  done being sent in Autosend mode, the CW pauses for as long as focus
  is on the other radio, and then starts sending the callsign from the
