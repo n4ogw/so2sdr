@@ -128,7 +128,8 @@ void Winkey::cancelcw()
     } else {
         winkeyOpen = false;
     }
-
+    sending=false;
+    emit(winkeyTx(false, rigNum));
     sendBuff.resize(0);
     nchar = 0;
 }
