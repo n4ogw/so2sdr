@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.0.3
+## So2sdr-bandmap Help Version 2.0.4
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -343,6 +343,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.4
+
+* Bug fix: when cancelling CW (for example when switch radios), the
+"TX" indicator on the bandmap should be turned off.
 
 * Bug fix for autosend: if CNTRL-R is pressed before the callsign is
  done being sent in Autosend mode, the CW pauses for as long as focus
