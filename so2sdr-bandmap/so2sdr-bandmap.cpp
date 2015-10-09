@@ -451,7 +451,6 @@ void So2sdrBandmap::calc()
  */
 void So2sdrBandmap::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
     stopTimers();
     closeIQ();
 
@@ -462,6 +461,8 @@ void So2sdrBandmap::closeEvent(QCloseEvent *event)
     settings->setValue("pos", pos());
     settings->endGroup();
     settings->sync();
+
+    event->accept();
 }
 
 /*! close IQ dialog
@@ -938,7 +939,6 @@ bool So2sdrBandmap::checkUserDirectory()
     if (dir.exists(userDirectory())) return(true);
 
     QMessageBox msg;
-    //QMessageBox *msg= new QMessageBox(this);
     msg.setWindowTitle("Error");
     msg.setText("User data directory " + userDirectory() + " does not exist.");
     msg.setInformativeText("Create it?");
@@ -950,12 +950,10 @@ bool So2sdrBandmap::checkUserDirectory()
 
         // create directory
         if (dir.mkdir(userDirectory())) {
-           // msg->deleteLater();
             return(true);
         } else {
             msg.setText("Could not create directory <" + userDirectory() + ">");
             msg.exec();
-            //msg->deleteLater();
             return(false);
         }
         break;
@@ -966,7 +964,6 @@ bool So2sdrBandmap::checkUserDirectory()
         // never reached
         break;
     }
-    //msg->deleteLater();
     return(false);
 }
 
