@@ -104,7 +104,8 @@ typedef enum ContestType {
     Stew_t    = 13,
     Sweepstakes_t = 14,
     Wpx_t     = 15,
-    Arrldx_t  = 16
+    Arrldx_t  = 16,
+    Paqp_t    = 17
 } ContestType;
 
 // ////////////// Contest/Log/country database

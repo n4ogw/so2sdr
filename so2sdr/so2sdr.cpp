@@ -1072,6 +1072,14 @@ void So2sdr::selectContest(QByteArray name)
         // disable changing mults by band status
         options->MultsByBandCheckBox->setDisabled(true);
     }
+    if (name == "PAQP-PA") {
+        contest = new PAQP();
+        static_cast<PAQP*>(contest)->setWithinState(true);
+    }
+    if (name == "PAQP") {
+        contest = new PAQP();
+        static_cast<PAQP*>(contest)->setWithinState(false);
+    }
     if (contest) {
         int sz=csettings->beginReadArray(c_qso_type1);
         for (int i=0;i<sz;i++) {
@@ -1213,6 +1221,15 @@ void So2sdr::selectContest2()
         snt_exch[0] = "599";
         snt_exch[1] = "#";
         mylog->setQsoPtsField(true);
+    }
+    if (name == "PAQP") {
+        mylog->setQsoPtsField(true);
+        snt_exch[0]="#";
+        snt_exch[1]=settings->value(s_state,s_state_def).toString();
+    }
+    if (name == "PAQP-PA") {
+        mylog->setQsoPtsField(true);
+        snt_exch[0]="#";
     }
     // fill in sent exchange fields with typical values if they are
     // not already entered

@@ -64,7 +64,8 @@ HEADERS += cwmessagedialog.h \
     settingsdialog.h \
     microham.h \
     history.h \
-    bandmapinterface.h
+    bandmapinterface.h \
+    contest_paqp.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -132,7 +133,8 @@ SOURCES += cwmessagedialog.cpp \
     settingsdialog.cpp \
     microham.cpp \
     history.cpp \
-    bandmapinterface.cpp
+    bandmapinterface.cpp \
+    contest_paqp.cpp
 
  unix { 
     include (../common.pri)
