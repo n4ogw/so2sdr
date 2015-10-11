@@ -347,9 +347,6 @@ void BandmapInterface::setBandmapState(int nr,QProcess::ProcessState state)
     case QProcess::Starting:
         break;
     case QProcess::Running:
-       // if (!bandmapOn[nr]) {
-       //     bandmapOn[nr]=true;
-       // }
         break;
     }
 }
@@ -486,7 +483,6 @@ void BandmapInterface::closeBandmap(int nr)
         }
         socket[nr].disconnectFromHost();
         socket[nr].waitForDisconnected(5000);
-        bandmapProcess[nr].close();
         bandmapProcess[nr].waitForFinished(5000);
         bandmapAvailable[nr]=false;
     }
