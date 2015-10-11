@@ -102,8 +102,8 @@ public:
     bool so2sdrOk() const;
 
 public slots:
-    void addSpot(int nr,QByteArray call, int f);
-    void addSpot(int nr,QByteArray call, int f, bool d);
+    void addSpot(QByteArray call, int f);
+    void addSpot(QByteArray call, int f, bool d);
     void removeSpot(QByteArray call, int band);
     void removeSpotFreq(int f, int band);
     void rescore();

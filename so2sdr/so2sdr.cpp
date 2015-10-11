@@ -2871,7 +2871,7 @@ void So2sdr::updateRadioFreq()
 
         if (b != -1) {
             if (b!=band[i] && bandmap->bandmapon(i)) {
-                bandmap->syncCalls(i,spotList[band[i]]);
+                bandmap->syncCalls(i,spotList[b]);
             }
             band[i] = b;
         }

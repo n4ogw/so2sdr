@@ -566,7 +566,7 @@ void So2sdr::markDupe(int nrig)
         So2sdrStatusBar->clearMessage();
         validLabel[nrig]->clear();
     } else {
-        addSpot(nrig,"*", cat->getRigFreq(nrig), true);
+        addSpot("*", cat->getRigFreq(nrig), true);
     }
 }
 
@@ -760,7 +760,7 @@ void So2sdr::backSlash()
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
-            addSpot(activeRadio,qso[activeRadio]->call, qso[activeRadio]->freq, true);
+            addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
             spotListPopUp[activeRadio] = true;
         } else {
             // remove any spot that is on freq, update other spots if in CQ mode
@@ -929,7 +929,7 @@ void So2sdr::spaceSP(int nrig)
 
     // put call on bandmap
     qso[nrig]->freq = rigFreq[nrig];
-    addSpot(nrig,qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
+    addSpot(qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
     // if dupe, clear call field
     if (qso[nrig]->dupe) {
         spotListPopUp[nrig]=false;
@@ -981,7 +981,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             return;
         }
         qso[activeRadio]->freq = rigFreq[activeRadio];
-        addSpot(activeRadio,qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
+        addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
         if (qso[activeRadio]->dupe || lineEditCall[activeRadio]->text().isEmpty()) {
             // call is a dupe- clear everything
             QPalette palette(lineEditCall[activeRadio]->palette());
@@ -1326,7 +1326,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
             qso[activeRadio]->freq = rigFreq[activeRadio];
-            addSpot(activeRadio,qso[activeRadio]->call, qso[activeRadio]->freq, true);
+            addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
             spotListPopUp[activeRadio]=true; // this prevents the call from immediately popping up
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
@@ -1836,7 +1836,7 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         if (!cqMode[activeRadio ^ 1]) {
             // add to bandmap if in S&P mode
             qso[activeRadio ^ 1]->freq = rigFreq[activeRadio ^ 1];
-            addSpot(activeRadio ^ 1,qso[activeRadio ^ 1]->call, qso[activeRadio ^ 1]->freq, true);
+            addSpot(qso[activeRadio ^ 1]->call, qso[activeRadio ^ 1]->freq, true);
             spotListPopUp[activeRadio ^ 1] = true;
         } else {
             // remove any spot on this freq, update other spots if in CQ mode

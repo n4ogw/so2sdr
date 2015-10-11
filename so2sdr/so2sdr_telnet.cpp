@@ -128,7 +128,7 @@ void So2sdr::showTelnet(int checkboxState)
 
 /*! add a spot. Checks to see if it is a dupe first
  */
-void So2sdr::addSpot(int nr,QByteArray call, int f)
+void So2sdr::addSpot(QByteArray call, int f)
 {
     // * is a special case, used to mark freq without callsign
     bool d = true;
@@ -139,17 +139,16 @@ void So2sdr::addSpot(int nr,QByteArray call, int f)
         tmp.band = getBand(f);
         d        = mylog->isDupe(&tmp, contest->dupeCheckingByBand(), false);
     }
-    addSpot(nr,call, f, d);
+    addSpot(call, f, d);
 }
 
 
 /*!
    add a callsign spot
  */
-void So2sdr::addSpot(int nr,QByteArray call, int f, bool d)
+void So2sdr::addSpot(QByteArray call, int f, bool d)
 {
     if (call.isEmpty()) return;
-
     BandmapEntry spot;
     spot.call = call;
     spot.f    = f;
@@ -198,20 +197,26 @@ void So2sdr::addSpot(int nr,QByteArray call, int f, bool d)
 
         if (dupe) {
             // replace previous spot, reset timer
-            if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
-                bandmap->removeSpot(nr,spotList[b][idupe]);
+            for (int nr=0;nr<NRIG;nr++) {
+                if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                    bandmap->removeSpot(nr,spotList[b][idupe]);
+                }
             }
             spotList[b][idupe].call = call;
             spotList[b][idupe].f    = f;
             spotList[b][idupe].createdTime = t;
             spotList[b][idupe].dupe = d;
-            if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
-                bandmap->addSpot(nr,spotList[b][idupe]);
+            for (int nr=0;nr<NRIG;nr++) {
+                if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                    bandmap->addSpot(nr,spotList[b][idupe]);
+                }
             }
         } else {
             spotList[b].append(spot);
-            if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
-                bandmap->addSpot(nr,spot);
+            for (int nr=0;nr<NRIG;nr++) {
+                if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                    bandmap->addSpot(nr,spot);
+                }
             }
         }
     }
