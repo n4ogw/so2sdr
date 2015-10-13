@@ -6,6 +6,24 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+## version 2.0.5
+
+* Bug fix: telnet spots were not working
+
+* Add support for PA QSO Party. Some issues however:
+
+        1. the one DX mult for PA stations is not counted
+        2. county line operations have to be worked as two separate
+		qsos, which will however double-count qso points
+		3. portable (/P) and rover (/R) calls are not able to
+		change counties. Only mobile /M can change counties.
+
+* Bug fix: geometry of bandmap windows was not being saved when
+closing them from within so2sdr.
+
+* Update default config file for CA QSO Party (out of state). Was
+missing state in exchange.
+
 ## version 2.0.4
 
 * Bug fix: when cancelling CW (for example when switch radios), the
