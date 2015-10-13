@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.4
+## SO2SDR Help file version 2.0.5
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -827,6 +827,20 @@ version of the Elecraft serial protocol the radio supports. These
 commands are ignored by LP-Bridge and hamlib assumes the serial
 connection is broken.
 
+* Windows: the "Grab keyboard" setting in the windows menu does not
+work. Normally this setting is used when the bandmap window is open.
+With grab keyboard enabled, you can click on the bandmap and still
+have keyboard focus in the logging window. This does not work in
+Windows. There is one workaround, which is to make the following
+registry changes.  After the changes you will need to log out or restart the
+computer.
+
+
+        HKEY_CURRENT_USER\Control Panel\Desktop 
+        ForegroundFlashCount = REG_DWORD 0x00000003 
+        ForegroundLockTimeout = REG_DWORD 0x00000000
+
+
 * Linux: soundcard SDR's may not start on certain systems with an
 error "Audio device does not support stereo." A workaround is to use
 the pasuspender utility to stop Pulseaudio. If starting the bandmap
@@ -843,6 +857,26 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.5
+
+* Bug fix: telnet spots were not working
+
+* Add support for PA QSO Party. Some issues however:
+
+    1. the one DX mult for PA stations is not counted
+    2. county line operations have to be worked as two separate
+	qsos, which will however double-count qso points
+    3. portable (/P) and rover (/R) calls are not able to
+	change counties. Only mobile /M can change counties.
+
+* Bug fix: geometry of bandmap windows was not being saved when
+closing them from within so2sdr.
+
+* Update default config file for CA QSO Party (out of state). Was
+missing state in exchange.
+
+
 
 ## version 2.0.4
 
