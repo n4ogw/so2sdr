@@ -6,6 +6,9 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+* Bug fix: under certain conditions, when logging a qso with ctrl-Enter, the
+  sent qso number was logged as zero.
+
 ## version 2.0.5
 
 * Bug fix: telnet spots were not working
