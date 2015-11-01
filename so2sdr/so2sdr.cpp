@@ -3710,7 +3710,6 @@ void So2sdr::fillSentExch(int nr)
         }
         // put in qso number
         if (contest->exchType(i) == QsoNumber) {
-            //qso[nr]->snt_exch[i] = QByteArray::number(nrReserved[activeRadio]);
             qso[nr]->snt_exch[i] = QByteArray::number(nrReserved[nr]);
         }
     }

@@ -1170,6 +1170,14 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         i2 = 1;
         // so only one enter press will log
         exchangeSent[activeRadio] = true;
+        // set qso number in case exchange never sent
+        if (nrReserved[activeRadio]==0) {
+            if (nrSent!=nrReserved[activeRadio ^ 1]) {
+                nrReserved[activeRadio]=nrSent;
+            } else {
+                nrReserved[activeRadio]=nrSent+1;
+            }
+        }
     }
     if (exchangeSent[activeRadio]) {
         i4=1;
@@ -1620,6 +1628,14 @@ void So2sdr::toggleEnter(Qt::KeyboardModifiers mod) {
         i2 = 1;
         // so only one enter press will log
         exchangeSent[activeRadio] = true;
+        // set qso number in case exchange never sent
+        if (nrReserved[activeRadio]==0) {
+            if (nrSent!=nrReserved[activeRadio ^ 1]) {
+                nrReserved[activeRadio]=nrSent;
+            } else {
+                nrReserved[activeRadio]=nrSent+1;
+            }
+        }
     }
     if (exchangeSent[activeRadio]) i4=1;
     else i4=0;
