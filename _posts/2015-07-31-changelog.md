@@ -5,6 +5,7 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+* Minor changes to enable building under Qt version 5
 
 * Bug fix: under certain conditions, when logging a qso with ctrl-Enter, the
   sent qso number was logged as zero.
