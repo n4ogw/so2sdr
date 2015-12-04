@@ -82,7 +82,7 @@ void StationDialog::updateStation()
     settings.setValue(s_section,ARRLSectionLineEdit->text());
     settings.setValue(s_state,StateLineEdit->text());
     settings.setValue(s_grid,GridLineEdit->text());
-    locator2longlat(&Lon, &Lat, GridLineEdit->text().toAscii().data());
+    locator2longlat(&Lon, &Lat, GridLineEdit->text().toLatin1().data());
     Lon            *= -1.0;
     settings.setValue(s_cqzone,CQZoneLineEdit->text().toInt());
     settings.setValue(s_ituzone,ITUZoneLineEdit->text().toInt());

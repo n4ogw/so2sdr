@@ -184,8 +184,13 @@ bool Win_QextSerialPort::open(OpenMode mode) {
         return isOpen();
     if (!isOpen()) {
         /*open the port*/
-        Win_Handle=CreateFileA(port.toAscii(), GENERIC_READ|GENERIC_WRITE,
+#if QT_VERSION > 0x050000
+        Win_Handle=CreateFileA(port.toLatin1(), GENERIC_READ|GENERIC_WRITE,
                               FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, dwFlagsAndAttributes, NULL);
+#else
+	Win_Handle=CreateFileA(port.toAscii(), GENERIC_READ|GENERIC_WRITE,
+                              FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, dwFlagsAndAttributes, NULL);
+#endif	
         if (Win_Handle!=INVALID_HANDLE_VALUE) {
 			QIODevice::open(mode);
 

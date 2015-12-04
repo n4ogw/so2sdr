@@ -136,7 +136,7 @@ void History::fillExchange(Qso *qso,QByteArray part)
     h.setQuery(query, history);
     if (h.rowCount()) {
         for (int i = 1; i < h.columnCount(); i++) { // skip call field
-            qso->prefill.append(h.record(0).value(i).toString().toAscii());
+            qso->prefill.append(h.record(0).value(i).toString().toLatin1());
             if (i < (h.columnCount() - 1)) {
                 qso->prefill.append(" ");
             }

@@ -858,6 +858,8 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
+* Minor changes to enable building under Qt version 5
+
 * Bug fix: under certain conditions, when logging a qso with ctrl-Enter, the
   sent qso number was logged as zero.
 

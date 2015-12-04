@@ -32,6 +32,11 @@
 // ///////// version ///////////////
 const QByteArray Version = "2.0.5";
 
+// syntax change for Qt version 5
+#if QT_VERSION < 0x050000
+#define toLatin1 toAscii
+#endif
+
 // //////// colors ////////////////
 // all of form (R,G,B)
 const QColor CQ_COLOR(255, 255, 255);  // color in CQ mode; white

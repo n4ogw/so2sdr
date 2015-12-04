@@ -228,7 +228,7 @@ void SSBMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         funcEditPtr[i]->setText(settings->value("func",c_cq_func_def[m]).toString());
-        cqF[i]=funcEditPtr[i]->text().toAscii();
+        cqF[i]=funcEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // function keys: exchange
@@ -236,7 +236,7 @@ void SSBMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         excFuncEditPtr[i]->setText(settings->value("func",c_ex_func_def[m]).toString());
-        excF[i]=excFuncEditPtr[i]->text().toAscii();
+        excF[i]=excFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // function keys: shift
@@ -244,7 +244,7 @@ void SSBMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         shiftFuncEditPtr[i]->setText(settings->value("func",c_shift_func_def[m]).toString());
-        cqShiftF[i]=shiftFuncEditPtr[i]->text().toAscii();
+        cqShiftF[i]=shiftFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // function keys: control
@@ -252,7 +252,7 @@ void SSBMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         ctrlFuncEditPtr[i]->setText(settings->value("func",c_ctrl_func_def[m]).toString());
-        cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toAscii();
+        cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // other special messages
@@ -301,7 +301,7 @@ void SSBMessageDialog::updateSSBMsg()
     for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",funcEditPtr[i]->text());
-        cqF[i]=funcEditPtr[i]->text().toAscii();
+        cqF[i]=funcEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // function keys: ctrl+func
@@ -309,7 +309,7 @@ void SSBMessageDialog::updateSSBMsg()
     for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",ctrlFuncEditPtr[i]->text());
-        cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toAscii();
+        cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // function keys: shift+func
@@ -317,7 +317,7 @@ void SSBMessageDialog::updateSSBMsg()
     for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",shiftFuncEditPtr[i]->text());
-            cqShiftF[i]=shiftFuncEditPtr[i]->text().toAscii();
+            cqShiftF[i]=shiftFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // function keys: exchange
@@ -325,7 +325,7 @@ void SSBMessageDialog::updateSSBMsg()
     for (int i=0;i<N_FUNC;i++) {
         settings->setArrayIndex(i);
         settings->setValue("func",excFuncEditPtr[i]->text());
-        excF[i]=excFuncEditPtr[i]->text().toAscii();
+        excF[i]=excFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     settings->setValue(c_cq_exc[m],cq_exc_edit->text());

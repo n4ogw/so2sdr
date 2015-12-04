@@ -49,7 +49,7 @@ void NoteDialog::writeNotes()
     directory.setCurrent(noteDir);
     QFile file(noteFile);
     if (file.open(QIODevice::Append | QIODevice::Text)) {
-        file.write(NoteLineEdit->text().toAscii().data());
+        file.write(NoteLineEdit->text().toLatin1().data());
         file.write("\n");
         file.close();
     }

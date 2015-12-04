@@ -303,7 +303,7 @@ void BandmapInterface::xmlParse()
                 }
 
                 if (attr.hasAttribute("call")) {
-                    call=attr.value("call").toString().toAscii();
+                    call=attr.value("call").toString().toLatin1();
                 }
 
                 if (attr.hasAttribute("operation")) {

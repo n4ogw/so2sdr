@@ -738,7 +738,7 @@ void So2sdr::backSlash()
     // 2) exchange is validated, is not a dupe
     // 3) CQ mode
     // 4) exchange has been sent
-    qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toAscii();
+    qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toLatin1();
     qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
     if (!qso[activeRadio]->call.isEmpty() &&
         (qso[activeRadio]->valid=contest->validateExchange(qso[activeRadio])) &&
@@ -2017,7 +2017,7 @@ void So2sdr::esc()
         escState[1][1][1][1] = 2 + 1024;
         first                = false;
     }
-    qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toAscii();
+    qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toLatin1();
     qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
 
     // if sending CW or audio, stop
@@ -2068,7 +2068,7 @@ void So2sdr::esc()
         setEntryFocus();
     }
 
-    QByteArray call = lineEditCall[activeRadio]->text().toAscii().toUpper();
+    QByteArray call = lineEditCall[activeRadio]->text().toLatin1().toUpper();
     if (!call.isEmpty()) {
         i1 = 1;
     } else {

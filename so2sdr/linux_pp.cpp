@@ -85,7 +85,7 @@ void ParallelPort::initialize()
             return;
         }
     }
-    parallelFD = open(port.toAscii().data(), O_RDWR);
+    parallelFD = open(port.toLatin1().data(), O_RDWR);
     if (parallelFD == -1) {
         QString tmp = "Can't open " + port;
         emit(parallelPortError(tmp));

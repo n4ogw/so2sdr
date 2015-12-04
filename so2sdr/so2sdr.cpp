@@ -572,7 +572,7 @@ void So2sdr::stationUpdate()
                        csettings->value(c_contestname_displayed,name).toString());
     }
     Qso  tmp(2);
-    tmp.call = settings->value(s_call,s_call_def).toString().toAscii();
+    tmp.call = settings->value(s_call,s_call_def).toString().toLatin1();
     bool b;
     contest->setCountry(cty->idPfx(&tmp, b));
     contest->setContinent(tmp.continent);
@@ -912,7 +912,7 @@ bool So2sdr::setupContest()
     // construct dialogs that depend on contest ini file settings
     QString cname=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
     if (cname.isEmpty()) return(false);
-    selectContest(cname.toAscii());
+    selectContest(cname.toLatin1());
     cwMessage->initialize(csettings);
 #ifdef DVK_ENABLE
     ssbMessage->initialize(csettings);
@@ -938,7 +938,7 @@ bool So2sdr::setupContest()
 
     // now in stationupdate
     Qso  tmp(2);
-    tmp.call = settings->value(s_call,s_call_def).toString().toAscii();
+    tmp.call = settings->value(s_call,s_call_def).toString().toLatin1();
     bool b;
     contest->setCountry(cty->idPfx(&tmp, b));
     contest->setContinent(tmp.continent);
@@ -1128,7 +1128,7 @@ void So2sdr::selectContest2()
 {
     // for several ARRL contests need to know whether station is US/VE or DX
     Qso  tmp(1);
-    tmp.call = settings->value(s_call,s_call_def).toString().toAscii();
+    tmp.call = settings->value(s_call,s_call_def).toString().toLatin1();
     QString snt_exch[MAX_EXCH_FIELDS];
     for (int i=0;i<contest->nExchange();i++) {
         snt_exch[i].clear();
@@ -1304,9 +1304,9 @@ void So2sdr::updateHistory() {
             tmpqso.setExchangeType(i, contest->exchType(i));
         }
         for (int row = 0; row < log.rowCount() && !progress.wasCanceled(); row++) {
-            tmpqso.call=log.record(row).value("Call").toString().toAscii();
+            tmpqso.call=log.record(row).value("Call").toString().toLatin1();
             for (int i = 0; i < contest->nExchange(); i++) {
-                tmpqso.rcv_exch[i]=log.record(row).value(i+1).toString().toAscii();
+                tmpqso.rcv_exch[i]=log.record(row).value(i+1).toString().toLatin1();
             }
             history->addQso(&tmpqso);
             progress.setValue(row);
@@ -1540,7 +1540,7 @@ void So2sdr::importCabrillo()
         m = field[3].mid(5, 2).toInt();
         int       d = field.at(3).mid(8, 2).toInt();
         time.setDate(QDate(y, m, d));
-        newqso.setValue(SQL_COL_DATE, QVariant(time.toString("MMddyyyy").toAscii()));
+        newqso.setValue(SQL_COL_DATE, QVariant(time.toString("MMddyyyy").toLatin1()));
 
         // Field4=time
         newqso.setValue(SQL_COL_TIME, QVariant(field.at(4)));
@@ -1554,26 +1554,26 @@ void So2sdr::importCabrillo()
             switch (j) {
             case 0:
                 newqso.setValue(SQL_COL_SNT1, QVariant(field.at(i).toUpper()));
-                qso.snt_exch[0]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[0]=field.at(i).toLatin1().toUpper();
                 break;
             case 1:
                 newqso.setValue(SQL_COL_SNT2, QVariant(field.at(i).toUpper()));
-                qso.snt_exch[1]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[1]=field.at(i).toLatin1().toUpper();
                 break;
             case 2:
                 newqso.setValue(SQL_COL_SNT3, QVariant(field.at(i).toUpper()));
-                qso.snt_exch[2]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[2]=field.at(i).toLatin1().toUpper();
                 break;
             case 3:
                 newqso.setValue(SQL_COL_SNT4, QVariant(field.at(i).toUpper()));
-                qso.snt_exch[3]=field.at(i).toAscii().toUpper();
+                qso.snt_exch[3]=field.at(i).toLatin1().toUpper();
                 break;
             }
         }
 
         // next field=call worked
         newqso.setValue(SQL_COL_CALL, QVariant(field.at(6 + contest->nExchange()).toUpper()));
-        qso.call = field.at(6 + contest->nExchange()).toAscii().toUpper();
+        qso.call = field.at(6 + contest->nExchange()).toLatin1().toUpper();
         bool bb;
         qso.country = cty->idPfx(&qso, bb);
 
@@ -1587,23 +1587,23 @@ void So2sdr::importCabrillo()
             switch (j) {
             case 0:
                 newqso.setValue(SQL_COL_RCV1, QVariant(field.at(i).toUpper()));
-                qso.exch = qso.exch + field.at(i).toAscii().toUpper();
-                qso.rcv_exch[0]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + field.at(i).toLatin1().toUpper();
+                qso.rcv_exch[0]=field.at(i).toLatin1().toUpper();
                 break;
             case 1:
                 newqso.setValue(SQL_COL_RCV2, QVariant(field.at(i).toUpper()));
-                qso.exch = qso.exch + " " + field.at(i).toAscii().toUpper();
-                qso.rcv_exch[1]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
+                qso.rcv_exch[1]=field.at(i).toLatin1().toUpper();
                 break;
             case 2:
                 newqso.setValue(SQL_COL_RCV3, QVariant(field.at(i).toUpper()));
-                qso.exch = qso.exch + " " + field.at(i).toAscii().toUpper();
-                qso.rcv_exch[2]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
+                qso.rcv_exch[2]=field.at(i).toLatin1().toUpper();
                 break;
             case 3:
                 newqso.setValue(SQL_COL_RCV4, QVariant(field.at(i).toUpper()));
-                qso.exch = qso.exch + " " + field.at(i).toAscii().toUpper();
-                qso.rcv_exch[3]=field.at(i).toAscii().toUpper();
+                qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
+                qso.rcv_exch[3]=field.at(i).toLatin1().toUpper();
                 break;
             }
         }
@@ -1720,7 +1720,11 @@ void So2sdr::initLogView()
     LogTableView->setShowGrid(true);
     LogTableView->verticalHeader()->hide();
     LogTableView->verticalHeader()->setDefaultAlignment(Qt::AlignLeft);
+#if QT_VERSION < 0x050000
     LogTableView->verticalHeader()->setClickable(false);
+#else
+   LogTableView->verticalHeader()->setSectionsClickable(false);
+#endif
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
 
     model = new tableModel(this,mylog->db);
@@ -2009,7 +2013,7 @@ void So2sdr::autoSendExch() {
                     int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
                     tmpCall = lineEditCall[activeRadio]->text();
                     QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
-                    send(callDiff.toAscii(), false);
+                    send(callDiff.toLatin1(), false);
                 } else if (comp > 0) {
                     winkey->cancelcw();
                     //send(QByteArray("?"));
@@ -2394,8 +2398,8 @@ void So2sdr::exchCheck(int nr,const QString &exch)
     }
     // recopy call; needed in case call was changed by a previous
     // exchange edit
-    qso[nr]->call=lineEditCall[nr]->text().toAscii();
-    qso[nr]->exch=exch.toAscii();
+    qso[nr]->call=lineEditCall[nr]->text().toLatin1();
+    qso[nr]->exch=exch.toLatin1();
     qso[nr]->valid=contest->validateExchange(qso[nr]);
     if (qso[nr]->valid) {
         updateWorkedMult(nr);
@@ -2483,7 +2487,7 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
  */
 void So2sdr::prefixCheck(int nrig, const QString &call)
 {
-    qso[nrig]->call = call.toAscii();
+    qso[nrig]->call = call.toLatin1();
     qso[nrig]->call = qso[nrig]->call.toUpper();
     for (int ii = 0; ii < MMAX; ii++) qso[nrig]->mult[ii] = -1;
     qso[nrig]->valid = false;
@@ -3608,15 +3612,15 @@ void So2sdr::rescore()
         dupes[i].clear();
     }
     for (int i = 0; i < m.rowCount(); i++) {
-        tmpqso.call    = m.record(i).value("call").toString().toAscii();
+        tmpqso.call    = m.record(i).value("call").toString().toLatin1();
         // run prefix check on call: need to check for /MM, etc
         tmpqso.country = cty->idPfx(&tmpqso, b);
         tmpqso.exch.clear();
         QByteArray tmp[4];
-        tmp[0] = m.record(i).value("rcv1").toString().toAscii();
-        tmp[1] = m.record(i).value("rcv2").toString().toAscii();
-        tmp[2] = m.record(i).value("rcv3").toString().toAscii();
-        tmp[3] = m.record(i).value("rcv4").toString().toAscii();
+        tmp[0] = m.record(i).value("rcv1").toString().toLatin1();
+        tmp[1] = m.record(i).value("rcv2").toString().toLatin1();
+        tmp[2] = m.record(i).value("rcv3").toString().toLatin1();
+        tmp[3] = m.record(i).value("rcv4").toString().toLatin1();
         tmpqso.nr=m.record(i).value("nr").toInt();
 
         for (int j = 0; j < contest->nExchange(); j++) {
@@ -3841,7 +3845,7 @@ void So2sdr::qsy(int nrig, int &freq, bool exact)
   */
 void So2sdr::logSearch()
 {
-    QByteArray searchFrag=lineEditCall[activeRadio]->text().toAscii();
+    QByteArray searchFrag=lineEditCall[activeRadio]->text().toLatin1();
     if (searchFrag.size()<2) return;
 
     So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\"");
@@ -3914,7 +3918,7 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
                 continue;
             }
         }
-        QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toAscii();
+        QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
         //
         /* @todo  the following could probably be simplified  using SQL commands... */
         //
@@ -3942,16 +3946,16 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
 
     // if call matches, prefill most recent exchange and mult information from log
     for (int i = m.rowCount() - 1; i >= 0; i--) {
-        QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toAscii();
+        QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
         if (tmp == qso->call) {
             qso->prefill.clear();
             int row = m.record(i).value(SQL_COL_NR).toInt() - 1;
             qso->mult[0] = contest->mult(row, 0);
             qso->mult[1] = contest->mult(row, 1);
-            qso->prefill = m.record(i).value(SQL_COL_RCV1).toString().toAscii() + " " +
-                           m.record(i).value(SQL_COL_RCV2).toString().toAscii() + " " +
-                           m.record(i).value(SQL_COL_RCV3).toString().toAscii() + " " +
-                           m.record(i).value(SQL_COL_RCV4).toString().toAscii();
+            qso->prefill = m.record(i).value(SQL_COL_RCV1).toString().toLatin1() + " " +
+                           m.record(i).value(SQL_COL_RCV2).toString().toLatin1() + " " +
+                           m.record(i).value(SQL_COL_RCV3).toString().toLatin1() + " " +
+                           m.record(i).value(SQL_COL_RCV4).toString().toLatin1();
             break;
         }
     }
@@ -4061,7 +4065,7 @@ void So2sdr::readExcludeMults()
 
         QFile file(filename);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qDebug("Can't open %s", filename.toAscii().data());
+            qDebug("Can't open %s", filename.toLatin1().data());
             return;
         }
         excludeMults[ii].clear();
@@ -4070,7 +4074,7 @@ void So2sdr::readExcludeMults()
             buffer = file.readLine();
             QStringList list = buffer.split(" ", QString::SkipEmptyParts);
             for (int i = 0; i < list.size(); i++) {
-                excludeMults[ii].append(list[i].toAscii());
+                excludeMults[ii].append(list[i].toLatin1());
             }
         }
         file.close();
@@ -4087,7 +4091,7 @@ bool So2sdr::readContestList()
     directory->setCurrent(dataDirectory());
     QFile file("contest_list.dat");
  	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug("can't open %s/contest_list.dat", dataDirectory().toAscii().data());
+        qDebug("can't open %s/contest_list.dat", dataDirectory().toLatin1().data());
         return(false);
     }
     while (!file.atEnd()) {
@@ -4308,7 +4312,7 @@ void So2sdr::screenShot()
     QString format = "png";
     directory->setCurrent(contestDirectory);
     QString filename="screenshot-main-"+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
-    p.save(filename,format.toAscii());
+    p.save(filename,format.toLatin1());
     QCoreApplication::processEvents();
 
     // bandmap windows

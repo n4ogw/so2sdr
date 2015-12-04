@@ -52,8 +52,8 @@ void Contest::initialize(QSettings *ss,QSettings *cs,const Cty *cty)
     stnSettings=ss;
     setGrid();
     QByteArray tmp[MMAX];
-    tmp[0]=settings->value(c_multfile1,c_multfile1_def).toString().toAscii();
-    tmp[1]=settings->value(c_multfile2,c_multfile2_def).toString().toAscii();
+    tmp[0]=settings->value(c_multfile1,c_multfile1_def).toString().toLatin1();
+    tmp[1]=settings->value(c_multfile2,c_multfile2_def).toString().toLatin1();
     availableModeTypes[0]=settings->value(c_multimode_cw,c_multimode_cw_def).toBool();
     availableModeTypes[1]=settings->value(c_multimode_phone,c_multimode_phone_def).toBool();
     availableModeTypes[2]=settings->value(c_multimode_digital,c_multimode_digital_def).toBool();

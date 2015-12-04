@@ -109,8 +109,8 @@ bool log::exportADIF(QFile *adifFile) const
 
         // frequency
         double f = m.record(i).value(SQL_COL_FREQ).toDouble() / 1000000.0;
-        tmp2 = QString::number(f, 'f', 4).toAscii();
-        tmp  = tmp + "<FREQ:" + QString::number(tmp2.size()).toAscii() + ">" + tmp2;
+        tmp2 = QString::number(f, 'f', 4).toLatin1();
+        tmp  = tmp + "<FREQ:" + QString::number(tmp2.size()).toLatin1() + ">" + tmp2;
 
         // date
         // in SQL log, date is of format MMddyyyy; need yyyyMMdd for adif
@@ -230,22 +230,22 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
 
         // for sent exchange, if log field is empty use config file value
         snt[0]=m.record(i).value(SQL_COL_SNT1).toByteArray();
-        if (snt[0].isEmpty()) snt[0]=snt_exch1.toAscii();
+        if (snt[0].isEmpty()) snt[0]=snt_exch1.toLatin1();
         int j = snt[0].size();
         if (j > sfw[0]) sfw[0] = j;
 
         snt[1]=m.record(i).value(SQL_COL_SNT2).toByteArray();
-        if (snt[1].isEmpty()) snt[1]=snt_exch2.toAscii();
+        if (snt[1].isEmpty()) snt[1]=snt_exch2.toLatin1();
         j = snt[1].size();
         if (j > sfw[1]) sfw[1] = j;
 
         snt[2]=m.record(i).value(SQL_COL_SNT3).toByteArray();
-        if (snt[2].isEmpty()) snt[2]=snt_exch3.toAscii();
+        if (snt[2].isEmpty()) snt[2]=snt_exch3.toLatin1();
         j = snt[2].size();
         if (j > sfw[2]) sfw[2] = j;
 
         snt[3]=m.record(i).value(SQL_COL_SNT4).toByteArray();
-        if (snt[3].isEmpty()) snt[3]=snt_exch4.toAscii();
+        if (snt[3].isEmpty()) snt[3]=snt_exch4.toLatin1();
         j = snt[3].size();
         if (j > sfw[3]) sfw[3] = j;
 
@@ -264,16 +264,16 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
 
         // for sent exchange, if log field is empty use config file value
         snt[0]=m.record(i).value(SQL_COL_SNT1).toByteArray();
-        if (snt[0].isEmpty()) snt[0]=snt_exch1.toAscii();
+        if (snt[0].isEmpty()) snt[0]=snt_exch1.toLatin1();
 
         snt[1]=m.record(i).value(SQL_COL_SNT2).toByteArray();
-        if (snt[1].isEmpty()) snt[1]=snt_exch2.toAscii();
+        if (snt[1].isEmpty()) snt[1]=snt_exch2.toLatin1();
 
         snt[2]=m.record(i).value(SQL_COL_SNT3).toByteArray();
-        if (snt[2].isEmpty()) snt[2]=snt_exch3.toAscii();
+        if (snt[2].isEmpty()) snt[2]=snt_exch3.toLatin1();
 
         snt[3]=m.record(i).value(SQL_COL_SNT4).toByteArray();
-        if (snt[3].isEmpty()) snt[3]=snt_exch4.toAscii();
+        if (snt[3].isEmpty()) snt[3]=snt_exch4.toLatin1();
 
         QString tmp;
         tmp = "QSO: ";
@@ -349,7 +349,7 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
             tmp = tmp + " ";
         }
         tmp = tmp + "\n";
-        cbrFile->write(tmp.toAscii());
+        cbrFile->write(tmp.toLatin1());
     }
     cbrFile->write("END-OF-LOG:\n");
     cbrFile->close();

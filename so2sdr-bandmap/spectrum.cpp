@@ -626,11 +626,11 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                 if (ipk > fftSize / 2) {
                     // neg freqs
                     freq = centerFreq - invert * totOffset - invert*qRound((fftSize - ipk) *
-                        settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/ fftSize);
+                        settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/ (double)fftSize);
                 } else {
                     // positive freqs
                     freq = centerFreq - invert * totOffset + invert*qRound(ipk *
-                        settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/ fftSize);
+                        settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/ (double)fftSize);
                 }
 
                 // is this a known signal already?
@@ -643,7 +643,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                         indx  = j;
                         sigList[j].cnt++;
                         sigList[j].fsum += freq; // update with new frequency
-                        sigList[j].f     = qRound(sigList[j].fsum / sigList[j].cnt);
+                        sigList[j].f     = qRound(sigList[j].fsum / (double)sigList[j].cnt);
 
                         // once signal has been detected 5 times, it becomes "active"
                         if (sigList[j].cnt > 5) {

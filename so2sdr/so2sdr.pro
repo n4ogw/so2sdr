@@ -15,6 +15,7 @@ TEMPLATE = app
 TARGET = so2sdr
 
 QT += network sql
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 HEADERS += cwmessagedialog.h \
     serial.h \

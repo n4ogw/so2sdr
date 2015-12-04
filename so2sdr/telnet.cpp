@@ -149,7 +149,7 @@ void Telnet::showText(QString txt)
             QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
             double  x = freq.toDouble(&ok);
             int f = (int) (x * 1000);
-            emit(dxSpot(call.toAscii(), f));
+            emit(dxSpot(call.toLatin1(), f));
         }
     }
     txt.remove(QRegExp("[^a-zA-Z/.\\d\\s]")); // remove all except letters, numbers, ., and /

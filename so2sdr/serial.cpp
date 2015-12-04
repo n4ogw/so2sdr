@@ -192,7 +192,7 @@ void RigSerial::initialize()
         model[i]=settings.value(s_radios_rig[i],RIG_MODEL_DUMMY).toInt();
         rig[i] = rig_init(model[i]);
         token_t t = rig_token_lookup(rig[i], "rig_pathname");
-        rig_set_conf(rig[i],t,settings.value(s_radios_port[i],defaultSerialPort[i]).toString().toAscii().data());
+        rig_set_conf(rig[i],t,settings.value(s_radios_port[i],defaultSerialPort[i]).toString().toLatin1().data());
         // set baud rate
         rig[i]->state.rigport.parm.serial.rate=settings.value(s_radios_baud[i],s_radios_baud_def[i]).toInt();
     }

@@ -140,64 +140,64 @@ void CabrilloDialog::writeHeader(QFile *cbrFile,int score)
     QString tmpstr;
     cbrFile->write("START-OF-LOG: " + settings->value(c_cab_version,c_cab_version_def).toByteArray() + "\n");
     tmpstr = "CREATED-BY: SO2SDR version " + Version + "\n";
-    cbrFile->write(tmpstr.toAscii().data());
-    cbrFile->write("CALLSIGN: " + labelCall->text().toAscii() + "\n");
-    cbrFile->write("CONTEST: " + labelContest->text().toAscii() + "\n");
-    cbrFile->write("LOCATION: " + lineEditLocation->text().toAscii() + "\n");
+    cbrFile->write(tmpstr.toLatin1().data());
+    cbrFile->write("CALLSIGN: " + labelCall->text().toLatin1() + "\n");
+    cbrFile->write("CONTEST: " + labelContest->text().toLatin1() + "\n");
+    cbrFile->write("LOCATION: " + lineEditLocation->text().toLatin1() + "\n");
     tmpstr = "CLAIMED-SCORE: " + QString::number(score) + "\n";
-    cbrFile->write(tmpstr.toAscii().data());
+    cbrFile->write(tmpstr.toLatin1().data());
     if (comboBoxCabrillo1->isEnabled()) {
         tmpstr = labelCabrillo1->text() + ": " + comboBoxCabrillo1->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
     if (comboBoxCabrillo2->isEnabled()) {
         tmpstr = labelCabrillo2->text() + ": " + comboBoxCabrillo2->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
     if (comboBoxCabrillo3->isEnabled()) {
         tmpstr = labelCabrillo3->text() + ": " + comboBoxCabrillo3->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
     if (comboBoxCabrillo4->isEnabled()) {
         tmpstr = labelCabrillo4->text() + ": " + comboBoxCabrillo4->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
     if (comboBoxCabrillo5->isEnabled()) {
         tmpstr = labelCabrillo5->text() + ": " + comboBoxCabrillo5->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
     if (comboBoxCabrillo6->isEnabled()) {
         tmpstr = labelCabrillo6->text() + ": " + comboBoxCabrillo6->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
     if (comboBoxCabrillo7->isEnabled()) {
         tmpstr = labelCabrillo7->text() + ": " + comboBoxCabrillo7->currentText() + "\n";
-        cbrFile->write(tmpstr.toAscii());
+        cbrFile->write(tmpstr.toLatin1());
     }
-    cbrFile->write("OPERATORS: " + lineEditOperators->text().toAscii() + "\n");
-    cbrFile->write("NAME: " + lineEditName->text().toAscii() + "\n");
+    cbrFile->write("OPERATORS: " + lineEditOperators->text().toLatin1() + "\n");
+    cbrFile->write("NAME: " + lineEditName->text().toLatin1() + "\n");
     QString     tmp     = textEditAddress->toPlainText();
     QStringList tmppart = tmp.split("\n");
     for (int i = 0; i < tmppart.size(); i++) {
         if (!tmppart[i].isEmpty()) {
-            cbrFile->write("ADDRESS: " + tmppart[i].toAscii() + "\n");
+            cbrFile->write("ADDRESS: " + tmppart[i].toLatin1() + "\n");
         }
     }
-    cbrFile->write("ADDRESS-CITY: " + lineEditAddressCity->text().toAscii() + "\n");
-    cbrFile->write("ADDRESS-STATE-PROVINCE: " + lineEditAddressState->text().toAscii() + "\n");
-    cbrFile->write("ADDRESS-POSTALCODE: " + lineEditAddressPostalCode->text().toAscii() + "\n");
-    cbrFile->write("ADDRESS-COUNTRY: " + lineEditAddressCountry->text().toAscii() + "\n");
-    cbrFile->write("CLUB: " + lineEditClub->text().toAscii() + "\n");
+    cbrFile->write("ADDRESS-CITY: " + lineEditAddressCity->text().toLatin1() + "\n");
+    cbrFile->write("ADDRESS-STATE-PROVINCE: " + lineEditAddressState->text().toLatin1() + "\n");
+    cbrFile->write("ADDRESS-POSTALCODE: " + lineEditAddressPostalCode->text().toLatin1() + "\n");
+    cbrFile->write("ADDRESS-COUNTRY: " + lineEditAddressCountry->text().toLatin1() + "\n");
+    cbrFile->write("CLUB: " + lineEditClub->text().toLatin1() + "\n");
     settings->setValue(c_cab_club,lineEditClub->text());
 
     tmp     = textEditSoapbox->toPlainText();
     tmppart = tmp.split("\n");
     for (int i = 0; i < tmppart.size(); i++) {
         if (!tmppart[i].isEmpty()) {
-            cbrFile->write("SOAPBOX: " + tmppart[i].toAscii() + "\n");
+            cbrFile->write("SOAPBOX: " + tmppart[i].toLatin1() + "\n");
         }
     }
     QByteArray exch[MAX_EXCH_FIELDS];
-    for (int i = 0; i < MAX_EXCH_FIELDS; i++) exch[i] = sent[i]->text().toAscii();
+    for (int i = 0; i < MAX_EXCH_FIELDS; i++) exch[i] = sent[i]->text().toLatin1();
 }
 

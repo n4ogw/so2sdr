@@ -270,7 +270,7 @@ void So2sdr::populateDupesheet()
             m.fetchMore();
         }
         for (int i = 0; i < m.rowCount(); i++) {
-            QByteArray tmp = m.record(i).value("call").toString().toAscii();
+            QByteArray tmp = m.record(i).value("call").toString().toLatin1();
             updateDupesheet(tmp,id);
         }
         dupesheet[id]->setWindowTitle("Dupesheet " + bandName[band[ib]]);
