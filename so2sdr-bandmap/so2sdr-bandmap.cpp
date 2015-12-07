@@ -137,6 +137,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     toolBar->addWidget(spacer1);
     toolBar->addWidget(&checkBoxMark);
     txLabel.clear();
+    txLabel.setText("<font color=#000000>TX");
     toolBar->addWidget(&txLabel);
     slider.setToolTip("Gain for signal detection. To the right is LESS sensitive.");
     slider.setOrientation(Qt::Horizontal);
@@ -988,11 +989,6 @@ void So2sdrBandmap::timerEvent(QTimerEvent *event)
         makeCall();
         CallLabel->setPixmap(callPixmap);
         CallLabel->update();
-        if (tx) {
-            txLabel.setText("<font color=#FF0000>TX");
-        } else {
-            txLabel.setText("<font color=#000000>TX");
-        }
     } else if (event->timerId() == timerId[1]) {
         // UDP beacon
         writeUdpXML(0,"",false);
