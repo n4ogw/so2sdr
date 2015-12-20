@@ -22,7 +22,7 @@
 #include <QSettings>
 #include <QObject>
 #include "defines.h"
-#include <qextserialport.h>
+#include <QSerialPort>
 
 /*
  * Support for microHam Control Protocol enabled devices
@@ -55,7 +55,7 @@ public slots:
 private:
     bool       MicroHamOpen;
     bool       stereo;
-    QextSerialPort *MicroHamPort;
+    QSerialPort *MicroHamPort;
     QSettings&  settings;
     void closeMicroHam();
 };

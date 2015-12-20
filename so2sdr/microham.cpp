@@ -19,6 +19,7 @@
 #include <QSettings>
 #include "defines.h"
 #include "microham.h"
+#include <QSerialPortInfo>
 
 /*!
  *  MicroHam Control Protocol (MCP)
@@ -30,7 +31,8 @@
 
 MicroHam::MicroHam(QSettings& s, QObject *parent) : QObject(parent),settings(s)
 {
-    MicroHamPort = new QextSerialPort(settings.value(s_microham_device,s_microham_device_def).toString(), QextSerialPort::EventDriven);
+    QSerialPortInfo info(settings.value(s_microham_device,s_microham_device_def).toString());
+    MicroHamPort = new QSerialPort(info);
     MicroHamOpen = false;
     stereo       = false;
 }
@@ -78,7 +80,7 @@ void MicroHam::toggleStereo(int nr)
     if (!MicroHamOpen || nr<0 || nr>1) return;
     if (stereo) {
         stereo=false;
-        this->switchAudio(nr);
+        switchAudio(nr);
     } else {
         const char cmd[5]="FRS\r";
         MicroHamPort->write(cmd,4);
@@ -96,30 +98,29 @@ bool MicroHam::stereoActive () const
  */
 void MicroHam::openMicroHam()
 {
+    // in case we are re-starting MicroHam
     if (MicroHamPort->isOpen()) {
         closeMicroHam();
         MicroHamOpen = false;
     }
     MicroHamPort->setPortName(settings.value(s_microham_device,s_microham_device_def).toString());
 
-    // 9600N81
-    MicroHamPort->setBaudRate(BAUD9600);
-    MicroHamPort->setFlowControl(FLOW_OFF);
-    MicroHamPort->setParity(PAR_NONE);
-    MicroHamPort->setDataBits(DATA_8);
-    MicroHamPort->setStopBits(STOP_1);
+    // currently only 9600N81
+    MicroHamPort->setBaudRate(QSerialPort::Baud9600);
+    MicroHamPort->setFlowControl(QSerialPort::NoFlowControl);
+    MicroHamPort->setParity(QSerialPort::NoParity);
+    MicroHamPort->setDataBits(QSerialPort::Data8);
+    MicroHamPort->setStopBits(QSerialPort::OneStop);
 
-    MicroHamPort->setTimeout(500);
     MicroHamPort->open(QIODevice::ReadWrite);
-    MicroHamPort->setRts(0);
-    MicroHamPort->setDtr(0);
-    MicroHamPort->flush();
 
     if (!MicroHamPort->isOpen()) {
         MicroHamOpen = false;
         emit(microhamError("ERROR: could not open MicroHam device"));
         return;
     }
+    MicroHamPort->setRequestToSend(false);
+    MicroHamPort->setDataTerminalReady(false);
     MicroHamOpen = true;
 }
 

@@ -14,8 +14,13 @@
 TEMPLATE = app
 TARGET = so2sdr
 
+#will add serialport to QT when QtSerialPort stable in Qt5 and Qt4 abandoned
 QT += network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+#lessThan(QT_MAJOR_VERSION, 5):  system("git -C ../qtserialport checkout qt4-dev")
+#greaterThan(QT_MAJOR_VERSION, 4):  system("git -C ../qtserialport checkout 5.6")
+
 
 HEADERS += cwmessagedialog.h \
     serial.h \
@@ -139,18 +144,26 @@ SOURCES += cwmessagedialog.cpp \
 
  unix { 
     include (../common.pri)
-    include (../qextserialport/src/qextserialport.pri)
+    include (../qtserialport/src/serialport/qt4support/serialport.prf)
     include (../qttelnet/src/qttelnet.pri)
+
+# additional modifications to build QtSerialPort.
+    INCLUDEPATH += ../qtserialport/include/QtSerialPort
+    INCLUDEPATH += ../qtserialport/include
+    QMAKE_LIBDIR+= ../qtserialport/src/serialport
 
     CONFIG += link_pkgconfig
     PKGCONFIG += hamlib
-    QMAKE_CXXFLAGS += -O2 \
-        -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
-    HEADERS += linux_pp.h 
+    QMAKE_CXXFLAGS += -O2 -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
+    HEADERS += linux_pp.h
     SOURCES += linux_pp.cpp 
 
     install.target = install
+#note added QtSerialPort lib. Remove this when QtSerialPort stabilizes in Qt5
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
+        install -d $$SO2SDR_INSTALL_DIR/lib; \
+        install -o root -m 644 ../qtserialport/src/serialport/libQtSerialPort.so $$SO2SDR_INSTALL_DIR/lib; \
+        install -o root -m 644 ../qtserialport/src/serialport/libQtSerialPort.so.1 $$SO2SDR_INSTALL_DIR/lib; \
         install -d $$SO2SDR_INSTALL_DIR/share/applications; \
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
@@ -166,6 +179,7 @@ SOURCES += cwmessagedialog.cpp \
 }
 
 #Windows flags for i686-w64-ming32 cross-compile
+#RTC 12/14/2015 needs updating after QtSerialPort change
 win32 {
     include (../qextserialport_1.2.0_win/src/qextserialport.pri)
     include (../qttelnet/src/qttelnet.pri)

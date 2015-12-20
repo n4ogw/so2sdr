@@ -358,6 +358,12 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
+* Change to QtSerialPort library for serial communications (Winkey, OTRSP,
+Microham). QtSerialPort is currently supported and is a standard component in
+Qt version 5. It can also be compiled in Qt 4.
+
+* Another change to try to keep the TX status of the bandmap in sync
+
 * Minor changes to enable building under Qt version 5
 
 * Bug fix: under certain conditions, when logging a qso with ctrl-Enter, the

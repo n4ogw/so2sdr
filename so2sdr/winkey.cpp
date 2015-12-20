@@ -20,20 +20,18 @@
 #include "defines.h"
 #include "winkey.h"
 
-#ifdef Q_OS_LINUX
-#include <unistd.h>
-#endif
-
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
+#include <QSerialPort>
+#include <QSerialPortInfo>
+#include <QDebug>
 
 /*!
    WinkeyDevice : serial port of device
  */
 Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
 {
-    winkeyPort     = new QextSerialPort(settings.value(s_winkey_device,s_winkey_device_def).toString(), QextSerialPort::EventDriven);
+    QSerialPortInfo info(settings.value(s_winkey_device,s_winkey_device_def).toString());
+    winkeyPort = new QSerialPort(info);
+
     winkeyVersion  = 0;
     nchar          = 0;
     sendBuff       = "";
@@ -41,6 +39,7 @@ Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
     winkeyOpen     = false;
     winkeySpeedPot = 0;
     rigNum         = 0;
+    initStatus     = 0;
 }
 
 Winkey::~Winkey()
@@ -94,6 +93,27 @@ void Winkey::receive()
 }
 
 /*!
+   Slot triggered when data is available at port, used during winkey
+   initialization
+ */
+void Winkey::receiveInit()
+{
+    unsigned char wkbyte;
+
+    int n = winkeyPort->read((char *) &wkbyte, 1);
+    if (n > 0) {
+        if (wkbyte==0x55) {
+            // this was the echo test
+            initStatus=1;
+        } else {
+            // otherwise assume this is version number
+            winkeyVersion = wkbyte;
+        }
+    }
+}
+
+
+/*!
    load a message into buffer
  */
 void Winkey::loadbuff(QByteArray msg)
@@ -129,7 +149,6 @@ void Winkey::cancelcw()
         winkeyOpen = false;
     }
     sending=false;
-    emit(winkeyTx(false, rigNum));
     sendBuff.resize(0);
     nchar = 0;
 }
@@ -180,34 +199,24 @@ void Winkey::openWinkey()
     // in case we are re-starting winkey
     if (winkeyPort->isOpen()) {
         closeWinkey();
-        winkeyOpen = false;
+        delete winkeyPort;
+        QSerialPortInfo info(settings.value(s_winkey_device,s_winkey_device_def).toString());
+        winkeyPort = new QSerialPort(info);
     }
-    winkeyPort->setPortName(settings.value(s_winkey_device,s_winkey_device_def).toString());
 
-    winkeyPort->setBaudRate(BAUD1200);
-    winkeyPort->setFlowControl(FLOW_OFF);
-    winkeyPort->setParity(PAR_NONE);
-    winkeyPort->setDataBits(DATA_8);
-    winkeyPort->setStopBits(STOP_2);
-
-    winkeyPort->setTimeout(250);
-    winkeyPort->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
-    winkeyPort->setRts(0);
-    winkeyPort->setDtr(1);
-    winkeyPort->flush();
-
-    // have to wait a while at various places
-#ifdef Q_OS_LINUX
-    usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-    Sleep(100);
-#endif
-
+    winkeyPort->setBaudRate(QSerialPort::Baud1200);
+    winkeyPort->setDataBits(QSerialPort::Data8);
+    winkeyPort->setStopBits(QSerialPort::TwoStop);
+    winkeyPort->setParity(QSerialPort::NoParity);
+    winkeyPort->setFlowControl(QSerialPort::NoFlowControl);
+    winkeyPort->open(QIODevice::ReadWrite);
     if (!winkeyPort->isOpen()) {
         winkeyOpen = false;
         return;
     }
+    connect(winkeyPort,SIGNAL(readyRead()),this,SLOT(receiveInit()));
+    winkeyPort->setRequestToSend(false);
+    winkeyPort->setDataTerminalReady(true);
 
     // Send three null commands to resync host to WK2
     unsigned char buff[64];
@@ -215,67 +224,40 @@ void Winkey::openWinkey()
     winkeyPort->write((char *) buff, 1);
     winkeyPort->write((char *) buff, 1);
     winkeyPort->write((char *) buff, 1);
-#ifdef Q_OS_LINUX
-    usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-    Sleep(100);
-#endif
 
-    // read any echo from winkey
-    int n = winkeyPort->bytesAvailable();
-    if (n > 64) n = 64;
-    winkeyPort->read((char *) buff, n);
+    winkeyPort->waitForBytesWritten(500);;
+    winkeyPort->waitForReadyRead(500);
 
     // Echo Test to see if WK is really there
-    // note: serial port events will not be emitted yet,
-    // since event loop has not started (exec).
     buff[0] = 0x00;     // WK admin command, next byte sets admin function
     buff[1] = 4;        // Echo function, echoes next received character to host
     buff[2] = 0x55;     // Send 'U' to WK
     winkeyPort->write((char *) buff, 3);
-#ifdef Q_OS_LINUX
-    usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-    Sleep(100);
-#endif
-
-    n = winkeyPort->bytesAvailable();
-    if (n > 64) n = 64;
-    winkeyPort->read((char *) buff, n);
+    winkeyPort->waitForBytesWritten(500);
+    winkeyPort->waitForReadyRead(500);
 
     // Was the 'U' received?
-    if (buff[0] == 0x55) {
+    if (initStatus==1) {
         buff[0] = 0x00;     // WK admin command
         buff[1] = 2;        // Host open, WK will now receive commands and Morse characters
         winkeyPort->write((char *) buff, 2);
-#ifdef Q_OS_LINUX
-        usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-        Sleep(100);
-#endif
+        winkeyPort->waitForBytesWritten(500);
+        winkeyPort->waitForReadyRead(500);
 
-
-        n = winkeyPort->bytesAvailable();
-        if (n > 64) n = 64;
-
-        // read Winkey firmware version
-        buff[0] = 0;
-        winkeyPort->read((char *) buff, n);
-        winkeyVersion = buff[0];
-        emit(version(winkeyVersion));
         if (winkeyVersion == 0) {
             // winkey open failed
+            qDebug("Winkey: open failed, could not get version");
             closeWinkey();
             winkeyOpen = false;
+            initStatus=0;
+            disconnect(winkeyPort,SIGNAL(readyRead()),this,SLOT(receiveInit()));
             return;
+        } else {
+            initStatus=2;
+            emit(version(winkeyVersion));
         }
 
-        // now reduce timeout
-        winkeyPort->setTimeout(100);
-
+        // now set some saved user settings
         // set sidetone config
         buff[0] = 0x01;     // Sidetone control command, next byte sets sidetone parameters
         buff[1] = 0;
@@ -288,12 +270,7 @@ void Winkey::openWinkey()
         buff[1] += settings.value(s_winkey_sidetone,s_winkey_sidetone_def).toInt();
 
         winkeyPort->write((char *) buff, 2);
-#ifdef Q_OS_LINUX
-        usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-        Sleep(100);
-#endif
+        winkeyPort->waitForBytesWritten(500);
 
         // set other winkey features
         buff[0] = 0x0e;     // Set WK options command, next byte sets WK options
@@ -311,12 +288,7 @@ void Winkey::openWinkey()
         buff[1] += (settings.value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt()) << 4;
 
         winkeyPort->write((char *) buff, 2);
-#ifdef Q_OS_LINUX
-        usleep(10000);
-#endif
-#ifdef Q_OS_WIN
-        Sleep(10);
-#endif
+        winkeyPort->waitForBytesWritten(500);
 
         // Pot min/max
         // must set this up or paddle speed screwed up.
@@ -326,14 +298,13 @@ void Winkey::openWinkey()
         buff[2] = 80;       // wpm range (min wpm + wpm range = wpm max)
         buff[3] = 0;        // Used only on WK1 keyers (does 0 cause a problem on WK1?)
         winkeyPort->write((char *) buff, 4);
-#ifdef Q_OS_LINUX
-        usleep(100000);
-#endif
-#ifdef Q_OS_WIN
-        Sleep(100);
-#endif
+        winkeyPort->waitForBytesWritten(500);
 
         winkeyOpen = true;
+        // disconnect slot used for receive during init process
+        disconnect(winkeyPort,SIGNAL(readyRead()),this,SLOT(receiveInit()));
+    } else {
+        qDebug("Winkey: echo test failed");
     }
 }
 
@@ -343,7 +314,13 @@ void Winkey::closeWinkey()
     buff[0] = 0x00;     // Admin command, next byte is function
     buff[1] = 0x03;     // Host close
     winkeyPort->write((char *) &buff, 2);
+    if (winkeyPort->isOpen()) {
+        winkeyPort->flush();
+    }
     winkeyPort->close();
+    disconnect(winkeyPort,SIGNAL(readyRead()));
+    initStatus=0;
+    winkeyOpen=false;
 }
 
 

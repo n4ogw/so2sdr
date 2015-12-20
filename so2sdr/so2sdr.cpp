@@ -355,9 +355,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkey, SIGNAL(version(int)), winkeyDialog, SLOT(setWinkeyVersionLabel(int)));
     connect(winkey, SIGNAL(winkeyTx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
     connect(winkeyDialog, SIGNAL(startWinkey()), this, SLOT(startWinkey()));
-    connect(winkey->winkeyPort, SIGNAL(readyRead()), winkey, SLOT(receive()));
     connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
     startWinkey();
+    connect(winkey->winkeyPort, SIGNAL(readyRead()), winkey, SLOT(receive()));
 
     openRadios();
     switchAudio(activeRadio);
@@ -1837,7 +1837,6 @@ void So2sdr::about()
     QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2015 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
-                       + "<li>qextserialport https://github.com/qextserialport/qextserialport"
                        + "<li>QtSolutions_Telnet 2.1"
 #ifdef Q_OS_WIN
                        + "<li>Parallel port access:  InpOut32.dll http://www.highrez.co.uk/"
@@ -2016,7 +2015,6 @@ void So2sdr::autoSendExch() {
                     send(callDiff.toLatin1(), false);
                 } else if (comp > 0) {
                     winkey->cancelcw();
-                    //send(QByteArray("?"));
                     autoSendPause = true;
                     tmpCall.clear();
                 } else { // calls equal

@@ -22,7 +22,7 @@
 #include <QSettings>
 #include <QString>
 #include "defines.h"
-#include <qextserialport.h>
+#include <QSerialPort>
 
 /*!
    Winkey support class
@@ -43,7 +43,8 @@ public:
 
 /*! @todo make this private; can connect signals instead of referring directly to winkeyPort
  */
-    QextSerialPort *winkeyPort;
+   // QextSerialPort *winkeyPort;
+    QSerialPort *winkeyPort;
 
 signals:
     void version(int ver);
@@ -55,10 +56,12 @@ public slots:
 
 private slots:
     void receive();
+    void receiveInit();
 
 private:
     bool       sending;
     bool       winkeyOpen;
+    int        initStatus;
     int        nchar;
     int        rigNum;
     int        winkeySpeedPot;

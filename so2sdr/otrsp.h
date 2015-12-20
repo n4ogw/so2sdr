@@ -20,7 +20,7 @@
 #define OTRSP_H
 #include <QSettings>
 #include "defines.h"
-#include <qextserialport.h>
+#include <QSerialPort>
 
 /*
  * Support for OTRSP (Open Two Radio Switching Protocol) devices
@@ -53,7 +53,7 @@ public slots:
 private:
     bool       OTRSPOpen;
     bool       stereo;
-    QextSerialPort *OTRSPPort;
+    QSerialPort *OTRSPPort;
     QSettings&  settings;
     void closeOTRSP();
 };

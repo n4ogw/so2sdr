@@ -19,10 +19,12 @@
 #include <QSettings>
 #include "defines.h"
 #include "otrsp.h"
+#include <QSerialPortInfo>
 
 OTRSP::OTRSP(QSettings& s, QObject *parent) : QObject(parent),settings(s)
 {
-    OTRSPPort     = new QextSerialPort(settings.value(s_otrsp_device,s_otrsp_device_def).toString(), QextSerialPort::EventDriven);
+    QSerialPortInfo info(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
+    OTRSPPort = new QSerialPort(info);
     OTRSPOpen     = false;
     stereo        = false;
 }
@@ -83,7 +85,7 @@ void OTRSP::toggleStereo(int nr)
     if (!OTRSPOpen || nr<0 || nr>1) return;
     if (stereo) {
         stereo=false;
-        this->switchAudio(nr);
+        switchAudio(nr);
     } else {
         const char cmd[6]="RX1S\r";
         OTRSPPort->write(cmd,5);
@@ -109,23 +111,21 @@ void OTRSP::openOTRSP()
     OTRSPPort->setPortName(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
 
     // currently only 9600N81
-    OTRSPPort->setBaudRate(BAUD9600);
-    OTRSPPort->setFlowControl(FLOW_OFF);
-    OTRSPPort->setParity(PAR_NONE);
-    OTRSPPort->setDataBits(DATA_8);
-    OTRSPPort->setStopBits(STOP_1);
+    OTRSPPort->setBaudRate(QSerialPort::Baud9600);
+    OTRSPPort->setFlowControl(QSerialPort::NoFlowControl);
+    OTRSPPort->setParity(QSerialPort::NoParity);
+    OTRSPPort->setDataBits(QSerialPort::Data8);
+    OTRSPPort->setStopBits(QSerialPort::OneStop);
 
-    OTRSPPort->setTimeout(500);
     OTRSPPort->open(QIODevice::ReadWrite);
-    OTRSPPort->setRts(0);
-    OTRSPPort->setDtr(0);
-    OTRSPPort->flush();
 
     if (!OTRSPPort->isOpen()) {
         OTRSPOpen = false;
         emit(otrspError("ERROR: could not open otrsp device"));
         return;
     }
+    OTRSPPort->setRequestToSend(false);
+    OTRSPPort->setDataTerminalReady(false);
     OTRSPOpen = true;
 }
 
