@@ -10,7 +10,6 @@ moc_*.cpp
 lib*.so
 lib*.so.*
 .qmake.cache
-include/*
 lib/cmake/*
 lib*.la
 lib*.prl
