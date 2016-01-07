@@ -2,11 +2,40 @@
 layout: page
 title: "Linux"
 category: install
-date: 2015-07-31 21:22:13
+date: 2016-01-07 08:55:00
 order: 1
 ---
 
-You will need the following development libraries installed: Qt4, FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
+You will need the following development libraries installed: Qt4,
+FFTW, Hamlib, and PortAudio. Other various development packages
+include g++  and pkg-config.
+
+
+### From released packages
+
+Download one of the source code packages:
+
+* [so2sdr-2.0.5.tgz](../downloads/so2sdr-2.0.5.tgz)
+
+
+1. Unpack the archive:
+
+        tar xzvof sosdr-2.0.5.tgz
+
+2. Build it
+
+
+        cd so2sdr
+        qmake
+        make
+
+3. The default install location is in /usr/local. You can change this in common.pri
+Then, as root:
+
+        make install
+
+
+### From git source
 
 
 1. Clone the git repository to your local machine:
