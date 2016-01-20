@@ -63,7 +63,7 @@ Cty::~Cty()
    returns CTY index, or -1 if callsign not found
    if found, returns cq and itu zones if known (or -1 if not)
  */
-int Cty::checkException(QByteArray call, int& zone) const
+int Cty::checkException(QByteArray call, int& zone,QString& sun) const
 {
     // start search in middle of list
     int  i1    = 0;
@@ -93,6 +93,7 @@ int Cty::checkException(QByteArray call, int& zone) const
     }
     if (found) {
         zone = CallE.at(i2)->Zone;
+        sun = CallE.at(i2)->sun;
         return(CallE.at(i2)->CtyIndx);
     } else {
         return(-1);
@@ -261,13 +262,12 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
 int Cty::idPfx2(Qso *qso, int sz) const
 {
     // is it an exception call?
-    int indx = checkException(qso->call, qso->zone);
+    int indx = checkException(qso->call, qso->zone,qso->sun);
     if (indx != -1) {
         qso->country      = indx;
         qso->country_name = countryList[indx]->name;
         qso->PfxName      = countryList[indx]->MainPfx;
         qso->bearing      = zoneBearing.at(qso->zone);
-        qso->sun          = zoneSun.at(qso->zone);
         qso->continent    = countryList[indx]->Continent;
         return(indx);
     }
@@ -700,6 +700,7 @@ void Cty::initialize(double la, double lo, int ZoneType)
                     // it NEITHER zone was defined, add call to exception list
                     // (with default zones set above). This is mostly for weird/unexpected calls
                     new_call->CtyIndx = indx;
+                    new_call->sun=new_country->sun;
                     CallE.append(new_call);
                 } else if ((!ZoneType && cqz == -1) || (ZoneType && ituz == -1)) {
                     // the exception doesn't have ONE of the zones defined, remove it
@@ -709,6 +710,7 @@ void Cty::initialize(double la, double lo, int ZoneType)
                     delete new_call;
                 } else {
                     new_call->CtyIndx = indx;
+                    new_call->sun=zoneSun.at(new_call->Zone);
                     CallE.append(new_call);
                 }
             }
@@ -769,16 +771,19 @@ void Cty::initialize(double la, double lo, int ZoneType)
     // exception
     for (int i = 1; i < CallE.size(); i++) {
         QByteArray tmp = CallE[i]->call;
+        QString suntmp= CallE[i]->sun;
         int        i0  = CallE[i]->Zone;
         int        i1  = CallE[i]->CtyIndx;
         int        j   = i - 1;
         while (j >= 0 && CallE[j]->call > tmp) {
             CallE[j + 1]->call    = CallE[j]->call;
+            CallE[j + 1]->sun    = CallE[j]->sun;
             CallE[j + 1]->Zone    = CallE[j]->Zone;
             CallE[j + 1]->CtyIndx = CallE[j]->CtyIndx;
             j--;
         }
         CallE[j + 1]->call    = tmp;
+        CallE[j + 1]->sun    = suntmp;
         CallE[j + 1]->Zone    = i0;
         CallE[j + 1]->CtyIndx = i1;
     }
@@ -934,4 +939,5 @@ void Cty::sunTimes(double lat, double lon, QString &sunTime)
             sunTime = sunTime+":"+QString::number(st);
         }
     }
+
 }

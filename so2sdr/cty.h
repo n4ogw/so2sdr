@@ -63,7 +63,7 @@ private:
     QList<int>        zoneBearing;
     QList<QString>    zoneSun;
 
-    int checkException(QByteArray call, int& zone) const;
+    int checkException(QByteArray call, int& zone, QString &sun) const;
     int idPfx2(Qso *qso, int sz) const;
     bool isDigit(char c) const;
     void sunTimes(double lat, double lon, QString &suntime);

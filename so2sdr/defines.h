@@ -188,6 +188,7 @@ typedef struct CtyCall {
     QByteArray call;
     int        CtyIndx;
     int        Zone;
+    QString    sun;
 } CtyCall;
 Q_DECLARE_TYPEINFO(CtyCall, Q_PRIMITIVE_TYPE);
 
