@@ -1,5 +1,6 @@
 TEMPLATE = subdirs
-SUBDIRS = src examples tests
+SUBDIRS = src 
+#examples tests
 CONFIG += ordered
 
 !infile($$OUT_PWD/.qmake.cache, QTSERIALPORT_PROJECT_ROOT) {
