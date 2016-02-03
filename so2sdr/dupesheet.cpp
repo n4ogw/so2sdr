@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,6 +16,7 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QDialog>
 #include <QKeyEvent>
 #include "dupesheet.h"
 
@@ -41,4 +42,11 @@ void DupeSheet::keyPressEvent(QKeyEvent *event)
     default:
         QWidget::keyPressEvent(event);
     }
+}
+
+void DupeSheet::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+    emit(closed(false));
+    QDialog::closeEvent(event);
 }

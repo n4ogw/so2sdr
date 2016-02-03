@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -104,23 +104,23 @@ void So2sdr::saveSpots()
     delete spotFile;
 }
 
-void So2sdr::showTelnet(int checkboxState)
+void So2sdr::showTelnet(bool checkboxState)
 
 // show/remove telnet window
 {
-    if (checkboxState == Qt::Unchecked) {
+    if (!checkboxState) {
         if (telnetOn) {
-            disconnect(telnet, SIGNAL(done()), telnetCheckBox, SLOT(toggle()));
+           // disconnect(telnet, SIGNAL(done()), telnetAction, SLOT(toggle()));
             telnet->hide();
             telnetOn = false;
         }
     } else {
         if (!telnet) {
             telnet = new Telnet(*settings);
+            connect(telnet, SIGNAL(done(bool)), telnetAction, SLOT(setChecked(bool)));
+            connect(telnet, SIGNAL(dxSpot(QByteArray, int)), this, SLOT(addSpot(QByteArray, int)));
         }
         telnet->show();
-        connect(telnet, SIGNAL(done()), telnetCheckBox, SLOT(toggle()));
-        connect(telnet, SIGNAL(dxSpot(QByteArray, int)), this, SLOT(addSpot(QByteArray, int)));
         telnetOn = true;
         setEntryFocus();
     }

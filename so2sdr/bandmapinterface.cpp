@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -492,9 +492,9 @@ void BandmapInterface::closeBandmap(int nr)
 /*!
    show/remove bandmap windows
  */
-void BandmapInterface::showBandmap(int nr, int checkboxState)
+void BandmapInterface::showBandmap(int nr, bool state)
 {
-    if (checkboxState == Qt::Checked) {
+    if (state) {
         if (!bandmapOn[nr]) {
             QStringList args;
             args <<  settings.value(s_sdr_config[nr],s_sdr_config_def[nr]).toString();
@@ -506,7 +506,7 @@ void BandmapInterface::showBandmap(int nr, int checkboxState)
 #endif
             bandmapProcess[nr].waitForStarted();
         }
-    } else if (checkboxState == Qt::Unchecked) {
+    } else {
         if (bandmapOn[nr]) {
             closeBandmap(nr);
         }

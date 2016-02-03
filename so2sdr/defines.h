@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.5";
+const QByteArray Version = "2.0.6";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000

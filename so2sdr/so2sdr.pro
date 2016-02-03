@@ -14,12 +14,9 @@
 TEMPLATE = app
 TARGET = so2sdr
 
-#will add serialport to QT when QtSerialPort stable in Qt5 and Qt4 abandoned
 QT += network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-#lessThan(QT_MAJOR_VERSION, 5):  system("git -C ../qtserialport checkout qt4-dev")
-#greaterThan(QT_MAJOR_VERSION, 4):  system("git -C ../qtserialport checkout 5.6")
+greaterThan(QT_MAJOR_VERSION, 4): QT += serialport
 
 
 HEADERS += cwmessagedialog.h \
@@ -144,13 +141,15 @@ SOURCES += cwmessagedialog.cpp \
 
  unix { 
     include (../common.pri)
-    include (../qtserialport/src/serialport/qt4support/serialport.prf)
+    if (lessThan(QT_MAJOR_VERSION, 5)) {
+         include (../qtserialport/src/serialport/qt4support/serialport.prf)
+     }
     include (../qttelnet/src/qttelnet.pri)
-
-# additional modifications to build QtSerialPort.
-    INCLUDEPATH += ../qtserialport/include/QtSerialPort
-    INCLUDEPATH += ../qtserialport/include
-    QMAKE_LIBDIR+= ../qtserialport/src/serialport
+    if (lessThan(QT_MAJOR_VERSION, 5)) {
+         INCLUDEPATH += ../qtserialport/include/QtSerialPort
+         INCLUDEPATH += ../qtserialport/include
+         QMAKE_LIBDIR += ../qtserialport/src/serialport
+    }
 
     CONFIG += link_pkgconfig
     PKGCONFIG += hamlib
@@ -159,7 +158,7 @@ SOURCES += cwmessagedialog.cpp \
     SOURCES += linux_pp.cpp 
 
     install.target = install
-#note added QtSerialPort lib. Remove this when QtSerialPort stabilizes in Qt5
+    if (lessThan(QT_MAJOR_VERSION, 5)) {
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
         install -d $$SO2SDR_INSTALL_DIR/lib; \
         install -o root -m 644 ../qtserialport/src/serialport/libQtSerialPort.so $$SO2SDR_INSTALL_DIR/lib; \
@@ -175,6 +174,21 @@ SOURCES += cwmessagedialog.cpp \
         install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
         install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
         install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png
+    } else {
+    install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
+        install -d $$SO2SDR_INSTALL_DIR/lib; \
+        install -d $$SO2SDR_INSTALL_DIR/share/applications; \
+        install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps; \
+        install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
+        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
+        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
+        install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
+        install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
+        install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
+        install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
+        install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
+        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png
+    }
     QMAKE_EXTRA_TARGETS += install
 }
 

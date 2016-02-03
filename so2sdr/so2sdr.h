@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,6 +19,7 @@
 #ifndef SO2SDR_H
 #define SO2SDR_H
 
+#include <QAction>
 #include <QSqlRecord>
 #include "ui_so2sdr.h"
 #include "bandmapentry.h"
@@ -147,13 +148,13 @@ private slots:
     void setGrab(bool);
     void setSummaryGroupBoxTitle();
     void setupNewContest(int result);
-    void showBandmap1(int checkboxState);
-    void showBandmap2(int checkboxState);
+    void showBandmap1(bool);
+    void showBandmap2(bool);
     void showCabrillo();
-    void showDupesheet1(int checkboxState);
-    void showDupesheet2(int checkboxState);
+    void showDupesheet1(bool checkboxState);
+    void showDupesheet2(bool checkboxState);
     void showHelp();
-    void showTelnet(int checkboxState);
+    void showTelnet(bool checkboxState);
     void speedDn(int nrig);
     void speedUp(int nrig);
     void startLogEdit();
@@ -218,7 +219,7 @@ private:
     int                  autoCQRadio;
     int                  band[NRIG];
     int                  multMode;
-    int                  nDupesheet;
+  //  int                  nDupesheet;
     int                  nqso[N_BANDS];
     int                  nrReserved[NRIG];
     int                  nrSent;
@@ -240,10 +241,6 @@ private:
     ParallelPort         *pport;
     QByteArray           lastMsg;
     QByteArray           origCallEntered[NRIG];
-    QCheckBox            *bandmapCheckBox[NRIG];
-    QCheckBox            *dupesheetCheckBox[NRIG];
-    QCheckBox            *grabCheckBox;
-    QCheckBox            *telnetCheckBox;
     QDir                 *directory;
     QErrorMessage        *errorBox;
     QPixmap              iconValid;
@@ -295,10 +292,10 @@ private:
     QThread              catThread;
     QTime                cqTimer;
     Qt::KeyboardModifiers toggleFxKeyMod;
-    QWidgetAction        *bandmapCheckAction[NRIG];
-    QWidgetAction        *dupesheetCheckAction[NRIG];
-    QWidgetAction        *grabAction;
-    QWidgetAction        *telnetCheckAction;
+ //   QAction              *dupesheetAction[NRIG];
+ //   QAction              *bandmapAction[NRIG];
+  //  QAction              *grabAction;
+  //  QAction              *telnetAction;
     QWidget              *grabWidget;
     RadioDialog          *radios;
     RigSerial            *cat;
@@ -344,6 +341,7 @@ private:
     bool logPartial(int nrig, QByteArray partial);
     void logSearch();
     void markDupe(int nrig);
+    int nDupesheet() const;
     void populateDupesheet();
     void prefixCheck(int nrig, const QString &call);
     void prefillExch(int nr);
@@ -359,7 +357,7 @@ private:
     void sendFunc(int i, Qt::KeyboardModifiers mode);
     bool setupContest();
     void setDefaultFreq(int nrig);
-    void showDupesheet(int nr, int checkboxState);
+    void showDupesheet(int nr, bool checkboxState);
     void spaceAltD();
     void spaceBar();
     void spaceSP(int nrig);

@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.0.5
+## So2sdr-bandmap Help Version 2.0.6
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -358,9 +358,15 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
-* Change to QtSerialPort library for serial communications (Winkey, OTRSP,
-Microham). Note that currently so2sdr will only compile under Qt 4.x. I will
-revisit Qt 5 compiling once QtSerialPort is more stable under Qt 5.
+## version 2.0.6 (02/02/2016)
+
+* internal changes to dupesheet
+
+* sunrise/sunset was displayed incorrectly for some calls in wl_cty.dat
+
+* fix build for Qt 4 and Qt 5. To rebuild and switch Qt versions, you
+must run "make distclean". The version of qmake used selects the version
+of Qt.
 
 * Another change to try to keep the TX status of the bandmap in sync
 

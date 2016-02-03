@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,8 +30,11 @@ Q_OBJECT
 public:
     explicit DupeSheet(QWidget *parent = 0);
     ~DupeSheet();
+signals:
+    void closed(bool);
 
 protected:
+    void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
 };
 #endif

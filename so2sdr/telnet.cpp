@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -82,7 +82,7 @@ void Telnet::closeEvent(QCloseEvent *event)
     settings.setValue("pos", pos());
     settings.endGroup();
 
-    emit(done());
+    emit(done(false));
 }
 
 /*!

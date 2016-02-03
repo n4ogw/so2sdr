@@ -2426,6 +2426,14 @@
     <property name="title">
      <string>&amp;Windows</string>
     </property>
+    <addaction name="dupesheetAction1"/>
+    <addaction name="dupesheetAction2"/>
+    <addaction name="separator"/>
+    <addaction name="bandmapAction1"/>
+    <addaction name="bandmapAction2"/>
+    <addaction name="separator"/>
+    <addaction name="telnetAction"/>
+    <addaction name="grabAction"/>
    </widget>
    <addaction name="FileMenu"/>
    <addaction name="SetupMenu"/>
@@ -2558,6 +2566,54 @@
   <action name="actionHistory">
    <property name="text">
     <string>Update History from Log</string>
+   </property>
+  </action>
+  <action name="dupesheetAction1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dupesheet 1</string>
+   </property>
+  </action>
+  <action name="dupesheetAction2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dupesheet 2</string>
+   </property>
+  </action>
+  <action name="bandmapAction1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bandmap 1</string>
+   </property>
+  </action>
+  <action name="bandmapAction2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bandmap 2</string>
+   </property>
+  </action>
+  <action name="telnetAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>DX Cluster &amp;telnet</string>
+   </property>
+  </action>
+  <action name="grabAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Grab Keyboard</string>
    </property>
   </action>
  </widget>

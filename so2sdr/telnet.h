@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -36,7 +36,7 @@ public:
     ~Telnet();
 
 signals:
-    void done();
+    void done(bool);
     void dxSpot(QByteArray, int);
 
 protected:

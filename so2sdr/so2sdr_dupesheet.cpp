@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -22,7 +22,6 @@
 #include <QErrorMessage>
 #include <QSqlQueryModel>
 #include <QSqlRecord>
-#include <QWidgetAction>
 #include "so2sdr.h"
 
 // //////// Visible dupesheet
@@ -41,16 +40,8 @@
 
 void So2sdr::initDupeSheet()
 {
-    nDupesheet           = 0;
-    dupesheetCheckBox[0] = new QCheckBox("Dupesheet 1", menuWindows);
-    dupesheetCheckBox[1] = new QCheckBox("Dupesheet 2", menuWindows);
-    for (int i = 0; i < NRIG; i++) {
-        dupesheetCheckAction[i] = new QWidgetAction(menuWindows);
-        dupesheetCheckAction[i]->setDefaultWidget(dupesheetCheckBox[i]);
-        menuWindows->addAction(dupesheetCheckAction[i]);
-    }
-    connect(dupesheetCheckBox[0], SIGNAL(stateChanged(int)), this, SLOT(showDupesheet1(int)));
-    connect(dupesheetCheckBox[1], SIGNAL(stateChanged(int)), this, SLOT(showDupesheet2(int)));
+    connect(dupesheetAction1,SIGNAL(triggered(bool)),this,SLOT(showDupesheet1(bool)));
+    connect(dupesheetAction2,SIGNAL(triggered(bool)),this,SLOT(showDupesheet2(bool)));
     dupeCalls[0]    = new QList<QByteArray>[dsColumns];
     dupeCalls[1]    = new QList<QByteArray>[dsColumns];
     dupeCallsKey[0] = new QList<char>[dsColumns];
@@ -61,101 +52,94 @@ void So2sdr::initDupeSheet()
         dupeCallsKey[0][i].clear();
         dupeCallsKey[1][i].clear();
     }
+    for (int nr=0;nr<NRIG;nr++) {
+        dupesheet[nr] = new DupeSheet(this);
+        dupesheet[nr]->hide();
+        dupesheet[nr]->setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+        dupesheet[nr]->installEventFilter(this);
+        dupesheet[nr]->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes0->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes0->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes0->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes1->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes1->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes1->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes2->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes2->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes2->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes3->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes3->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes3->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes4->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes4->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes4->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes5->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes5->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes5->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes6->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes6->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes6->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes7->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes7->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes7->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes8->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes8->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes8->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        dupesheet[nr]->Dupes9->setFocusPolicy(Qt::NoFocus);
+        dupesheet[nr]->Dupes9->setLineWrapMode(QTextEdit::NoWrap);
+        dupesheet[nr]->Dupes9->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+        // restore geometry
+        switch (nr) {
+        case 0: settings->beginGroup("DupeSheetWindow1"); break;
+        case 1: settings->beginGroup("DupeSheetWindow2"); break;
+        }
+        dupesheet[nr]->resize(settings->value("size", QSize(750, 366)).toSize());
+        dupesheet[nr]->move(settings->value("pos", QPoint(400, 400)).toPoint());
+        settings->endGroup();
+        dupesheet[nr]->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint |
+                                      Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    }
+    connect(dupesheet[0],SIGNAL(closed(bool)),dupesheetAction1,SLOT(setChecked(bool)));
+    connect(dupesheet[1],SIGNAL(closed(bool)),dupesheetAction2,SLOT(setChecked(bool)));
 }
 
-void So2sdr::showDupesheet1(int checkboxState)
+void So2sdr::showDupesheet1(bool checkboxState)
 {
     showDupesheet(0, checkboxState);
 }
 
-void So2sdr::showDupesheet2(int checkboxState)
+void So2sdr::showDupesheet2(bool checkboxState)
 {
     showDupesheet(1, checkboxState);
 }
 
-void So2sdr::showDupesheet(int nr, int checkboxState)
+void So2sdr::showDupesheet(int nr, bool checkboxState)
 {
-    if (checkboxState == Qt::Unchecked) {
-        // need to disconnect, otherwise signal will toggle checkbox again and
-        // reopen the dupesheet
-        disconnect(dupesheet[nr], SIGNAL(destroyed()), dupesheetCheckBox[nr], SLOT(toggle()));
-        // save window position
-        if (dupesheet[nr]) {
-            switch (nr) {
-            case 0: settings->beginGroup("DupeSheetWindow1"); break;
-            case 1: settings->beginGroup("DupeSheetWindow2"); break;
-            }
-            settings->setValue("size",dupesheet[nr]->size());
-            settings->setValue("pos", dupesheet[nr]->pos());
-            settings->endGroup();
-        }
-        dupesheet[nr]->close();
-        dupesheet[nr]=0;
-        nDupesheet--;
-        // if we still have one dupesheet open, repopulate it
-        if (nDupesheet==1) populateDupesheet();
-    } else {
-        if (!dupesheet[nr]) {
-            dupesheet[nr] = new DupeSheet(this);
-            dupesheet[nr]->setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
-            dupesheet[nr]->installEventFilter(this);
-            dupesheet[nr]->setAttribute(Qt::WA_DeleteOnClose);
-            dupesheet[nr]->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes0->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes0->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes0->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes1->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes1->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes1->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes2->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes2->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes2->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes3->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes3->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes3->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes4->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes4->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes4->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes5->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes5->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes5->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes6->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes6->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes6->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes7->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes7->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes7->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes8->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes8->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes8->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            dupesheet[nr]->Dupes9->setFocusPolicy(Qt::NoFocus);
-            dupesheet[nr]->Dupes9->setLineWrapMode(QTextEdit::NoWrap);
-            dupesheet[nr]->Dupes9->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-            // restore geometry
-            switch (nr) {
-            case 0: settings->beginGroup("DupeSheetWindow1"); break;
-            case 1: settings->beginGroup("DupeSheetWindow2"); break;
-            }
-            dupesheet[nr]->resize(settings->value("size", QSize(750, 366)).toSize());
-            dupesheet[nr]->move(settings->value("pos", QPoint(400, 400)).toPoint());
-            settings->endGroup();
-            dupesheet[nr]->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
-        }
-        nDupesheet++;
+    if (!checkboxState) {
+        dupesheet[nr]->hide();
         populateDupesheet();
+    } else {
         dupesheet[nr]->show();
-        connect(dupesheet[nr], SIGNAL(destroyed()), dupesheetCheckBox[nr], SLOT(toggle()));
+        populateDupesheet();
         setEntryFocus();
     }
 }
 
+int So2sdr::nDupesheet() const
+{
+    int i=0;
+    if (dupesheet[0]->isVisible()) i++;
+    if (dupesheet[1]->isVisible()) i++;
+    return i;
+}
+
 void So2sdr::updateDupesheet(QByteArray call,int nr)
 {
-    if (nDupesheet == 0) return;
+    if (nDupesheet() == 0) return;
 
     // if only one dupesheet is active, figure out which one it is
-    if (nDupesheet==1) {
+    if (nDupesheet()==1) {
         for (int i=0;i<NRIG;i++) {
             if (!dupesheet[i]) continue;
             if (dupesheet[i]->isVisible()) {
@@ -224,15 +208,15 @@ void So2sdr::updateDupesheet(QByteArray call,int nr)
     }
 }
 
+/*! populates dupe sheet. Needs to be called when switching bands
+ or first turning on the dupesheet
+ */
 void So2sdr::populateDupesheet()
-
-// populates dupe sheet. Needs to be called when switching bands
-// or first turning on the dupesheet
 {
     // if only one dupesheet is active, figure out which one it is
     bool oneactive=false;
     int nr=0;
-    if (nDupesheet==1) {
+    if (nDupesheet()==1) {
         oneactive=true;
         for (int i=0;i<NRIG;i++) {
             if (!dupesheet[i]) continue;
@@ -249,7 +233,6 @@ void So2sdr::populateDupesheet()
             if (nr!=id) continue;
             ib=activeRadio;
         }
-
         dupesheet[id]->Dupes0->clear();
         dupesheet[id]->Dupes1->clear();
         dupesheet[id]->Dupes2->clear();

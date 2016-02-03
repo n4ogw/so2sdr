@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -59,7 +59,7 @@ signals:
 public slots:
     void bandmapSetFreq(int f,int nr);
     void closeBandmap(int nr);
-    void showBandmap(int nr,int checkboxState);
+    void showBandmap(int nr, bool state);
     void setBandmapTxStatus(bool b, int nr);
 
 private slots:

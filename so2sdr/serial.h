@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -60,9 +60,9 @@ const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM"
                             "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
 
 /*!
-   Radio serial communications for one radio using Hamlib library.
+   Radio serial communications for both radios using Hamlib library.
 
-   note that this class will reside in its own QThread
+   note that this class will run in its own QThread
  */
 class RigSerial : public QObject
 {
@@ -88,7 +88,6 @@ public:
     void openRig();
     bool radioOpen(int nrig);
     void sendRaw(int nrig,QByteArray cmd);
-    void stopSerial();
 
     static QList<hamlibmfg>        mfg;
     static QList<QByteArray>       mfgName;
@@ -100,6 +99,7 @@ public slots:
     void qsyExact(int nrig, int f);
     void setRigMode(int nrig, rmode_t m, pbwidth_t pb);
     void run();
+    void stopSerial();
 
 protected:
     void timerEvent(QTimerEvent *event);

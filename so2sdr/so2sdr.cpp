@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -52,7 +52,6 @@
 #include <QStyle>
 #include <QThread>
 #include <QTimer>
-#include <QWidgetAction>
 #include "hamlib/rig.h"
 #include "defines.h"
 #include "so2sdr.h"
@@ -87,8 +86,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // pointers for each radio
     for (int i=0;i<NRIG;i++) {
         wpmLineEditPtr[i]->setFocusPolicy(Qt::NoFocus);
-        lineEditCall[i]->setValidator(new UpperValidator(lineEditCall[i]));
-        lineEditExchange[i]->setValidator(new UpperValidator(lineEditExchange[i]));
+        // RTC 02/02/16 Qt5 bug: textEdited() signal is not emitted when
+        // a validator is used; screws up prefixCheck
+        //lineEditCall[i]->setValidator(new UpperValidator(lineEditCall[i]));
+        //lineEditExchange[i]->setValidator(new UpperValidator(lineEditExchange[i]));
     }
     rLabelPtr[0]      = new QLabel("<font color=#FF0000>R1:OFF /font>");
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
@@ -268,33 +269,13 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     actionSSB_Messages->setEnabled(false);
 #endif
     initDupeSheet();
-    menuWindows->addSeparator();
-    bandmapCheckBox[0] = new QCheckBox("Bandmap 1", menuWindows);
-    bandmapCheckBox[1] = new QCheckBox("Bandmap 2", menuWindows);
-    connect(bandmap,SIGNAL(bandmap1state(bool)),bandmapCheckBox[0],SLOT(setChecked(bool)));
-    connect(bandmap,SIGNAL(bandmap2state(bool)),bandmapCheckBox[1],SLOT(setChecked(bool)));
     connect(bandmap,SIGNAL(bandmap1state(bool)),this,SLOT(sendCalls1(bool)));
     connect(bandmap,SIGNAL(bandmap2state(bool)),this,SLOT(sendCalls2(bool)));
-
-    for (int i = 0; i < NRIG; i++) {
-        bandmapCheckAction[i] = new QWidgetAction(menuWindows);
-        bandmapCheckAction[i]->setDefaultWidget(bandmapCheckBox[i]);
-        menuWindows->addAction(bandmapCheckAction[i]);
-    }
-    grabCheckBox = new QCheckBox("Grab keyboard", menuWindows);
-    grabCheckBox->setCheckState(Qt::Unchecked);
-    grabAction = new QWidgetAction(menuWindows);
-    grabAction->setDefaultWidget(grabCheckBox);
-    menuWindows->addAction(grabAction);
-    connect(bandmapCheckBox[0], SIGNAL(stateChanged(int)), this, SLOT(showBandmap1(int)));
-    connect(bandmapCheckBox[1], SIGNAL(stateChanged(int)), this, SLOT(showBandmap2(int)));
-    connect(grabCheckBox, SIGNAL(toggled(bool)), this, SLOT(setGrab(bool)));
-    connect(grabCheckBox, SIGNAL(clicked()), menuWindows, SLOT(close()));
-    telnetCheckBox    = new QCheckBox("Telnet", menuWindows);
-    telnetCheckAction = new QWidgetAction(menuWindows);
-    telnetCheckAction->setDefaultWidget(telnetCheckBox);
-    menuWindows->addSeparator();
-    menuWindows->addAction(telnetCheckAction);
+    connect(bandmap,SIGNAL(bandmap1state(bool)),bandmapAction1,SLOT(setChecked(bool)));
+    connect(bandmap,SIGNAL(bandmap2state(bool)),bandmapAction2,SLOT(setChecked(bool)));
+    connect(bandmapAction1,SIGNAL(triggered(bool)),this,SLOT(showBandmap1(bool)));
+    connect(bandmapAction2,SIGNAL(triggered(bool)),this,SLOT(showBandmap2(bool)));
+    connect(grabAction,SIGNAL(triggered(bool)),this,SLOT(setGrab(bool)));
 
     // ungrab keyboard when menubar menus are open
     connect(SetupMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
@@ -306,7 +287,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(HelpMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
     connect(HelpMenu,SIGNAL(aboutToHide()),this,SLOT(regrab()));
 
-    connect(telnetCheckBox, SIGNAL(stateChanged(int)), this, SLOT(showTelnet(int)));
+    connect(telnetAction,SIGNAL(triggered(bool)),this,SLOT(showTelnet(bool)));
     lineEditCall[0]->installEventFilter(this);
     lineEditCall[1]->installEventFilter(this);
     lineEditExchange[0]->installEventFilter(this);
@@ -357,7 +338,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(startWinkey()), this, SLOT(startWinkey()));
     connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
     startWinkey();
-    connect(winkey->winkeyPort, SIGNAL(readyRead()), winkey, SLOT(receive()));
 
     openRadios();
     switchAudio(activeRadio);
@@ -378,6 +358,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     menubar->setNativeMenuBar(false);
     disableUI();
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
+    connect(qApp,SIGNAL(aboutToQuit()),cat,SLOT(stopSerial()));
 
     // restore window geometry
     settings->beginGroup("MainWindow");
@@ -424,25 +405,13 @@ So2sdr::~So2sdr()
     delete grabLabel;
     if (master) delete master;
     if (contest) delete contest;
-    delete dupesheetCheckBox[0];
-    delete dupesheetCheckBox[1];
-    delete dupesheetCheckAction[0];
-    delete dupesheetCheckAction[1];
     delete [] dupeCalls[0];
     delete [] dupeCalls[1];
     delete [] dupeCallsKey[0];
     delete [] dupeCallsKey[1];
     delete dupesheet[0];
     delete dupesheet[1];
-    delete bandmapCheckBox[0];
-    delete bandmapCheckBox[1];
-    delete bandmapCheckAction[0];
-    delete bandmapCheckAction[1];
-    delete grabCheckBox;
-    delete grabAction;
     delete telnet;
-    delete telnetCheckBox;
-    delete telnetCheckAction;
     delete directory;
     delete winkey;
     delete pport;
@@ -757,13 +726,13 @@ void So2sdr::disableUI()
     actionCabrillo->setEnabled(false);
     actionHistory->setEnabled(false);
     actionHistory->setText("Update history from log");
-    grabCheckBox->setEnabled(false);
+    grabAction->setEnabled(false);
     actionImport_Cabrillo->setEnabled(false);
-    dupesheetCheckBox[0]->setEnabled(false);
-    dupesheetCheckBox[1]->setEnabled(false);
-    telnetCheckBox->setEnabled(false);
-    bandmapCheckBox[0]->setEnabled(false);
-    bandmapCheckBox[1]->setEnabled(false);
+    dupesheetAction1->setEnabled(false);
+    dupesheetAction2->setEnabled(false);
+    telnetAction->setEnabled(false);
+    bandmapAction1->setEnabled(false);
+    bandmapAction2->setEnabled(false);
     uiEnabled = false;
 }
 
@@ -775,9 +744,11 @@ void So2sdr::enableUI()
     for (int i = 0; i < NRIG; i++) {
         lineEditCall[i]->setEnabled(true);
         lineEditExchange[i]->setEnabled(true);
-        bandmapCheckBox[i]->setEnabled(true);
-        dupesheetCheckBox[i]->setEnabled(true);
     }
+    bandmapAction1->setEnabled(true);
+    dupesheetAction1->setEnabled(true);
+    bandmapAction2->setEnabled(true);
+    dupesheetAction2->setEnabled(true);
     cwMessage->setEnabled(true);
 #ifdef DVK_ENABLE
     ssbMessage->setEnabled(true);
@@ -789,9 +760,9 @@ void So2sdr::enableUI()
     actionSave->setEnabled(true);
     actionADIF->setEnabled(true);
     actionCabrillo->setEnabled(true);
-    grabCheckBox->setEnabled(true);
+    grabAction->setEnabled(true);
     actionImport_Cabrillo->setEnabled(true);
-    telnetCheckBox->setEnabled(true);
+    telnetAction->setEnabled(true);
     uiEnabled = true;
     callFocus[activeRadio]=true;
     setEntryFocus();
@@ -1834,7 +1805,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2015 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2016 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>QtSolutions_Telnet 2.1"
@@ -2350,7 +2321,7 @@ void So2sdr::switchRadios(bool switchcw)
     updateMults(activeRadio);
 
     // if only using 1 dupesheet, repopulate it so that it follows the active radio
-    if (nDupesheet==1) populateDupesheet();
+    if (nDupesheet()==1) populateDupesheet();
 }
 
 /*!
@@ -2358,6 +2329,7 @@ void So2sdr::switchRadios(bool switchcw)
  */
 void So2sdr::prefixCheck1(const QString &call)
 {
+    lineEditCall1->setText(call.toUpper());
     prefixCheck(0, call);
 }
 
@@ -2366,6 +2338,7 @@ void So2sdr::prefixCheck1(const QString &call)
  */
 void So2sdr::prefixCheck2(const QString &call)
 {
+    lineEditCall2->setText(call.toUpper());
     prefixCheck(1, call);
 }
 
@@ -2771,7 +2744,7 @@ bool So2sdr::enterFreqOrMode()
     updateBreakdown();
     updateMults(activeRadio);
 
-    if (nDupesheet) {
+    if (nDupesheet()) {
         populateDupesheet();
     }
 
@@ -2884,7 +2857,7 @@ void So2sdr::updateRadioFreq()
         if (contest && tmp[i] != band[i]) {
             if (i == activeRadio) {
                 updateMults(i);
-                if (nDupesheet) {
+                if (nDupesheet()) {
                     populateDupesheet();
                 }
             }
@@ -3686,7 +3659,7 @@ void So2sdr::rescore()
     }
     updateBreakdown();
     updateMults(activeRadio);
-    if (nDupesheet) populateDupesheet();
+    if (nDupesheet()) populateDupesheet();
 }
 
 
@@ -4132,14 +4105,6 @@ void So2sdr::initPointers()
     qso[0]       = 0;
     qso[1]       = 0;
     bandmap      = 0;
-    dupesheetCheckBox[0] = 0;
-    dupesheetCheckBox[1] = 0;
-    dupesheetCheckAction[0] = 0;
-    dupesheetCheckAction[1] = 0;
-    bandmapCheckBox[0] = 0;
-    bandmapCheckBox[1] = 0;
-    grabCheckBox = 0;
-    telnetCheckBox = 0;
     dupeCalls[0]=0;
     dupeCalls[1]=0;
     dupeCallsKey[0]=0;
@@ -4173,8 +4138,6 @@ void So2sdr::initPointers()
     multWorkedLabel[0][1] = Mult1Label2;
     multWorkedLabel[1][0] = Mult2Label;
     multWorkedLabel[1][1] = Mult2Label2;
-    //bandmapProcess[0]     = 0;
-    //bandmapProcess[1]     = 0;
 
     // the following is needed to get a monospace font under Windows
     for (int i=0;i<NRIG;i++) {
@@ -4249,7 +4212,6 @@ void So2sdr::initVariables()
     for (int i = 0; i < N_TIMERS; i++) timerId[i] = 0;
     ratePtr = 0;
     for (int i = 0; i < 60; i++) rateCount[i] = 0;
-    nDupesheet   = 0;
     telnetOn          = false;
     for (int i = 0; i < MMAX; i++) {
         excludeMults[i].clear();
@@ -4327,14 +4289,14 @@ void So2sdr::screenShot()
 }
 
 
-void So2sdr::showBandmap1(int checkboxState)
+void So2sdr::showBandmap1(bool state)
 {
     menuWindows->hide();
-    bandmap->showBandmap(0,checkboxState);
+    bandmap->showBandmap(0,state);
 }
 
-void So2sdr::showBandmap2(int checkboxState)
+void So2sdr::showBandmap2(bool state)
 {
     menuWindows->close();
-    bandmap->showBandmap(1,checkboxState);
+    bandmap->showBandmap(1,state);
 }

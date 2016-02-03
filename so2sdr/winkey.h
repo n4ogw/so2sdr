@@ -1,4 +1,4 @@
-/*! Copyright 2010-2015 R. Torsten Clay N4OGW
+/*! Copyright 2010-2016 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -41,11 +41,6 @@ public:
     void setSpeed(int speed);
     bool winkeyIsOpen() const;
 
-/*! @todo make this private; can connect signals instead of referring directly to winkeyPort
- */
-   // QextSerialPort *winkeyPort;
-    QSerialPort *winkeyPort;
-
 signals:
     void version(int ver);
     void winkeyTx(bool, int);
@@ -59,9 +54,9 @@ private slots:
     void receiveInit();
 
 private:
+    QSerialPort *winkeyPort;
     bool       sending;
     bool       winkeyOpen;
-    int        initStatus;
     int        nchar;
     int        rigNum;
     int        winkeySpeedPot;
@@ -69,6 +64,7 @@ private:
     QByteArray sendBuff;
     QSettings& settings;
     void closeWinkey();
+    void openWinkey2();
 };
 
 #endif // WINKEY_H

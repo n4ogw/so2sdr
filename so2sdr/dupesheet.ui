@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
+    <width>765</width>
     <height>366</height>
    </rect>
   </property>
@@ -18,13 +18,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>750</width>
+    <width>765</width>
     <height>250</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>750</width>
+    <width>783</width>
     <height>800</height>
    </size>
   </property>
@@ -48,13 +48,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -82,13 +82,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -113,13 +113,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -147,13 +147,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -181,13 +181,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -215,13 +215,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -249,13 +249,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -283,13 +283,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -317,13 +317,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
@@ -351,13 +351,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>60</width>
+       <width>75</width>
        <height>250</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>80</width>
+       <width>75</width>
        <height>800</height>
       </size>
      </property>
