@@ -15,17 +15,17 @@ include g++  and pkg-config.
 
 Download one of the source code packages:
 
-* [so2sdr-2.0.5.tgz](../downloads/so2sdr-2.0.5.tgz)
+* [so2sdr-2.0.6.tgz](../downloads/so2sdr-2.0.6.tgz)
 
 
 1. Unpack the archive:
 
-        tar xzvof sosdr-2.0.5.tgz
+        tar xzvof sosdr-2.0.6.tgz
 
 2. Build it
 
 
-        cd so2sdr
+        cd so2sdr-2.0.6
         qmake
         make
 
