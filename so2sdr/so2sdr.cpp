@@ -60,6 +60,7 @@
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 {
     setupUi(this);
+    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
     initPointers();
     initVariables();
 
