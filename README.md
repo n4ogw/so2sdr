@@ -16,7 +16,7 @@ However, there are a number of issues with Qt5 that make the program unusable.
 These are a combination of Qt bugs and undocumented differences between Qt4 and Qt5.
 For example, UDP socket support was broken in Qt 5.4.x but fixed in Qt 5.5.x.
 There also appear to be differences in the SQL database classes in Qt5 versus Qt4.
-It's going to take me a while to figure them out- for now I recommed sticking with
+It's going to take me a while to figure them out- for now I recommend sticking with
 Qt 4.8.x
 
 ------------------------
