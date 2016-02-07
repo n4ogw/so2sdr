@@ -2617,13 +2617,13 @@ void So2sdr::updateWorkedMult(int nr)
         if (!csettings->value(c_multsband,c_multsband_def).toBool()) {
             if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
                 // mult already worked
-                if (qso[nr]->isamult[nr])
+                if (qso[nr]->isamult[ii])
                     tmp = tmp + "<font color=#000000>      WORKED      </font>";
                 else
                     tmp.clear();
             } else {
                 // needed
-                if (qso[nr]->isamult[nr])
+                if (qso[nr]->isamult[ii])
                     tmp = tmp + "<font color=#CC0000>      NEEDED      </font>";
                 else
                     tmp.clear();
