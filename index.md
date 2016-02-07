@@ -12,6 +12,18 @@ in May/June 2013 National Contest Journal [NCJ](http://ncjweb.com).
 The program is primarily developed for Linux use, but can also
 be compiled for Windows. 
 
+### News
+
+* 02/07/2016 Qt4 versus Qt5: currently the code compiles with either Qt4 or Qt5.
+The version of Qt is selected by using the appropriate version of qmake.
+However, there are a number of issues with Qt5 that make the program unusable.
+These are a combination of Qt bugs and undocumented differences between Qt4 and Qt5.
+For example, UDP socket support was broken in Qt 5.4.x but fixed in Qt 5.5.x.
+There also appear to be differences in the SQL database classes in Qt5 versus Qt4.
+It's going to take me a while to figure them out- for now I recommed sticking with
+Qt 4.8.x
+
+
 ### Features
 
 * Two-radio (SO2R) support. Headphone and radio switching via parallel port 
