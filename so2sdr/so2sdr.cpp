@@ -89,8 +89,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         wpmLineEditPtr[i]->setFocusPolicy(Qt::NoFocus);
         // RTC 02/02/16 Qt5 bug: textEdited() signal is not emitted when
         // a validator is used; screws up prefixCheck
-        //lineEditCall[i]->setValidator(new UpperValidator(lineEditCall[i]));
-        //lineEditExchange[i]->setValidator(new UpperValidator(lineEditExchange[i]));
+#if QT_VERSION < 0x050000	
+        lineEditCall[i]->setValidator(new UpperValidator(lineEditCall[i]));
+        lineEditExchange[i]->setValidator(new UpperValidator(lineEditExchange[i]));
+#endif
     }
     rLabelPtr[0]      = new QLabel("<font color=#FF0000>R1:OFF /font>");
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
@@ -2330,8 +2332,12 @@ void So2sdr::switchRadios(bool switchcw)
  */
 void So2sdr::prefixCheck1(const QString &call)
 {
-    lineEditCall1->setText(call.toUpper());
+#if QT_VERSION >= 0x050000  
+    lineEditCall[0]->setText(call.toUpper());
+    prefixCheck(0, call.toUpper());
+#else
     prefixCheck(0, call);
+#endif
 }
 
 /*!
@@ -2339,8 +2345,12 @@ void So2sdr::prefixCheck1(const QString &call)
  */
 void So2sdr::prefixCheck2(const QString &call)
 {
-    lineEditCall2->setText(call.toUpper());
+#if QT_VERSION >= 0x050000  
+    lineEditCall[1]->setText(call.toUpper());
+    prefixCheck(1, call.toUpper());
+#else
     prefixCheck(1, call);
+#endif
 }
 
 /*!
@@ -2348,7 +2358,12 @@ void So2sdr::prefixCheck2(const QString &call)
  */
 void So2sdr::exchCheck1(const QString &exch)
 {
+#if QT_VERSION >= 0x050000
+    lineEditExchange[0]->setText(exch.toUpper());
+    exchCheck(0,exch.toUpper());
+#else    
     exchCheck(0,exch);
+#endif
 }
 
 /*!
@@ -2356,7 +2371,12 @@ void So2sdr::exchCheck1(const QString &exch)
  */
 void So2sdr::exchCheck2(const QString &exch)
 {
+#if QT_VERSION >= 0x050000
+    lineEditExchange[1]->setText(exch.toUpper());
+    exchCheck(1,exch.toUpper());
+#else    
     exchCheck(1,exch);
+#endif    
 }
 
 /*!
