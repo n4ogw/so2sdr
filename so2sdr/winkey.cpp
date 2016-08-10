@@ -32,9 +32,13 @@ Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
     QSerialPortInfo info(settings.value(s_winkey_device,s_winkey_device_def).toString());
     winkeyPort = new QSerialPort(info);
 
+    txPtr=0;
+    ignoreEcho=false;
+    echoMode=true;
     winkeyVersion  = 0;
     nchar          = 0;
-    sendBuff       = "";
+    sendBuff.clear();
+    sent.clear();
     sending        = false;
     winkeyOpen     = false;
     winkeySpeedPot = 0;
@@ -86,10 +90,38 @@ void Winkey::receive()
             // speed pot setting in 6 lowest bits
             winkeySpeedPot = wkbyte & 0x3f;
         } else    {
-            // This would be an echo byte
+            // echo byte
+            // in case CW was canceled, ignore any echo still associated with previous
+            // message
+            if (ignoreEcho) {
+                ignoreEcho=false;
+                return;
+            }
+            if (echoMode) processEcho(wkbyte);
         }
     }
 }
+
+/*! process echo bytes
+  */
+void Winkey::processEcho(unsigned char byte)
+{
+    // find first occurence of this character starting at txPtr; this
+    // will skip some special characters which are not echoed (half space, etc)
+    int i=sent.indexOf(byte,txPtr);
+    if (i!=-1) {
+        txPtr=i;
+        QString s=QString::number(rigNum+1)+":"+sent;
+        s.truncate(i+3);
+        emit(textSent(s,1700));
+    }
+}
+
+void Winkey::setEchoMode(bool b)
+{
+    echoMode=b;
+}
+
 
 /*!
    Slot triggered when data is available at port, used during winkey
@@ -114,14 +146,18 @@ void Winkey::receiveInit()
     }
 }
 
-
 /*!
    load a message into buffer
  */
 void Winkey::loadbuff(QByteArray msg)
 {
     sendBuff.append(msg);
-    nchar = sendBuff.length();
+    sent=QString::fromAscii(sendBuff);
+
+    sent.remove('|'); // remove half spaces
+    sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel buffered speed change
+    nchar = sent.length();
+    txPtr=0;
 }
 
 /*!
@@ -130,12 +166,11 @@ void Winkey::loadbuff(QByteArray msg)
 void Winkey::sendcw()
 {
     if (winkeyPort->isOpen()) {
-        winkeyPort->write(sendBuff.data(), nchar);
+        winkeyPort->write(sendBuff.data(), sendBuff.length());
     } else {
         winkeyOpen = false;
     }
-    nchar = 0;
-    sendBuff.resize(0);
+    sendBuff.clear();
 }
 
 /*!
@@ -151,8 +186,12 @@ void Winkey::cancelcw()
         winkeyOpen = false;
     }
     sending=false;
+    sent.clear();
+    if (txPtr) ignoreEcho=true;
+    txPtr=0;
     sendBuff.resize(0);
     nchar = 0;
+    emit(cwCanceled());
 }
 
 
@@ -269,7 +308,7 @@ void Winkey::openWinkey2()
 
     // set other winkey features
     buff[0] = 0x0e;     // Set WK options command, next byte sets WK options
-    buff[1] = 0;
+    buff[1] = 4;        // enables serial echoback
 
     // CT spacing?  Set bit 0 (lsb) of buff[1]
     if (settings.value(s_winkey_ctspace,s_winkey_ctspace_def).toBool()) {

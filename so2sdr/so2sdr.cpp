@@ -340,6 +340,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkey, SIGNAL(winkeyTx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
     connect(winkeyDialog, SIGNAL(startWinkey()), this, SLOT(startWinkey()));
     connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
+    connect(winkey,SIGNAL(textSent(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
+    connect(winkey,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
+
     startWinkey();
 
     openRadios();
@@ -1971,6 +1974,8 @@ void So2sdr::duelingCQActivate (bool state) {
  toggles with Alt/-
  Buffers and sends call letters until CW catches up
  Backspaced changes before CW catches up to buffer results in stopped CW
+
+ winkey echo is turned off while call is sent
  */
 void So2sdr::autoSendExch() {
 
@@ -1983,16 +1988,20 @@ void So2sdr::autoSendExch() {
 
                 int comp = QString::compare(tmpCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
                 if ( comp < 0) {
+                    winkey->setEchoMode(false);
                     int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
                     tmpCall = lineEditCall[activeRadio]->text();
                     QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
                     send(callDiff.toLatin1(), false);
                 } else if (comp > 0) {
+                    winkey->setEchoMode(true);
                     winkey->cancelcw();
                     autoSendPause = true;
                     tmpCall.clear();
                 } else { // calls equal
                     autoSendExch_exch();
+                    So2sdrStatusBar->showMessage(QString::number(activeRadio+1)+":"+tmpCall,1700);
+                    winkey->setEchoMode(true);
                 }
 
             } else if (activeTxRadio != activeRadio && !exchangeSent[activeTxRadio] && cqMode[activeTxRadio]
@@ -3197,7 +3206,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
 #endif
     int        tmp_wpm = wpm[activeTxRadio];
     QByteArray out     = "";
-    QByteArray txt = "";
     QByteArray command = "";
 
     // will not overwrite a dupe message that is present
@@ -3286,7 +3294,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
         int i0 = 0;
         while (i1 != -1) {
             out.append(msg.mid(i0, i1 - i0));
-            txt.append(msg.mid(i0, i1 - i0));
             i2  = msg.indexOf("}", i1);
             QByteArray val = msg.mid(i1 + 1, i2 - i1 - 1);
             val = val.trimmed();
@@ -3296,15 +3303,12 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                     switch (i) {
                     case 0:  // CALL
                         out.append(settings->value(s_call,s_call_def).toByteArray());
-                        txt.append(settings->value(s_call,s_call_def).toByteArray());
                         break;
                     case 1:  // #
                         if (nrReserved[activeTxRadio]) {
                             out.append(QString::number(nrReserved[activeTxRadio]));
-                            txt.append(QString::number(nrReserved[activeTxRadio]));
                         } else {
                             out.append(QString::number(nrSent));
-                            txt.append(QString::number(nrSent));
                         }
                         break;
                     case 2:  // SPEED UP
@@ -3340,35 +3344,27 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 6: // State
                         out.append(settings->value(s_state,s_state_def).toByteArray());
-                        txt.append(settings->value(s_state,s_state_def).toByteArray());
                         break;
                     case 7: // ARRL Section
                         out.append(settings->value(s_section,s_section_def).toByteArray());
-                        txt.append(settings->value(s_section,s_section_def).toByteArray());
                         break;
                     case 8: // Name
                         out.append(settings->value(s_name,s_name_def).toByteArray());
-                        txt.append(settings->value(s_name,s_name_def).toByteArray());
                         break;
                     case 9: // CQ zone
                         out.append(settings->value(s_cqzone,s_cqzone_def).toByteArray());
-                        txt.append(settings->value(s_cqzone,s_cqzone_def).toByteArray());
                         break;
                     case 10: // ITU Zone
                         out.append(settings->value(s_ituzone,s_ituzone_def).toByteArray());
-                        txt.append(settings->value(s_ituzone,s_ituzone_def).toByteArray());
                         break;
                     case 11: // grid
                         out.append(settings->value(s_grid,s_grid_def).toByteArray());
-                        txt.append(settings->value(s_grid,s_grid_def).toByteArray());
                         break;
                     case 12: // call entered
                         if (!toggleMode) {
                             out.append(qso[activeRadio]->call);
-                            txt.append(qso[activeRadio]->call);
                         } else {
                             out.append(qso[activeTxRadio]->call);
-                            txt.append(qso[activeTxRadio]->call);
                         }
                         break;
                     case 13: // togglestereopin
@@ -3402,7 +3398,6 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         }
                         if (nr != 0) {
                             out.append(QString::number(nr));
-                            txt.append(QString::number(nr));
                         }
                         break;
                     case 19: // clear RIT
@@ -3410,11 +3405,9 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 20: // RIG_FREQ
                         out.append(QByteArray::number(qRound(rigFreq[activeRadio] / 1000.0)));
-                        txt.append(QByteArray::number(qRound(rigFreq[activeRadio] / 1000.0)));
                         break;
                     case 21: // RIG2_FREQ
                         out.append(QByteArray::number(qRound(rigFreq[activeRadio ^ 1] / 1000.0)));
-                        txt.append(QByteArray::number(qRound(rigFreq[activeRadio ^ 1] / 1000.0)));
                         break;
                     case 22: // best cq
                         bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[band[activeRadio]],
@@ -3510,20 +3503,14 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
         // add any remaining text
         if (i2 < (i1 = msg.size())) {
             out.append(msg.right(i1 - i2 - 1));
-            txt.append(msg.right(i1 - i2 - 1));
         }
 
         // cancel any buffered speed changes
         out.append(0x1e);
         if (repeat) {
             send(lastMsg,stopcw);
-            if (!statusBarDupe && lastMsg.size()) So2sdrStatusBar->showMessage(lastMsg.simplified());
         } else {
             send(out,stopcw);
-            if (!statusBarDupe && txt.size()) {
-                txt.prepend(QByteArray::number(activeTxRadio + 1) + ":");
-                So2sdrStatusBar->showMessage(txt.simplified());
-            }
         }
     } else {
         // no macro present send as-is
@@ -3539,12 +3526,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
             switchTransmit(activeRadio, tmp_wpm);
         }
         out.append(msg);
-        txt.append(msg);
         send(out,stopcw);
-        if (!statusBarDupe && txt.size()) {
-            txt.prepend(QByteArray::number(activeTxRadio + 1) + ":");
-            So2sdrStatusBar->showMessage(txt.simplified());
-        }
     }
     lastMsg = out;
 }

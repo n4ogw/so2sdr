@@ -38,10 +38,13 @@ public:
     bool isSending() const;
     void sendcw();
     void switchTransmit(int nrig);
+    void setEchoMode(bool b);
     void setSpeed(int speed);
     bool winkeyIsOpen() const;
 
 signals:
+    void cwCanceled();
+    void textSent(const QString& t,int);
     void version(int ver);
     void winkeyTx(bool, int);
 
@@ -55,16 +58,21 @@ private slots:
 
 private:
     QSerialPort *winkeyPort;
+    bool       echoMode;
+    bool       ignoreEcho;
     bool       sending;
     bool       winkeyOpen;
     int        nchar;
     int        rigNum;
+    int        txPtr;
     int        winkeySpeedPot;
     int        winkeyVersion;
     QByteArray sendBuff;
+    QString sent;
     QSettings& settings;
     void closeWinkey();
     void openWinkey2();
+    void processEcho(unsigned char byte);
 };
 
 #endif // WINKEY_H
