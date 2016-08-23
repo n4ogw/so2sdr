@@ -138,11 +138,12 @@ bool BandmapDisplay::invert() const
  */
 void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
 {
+    bool reverse=settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool();
     int hgt=height();
     unsigned char cut;
     if (bg < 225) cut = bg + 30;
     else cut = bg;
-    if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+    if (reverse) {
         pixmap.scroll(1, 0, QRect(cornerx, cornery, width(), hgt));
     } else {
         pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), hgt));
@@ -162,7 +163,7 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));
             }
-            if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+            if (reverse) {
                 painter.drawPoint(MAX_W - width(), j);
             } else {
                 painter.drawPoint(MAX_W - 1, j);
@@ -181,7 +182,7 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
             } else {
                 painter.setPen(qRgb(data[i], data[i], data[i]));
             }
-            if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+            if (reverse) {
                 painter.drawPoint(MAX_W - width(), j);
             } else {
                 painter.drawPoint(MAX_W - 1, j);
