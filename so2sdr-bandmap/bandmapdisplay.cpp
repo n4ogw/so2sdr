@@ -139,6 +139,7 @@ bool BandmapDisplay::invert() const
 void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
 {
     bool reverse=settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool();
+    int fft=settings->value(s_sdr_fft,s_sdr_fft_def).toInt();
     int hgt=height();
     unsigned char cut;
     if (bg < 225) cut = bg + 30;
@@ -151,7 +152,7 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
     int      dy = hgt / 2 - vfoPos;
     QPainter painter(&pixmap);
     if (!_invert) {
-        for (int i = (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - hgt) / 2 - dy, j = (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() + hgt) / 2 - 1 + dy; j >= (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - hgt) / 2 + dy; i++, j--) {
+        for (int i = (fft - hgt) / 2 - dy, j = (fft + hgt) / 2 - 1 + dy; j >= (fft - hgt) / 2 + dy; i++, j--) {
             if (cmap[j] && data[i] > cut && mark) {
                 unsigned char r=data[i];
                 unsigned char g=data[i];
@@ -170,7 +171,7 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
             }
         }
     } else {
-        for (int i = (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - hgt) / 2 - dy, j = (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - hgt) / 2 + dy; j < settings->value(s_sdr_fft,s_sdr_fft_def).toInt(); i++, j++) {
+        for (int i = (fft - hgt) / 2 - dy, j = (fft - hgt) / 2 + dy; j < fft; i++, j++) {
             if (mark && cmap[j] && data[i] > cut) {
                 unsigned char r=data[i];
                 unsigned char g=data[i];
