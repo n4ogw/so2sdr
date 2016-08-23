@@ -68,6 +68,10 @@ void Afedri::initialize()
             send_rx_command(RCV_START);
             set_freq(settings->value(s_sdr_afedri_freq1,s_sdr_afedri_freq1_def).toUInt(),1);
             set_freq(settings->value(s_sdr_afedri_freq2,s_sdr_afedri_freq2_def).toUInt(),2);
+            // for some reason, need to send frequency again to channel 0 in order for freq
+            // setting to work:
+            set_freq(settings->value(s_sdr_afedri_freq1,s_sdr_afedri_freq1_def).toULongLong(),0);
+
             mutex.lock();
             running=true;
             initialized=true;
@@ -131,6 +135,10 @@ void Afedri::initialize()
 
             set_freq(settings->value(s_sdr_afedri_freq1,s_sdr_afedri_freq1_def).toULongLong(),1);
             set_freq(settings->value(s_sdr_afedri_freq2,s_sdr_afedri_freq2_def).toULongLong(),2);
+            // for some reason, need to send frequency again to channel 0 in order for freq
+            // setting to work:
+            set_freq(settings->value(s_sdr_afedri_freq1,s_sdr_afedri_freq1_def).toULongLong(),0);
+
             mutex.lock();
             running=true;
             initialized=true;
@@ -273,6 +281,11 @@ void Afedri::set_multichannel_mode(int channel)
  * \brief Afedri::set_sample_rate
  *    Set the Afedri sampling rate
  * \param rate  sample rate in Hz
+ *
+ * Note 08/23/16: this does not seem to actually change the sample rate!
+ * have to change it manually with ./sdr_commander -SD100000; ./sdr_commander -S100000
+ * for i.e. 100000 Hz.
+ *
  */
 void Afedri::set_sample_rate(unsigned long sample_rate)
 {
