@@ -474,6 +474,10 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             spec_tmp[i] = (out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         }
     }
+    // following reduces zero-frequency peak; need better way to handle it
+    spec_tmp[1]=1.0e-8;
+    spec_tmp[0]=1.0e-8;
+    spec_tmp[fftSize-1]=1.0e-8;
 
     double bga, sigma;
     measureBackground(bga, sigma, spec_tmp);
