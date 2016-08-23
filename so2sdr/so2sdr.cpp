@@ -3328,6 +3328,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                     case 4: // Radio 2
                         switchTransmit(activeRadio ^ 1);
                         switchradio=false;
+                        autoSendPause=true;  // prevent autosend from going crazy
                         break;
                     case 5: // Radio 2 CQ
                     {
