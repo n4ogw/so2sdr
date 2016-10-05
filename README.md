@@ -10,6 +10,9 @@ Copyright 2010-2016 R. Torsten Clay N4OGW
 
 # News
 
+* 10/04/2016 Qt5 update: the main issue with Qt 5 (not creating the log Sqlite
+file correctly) hopefully has been fixed.
+
 * 02/07/2016 Qt4 versus Qt5: currently the code compiles with either Qt4 or Qt5.
 The version of Qt is selected by using the appropriate version of qmake.
 However, there are a number of issues with Qt5 that make the program unusable.

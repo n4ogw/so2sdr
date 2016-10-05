@@ -152,7 +152,7 @@ void Winkey::receiveInit()
 void Winkey::loadbuff(QByteArray msg)
 {
     sendBuff.append(msg);
-    sent=QString::fromAscii(sendBuff);
+    sent=QString::fromLatin1(sendBuff);
 
     sent.remove('|'); // remove half spaces
     sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel buffered speed change
@@ -240,10 +240,10 @@ void Winkey::openWinkey()
     // in case we are re-starting winkey
     if (winkeyPort->isOpen()) {
         closeWinkey();
-        delete winkeyPort;
-        QSerialPortInfo info(settings.value(s_winkey_device,s_winkey_device_def).toString());
-        winkeyPort = new QSerialPort(info);
+        winkeyOpen = false;
     }
+
+    winkeyPort->setPortName(settings.value(s_winkey_device,s_winkey_device_def).toString());
 
     winkeyPort->setBaudRate(QSerialPort::Baud1200);
     winkeyPort->setDataBits(QSerialPort::Data8);
@@ -253,6 +253,7 @@ void Winkey::openWinkey()
     winkeyPort->open(QIODevice::ReadWrite);
     if (!winkeyPort->isOpen()) {
         winkeyOpen = false;
+        emit(winkeyError("ERROR: could not open WinKey device"));
         return;
     }
     connect(winkeyPort,SIGNAL(readyRead()),this,SLOT(receiveInit()));

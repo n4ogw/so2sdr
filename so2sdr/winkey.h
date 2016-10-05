@@ -47,6 +47,7 @@ signals:
     void textSent(const QString& t,int);
     void version(int ver);
     void winkeyTx(bool, int);
+    void winkeyError(const QString &);
 
 public slots:
     void cancelcw();

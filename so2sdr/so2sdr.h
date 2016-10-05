@@ -35,7 +35,6 @@
 #include "settingsdialog.h"
 #include "notedialog.h"
 #include "dupesheet.h"
-#include "log.h"
 #include "logedit.h"
 #include "cty.h"
 #include "helpdialog.h"
@@ -77,7 +76,7 @@
 #include "history.h"
 #include <QThread>
 
-
+class Log;
 class QDir;
 class QString;
 class QByteArray;
@@ -177,6 +176,7 @@ protected:
 private:
     bool                 activeR2CQ;
     bool                 autoCQMode;
+    bool                 autoCQModeWait;
     bool                 autoCQModePause;
     bool                 autoSend;
     bool                 autoSendPause;
@@ -188,6 +188,7 @@ private:
     bool                 cqQsoInProgress[NRIG];
     bool                 duelingCQMode;
     bool                 duelingCQWait;
+    bool                 duelingCQModePause;
     bool                 dupeCheckDone;
     bool                 exchangeSent[NRIG];
     bool                 excMode[NRIG];
@@ -199,7 +200,6 @@ private:
     bool                 spotListPopUp[NRIG];
     bool                 statusBarDupe;
     bool                 telnetOn;
-    bool                 toggleFxKeySend;
     bool                 toggleMode;
     bool                 uiEnabled;
     CabrilloDialog       *cabrillo;
@@ -219,7 +219,6 @@ private:
     int                  autoCQRadio;
     int                  band[NRIG];
     int                  multMode;
-  //  int                  nDupesheet;
     int                  nqso[N_BANDS];
     int                  nrReserved[NRIG];
     int                  nrSent;
@@ -227,10 +226,9 @@ private:
     int                  ratePtr;
     int                  rigFreq[NRIG];
     int                  timerId[N_TIMERS];
-    int                  toggleFxKey;
     int                  usveIndx[MMAX];
     int                  wpm[NRIG];
-    log                  *mylog;
+    Log                  *mylog;
     logDelegate          *logdel;
     Master               *master;
     MicroHam             *microham;
@@ -291,11 +289,6 @@ private:
     QString              tmpCall;
     QThread              catThread;
     QTime                cqTimer;
-    Qt::KeyboardModifiers toggleFxKeyMod;
- //   QAction              *dupesheetAction[NRIG];
- //   QAction              *bandmapAction[NRIG];
-  //  QAction              *grabAction;
-  //  QAction              *telnetAction;
     QWidget              *grabWidget;
     RadioDialog          *radios;
     RigSerial            *cat;
@@ -369,7 +362,6 @@ private:
     void superPartial(QByteArray partial);
     void swapRadios();
     void tab();
-    void toggleEnter(Qt::KeyboardModifiers);
     void up();
     void updateBandmapDupes(const Qso *qso);
     void updateBreakdown();

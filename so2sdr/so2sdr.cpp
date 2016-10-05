@@ -56,6 +56,7 @@
 #include "defines.h"
 #include "so2sdr.h"
 #include "utils.h"
+#include "log.h"
 
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 {
@@ -342,6 +343,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
     connect(winkey,SIGNAL(textSent(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
     connect(winkey,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
+    connect(winkey, SIGNAL(winkeyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
 
     startWinkey();
 
@@ -433,88 +435,52 @@ So2sdr::~So2sdr()
 
 /*!
    add a new qso to the log
-
-   @todo Fix bytearray/string conversion correctly
- */
+*/
 void So2sdr::addQso(const Qso *qso)
 {
-    QSqlRecord newqso;
-    newqso.append(QSqlField("nr", QVariant::Int));
-    newqso.append(QSqlField("time", QVariant::String));
-    newqso.append(QSqlField("freq", QVariant::Int));
-    newqso.append(QSqlField("call", QVariant::String));
-    newqso.append(QSqlField("band", QVariant::Int));
-    newqso.append(QSqlField("date", QVariant::String));
-    newqso.append(QSqlField("mode", QVariant::Int));
-    newqso.append(QSqlField("snt1", QVariant::String));
-    newqso.append(QSqlField("snt2", QVariant::String));
-    newqso.append(QSqlField("snt3", QVariant::String));
-    newqso.append(QSqlField("snt4", QVariant::String));
-    newqso.append(QSqlField("rcv1", QVariant::String));
-    newqso.append(QSqlField("rcv2", QVariant::String));
-    newqso.append(QSqlField("rcv3", QVariant::String));
-    newqso.append(QSqlField("rcv4", QVariant::String));
-    newqso.append(QSqlField("pts", QVariant::Int));
-    newqso.append(QSqlField("valid", QVariant::Int));
-    for (int i = 0; i < SQL_N_COL; i++) newqso.setGenerated(i, true);
-    newqso.setValue(SQL_COL_NR, QVariant(model->rowCount() + 1));
-    newqso.setValue(SQL_COL_CALL, QVariant(qso->call).toString());
-    newqso.setValue(SQL_COL_PTS, QVariant(qso->pts));
-    newqso.setValue(SQL_COL_FREQ, QVariant(qso->freq));
-    newqso.setValue(SQL_COL_BAND, QVariant(qso->band));
-    newqso.setValue(SQL_COL_MODE, QVariant(qso->mode));
-    for (int i = 0; i < 4; i++) {
-        if (i < contest->nExchange()) {
-            switch (i) {
-            case 0:
-                newqso.setValue(SQL_COL_SNT1, QVariant(qso->snt_exch[0]).toString());
-                newqso.setValue(SQL_COL_RCV1, QVariant(qso->rcv_exch[0]).toString());
-                break;
-            case 1:
-                newqso.setValue(SQL_COL_SNT2, QVariant(qso->snt_exch[1]).toString());
-                newqso.setValue(SQL_COL_RCV2, QVariant(qso->rcv_exch[1]).toString());
-                break;
-            case 2:
-                newqso.setValue(SQL_COL_SNT3, QVariant(qso->snt_exch[2]).toString());
-                newqso.setValue(SQL_COL_RCV3, QVariant(qso->rcv_exch[2]).toString());
-                break;
-            case 3:
-                newqso.setValue(SQL_COL_SNT4, QVariant(qso->snt_exch[3]).toString());
-                newqso.setValue(SQL_COL_RCV4, QVariant(qso->rcv_exch[3]).toString());
-                break;
-            }
-        } else {
-            switch (i) {
-            case 0:
-                newqso.setNull(SQL_COL_SNT1);
-                newqso.setNull(SQL_COL_RCV1);
-                break;
-            case 1:
-                newqso.setNull(SQL_COL_SNT2);
-                newqso.setNull(SQL_COL_RCV2);
-                break;
-            case 2:
-                newqso.setNull(SQL_COL_SNT3);
-                newqso.setNull(SQL_COL_RCV3);
-                break;
-            case 3:
-                newqso.setNull(SQL_COL_SNT4);
-                newqso.setNull(SQL_COL_RCV4);
-                break;
-            }
-        }
+    QSqlQuery query(model->database());
+    query.prepare("INSERT INTO log (nr,time,freq,call,band,date,mode,snt1,snt2,snt3,snt4,rcv1,rcv2,rcv3,rcv4,pts,valid)"
+                    "VALUES (:nr,:time,:freq,:call,:band,:date,:mode,:snt1,:snt2,:snt3,:snt4,:rcv1,:rcv2,:rcv3,:rcv4,:pts,:valid)");
+    query.bindValue(":nr",model->rowCount()+1);
+    query.bindValue(":time",qso->time.toUTC().toString("hhmm"));
+    query.bindValue(":freq",qso->freq);
+    query.bindValue(":call",qso->call);
+    query.bindValue(":band",qso->band);
+    query.bindValue(":date",qso->time.toUTC().toString("MMddyyyy"));
+    query.bindValue(":mode",qso->mode);
+    if (contest->nExchange()>0) {
+        query.bindValue(":snt1",qso->snt_exch[0]);
+        query.bindValue(":rcv1",qso->rcv_exch[0]);
+    } else {
+        query.bindValue(":snt1",QVariant(QVariant::String));
+        query.bindValue(":rcv1",QVariant(QVariant::String));
     }
-    newqso.setValue(SQL_COL_DATE, QVariant(qso->time.toUTC().toString("MMddyyyy")));
-    newqso.setValue(SQL_COL_TIME, QVariant(qso->time.toUTC().toString("hhmm")));
-    newqso.setValue(SQL_COL_VALID, QVariant(qso->valid));
-
-    if (csettings->value(c_historyupdate,c_historyupdate_def).toBool()) {
-        history->addQso(qso);
+    if (contest->nExchange()>1) {
+        query.bindValue(":snt2",qso->snt_exch[1]);
+        query.bindValue(":rcv2",qso->rcv_exch[1]);
+    } else {
+        query.bindValue(":snt2",QVariant(QVariant::String));
+        query.bindValue(":rcv2",QVariant(QVariant::String));
     }
+    if (contest->nExchange()>2) {
+        query.bindValue(":snt3",qso->snt_exch[2]);
+        query.bindValue(":rcv3",qso->rcv_exch[2]);
+    } else {
+        query.bindValue(":snt3",QVariant(QVariant::String));
+        query.bindValue(":rcv3",QVariant(QVariant::String));
+    }
+    if (contest->nExchange()>3) {
+        query.bindValue(":snt4",qso->snt_exch[3]);
+        query.bindValue(":rcv4",qso->rcv_exch[3]);
+    } else {
+        query.bindValue(":snt4",QVariant(QVariant::String));
+        query.bindValue(":rcv4",QVariant(QVariant::String));
+    }
+    query.bindValue(":pts",qso->pts);
+    query.bindValue(":valid",qso->valid);
+    query.exec();
+    model->select();
 
-
-    model->insertRecord(-1, newqso);
-    model->submitAll();
     while (model->canFetchMore()) {
         model->fetchMore();
     }
@@ -571,7 +537,7 @@ void So2sdr::settingsUpdate()
     }
     if (autoCQMode) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
     }
 }
 
@@ -935,7 +901,7 @@ bool So2sdr::setupContest()
             actionHistory->setText("Update History from Log");
         }
     }
-    mylog = new log(*csettings,contest->nExchange(), this);
+    mylog = new Log(*csettings,contest->nExchange(), this);
     connect(contest,SIGNAL(mobileDupeCheck(Qso*)),mylog,SLOT(mobileDupeCheck(Qso*)));
     connect(contest,SIGNAL(clearDupe()),So2sdrStatusBar,SLOT(clearMessage()));
     mylog->setRstField(contest->rstField());
@@ -1402,9 +1368,6 @@ void So2sdr::exportCabrillo()
    note: the number of exchange fields must be correct for this contest, otherwise
    bad things happen. @todo check for this and abort if wrong number of fields
 
-   @todo investigate qprogressdialog more. I could not get it to show if the event
-   duration was less than the default (4 seconds). Adding qApp->processEvents() causes
-   crash.
    @todo give option to delete previous qso's or append to them
  */
 void So2sdr::importCabrillo()
@@ -1449,26 +1412,6 @@ void So2sdr::importCabrillo()
 
     QString buffer;
     QStringList field;
-    QSqlRecord  newqso;
-    newqso.append(QSqlField("nr", QVariant::Int));
-    newqso.append(QSqlField("time", QVariant::String));
-    newqso.append(QSqlField("freq", QVariant::Int));
-    newqso.append(QSqlField("call", QVariant::String));
-    newqso.append(QSqlField("band", QVariant::Int));
-    newqso.append(QSqlField("date", QVariant::String));
-    newqso.append(QSqlField("mode", QVariant::Int));
-    newqso.append(QSqlField("snt1", QVariant::String));
-    newqso.append(QSqlField("snt2", QVariant::String));
-    newqso.append(QSqlField("snt3", QVariant::String));
-    newqso.append(QSqlField("snt4", QVariant::String));
-    newqso.append(QSqlField("rcv1", QVariant::String));
-    newqso.append(QSqlField("rcv2", QVariant::String));
-    newqso.append(QSqlField("rcv3", QVariant::String));
-    newqso.append(QSqlField("rcv4", QVariant::String));
-    newqso.append(QSqlField("pts", QVariant::Int));
-    newqso.append(QSqlField("valid", QVariant::Int));
-    for (int i = 0; i < SQL_N_COL; i++) newqso.setGenerated(i, true);
-
     while (!file.atEnd() && !progress.wasCanceled()) {
         buffer = file.readLine();
         buffer = buffer.trimmed();
@@ -1480,10 +1423,9 @@ void So2sdr::importCabrillo()
 
         // Field1 = frequency in KHz
         int f = field.at(1).toInt() * 1000;
-        newqso.setValue(SQL_COL_FREQ, QVariant(f));
+        qso.freq=f;
 
         int b = getBand(f);
-        newqso.setValue(SQL_COL_BAND, QVariant(b));
         qso.band = b;
 
         // Field2 = mode
@@ -1506,9 +1448,7 @@ void So2sdr::importCabrillo()
         }
         qso.mode = (rmode_t) m;
         qso.modeType=cat->getModeType(qso.mode);
-        newqso.setValue(SQL_COL_MODE, QVariant(m));
         cnt++;
-        newqso.setValue(SQL_COL_NR, QVariant(cnt));
 
         // Field3 = date
         QDateTime time;
@@ -1517,10 +1457,10 @@ void So2sdr::importCabrillo()
         m = field[3].mid(5, 2).toInt();
         int       d = field.at(3).mid(8, 2).toInt();
         time.setDate(QDate(y, m, d));
-        newqso.setValue(SQL_COL_DATE, QVariant(time.toString("MMddyyyy").toLatin1()));
 
         // Field4=time
-        newqso.setValue(SQL_COL_TIME, QVariant(field.at(4)));
+        time.setTime(QTime(field.at(4).left(2).toInt(),field.at(4).right(2).toInt()));
+        qso.time=time;
 
         // Field5=station call. ignore this
 
@@ -1530,26 +1470,21 @@ void So2sdr::importCabrillo()
         for (i = 6, j = 0; i < (6 + contest->nExchange()); i++, j++) {
             switch (j) {
             case 0:
-                newqso.setValue(SQL_COL_SNT1, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[0]=field.at(i).toLatin1().toUpper();
                 break;
             case 1:
-                newqso.setValue(SQL_COL_SNT2, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[1]=field.at(i).toLatin1().toUpper();
                 break;
             case 2:
-                newqso.setValue(SQL_COL_SNT3, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[2]=field.at(i).toLatin1().toUpper();
                 break;
             case 3:
-                newqso.setValue(SQL_COL_SNT4, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[3]=field.at(i).toLatin1().toUpper();
                 break;
             }
         }
 
         // next field=call worked
-        newqso.setValue(SQL_COL_CALL, QVariant(field.at(6 + contest->nExchange()).toUpper()));
         qso.call = field.at(6 + contest->nExchange()).toLatin1().toUpper();
         bool bb;
         qso.country = cty->idPfx(&qso, bb);
@@ -1563,42 +1498,30 @@ void So2sdr::importCabrillo()
             }
             switch (j) {
             case 0:
-                newqso.setValue(SQL_COL_RCV1, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[0]=field.at(i).toLatin1().toUpper();
                 break;
             case 1:
-                newqso.setValue(SQL_COL_RCV2, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[1]=field.at(i).toLatin1().toUpper();
                 break;
             case 2:
-                newqso.setValue(SQL_COL_RCV3, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[2]=field.at(i).toLatin1().toUpper();
                 break;
             case 3:
-                newqso.setValue(SQL_COL_RCV4, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[3]=field.at(i).toLatin1().toUpper();
                 break;
             }
         }
-        newqso.setValue(SQL_COL_PTS, QVariant(qso.pts));
-        newqso.setValue(SQL_COL_VALID, QVariant(true)); // set to valid
+        qso.valid=true;
+        addQso(&qso);
         contest->addQso(&qso);
-        model->insertRecord(-1, newqso);
         progress.setValue(cnt);
     }
-    model->submitAll();
     model->database().commit();
     rescore();
-
-    while (model->canFetchMore()) {
-        model->fetchMore();
-    }
-
-    LogTableView->scrollToBottom();
     nrSent = model->rowCount() + 1;
     progress.setValue(maxLines);
 }
@@ -1904,18 +1827,23 @@ void So2sdr::timerEvent(QTimerEvent *event)
 }
 
 void So2sdr::autoCQActivate (bool state) {
+    if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return; // disabled in Sprint mode
     autoCQMode = state;
     if (autoCQMode) {
-        autoCQRadio = activeRadio;
-        if (duelingCQMode) duelingCQActivate(false);
-        activeR2CQ = false;
+        duelingCQActivate(false);
         clearR2CQ(activeRadio ^ 1);
+        autoCQRadio = activeRadio;
         if (activeTxRadio != activeRadio) {
             switchTransmit(activeRadio);
         }
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
         autoCQModePause = false;
+        autoCQModeWait = true;
+        sendLongCQ = true;
+        if (lineEditCall[activeRadio]->text().isEmpty()) {
+            sendFunc(0, Qt::NoModifier); // send F1 immediately
+        }
     } else {
         autoCQStatus->clear();
     }
@@ -1937,11 +1865,11 @@ void So2sdr::autoSendActivate (bool state) {
 }
 
 void So2sdr::duelingCQActivate (bool state) {
+    if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return; // disabled in Sprint mode
     duelingCQMode = state;
     if (duelingCQMode) {
         autoCQActivate(false);
         autoSendStatus->hide();
-        activeR2CQ = false;
         clearR2CQ(activeRadio ^ 1);
         if (activeTxRadio != activeRadio) {
             switchTransmit(activeRadio);
@@ -1958,12 +1886,20 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQStatus->setText("<font color=#006B00>DuelingCQ (AUTO)</font>");
         toggleMode = true;
         toggleStatus->clear();
+        sendLongCQ = true;
+        duelingCQWait = true;
+        if (lineEditCall[activeRadio]->text().isEmpty()) {
+            duelingCQModePause = false;
+            enter(Qt::NoModifier); // start CQ immediately
+        } else {
+            duelingCQModePause = true;
+        }
     } else {
         duelingCQStatus->clear();
         toggleMode = false;
         toggleStatus->clear();
-        if (activeTxRadio != activeRadio) {
-            switchTransmit(activeRadio);
+        if (activeRadio != activeTxRadio) {
+            switchRadios(false); // move focus to where last transmit
         }
         autoSendStatus->show();
     }
@@ -2046,6 +1982,7 @@ void So2sdr::autoSendExch_exch() {
         QByteArray tmpExch;
         if (qso[activeTxRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
             tmpExch = csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray();
+            tmpExch.replace("{CALL_ENTERED}", "");
         } else {
             tmpExch = csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toByteArray();
             tmpExch.replace("{CALL_ENTERED}", "");
@@ -2083,56 +2020,28 @@ void So2sdr::autoSendExch_exch() {
  Automatic repeating CQ, user-defined delay
  */
 void So2sdr::autoCQ () {
-    qint64 delay = (long long) (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() * 1000.0D);
 
-    if (activeR2CQ) {
-        activeR2CQ = false;
-        clearR2CQ(activeRadio ^ 1);
-        switchTransmit(activeRadio);
-    }
-    if (!cqMode[activeRadio] && !(altDActive && altDActiveRadio == activeRadio)) {
-        setCqMode(activeRadio);
-    } else if (!cqMode[activeRadio ^ 1] && altDActive && altDActiveRadio == activeRadio) {
-        setCqMode(activeRadio ^ 1);
-    }
-    if (autoCQModePause) {
-        cqTimer.restart();
+    int delay = (int) (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() * 1000.0);
+
+    if (autoCQModeWait) {
+        if (winkey->isSending()) { // prevent switching hysteresis
+            autoCQModeWait = false;
+        }
+    } else if (autoCQModePause) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
-    } else if ((!lineEditCall[activeRadio]->text().isEmpty() && !(altDActive && altDActiveRadio == activeRadio))
-            || (!lineEditCall[activeRadio ^ 1]->text().isEmpty() && altDActive && altDActiveRadio == activeRadio)
-            || (altDActive > 2 && altDActiveRadio == activeRadio)) {
-        if (!autoCQModePause) autoCQModePause = true;
-        cqTimer.restart();
+    } else if (!lineEditCall[autoCQRadio]->text().isEmpty() || altDActive > 2) {
+        autoCQModePause = true;
     } else if (winkey->isSending()) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
-    } else if (cqTimer.elapsed() >= delay) {
-        cqTimer.restart();
-        if (altDActive && altDActiveRadio == activeRadio) {
-            switchTransmit(altDActiveRadio ^ 1);
-        } else if (activeTxRadio != activeRadio) {
-            switchTransmit(activeRadio);
-        }
-        switch (cat->modeType(activeTxRadio)) {
-        case CWType:case DigiType:
-            if (sendLongCQ) {
-                expandMacro(cwMessage->cqF[0],0,false);
-            } else {
-                expandMacro(cwMessage->cqF[1],0,false);
-            }
-            break;
-        case PhoneType:
-            if (sendLongCQ) {
-                expandMacro(ssbMessage->cqF[0],0,false);
-            } else {
-                expandMacro(ssbMessage->cqF[1],0,false);
-            }
-            break;
-        }
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
+    } else if (cqTimer.elapsed() > delay) {
+        autoCQModeWait = true;
+        switchTransmit(autoCQRadio);
+        enter(Qt::NoModifier);
     } else {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat() - ((float) cqTimer.elapsed() / 1000.0),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - ((double) cqTimer.elapsed() / 1000.0),'f',1) + "s)</font>");
     }
 }
 
@@ -2141,21 +2050,21 @@ void So2sdr::autoCQ () {
  */
 void So2sdr::autoCQdelay (bool incr) {
     if (incr) {
-        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() + 0.1D);
+        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() + 0.1);
     } else {
-        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - 0.1D);
-        if (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() < 0) {
-            settings->setValue(s_settings_cqrepeat, 0.0D);
+        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - 0.1);
+        if (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() < 0.0) {
+            settings->setValue(s_settings_cqrepeat, 0.0);
         }
     }
     progsettings->CQRepeatLineEdit->setText(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
     settings->sync();
     if (autoCQMode && winkey->isSending()) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
     } else {
         So2sdrStatusBar->showMessage("CQ DELAY: " +
-             QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toFloat(),'f',1), 2000);
+             QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1), 2000);
     }
 }
 
@@ -2163,10 +2072,9 @@ void So2sdr::autoCQdelay (bool incr) {
  Dueling CQ, user-defined delay
  */
 void So2sdr::duelingCQ () {
-    qint64 delay = (long long) (settings->value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toDouble() * 1000.0D);
 
-    //toggleMode = true;
-    activeR2CQ = false;
+    int delay = (int) (settings->value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toDouble() * 1000.0);
+
     if (!cqMode[activeRadio]) setCqMode(activeRadio);
     if (!cqMode[activeRadio ^ 1]) setCqMode(activeRadio ^ 1);
 
@@ -2174,14 +2082,21 @@ void So2sdr::duelingCQ () {
         if (winkey->isSending()) { // prevent switching hysteresis
             duelingCQWait = false;
         }
+    } else if (duelingCQModePause) {
+        // prevent further processing if paused
     } else if (!lineEditCall[activeRadio]->text().isEmpty() || !lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
-        duelingCQStatus->setText("<font color=#006B00>DuelingCQ (ESM) </font>");
+        duelingCQModePause = true;
     } else if (winkey->isSending()) {
         cqTimer.restart();
-    } else if (cqTimer.elapsed() >= delay) {
+    } else if (cqTimer.elapsed() > delay) {
         duelingCQWait = true;
+        enter(Qt::NoModifier);
+    }
+    // process status outside of control loop
+    if (duelingCQModePause) {
+        duelingCQStatus->setText("<font color=#006B00>DuelingCQ (SLEEP) </font>");
+    } else {
         duelingCQStatus->setText("<font color=#006B00>DuelingCQ (AUTO)</font>");
-        toggleEnter(Qt::NoModifier);
     }
 }
 
@@ -2190,6 +2105,8 @@ void So2sdr::duelingCQ () {
  */
 void So2sdr::swapRadios()
 {
+    duelingCQActivate(false);
+    autoCQActivate(false);
     int old_f[NRIG]={rigFreq[0],rigFreq[1]};
     band[1]  = getBand(old_f[0]);
     band[0]  = getBand(old_f[1]);
@@ -3332,6 +3249,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 5: // Radio 2 CQ
                     {
+                        autoCQActivate(false);
                         switchTransmit(activeRadio ^ 1);
                         setCqMode(activeRadio ^ 1);
                         activeR2CQ = true;
@@ -4188,7 +4106,7 @@ void So2sdr::initVariables()
     labelLPBearing1->clear();
     labelLPBearing2->clear();
     activeRadio = 0;
-    activeTxRadio = activeRadio;
+    activeTxRadio = -1; // force switchTransmit to update SO2R device
     altDActive         = 0;
     altDActiveRadio    = 0;
     altDOrigMode       = 0;
@@ -4250,16 +4168,15 @@ void So2sdr::initVariables()
     toggleMode = false;
     autoCQMode = false;
     autoCQModePause = false;
+    autoCQModeWait = true;
     duelingCQMode = false;
-    duelingCQWait = false;
+    duelingCQWait = true;
+    duelingCQModePause = false;
     autoSend = false;
     autoSendPause = false;
     autoSendTrigger = false;
     sendLongCQ = true;
     tmpCall.clear();
-    toggleFxKey = -1;
-    toggleFxKeyMod = Qt::NoModifier;
-    toggleFxKeySend = false;
 }
 
 /*!

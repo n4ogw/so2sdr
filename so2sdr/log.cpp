@@ -33,7 +33,7 @@
 /*!
    n_exch is number of exchange fields; this can't change during the contest
  */
-log:: log(QSettings &s, int n_exch, QObject *parent = 0) : QObject(parent),csettings(s)
+Log::Log(QSettings &s, int n_exch, QObject *parent = 0) : QObject(parent),csettings(s)
 {
     nExchange = n_exch;
     if (nExchange > MAX_EXCH_FIELDS) {
@@ -50,7 +50,7 @@ log:: log(QSettings &s, int n_exch, QObject *parent = 0) : QObject(parent),csett
     db=QSqlDatabase::addDatabase("QSQLITE");
 }
 
-log :: ~log()
+Log :: ~Log()
 {
     closeLogFile();
 }
@@ -58,7 +58,7 @@ log :: ~log()
 /*!
   close sql database
   */
-void log::closeLogFile()
+void Log::closeLogFile()
 {
     db.close();
 }
@@ -68,7 +68,7 @@ void log::closeLogFile()
 
    @todo look up correct ADIF BAND strings for VHF/UHF
  */
-bool log::exportADIF(QFile *adifFile) const
+bool Log::exportADIF(QFile *adifFile) const
 {
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log where valid='true'", db);
@@ -207,7 +207,7 @@ bool log::exportADIF(QFile *adifFile) const
    Cabrillo export
 
  */
-void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString snt_exch2,QString snt_exch3,QString snt_exch4) const
+void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString snt_exch2,QString snt_exch3,QString snt_exch4) const
 {
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log  where valid='true'", db);
@@ -363,7 +363,7 @@ void log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
 
    @todo Multiple-mode contests not implemented yet
  */
-bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
+bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 {
     // if called with no call, abort
     if (qso->call.isEmpty()) return false;
@@ -445,7 +445,7 @@ bool log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 /*!
    qso number sent for last qso in log
  */
-int log::lastNr() const
+int Log::lastNr() const
 {
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log where valid='true'", db);
@@ -472,7 +472,7 @@ slot for mobile dupe checking. Gets called by exchange validator if
 exchange if ok. In this case, modify qso dupes status based on whether this
 is a new mult or not
 */
-void log::mobileDupeCheck(Qso *qso)
+void Log::mobileDupeCheck(Qso *qso)
 {
     qso->dupe=isDupe(qso,true,false);
 }
@@ -482,21 +482,21 @@ void log::mobileDupeCheck(Qso *qso)
 
    s is pointer to contest settings file
  */
-bool log::openLogFile(QString fname,bool clear)
+bool Log::openLogFile(QString fname,bool clear)
 {
     Q_UNUSED(clear);
     if (fname.isEmpty())
         return(false);
 
-  //  csettings=s;
     logFileName = fname.remove(".cfg") + ".log";
     db.setDatabaseName(logFileName);
     if (!db.open()) {
         return(false);
     }
+    db.transaction();
     QSqlQuery query(db);
 
-    if (!query.exec("create table if not exists log (nr int primary key,time text,freq int,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid boolean)")) {
+    if (!query.exec("create table if not exists log (nr int primary key,time text,freq int,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid int)")) {
         return(false);
     }
     return(db.commit());
@@ -506,7 +506,7 @@ bool log::openLogFile(QString fname,bool clear)
 
    in contests where every qso is worth the same number of points, don't show it
  */
-bool log::qsoPtsField() const
+bool Log::qsoPtsField() const
 {
     return(_qsoPtsField);
 }
@@ -516,7 +516,7 @@ bool log::qsoPtsField() const
 
    bit position=1 --> field visible
  */
-void log::setFieldsShown(const unsigned int snt, const unsigned int rcv)
+void Log::setFieldsShown(const unsigned int snt, const unsigned int rcv)
 {
     sntFieldsShown = snt;  // for sent exchange
     rcvFieldsShown = rcv;  // for rcv exchange
@@ -534,7 +534,7 @@ void log::setFieldsShown(const unsigned int snt, const unsigned int rcv)
 /*!
    Mark exchange field to be filled from previous log data
  */
-void log::setPrefill(const int indx)
+void Log::setPrefill(const int indx)
 {
     if (indx<0 || indx>=MAX_EXCH_FIELDS) return;
     prefill[indx] = true;
@@ -544,7 +544,7 @@ void log::setPrefill(const int indx)
    ShowQsoPts indicates whether additional column shows the point value for each qso
 
  */
-void log::setQsoPtsField(bool b)
+void Log::setQsoPtsField(bool b)
 {
     _qsoPtsField = b;
 }
@@ -552,7 +552,7 @@ void log::setQsoPtsField(bool b)
 /*!
    Received exchange field which has RS(T). If == -1, no RST given, will assume 599
  */
-void log::setRstField(int i)
+void Log::setRstField(int i)
 {
     if (i < nExchange && i >= -1) {
         rstField = i;
@@ -566,7 +566,7 @@ void log::setRstField(int i)
    Called to set which field contains the sent qso number
    this is needed so the sent # rather than sequential number can be shown in column 1
  */
-void log::setupQsoNumbers(const int n)
+void Log::setupQsoNumbers(const int n)
 {
     nrField = n;
 }
@@ -578,7 +578,7 @@ void log::setupQsoNumbers(const int n)
  * \param end End of contest. QSO's must be before this time to be valid.
  * \return string giving off time
  */
-QString log::offTime(int minOffTime,QDateTime start,QDateTime end)
+QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
 {
     QSqlQueryModel m;
     m.setQuery("SELECT * FROM log where valid='true'", db);

@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.6";
+const QByteArray Version = "2.0.7";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000
@@ -592,10 +592,10 @@ const QString s_settings_exchangelogs="main/exchangelogs";
 const bool s_settings_exchangelogs_def=false;
 
 const QString s_settings_cqrepeat="main/cqrepeat";
-const float s_settings_cqrepeat_def=3.0;
+const double s_settings_cqrepeat_def=3.0;
 
 const QString s_settings_duelingcqdelay="main/duelingcqdelay";
-const float s_settings_duelingcqdelay_def=0.0;
+const double s_settings_duelingcqdelay_def=0.0;
 
 const QString s_settings_autosend_mode="main/autosendmode";
 const int s_settings_autosend_mode_def=0;

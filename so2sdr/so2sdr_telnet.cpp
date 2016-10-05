@@ -280,7 +280,6 @@ void So2sdr::checkSpot(int nr)
             duelingCQActivate(false);
         }
         if (activeR2CQ && nr == (activeRadio ^ 1)) {
-            activeR2CQ = false;
             clearR2CQ(nr);
             setCqMode(nr);
         }

@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.6
+## SO2SDR Help file version 2.0.7
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -857,6 +857,65 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.7 (10/04/2016)
+
+* fixes to Winkey initialization (NO3M)
+
+* fixes for Qt 5 sqlite
+
+* Initialize activeTxRadio to -1 so switchTransmit is forced to
+update SO2R device on startup (NO3M)
+
+* Set QSO invalid if clearing Exchange line with ESC; wiping prefill
+would allow QSO to be logged with no text in Exchange line (NO3M)
+
+* When dupe allowed (no checking or WORK DUPES), focus exchange field
+after sending CQ exchange (NO3M)
+
+* Revert change made in 2013; block Alt-D during Sprint (NO3M)
+
+* Remove {CALL_ENTERED} from Dupe MSG when using Autosend to avoid
+sending call twice (NO3M)
+
+* AutoCQ disables Dueling CQ and Toggle ESM (NO3M)
+
+* Dueling CQ or Toggle ESM disables AutoCQ (NO3M)
+
+* TAB (S&P) on AutoCQRadio or SWAP radios (macro) kills AutoCQ,
+Dueling CQ, Toggle ESM (NO3M)
+
+* Send F1 (long CQ) immediately when AutoCQ or Dueling CQ first
+enabled unless QSO in progress, then start in SLEEP mode (NO3M)
+
+* Disable AutoCQ and Dueling CQ in sprint mode (NO3M)
+
+
+* AutoCQ:
+Several bugs fixes, including with Alt-D interaction and timing/debounce
+Pressing F1/F2 while un-paused sets long/short CQ silently (same as before)
+Pressing F3-F12, ESC, or entering text in callsign field pauses
+F1/F2, ENTER, or logging QSO un-pauses (NO3M)
+
+* Dueling CQ: Re-implemented with better control and sleep (pause)
+mode CQ starts on focused radio Pressing F1/F2 while un-paused sets
+long/short CQ silently Pressing F3-F12, ESC, or ALT-R / CTRL-R, or
+entering text in either call field pauses F1/F2, ENTER, or logging QSO
+un-pauses if both call fields empty When paused (SLEEP), goes into
+Toggle ESM, notes below (NO3M)
+
+*Toggle ESM / Dueling CQ (SLEEP): Numerous bug fixes and cleaner
+implementation, much better and more flexible than previously
+Re-implemented; toggleEnter() function removed.  Uses regular ESM
+enter() function now Focused radio behavior same as normal non-toggle
+operation.  ESM processed by enter(). ESM, Fx, "\" keypresses start CW
+immediately on focused radio and shift focus to opposite radio Works
+with CTRL-ENTER and SHIFT-ENTER. Backslash "\" doesn't toggle ready
+for next quick station ALT-R or CTRL-R allowed to manually toggle
+focus, next CW message (ESM, Fx, etc) goes out on focused radio and
+toggling resumes Can use empty Fx message to toggle w/o sending CW to
+maintain QSO flow control / timing or use ALT/CTRL-R as noted above (NO3M)
+
 
 ## version 2.0.6 (02/02/2016)
 

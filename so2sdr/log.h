@@ -30,13 +30,13 @@
 /*!
    class defining log database structure and related functions
  */
-class log : public QObject
+class Log : public QObject
 {
 Q_OBJECT
 
 public:
-    log(QSettings& s,int n_exch, QObject *parent);
-    ~log();
+    Log(QSettings& s,int n_exch, QObject *parent);
+    ~Log();
 
     void closeLogFile();
     bool exportADIF(QFile *) const;
