@@ -1629,7 +1629,6 @@ void So2sdr::initLogView()
 
     model = new tableModel(this,mylog->db);
     model->setTable("log");
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->select();
     connect(model, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(logEdited(QModelIndex, QModelIndex)));
     while (model->canFetchMore()) {

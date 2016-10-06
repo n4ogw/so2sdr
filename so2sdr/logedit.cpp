@@ -32,7 +32,7 @@
   */
 tableModel::tableModel(QObject * parent, QSqlDatabase db) : QSqlTableModel(parent,db)
 {
-
+    setEditStrategy(QSqlTableModel::OnFieldChange);
 }
 
 /*!
@@ -62,6 +62,7 @@ Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
         f=f | Qt::ItemIsEditable;
         break;
     case SQL_COL_VALID:
+        f=f | Qt::ItemIsEditable;
         f=f | Qt::ItemIsUserCheckable;
         break;
     }
