@@ -14,6 +14,8 @@ be compiled for Windows.
 
 ### News
 
+* 10/06/2016 2.0.8 should hopefully work correctly with Qt5.
+
 * 02/07/2016 Qt4 versus Qt5: currently the code compiles with either Qt4 or Qt5.
 The version of Qt is selected by using the appropriate version of qmake.
 However, there are a number of issues with Qt5 that make the program unusable.
@@ -79,11 +81,3 @@ band.
 
 ![bandmap](images/bandmap.png)
 
-#### So2sdr-bandmap with N1MM+
-
-As of version 2.0.0, the bandmap part of so2sdr can be used as a stand-alone
-executable. It can read the frequency from N1MM+ logger, but more advanced
-functions are not yet supported.
-
-
-![N1MM-so2sdr](images/n1mm-so2sdr.png)
