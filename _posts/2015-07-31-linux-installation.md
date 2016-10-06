@@ -13,19 +13,19 @@ include g++  and pkg-config.
 
 ### From released packages
 
-Download one of the source code packages:
+Download one of the Github release packages:
 
-* [so2sdr-2.0.6.tgz](../downloads/so2sdr-2.0.6.tgz)
+* [Github releases](https://github.com/n4ogw/so2sdr/releases)
 
 
 1. Unpack the archive:
 
-        tar xzvof sosdr-2.0.6.tgz
+        tar xzvof sosdr-X.X.X.tgz
 
 2. Build it
 
 
-        cd so2sdr-2.0.6
+        cd so2sdr-X.X.X
         qmake
         make
 
