@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.7";
+const QByteArray Version = "2.0.8";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000

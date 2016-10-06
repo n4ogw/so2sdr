@@ -71,7 +71,13 @@ void Log::closeLogFile()
 bool Log::exportADIF(QFile *adifFile) const
 {
     QSqlQueryModel m;
+
+#if QT_VERSION < 0x050000
     m.setQuery("SELECT * FROM log where valid='true'", db);
+#else
+    m.setQuery("SELECT * FROM log where valid=1", db);
+#endif
+
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -210,8 +216,11 @@ bool Log::exportADIF(QFile *adifFile) const
 void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString snt_exch2,QString snt_exch3,QString snt_exch4) const
 {
     QSqlQueryModel m;
+#if QT_VERSION < 0x050000
     m.setQuery("SELECT * FROM log  where valid='true'", db);
-
+#else
+    m.setQuery("SELECT * FROM log  where valid=1", db);
+#endif
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -375,7 +384,11 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 
     // call can only be worked once on any band
     if (!DupeCheckingEveryBand) {
+#if QT_VERSION < 0x050000
         m.setQuery("SELECT * FROM log WHERE valid='true' and CALL='" + qso->call + "'", db);
+#else
+        m.setQuery("SELECT * FROM log WHERE valid=1 and CALL='" + qso->call + "'", db);
+#endif
         while (m.canFetchMore()) {
             m.fetchMore();
         }
@@ -389,7 +402,11 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     } else {
         // if mobile station, check for mobile dupe option. In this
         // case, count dupe only if exchange is identical
+#if QT_VERSION < 0x050000
         QString query="SELECT * FROM log WHERE valid='true' and call='" + qso->call + "' AND band=" + QString::number(qso->band);
+#else
+        QString query="SELECT * FROM log WHERE valid=1 and call='" + qso->call + "' AND band=" + QString::number(qso->band);
+#endif
 
         if (qso->isMobile && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
             QString exch=qso->rcv_exch[csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
@@ -430,7 +447,11 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             dupe=true;
         }
         if (FillWorked) {
+#if QT_VERSION < 0x050000
             m.setQuery("SELECT * FROM log WHERE valid='true' and CALL='" + qso->call + "'", db);
+#else
+            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL='" + qso->call + "'", db);
+#endif
             for (int i = 0; i < m.rowCount(); i++) {
                 qso->worked += bits[m.record(i).value(SQL_COL_BAND).toInt()];
             }
@@ -448,7 +469,11 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 int Log::lastNr() const
 {
     QSqlQueryModel m;
+#if QT_VERSION < 0x050000
     m.setQuery("SELECT * FROM log where valid='true'", db);
+#else
+    m.setQuery("SELECT * FROM log where valid=1", db);
+#endif
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -581,7 +606,11 @@ void Log::setupQsoNumbers(const int n)
 QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
 {
     QSqlQueryModel m;
+#if QT_VERSION < 0x050000
     m.setQuery("SELECT * FROM log where valid='true'", db);
+#else
+    m.setQuery("SELECT * FROM log where valid=1", db);
+#endif
     while (m.canFetchMore()) {
         m.fetchMore();
     }

@@ -1236,7 +1236,11 @@ void So2sdr::startMaster()
 void So2sdr::updateHistory() {
     if (csettings->value(c_historymode,c_historymode_def).toBool()) {
         QSqlQueryModel log;
+#if QT_VERSION < 0x050000
         QString query_log = "SELECT call,rcv1,rcv2,rcv3,rcv4 from log where valid='true'";
+#else
+        QString query_log = "SELECT call,rcv1,rcv2,rcv3,rcv4 from log where valid=1";
+#endif
         log.setQuery(query_log, mylog->db);
         while (log.canFetchMore()) log.fetchMore();
         QProgressDialog progress("Updating history file (" + csettings->value(c_historyfile,c_historyfile_def).toString() + ") from current log" , "Cancel", 0, log.rowCount(), this);
@@ -3801,12 +3805,18 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
     if (psz < 2) {
         return;
     }
+
     // query for partial fragment
     QSqlQueryModel m;
+#if QT_VERSION < 0x050000
     m.setQuery("SELECT * FROM log WHERE VALID='true' AND (CALL LIKE'%" + part + "%' )", mylog->db);
+#else
+    m.setQuery("SELECT * FROM log WHERE VALID=1 AND (CALL LIKE'%" + part + "%' )", mylog->db);
+#endif
     while (m.canFetchMore()) {
         m.fetchMore();
     }
+
     for (int i = 0; i < m.rowCount(); i++) {
         // if multi-mode contest, check for matching mode
         if (csettings->value(c_multimode).toBool(),c_multimode_def) {

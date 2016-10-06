@@ -248,7 +248,11 @@ void So2sdr::populateDupesheet()
             dupeCallsKey[id][i].clear();
         }
         QSqlQueryModel m;
+#if QT_VERSION < 0x050000
         m.setQuery("SELECT * FROM log WHERE valid='true' and BAND=" + QString::number(band[ib]), mylog->db);
+#else
+        m.setQuery("SELECT * FROM log WHERE valid=1 and BAND=" + QString::number(band[ib]), mylog->db);
+#endif
         while (m.canFetchMore()) {
             m.fetchMore();
         }

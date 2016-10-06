@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.7
+## SO2SDR Help file version 2.0.8
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -857,6 +857,14 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.8 (10/06/2016)
+
+* Bug fix for Qt5- SQL changes broke dupe checking
+
+* Activating AutoCQ or dueling CQ will not interrupt current CW/msg
+    transmission.  Dueling will start on focused radio if no CW, otherwise
+    focuses other radio ready for toggling sequence. (NO3M)
 
 ## version 2.0.7 (10/04/2016)
 
