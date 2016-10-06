@@ -1840,7 +1840,7 @@ void So2sdr::autoCQActivate (bool state) {
         autoCQModePause = false;
         autoCQModeWait = true;
         sendLongCQ = true;
-        if (lineEditCall[activeRadio]->text().isEmpty()) {
+        if (lineEditCall[activeRadio]->text().isEmpty() && !winkey->isSending()) {
             sendFunc(0, Qt::NoModifier); // send F1 immediately
         }
     } else {
@@ -1889,7 +1889,11 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQWait = true;
         if (lineEditCall[activeRadio]->text().isEmpty()) {
             duelingCQModePause = false;
-            enter(Qt::NoModifier); // start CQ immediately
+            if (!winkey->isSending()) {
+                enter(Qt::NoModifier); // start CQ immediately
+            } else {
+                switchRadios(false); // focus other radio to begin dueling or toggle sequence
+            }
         } else {
             duelingCQModePause = true;
         }
