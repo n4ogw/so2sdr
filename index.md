@@ -9,8 +9,7 @@ title: "Introduction"
 A ham radio contest log program that features a software-defined radio (SDR) 
 bandscope.  The main ideas behind the program are described in an article
 in May/June 2013 National Contest Journal [NCJ](http://ncjweb.com).
-The program is primarily developed for Linux use, but can also
-be compiled for Windows. 
+The program is primarily developed for Linux.
 
 ### News
 
