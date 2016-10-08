@@ -66,6 +66,7 @@ private:
     int        nchar;
     int        rigNum;
     int        txPtr;
+    int        txRig;
     int        winkeySpeedPot;
     int        winkeyVersion;
     QByteArray sendBuff;

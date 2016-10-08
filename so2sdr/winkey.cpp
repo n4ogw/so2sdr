@@ -43,6 +43,7 @@ Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
     winkeyOpen     = false;
     winkeySpeedPot = 0;
     rigNum         = 0;
+    txRig          = 0;
 }
 
 Winkey::~Winkey()
@@ -80,10 +81,14 @@ void Winkey::receive()
             // Status byte: currently sending CW?
             if (wkbyte & 4) {
                 sending = true;
+                txRig=rigNum;
                 emit(winkeyTx(true, rigNum));
             } else {
                 sending = false;
-                emit(winkeyTx(false, rigNum));
+                // signal to rx is send for radio txRig, not rigNum. This is because
+                // the radio may have been switched since transmit started, need rx signal
+                // for the sending radio
+                emit(winkeyTx(false, txRig));
             }
         // Pushbutton status only sent to host in WK2 mode by admin command, (0x00, 11)
         } else if ((wkbyte & 0xc0) == 0x80) {
