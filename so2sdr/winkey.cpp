@@ -272,23 +272,23 @@ void Winkey::openWinkey()
     winkeyPort->write((char *) buff, 1);
     winkeyPort->write((char *) buff, 1);
 
-    winkeyPort->waitForBytesWritten(200);;
-    winkeyPort->waitForReadyRead(200);
+    winkeyPort->waitForBytesWritten(100);;
+    winkeyPort->waitForReadyRead(100);
 
     // Echo Test to see if WK is really there
     buff[0] = 0x00;     // WK admin command, next byte sets admin function
     buff[1] = 4;        // Echo function, echoes next received character to host
     buff[2] = 0x55;     // Send 'U' to WK
     winkeyPort->write((char *) buff, 3);
-    winkeyPort->waitForBytesWritten(200);
-    winkeyPort->waitForReadyRead(200);
+    winkeyPort->waitForBytesWritten(100);
+    winkeyPort->waitForReadyRead(100);
 
     // command to get Winkey version
     buff[0] = 0x00;     // WK admin command
     buff[1] = 2;        // Host open, WK will now receive commands and Morse characters
     winkeyPort->write((char *) buff, 2);
-    winkeyPort->waitForBytesWritten(200);
-    winkeyPort->waitForReadyRead(200);
+    winkeyPort->waitForBytesWritten(100);
+    winkeyPort->waitForReadyRead(100);
 }
 
 /*!
@@ -310,7 +310,7 @@ void Winkey::openWinkey2()
     // Set sidetone frequency (chosen in GUI)
     buff[1] += settings.value(s_winkey_sidetone,s_winkey_sidetone_def).toInt();
     winkeyPort->write((char *) buff, 2);
-    winkeyPort->waitForBytesWritten(200);
+    winkeyPort->waitForBytesWritten(100);
 
     // set other winkey features
     buff[0] = 0x0e;     // Set WK options command, next byte sets WK options
@@ -330,7 +330,7 @@ void Winkey::openWinkey2()
     buff[1] += (settings.value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt()) << 4;
 
     winkeyPort->write((char *) buff, 2);
-    winkeyPort->waitForBytesWritten(200);
+    winkeyPort->waitForBytesWritten(100);
 
     // Pot min/max
     // must set this up or paddle speed screwed up.
@@ -340,7 +340,7 @@ void Winkey::openWinkey2()
     buff[2] = 80;       // wpm range (min wpm + wpm range = wpm max)
     buff[3] = 0;        // Used only on WK1 keyers (does 0 cause a problem on WK1?)
     winkeyPort->write((char *) buff, 4);
-    winkeyPort->waitForBytesWritten(200);
+    winkeyPort->waitForBytesWritten(100);
     winkeyOpen = true;
 }
 

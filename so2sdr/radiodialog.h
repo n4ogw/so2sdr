@@ -52,6 +52,8 @@ public slots:
 private slots:
     void populateModels1(int);
     void populateModels2(int);
+    void rigctld1Checked(bool);
+    void rigctld2Checked(bool);
 
 private:
     void populateModelCombo(int, int);

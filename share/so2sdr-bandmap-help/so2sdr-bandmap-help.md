@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.0.8
+## So2sdr-bandmap Help Version 2.0.9
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -357,6 +357,15 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.9 (10/22/2016)
+
+* Add support for radio control via hamlib rigctld
+
+* Bug fix for auto cq and alt-D qsos
+
+* shorten some delays in winkey initialization
+
 
 ## version 2.0.8 (10/06/2016)
 

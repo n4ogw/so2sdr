@@ -1,6 +1,6 @@
 <p><a name="top"></a></p>
 
-<h2>SO2SDR Help file version 2.0.8</h2>
+<h2>SO2SDR Help file version 2.0.9</h2>
 
 <ul>
 <li><a href="#overview">Overview</a></li>
@@ -199,15 +199,32 @@ adds an extra delay before switching radios.</li>
 <p><img src="./radio_dialog.png" alt="Radio/SO2R Dialog" title="Radio/SO2R Dialog" /></p>
 
 <ul>
-<li>Radio control uses the Hamlib library. The current version
-being used is shown at the top. </li>
+<li><p>Radio control uses the Hamlib library. The current version
+being used is shown at the top.  There are two basic modes of operation,
+either direct serial connection to a radio, or a connection
+through the hamlib program "rigctld".</p></li>
 <li><p>Tabs 1 and 2 are for the two radios. The "Dummy" model
 can be used for testing when no radio is attached. Note that
 the PTT method setting is not currently used.</p></li>
-<li><p>Under Linux
+<li><p>Rigctld: fill in the IP address of the computer running
+rigctld ("localhost" works for the same computer), and the TCP
+port. If you are using two radios, rigctld needs to be assigned
+separate ports. For example for two K3's, rigctld can be
+started like this:</p>
+
+<p>rigctld -m 229 -r /dev/ttyS0 &amp;</p>
+
+<p>rigctld -m 229 -r /dev/ttyS1 -t 4534 &amp;</p></li>
+</ul>
+
+<p>In this example, one radio port number would be 4532 (rigctld
+default), and the other 4534.</p>
+
+<ul>
+<li>Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
 You may have to add your username to a particular group to access
-these ports. Under Windows ports are COM1, COM2, ...</p></li>
+these ports. Under Windows ports are COM1, COM2, ...</li>
 <li><p>When the radios are configured correctly, after
 clicking "OK" in the radio dialog the "R1" and "R2"
 indicators at the bottom of the main window
@@ -897,6 +914,14 @@ from so2sdr, do this</p>
 <hr />
 
 <p><a name="changes"></a></p>
+
+<h2>version 2.0.9 (10/22/2016)</h2>
+
+<ul>
+<li><p>Add support for radio control via hamlib rigctld</p></li>
+<li><p>Bug fix for auto cq and alt-D qsos</p></li>
+<li><p>shorten some delays in winkey initialization</p></li>
+</ul>
 
 <h2>version 2.0.8 (10/06/2016)</h2>
 

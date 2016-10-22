@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.8
+## SO2SDR Help file version 2.0.9
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -192,10 +192,27 @@ adds an extra delay before switching radios.
 
 
 * Radio control uses the Hamlib library. The current version
-being used is shown at the top. 
+being used is shown at the top.  There are two basic modes of operation,
+either direct serial connection to a radio, or a connection
+through the hamlib program "rigctld".
+
+
 * Tabs 1 and 2 are for the two radios. The "Dummy" model
 can be used for testing when no radio is attached. Note that
 the PTT method setting is not currently used.
+
+* Rigctld: fill in the IP address of the computer running
+rigctld ("localhost" works for the same computer), and the TCP
+port. If you are using two radios, rigctld needs to be assigned
+separate ports. For example for two K3's, rigctld can be
+started like this:
+
+    rigctld -m 229 -r /dev/ttyS0 &
+
+    rigctld -m 229 -r /dev/ttyS1 -t 4534 &
+
+In this example, one radio port number would be 4532 (rigctld
+default), and the other 4534.
 
 * Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
@@ -857,6 +874,14 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.9 (10/22/2016)
+
+* Add support for radio control via hamlib rigctld
+
+* Bug fix for auto cq and alt-D qsos
+
+* shorten some delays in winkey initialization
 
 ## version 2.0.8 (10/06/2016)
 

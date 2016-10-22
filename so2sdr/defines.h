@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.8";
+const QByteArray Version = "2.0.9";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000
@@ -545,6 +545,15 @@ const QString s_sdr_cqlimit_high[N_BANDS]={"sdr/160high","sdr/80high","sdr/40hig
                                            "sdr/902high","sdr/1240high"};
 const int cqlimit_default_high[N_BANDS]={1845000,3555000,7550000,14055000,21055000,28055000, 5403500,10150000,
                                         18110000, 24930000,50100000,144100000,450000000,225000000,928000000,1300000000};
+
+const QString s_radios_rigctld_enable[NRIG]={"radios/rigctldenable1","radios/rigctldenable2"};
+const bool s_radios_rigctld_enable_def[NRIG]={false,false};
+
+const QString s_radios_rigctld_ip[NRIG]={"radios/rigctldip1","radios/rigctldip2"};
+const QString s_radios_rigctld_ip_def[NRIG]={"localhost","localhost"};
+
+const QString s_radios_rigctld_port[NRIG]={"radios/rigctldport1","radios/rigctldport2"};
+const int s_radios_rigctld_port_def[NRIG]={4532,4534};
 
 const QString s_radios_rig[NRIG]={"radios/hamlibmodel1","radios/hamlibmodel2"};
 const int s_radios_rig_def[NRIG]={1,1};

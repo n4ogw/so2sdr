@@ -149,10 +149,13 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     updateNrDisplay();
 
-    cat = new RigSerial(*settings);
+    cat = new RigSerial(settingsFile);
     cat->moveToThread(&catThread);
     connect(&catThread, SIGNAL(started()), cat, SLOT(run()));
     connect(cat, SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
+    connect(this, SIGNAL(setRigMode(int, rmode_t, pbwidth_t)), cat, SLOT(setRigMode(int, rmode_t, pbwidth_t)));
+
     options = new ContestOptionsDialog(this);
     connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -393,7 +396,7 @@ So2sdr::~So2sdr()
         catThread.quit();
         catThread.wait();
     }
-    delete cat;
+    cat->deleteLater();
     delete cabrillo;
     delete detail;
     delete radios;
@@ -637,33 +640,17 @@ void So2sdr::quit()
     close();
 }
 
-
+/*! starts radio RigSerial thread running. May be
+ * called again if radio parameters change
+ */
 void So2sdr::openRadios()
 {
+    stopTimers();
     if (catThread.isRunning()) {
         catThread.quit();
-        catThread.wait(100); // needed to wait for the thread to stop
+        catThread.wait(0); // wait for the thread to stop
     }
-    cat->initialize();
-    // Connect signals from functions in this class with slots in RigSerial class
-    connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
-    connect(this, SIGNAL(setRigMode(int, rmode_t, pbwidth_t)), cat, SLOT(setRigMode(int, rmode_t, pbwidth_t)));
-    cat->openRig();
     catThread.start();
-    for (int i = 0; i < N_BANDS; i++) {
-        bandInvert[0][i] = false;
-        bandInvert[1][i] = false;
-    }
-    for (int i = 0; i < NRIG; i++) {
-        /* @todo fix this
-        if (radios->model(i) == 221) {
-            // K2 (hamlib #221) has inverted IF on 21/28 MHz.
-            bandInvert[i][5] = true;
-            bandInvert[i][4] = true;
-        }
-        */
-    }
-    stopTimers();
     startTimers();
 }
 

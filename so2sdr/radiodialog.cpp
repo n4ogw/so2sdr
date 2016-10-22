@@ -42,6 +42,8 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
     radioDevEdit[1]       = Radio2DeviceLineEdit;
     radioPttComboBox[0]   = Radio1PttComboBox;
     radioPttComboBox[1]   = Radio2PttComboBox;
+    connect(checkBoxRigctld1,SIGNAL(toggled(bool)),this,SLOT(rigctld1Checked(bool)));
+    connect(checkBoxRigctld2,SIGNAL(toggled(bool)),this,SLOT(rigctld2Checked(bool)));
 
     for (int i = 0; i < NRIG; i++) {
 #ifdef Q_OS_WIN
@@ -179,6 +181,12 @@ void RadioDialog::updateRadio()
         settings.setValue(s_radios_rig[i],catptr.hamlibModelIndex(radioMfgComboBox[i]->currentIndex(),
                                                                    radioModelComboBox[i]->currentIndex()));
     }
+    settings.setValue(s_radios_rigctld_enable[0],checkBoxRigctld1->isChecked());
+    settings.setValue(s_radios_rigctld_enable[1],checkBoxRigctld2->isChecked());
+    settings.setValue(s_radios_rigctld_ip[0],lineEditIp1->text());
+    settings.setValue(s_radios_rigctld_ip[1],lineEditIp2->text());
+    settings.setValue(s_radios_rigctld_port[0],lineEditPort1->text());
+    settings.setValue(s_radios_rigctld_port[1],lineEditPort2->text());
     settings.setValue(s_radios_focus,RadioPinComboBox->currentIndex() + 2);
     settings.setValue(s_radios_txfocus,TransmitPinComboBox->currentIndex() + 2);
     settings.setValue(s_radios_stereo,StereoPinComboBox->currentIndex() + 2);
@@ -234,6 +242,14 @@ void RadioDialog::updateRadio()
 
 void RadioDialog::updateFromSettings()
 {
+    checkBoxRigctld1->setChecked(settings.value(s_radios_rigctld_enable[0],s_radios_rigctld_enable_def[0]).toBool());
+    checkBoxRigctld2->setChecked(settings.value(s_radios_rigctld_enable[1],s_radios_rigctld_enable_def[1]).toBool());
+    rigctld1Checked(settings.value(s_radios_rigctld_enable[0],s_radios_rigctld_enable_def[0]).toBool());
+    rigctld2Checked(settings.value(s_radios_rigctld_enable[1],s_radios_rigctld_enable_def[1]).toBool());
+    lineEditIp1->setText(settings.value(s_radios_rigctld_ip[0],s_radios_rigctld_ip_def[0]).toString());
+    lineEditIp2->setText(settings.value(s_radios_rigctld_ip[1],s_radios_rigctld_ip_def[1]).toString());
+    lineEditPort1->setText(settings.value(s_radios_rigctld_port[0],s_radios_rigctld_port_def[0]).toString());
+    lineEditPort2->setText(settings.value(s_radios_rigctld_port[1],s_radios_rigctld_port_def[1]).toString());
     for (int i=0;i<NRIG;i++) {
         radioDevEdit[i]->setText(settings.value(s_radios_port[i],defaultSerialPort[i]).toString());
         radioPollTimeEdit[i]->setText(settings.value(s_radios_poll[i],s_radios_poll_def[i]).toString());
@@ -290,4 +306,28 @@ void RadioDialog::rejectChanges()
 {
     updateFromSettings();
     reject();
+}
+
+void RadioDialog::rigctld1Checked(bool b)
+{
+    Rig1PollEdit->setEnabled(!b);
+    Radio1MfgComboBox->setEnabled(!b);
+    Radio1BaudComboBox->setEnabled(!b);
+    Radio1DeviceLineEdit->setEnabled(!b);
+    Radio1ModelComboBox->setEnabled(!b);
+    Radio1PttComboBox->setEnabled(!b);
+    lineEditIp1->setEnabled(b);
+    lineEditPort1->setEnabled(b);
+}
+
+void RadioDialog::rigctld2Checked(bool b)
+{
+    Rig2PollEdit->setEnabled(!b);
+    Radio2MfgComboBox->setEnabled(!b);
+    Radio2BaudComboBox->setEnabled(!b);
+    Radio2DeviceLineEdit->setEnabled(!b);
+    Radio2ModelComboBox->setEnabled(!b);
+    Radio2PttComboBox->setEnabled(!b);
+    lineEditIp2->setEnabled(b);
+    lineEditPort2->setEnabled(b);
 }

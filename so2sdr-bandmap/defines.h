@@ -24,8 +24,8 @@
 
 // //////////////// Bandscope defines //////////////////
 
-// ///////// version ///////////////
-const QByteArray Version = "2.0.8";
+// ///////// version //////////////
+const QByteArray Version = "2.0.9";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000

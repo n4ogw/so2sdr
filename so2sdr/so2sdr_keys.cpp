@@ -1214,9 +1214,9 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         i4=0;
     }
     // test
-    if (activeTxRadio != activeRadio) {
-        switchTransmit(activeRadio);
-    }
+    //if (activeTxRadio != activeRadio) {
+    //    switchTransmit(activeRadio);
+    //}
     // change radios
     /*!
        @todo make actions below separate functions; some are duplicated elsewhere (backslash,...)
