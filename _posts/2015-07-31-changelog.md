@@ -67,7 +67,7 @@ entering text in either call field pauses F1/F2, ENTER, or logging QSO
 un-pauses if both call fields empty When paused (SLEEP), goes into
 Toggle ESM, notes below (NO3M)
 
-*Toggle ESM / Dueling CQ (SLEEP): Numerous bug fixes and cleaner
+* Toggle ESM / Dueling CQ (SLEEP): Numerous bug fixes and cleaner
 implementation, much better and more flexible than previously
 Re-implemented; toggleEnter() function removed.  Uses regular ESM
 enter() function now Focused radio behavior same as normal non-toggle
