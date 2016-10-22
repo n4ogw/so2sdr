@@ -5,6 +5,14 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.0.9 (10/22/2016)
+
+* Add support for radio control via hamlib rigctld
+
+* Bug fix for auto cq and alt-D qsos
+
+* shorten some delays in winkey initialization
+
 ## version 2.0.8 (10/06/2016)
 
 * Bug fix for Qt5- SQL changes broke dupe checking
