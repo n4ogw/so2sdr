@@ -5,6 +5,10 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.0.10 (10/26/2016)
+
+* Another fix for winkey status getting stuck in TX
+
 ## version 2.0.9 (10/22/2016)
 
 * Add support for radio control via hamlib rigctld
