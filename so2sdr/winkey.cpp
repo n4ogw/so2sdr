@@ -44,6 +44,7 @@ Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
     winkeySpeedPot = 0;
     rigNum         = 0;
     txRig          = 0;
+    winkeySendingCmd=false;
 }
 
 Winkey::~Winkey()
@@ -75,34 +76,39 @@ void Winkey::receive()
 {
     unsigned char wkbyte;
 
-    int           n = winkeyPort->read((char *) &wkbyte, 1);
-    if (n > 0) {
-        if ((wkbyte & 0xc0) == 0xc0) {
-            // Status byte: currently sending CW?
-            if (wkbyte & 4) {
-                sending = true;
-                txRig=rigNum;
-                emit(winkeyTx(true, rigNum));
-            } else {
-                sending = false;
-                // signal to rx is send for radio txRig, not rigNum. This is because
-                // the radio may have been switched since transmit started, need rx signal
-                // for the sending radio
-                emit(winkeyTx(false, txRig));
+    while (winkeyPort->bytesAvailable()) {
+        int n = winkeyPort->read((char *) &wkbyte, 1);
+        if (n > 0) {
+            if ((wkbyte & 0xc0) == 0xc0) {
+                // Status byte: currently sending CW?
+                if (wkbyte & 4) {
+                    if (winkeySendingCmd==true) continue; // ignore duplicate tx messages
+                    sending = true;
+                    winkeySendingCmd=true;
+                    txRig=rigNum;
+                    emit(winkeyTx(true, rigNum));
+                } else {
+                    sending = false;
+                    winkeySendingCmd=false;
+                    // signal to rx is sent for radio txRig, not rigNum. This is because
+                    // the radio may have been switched since transmit started, need rx signal
+                    // for the sending radio
+                    emit(winkeyTx(false, txRig));
+                }
+                // Pushbutton status only sent to host in WK2 mode by admin command, (0x00, 11)
+            } else if ((wkbyte & 0xc0) == 0x80) {
+                // speed pot setting in 6 lowest bits
+                winkeySpeedPot = wkbyte & 0x3f;
+            } else    {
+                // echo byte
+                // in case CW was canceled, ignore any echo still associated with previous
+                // message
+                if (ignoreEcho) {
+                    ignoreEcho=false;
+                    return;
+                }
+                if (echoMode) processEcho(wkbyte);
             }
-        // Pushbutton status only sent to host in WK2 mode by admin command, (0x00, 11)
-        } else if ((wkbyte & 0xc0) == 0x80) {
-            // speed pot setting in 6 lowest bits
-            winkeySpeedPot = wkbyte & 0x3f;
-        } else    {
-            // echo byte
-            // in case CW was canceled, ignore any echo still associated with previous
-            // message
-            if (ignoreEcho) {
-                ignoreEcho=false;
-                return;
-            }
-            if (echoMode) processEcho(wkbyte);
         }
     }
 }

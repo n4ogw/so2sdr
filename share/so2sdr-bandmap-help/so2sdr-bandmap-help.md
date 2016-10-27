@@ -358,6 +358,10 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
+## version 2.0.10 (10/26/2016)
+
+* Another fix for winkey status getting stuck in TX
+
 ## version 2.0.9 (10/22/2016)
 
 * Add support for radio control via hamlib rigctld

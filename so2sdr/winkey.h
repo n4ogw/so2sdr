@@ -63,6 +63,7 @@ private:
     bool       ignoreEcho;
     bool       sending;
     bool       winkeyOpen;
+    bool       winkeySendingCmd;
     int        nchar;
     int        rigNum;
     int        txPtr;
