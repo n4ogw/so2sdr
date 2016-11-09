@@ -48,9 +48,10 @@ Sweepstakes::~Sweepstakes()
 QVariant Sweepstakes::columnName(int c) const
 {
     switch (c) {
-    case SQL_COL_RCV1:return(QVariant("#"));break;
+    case SQL_COL_RCV1:return(QVariant("#Rcv"));break;
     case SQL_COL_RCV2:return(QVariant("Pr"));break;
     case SQL_COL_RCV3:return(QVariant("Ck"));break;
+    case SQL_COL_SNT1:return(QVariant("#Snt"));break;
     }
     return Contest::columnName(c);
 }

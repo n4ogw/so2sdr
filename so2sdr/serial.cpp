@@ -451,7 +451,6 @@ void RigSerial::clearRIT(int nrig)
     mutex[nrig].lock();
     clearRitFlag[nrig] = true;
 
-    // rig_set_rit(rig[nrig],RIG_VFO_CURR,0);
     mutex[nrig].unlock();
 }
 
@@ -459,10 +458,10 @@ void RigSerial::clearRIT(int nrig)
  */
 bool RigSerial::radioOpen(int nrig)
 {
-    // mutex[nrig].lock();
+    mutex[nrig].lock();
     bool b = radioOK[nrig];
 
-    // mutex[nrig].unlock();
+    mutex[nrig].unlock();
     return(b);
 }
 
@@ -470,10 +469,10 @@ bool RigSerial::radioOpen(int nrig)
  */
 int RigSerial::getRigFreq(int nrig)
 {
-    // mutex[nrig].lock();
+    mutex[nrig].lock();
     int f = rigFreq[nrig];
 
-    // mutex[nrig].unlock();
+    mutex[nrig].unlock();
     return(f);
 }
 

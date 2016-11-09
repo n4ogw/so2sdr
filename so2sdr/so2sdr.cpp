@@ -88,8 +88,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // pointers for each radio
     for (int i=0;i<NRIG;i++) {
         wpmLineEditPtr[i]->setFocusPolicy(Qt::NoFocus);
-        // RTC 02/02/16 Qt5 bug: textEdited() signal is not emitted when
+        // RTC 02/02/16 Qt5 bug/change: textEdited() signal is not emitted when
         // a validator is used; screws up prefixCheck
+        // see https://bugreports.qt.io/browse/QTBUG-44046
 #if QT_VERSION < 0x050000	
         lineEditCall[i]->setValidator(new UpperValidator(lineEditCall[i]));
         lineEditExchange[i]->setValidator(new UpperValidator(lineEditExchange[i]));
@@ -2253,7 +2254,9 @@ void So2sdr::switchRadios(bool switchcw)
 void So2sdr::prefixCheck1(const QString &call)
 {
 #if QT_VERSION >= 0x050000  
+    int i=lineEditCall[0]->cursorPosition();
     lineEditCall[0]->setText(call.toUpper());
+    lineEditCall[0]->setCursorPosition(i);
     prefixCheck(0, call.toUpper());
 #else
     prefixCheck(0, call);
@@ -2266,7 +2269,9 @@ void So2sdr::prefixCheck1(const QString &call)
 void So2sdr::prefixCheck2(const QString &call)
 {
 #if QT_VERSION >= 0x050000  
+    int i=lineEditCall[1]->cursorPosition();
     lineEditCall[1]->setText(call.toUpper());
+    lineEditCall[1]->setCursorPosition(i);
     prefixCheck(1, call.toUpper());
 #else
     prefixCheck(1, call);
@@ -2279,7 +2284,9 @@ void So2sdr::prefixCheck2(const QString &call)
 void So2sdr::exchCheck1(const QString &exch)
 {
 #if QT_VERSION >= 0x050000
+    int i=lineEditExchange[0]->cursorPosition();
     lineEditExchange[0]->setText(exch.toUpper());
+    lineEditExchange[0]->setCursorPosition(i);
     exchCheck(0,exch.toUpper());
 #else    
     exchCheck(0,exch);
@@ -2292,7 +2299,9 @@ void So2sdr::exchCheck1(const QString &exch)
 void So2sdr::exchCheck2(const QString &exch)
 {
 #if QT_VERSION >= 0x050000
+     int i=lineEditExchange[1]->cursorPosition();
     lineEditExchange[1]->setText(exch.toUpper());
+    lineEditExchange[1]->setCursorPosition(i);
     exchCheck(1,exch.toUpper());
 #else    
     exchCheck(1,exch);
