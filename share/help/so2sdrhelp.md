@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.9
+## SO2SDR Help file version 2.0.11
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -874,6 +874,14 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.0.11 (11/08/2016)
+
+* Bug fix: editing call or report broken in Qt5 (cursor jumps to end of line)
+
+* Fix log headings for Sweepstakes
+
+* clean up in serial code
 
 ## version 2.0.10 (10/26/2016)
 
