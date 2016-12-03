@@ -1,0 +1,37 @@
+# This script is for playing a message. It takes two arguments. The first is
+# the radio number (0,1), the second the filename (without .wav)
+#
+# Example: play call.wav to radio 0
+#
+# play-message 0 call
+#
+#!/bin/bash
+source ~/.so2sdr/wav/wav_settings
+pkill gst-launch-1.0
+
+#mute the mic
+pactl set-source-mute $mic 1
+
+#turn on ptt for radio 0 or 1
+if [ $1 == "0" ]; then
+  echo "\set_ptt 1" > /dev/tcp/$rigctld_ip0/$rigctld_port0
+fi
+
+if [ $1 == "1" ]; then
+  echo "\set_ptt 1" > /dev/tcp/$rigctld_ip1/$rigctld_port1
+fi
+
+#play file
+gst-launch-1.0 -q filesrc location=$2.wav ! wavparse ! audioconvert ! pulsesink
+
+#turn off ptt
+if [ $1 == "0" ]; then
+  echo "\set_ptt 0" > /dev/tcp/$rigctld_ip0/$rigctld_port0
+fi
+
+if [ $1 == "1" ]; then
+  echo "\set_ptt 0" > /dev/tcp/$rigctld_ip1/$rigctld_port1
+fi
+
+#restore mic
+pactl set-source-mute $mic 0

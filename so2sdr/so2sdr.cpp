@@ -80,11 +80,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     settings=new QSettings(settingsFile,QSettings::IniFormat);
     setFocusPolicy(Qt::StrongFocus);
     errorBox           = new QErrorMessage(this);
+    errorBox->setModal(true);
     setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
     if (!iconValid.load(dataDirectory() + "/check.png")) {
         qDebug("file check.png missing");
     }
-
     // pointers for each radio
     for (int i=0;i<NRIG;i++) {
         wpmLineEditPtr[i]->setFocusPolicy(Qt::NoFocus);
@@ -130,6 +130,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
             break;
         }
     }
+    scriptProcess=new QProcess();
+    scriptProcess->setWorkingDirectory(userDirectory()+"/wav");
     So2sdrStatusBar->addPermanentWidget(offPtr);
     So2sdrStatusBar->addPermanentWidget(grabLabel);
     grabLabel->hide();
@@ -189,6 +191,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     ssbMessage = new SSBMessageDialog(this);
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
+    connect(ssbMessage,SIGNAL(recordMsg(QByteArray,bool)),this,SLOT(expandMacro(QByteArray,bool)));
     ssbMessage->hide();
 
     radios = new RadioDialog(*settings,*cat, this);
@@ -270,12 +273,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(cwMessage,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(ssbMessage,SIGNAL(accepted()),this,SLOT(regrab()));
     connect(ssbMessage,SIGNAL(rejected()),this,SLOT(regrab()));
-#ifdef DVK_ENABLE
     connect(actionSSB_Messages, SIGNAL(triggered()), ssbMessage, SLOT(show()));
     connect(actionSSB_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
-#else
-    actionSSB_Messages->setEnabled(false);
-#endif
     initDupeSheet();
     connect(bandmap,SIGNAL(bandmap1state(bool)),this,SLOT(sendCalls1(bool)));
     connect(bandmap,SIGNAL(bandmap2state(bool)),this,SLOT(sendCalls2(bool)));
@@ -352,8 +351,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     startWinkey();
 
     openRadios();
-    switchAudio(activeRadio);
     toggleStereo();
+    toggleStereo();
+    switchAudio(activeRadio);
     switchTransmit(activeRadio);
 
     callFocus[activeRadio]=true;
@@ -429,6 +429,8 @@ So2sdr::~So2sdr()
     delete pport;
     delete otrsp;
     delete bandmap;
+    scriptProcess->close();
+    delete scriptProcess;
 
     if (qso[0]) delete qso[0];
     if (qso[1]) delete qso[1];
@@ -710,10 +712,8 @@ void So2sdr::enableUI()
     bandmapAction2->setEnabled(true);
     dupesheetAction2->setEnabled(true);
     cwMessage->setEnabled(true);
-#ifdef DVK_ENABLE
     ssbMessage->setEnabled(true);
     actionSSB_Messages->setEnabled(true);
-#endif
     options->setEnabled(true);
     actionCW_Messages->setEnabled(true);
     actionContestOptions->setEnabled(true);
@@ -845,9 +845,7 @@ bool So2sdr::setupContest()
     if (cname.isEmpty()) return(false);
     selectContest(cname.toLatin1());
     cwMessage->initialize(csettings);
-#ifdef DVK_ENABLE
     ssbMessage->initialize(csettings);
-#endif
     options->initialize(csettings);
     cty = new Cty(*csettings);
     connect(cty, SIGNAL(ctyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
@@ -1910,6 +1908,7 @@ void So2sdr::duelingCQActivate (bool state) {
  */
 void So2sdr::autoSendExch() {
 
+    if (cat->modeType(activeTxRadio)!=CWType) return;
     if (autoSendTrigger && !autoSendPause) {
         if (!activeR2CQ && !duelingCQMode && !toggleMode) {
 
@@ -1984,7 +1983,7 @@ void So2sdr::autoSendExch_exch() {
         }
         if (activeRadio != activeTxRadio)
             tmpExch.prepend("{R2}");
-        expandMacro(tmpExch,-1,false,false);
+        expandMacro(tmpExch,false);
         exchangeSent[activeTxRadio]    = true;
         callSent[activeTxRadio]        = true; // set this true as well in case mode switched to S&P
         origCallEntered[activeTxRadio] = qso[activeTxRadio]->call;
@@ -2017,7 +2016,6 @@ void So2sdr::autoSendExch_exch() {
 void So2sdr::autoCQ () {
 
     int delay = (int) (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() * 1000.0);
-
     if (autoCQModeWait) {
         if (winkey->isSending()) { // prevent switching hysteresis
             autoCQModeWait = false;
@@ -2173,7 +2171,16 @@ void So2sdr::switchAudio(int r)
  */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
-    winkey->cancelcw();
+    switch (cat->modeType(activeTxRadio)) {
+     case CWType:
+        winkey->cancelcw();
+        break;
+    case PhoneType:
+        expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
+        break;
+    case DigiType:
+        break;
+    }
     if (CWspeed) {
         winkey->setSpeed(CWspeed);
     } else {
@@ -3115,15 +3122,9 @@ void So2sdr::clearR2CQ(int nr)
 /*!
  * \brief So2sdr::expandMacro parse messages
  * \param msg Text of message
- * \param ssbnr If ssbnr >=0, activate {AUDIO} to play or record an audio message with number ssbnr
- * \param ssbRecord If true, record this message
  */
-void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
+void So2sdr::expandMacro(QByteArray msg, bool stopcw)
 {
-#ifndef DVK_ENABLE
-    Q_UNUSED(ssbnr);
-    Q_UNUSED(ssbRecord);
-#endif
     int        tmp_wpm = wpm[activeTxRadio];
     QByteArray out     = "";
     QByteArray command = "";
@@ -3163,8 +3164,19 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                                        "CATR2",
                                        "CAT1",
                                        "CAT2",
-                                       "CALL_OK"};
-    const int        n_token_names = 34;
+                                       "CALL_OK",
+                                       "SCRIPT",
+                                       "SCRIPTNR",
+                                       "PTTON",
+                                       "PTTON1",
+                                       "PTTON2",
+                                       "PTTONR2",
+                                       "PTTOFF",
+                                       "PTTOFF1",
+                                       "PTTOFF2",
+                                       "PTTOFFR2"
+                                     };
+    const int        n_token_names = 44;
 
     /*!
        cw/ssb message macros
@@ -3204,12 +3216,20 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
        - {CAT1}{/CAT1} raw serial port command to radio 1
        - {CAT2}{/CAT2} raw serial port command to radio 2
        - {CALL_OK} mark call in entry line as correct, so correct call msg will not be sent
+       - {SCRIPT}{/SCRIPT} run a script in the /scripts directory
+       - {SCRIPTNR}{/SCRIPTNR} run a script in the /scripts directory, where #=radio number
+       - {PTTON} {PTTOFF} turn active radio PTT on/off
+       - {PTTON1} {PTTOFF1} turn radio 1 PTT on/off
+       - {PTTON2} {PTTOFF2} turn radio 2 PTT on/off
+       - {PTTONR2} {PTTOFFR2} turn inactive radio PTT on/off
     */
     bool switchradio=true;
     bool first=true;
     bool repeat = false;
     int        i1;
     int        i2;
+
+    if (msg.isEmpty()) return; // abort for null length messages
     if ((i1 = msg.indexOf("{")) != -1) {
         int i0 = 0;
         while (i1 != -1) {
@@ -3351,13 +3371,7 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         out.append(0x1e);
                         break;
                     case 25: // play/record audio
-#ifdef DVK_ENABLE
-                        if (ssbRecord) {
-                            emit(recordDvk(ssbnr));
-                        } else {
-                            emit(playDvk(ssbnr,activeRadio));
-                        }
-#endif
+                        // REMOVED
                         break;
                     case 26: // switch radios
                         switchRadios();
@@ -3396,6 +3410,56 @@ void So2sdr::expandMacro(QByteArray msg,int ssbnr,bool ssbRecord, bool stopcw)
                         break;
                     case 33: // CALL_OK
                         origCallEntered[activeRadio]=qso[activeRadio]->call;
+                        break;
+                    case 34: // SCRIPT
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        runScript(command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        switchradio=false;
+                        break;
+                    case 35: // SCRIPTNR
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        if (activeRadio==0) {
+                            command.replace('#','0');
+                        } else {
+                            command.replace('#','1');
+                        }
+                        runScript(command);
+                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        switchradio=false;
+                        break;
+                    case 36: // PTTON
+                        // fixme add winkey option
+                        cat->setPtt(activeRadio,1);
+                        switchradio=false;
+                        break;
+                    case 37: // PTTON1
+                        cat->setPtt(0,1);
+                        switchradio=false;
+                        break;
+                    case 38: // PTTON2
+                        cat->setPtt(1,1);
+                        switchradio=false;
+                        break;
+                    case 39: // PTTONR2
+                        cat->setPtt(activeRadio ^ 1,1);
+                        switchradio=false;
+                        break;
+                    case 40: // PTTOFF
+                        cat->setPtt(activeRadio,0);
+                        switchradio=false;
+                        break;
+                    case 41: // PTTOFF1
+                        cat->setPtt(0,0);
+                        switchradio=false;
+                        break;
+                    case 42: // PTTOFF2
+                        cat->setPtt(1,0);
+                        switchradio=false;
+                        break;
+                    case 43: // PTTOFFR2
+                        cat->setPtt(activeRadio ^ 1,0);
+                        switchradio=false;
                         break;
                     }
                     break;
@@ -3658,7 +3722,7 @@ void So2sdr::updateNrDisplay()
 }
 
 /*! check to see if userDirectory() exists. If not, give options to
-   create it.
+   create it. Also creates subdirectory for wav files.
 
    returns true if directory exists or was created; false if program
    should exit.
@@ -3666,8 +3730,13 @@ void So2sdr::updateNrDisplay()
 bool So2sdr::checkUserDirectory()
 {
     QDir dir;
-    if (dir.exists(userDirectory())) return(true);
-
+    if (dir.exists(userDirectory())) {
+        dir.mkdir("wav");
+        if (!QFile::exists(userDirectory()+"/wav/wav_settings")) {
+            QFile::copy(dataDirectory()+"/wav_settings",userDirectory()+"/wav/wav_settings");
+        }
+        return(true);
+    }
     QMessageBox *msg= new QMessageBox(this);
     msg->setWindowTitle("Error");
     msg->setText("User data directory " + userDirectory() + " does not exist.");
@@ -3677,9 +3746,13 @@ bool So2sdr::checkUserDirectory()
     int ret = msg->exec();
     switch (ret) {
     case QMessageBox::Yes:
-
         // create directory
         if (dir.mkdir(userDirectory())) {
+            dir.setCurrent(userDirectory());
+            dir.mkdir("wav");
+            if (!QFile::exists(userDirectory()+"/wav/wav_settings")) {
+                QFile::copy(dataDirectory()+"/wav_settings",userDirectory()+"/wav/wav_settings");
+            }
             msg->deleteLater();
             return(true);
         } else {
@@ -3690,7 +3763,6 @@ bool So2sdr::checkUserDirectory()
         }
         break;
     case QMessageBox::Cancel:
-
         // this will abort the program (return false)
         break;
     default:  // never reached
@@ -4040,6 +4112,7 @@ void So2sdr::initPointers()
     dupeCalls[1]=0;
     dupeCallsKey[0]=0;
     dupeCallsKey[1]=0;
+    scriptProcess = 0;
     telnet            = 0;
     wpmLineEditPtr[0] = WPMLineEdit;
     wpmLineEditPtr[1] = WPMLineEdit2;
@@ -4229,4 +4302,12 @@ void So2sdr::showBandmap2(bool state)
 {
     menuWindows->close();
     bandmap->showBandmap(1,state);
+}
+
+void So2sdr::runScript(QByteArray cmd)
+{
+    So2sdrStatusBar->showMessage("Script:"+cmd,3000);
+    QString program = dataDirectory()+"/scripts/"+cmd;
+    scriptProcess->close();
+    scriptProcess->start(program);
 }

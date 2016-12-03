@@ -259,8 +259,6 @@ void RadioDialog::updateFromSettings()
         radioMfgComboBox[i]->setCurrentIndex(indx1);
         radioModelComboBox[i]->setCurrentIndex(indx2);
 
-        radioDevEdit[i]->setText(settings.value(s_radios_port[i],s_radios_port_def[i]).toString());
-        radioPollTimeEdit[i]->setText(settings.value(s_radios_poll[i],s_radios_poll_def[i]).toString());
         switch (settings.value(s_radios_baud[i],4800).toInt()) {
         case 1200:
             radioBaudComboBox[i]->setCurrentIndex(4);
@@ -310,7 +308,6 @@ void RadioDialog::rejectChanges()
 
 void RadioDialog::rigctld1Checked(bool b)
 {
-    Rig1PollEdit->setEnabled(!b);
     Radio1MfgComboBox->setEnabled(!b);
     Radio1BaudComboBox->setEnabled(!b);
     Radio1DeviceLineEdit->setEnabled(!b);
@@ -322,7 +319,6 @@ void RadioDialog::rigctld1Checked(bool b)
 
 void RadioDialog::rigctld2Checked(bool b)
 {
-    Rig2PollEdit->setEnabled(!b);
     Radio2MfgComboBox->setEnabled(!b);
     Radio2BaudComboBox->setEnabled(!b);
     Radio2DeviceLineEdit->setEnabled(!b);

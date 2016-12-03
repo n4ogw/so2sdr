@@ -235,7 +235,7 @@ void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
     QByteArray snt[MAX_EXCH_FIELDS];
     for (int i = 0; i < m.rowCount(); i++) {
         // skip qsos marked as invalid
-     //   if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
+        if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
 
         // for sent exchange, if log field is empty use config file value
         snt[0]=m.record(i).value(SQL_COL_SNT1).toByteArray();
@@ -269,7 +269,7 @@ void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
 
     for (int i = 0; i < m.rowCount(); i++) {
         // skip qsos marked as invalid
-       // if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
+        if (!m.record(i).value(SQL_COL_VALID).toBool()) continue;
 
         // for sent exchange, if log field is empty use config file value
         snt[0]=m.record(i).value(SQL_COL_SNT1).toByteArray();

@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.0.11";
+const QByteArray Version = "2.1.0";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000
@@ -688,34 +688,67 @@ const QString c_qso_type2="contest/qsotype2";
 const QString c_qso_type2_def="";
 
 const QString c_cq_func[2]={"keys/cq","keys_phone/cq"};
-const QString c_cq_func_def[2]={"","{AUDIO}"};
+const QString c_cq_func_def[2]={"",""};
+
+const QString c_cq_rec_func="keys_phone_rec/cq";
+const QString c_cq_rec_func_def="";
 
 const QString c_ex_func[2]={"keys/ex","keys_phone/ex"};
-const QString c_ex_func_def[2]={"","{AUDIO}"};
+const QString c_ex_func_def[2]={"",""};
+
+const QString c_ex_rec_func="keys_phone_rec/ex";
+const QString c_ex_rec_func_def="";
 
 const QString c_ctrl_func[2]={"keys/ctrl","keys_phone/ctrl"};
-const QString c_ctrl_func_def[2]={"","{AUDIO}"};
+const QString c_ctrl_func_def[2]={"",""};
 
 const QString c_shift_func[2]={"keys/shift","keys_phone/shift"};
-const QString c_shift_func_def[2]={"","{AUDIO}"};
+const QString c_shift_func_def[2]={"",""};
 
 const QString c_sp_exc[2]={"keys/sp_exch","keys_phone/sp_exch"};
 const QString c_sp_exc_def[2]={"",""};
 
+const QString c_sp_exc_rec="keys_phone/sp_exch_rec";
+const QString c_sp_exc_rec_def="";
+
 const QString c_cq_exc[2]={"keys/cq_exch","keys_phone/cq_exch"};
 const QString c_cq_exc_def[2]={"",""};
+
+const QString c_cq_exc_rec="keys_phone/cq_exch_rec";
+const QString c_cq_exc_rec_def="";
 
 const QString c_qsl_msg[2]={"keys/qsl_msg","keys_phone/qsl_msg"};
 const QString c_qsl_msg_def[2]={"",""};
 
+const QString c_call_msg="keys_phone/call";
+const QString c_call_msg_def="";
+
+const QString c_call_msg_rec="keys_phone/call_rec";
+const QString c_call_msg_rec_def="";
+
+const QString c_qsl_msg_rec="keys_phone/qsl_msg_rec";
+const QString c_qsl_msg_rec_def="";
+
 const QString c_qsl_msg_updated[2]={"keys/qsl_msg_updated","keys_phone/qsl_msg_updated"};
 const QString c_qsl_msg_updated_def[2]={"",""};
+
+const QString c_qsl_msg_updated_rec="keys_phone/qsl_msg_updated_rec";
+const QString c_qsl_msg_updated_rec_def="";
 
 const QString c_qqsl_msg[2]={"keys/qqsl_msg","keys_phone/qqsl_msg"};
 const QString c_qqsl_msg_def[2]={"",""};
 
+const QString c_qqsl_msg_rec="keys_phone/qqsl_msg_rec";
+const QString c_qqsl_msg_rec_def="";
+
 const QString c_dupe_msg[2]={"keys/dupe_msg","keys_phone/dupe_msg"};
 const QString c_dupe_msg_def[2]={"",""};
+
+const QString c_dupe_msg_rec="keys_phone/dupe_msg_rec";
+const QString c_dupe_msg_rec_def="";
+
+const QString c_ssb_cancel="keys_phone/cancel";
+const QString c_ssb_cancel_def="";
 
 const QString c_cty="contest/cty";
 const QString c_cty_def="wl_cty.dat";

@@ -45,9 +45,9 @@ public:
     ~SSBMessageDialog();
     void initialize(QSettings *s);
     friend class So2sdr;
+
 signals:
-    void stopRecording(int);
-    void startRecording(int);
+    void recordMsg(QByteArray,bool);
 
 public slots:
     void updateSSBMsg();
@@ -55,25 +55,26 @@ public slots:
 
 private slots:
     void recButtons(int id);
+    void excRecButtons(int id);
+    void otherRecButtons(int id);
 
 private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     const static int  m=1;
 
-    int            nowRecording;
     QButtonGroup   recGroup;
-    QByteArray     cqCtrlF[N_FUNC];
+    QButtonGroup   excRecGroup;
+    QButtonGroup   otherRecGroup;
     QByteArray     cqF[N_FUNC];
-    QByteArray     cqShiftF[N_FUNC];
     QByteArray     excF[N_FUNC];
-    QLineEdit      *ctrlFuncEditPtr[N_FUNC];
-    QPushButton    *ctrlFuncRecPtr[N_FUNC];
+    QByteArray     cqRecF[N_FUNC];
+    QByteArray     excRecF[N_FUNC];
     QLineEdit      *excFuncEditPtr[N_FUNC];
+    QLineEdit      *excFuncRecEditPtr[N_FUNC];
     QPushButton    *excFuncRecPtr[N_FUNC];
     QLineEdit      *funcEditPtr[N_FUNC];
+    QLineEdit      *funcRecEditPtr[N_FUNC];
     QPushButton    *funcRecPtr[N_FUNC];
-    QLineEdit      *shiftFuncEditPtr[N_FUNC];
-    QPushButton    *shiftFuncRecPtr[N_FUNC];
     UpperValidator *upperValidate;
     QSettings      *settings;
 };

@@ -62,8 +62,8 @@ CabrilloDialog::CabrilloDialog(QWidget *parent) : QDialog(parent)
         cabCombo[i]->setEnabled(false);
         cabLabel[i]->clear();
     }
+    comboBoxContestName->clear();
     labelClaimedScore->clear();
-    labelContest->clear();
 }
 
 /*!
@@ -104,6 +104,7 @@ void CabrilloDialog::initialize(QSettings *s1,QSettings *s2)
             settings->setArrayIndex(0);
             cabLabel[j]->setText(settings->value("cabstring").toString());
             // further entries are combobox values
+            cabCombo[j]->clear();
             for (int i=1;i<sz;i++) {
                 settings->setArrayIndex(i);
                 cabCombo[j]->addItem(settings->value("cabstring").toString());
@@ -111,11 +112,14 @@ void CabrilloDialog::initialize(QSettings *s1,QSettings *s2)
         }
         settings->endArray();
     }
-    labelContest->setText(settings->value(c_cab_contestname,c_cab_contestname_def).toString());
-    /* @todo is Cabrillo LOCATION used for all contests*/
-    //if (!settings->value(c_cab_location,"").toString().isEmpty()) {
-    //    lineEditLocation->setText(settings->value(c_cab_location,"").toString());
-    //}
+    int sz=settings->beginReadArray(c_cab_contestname);
+    comboBoxContestName->clear();
+    for (int i=0;i<sz;i++) {
+        settings->setArrayIndex(i);
+        comboBoxContestName->addItem(settings->value("name").toString());
+    }
+    settings->endArray();
+
     updateExch();
 }
 
@@ -142,40 +146,46 @@ void CabrilloDialog::writeHeader(QFile *cbrFile,int score)
     tmpstr = "CREATED-BY: SO2SDR version " + Version + "\n";
     cbrFile->write(tmpstr.toLatin1().data());
     cbrFile->write("CALLSIGN: " + labelCall->text().toLatin1() + "\n");
-    cbrFile->write("CONTEST: " + labelContest->text().toLatin1() + "\n");
-    cbrFile->write("LOCATION: " + lineEditLocation->text().toLatin1() + "\n");
+    cbrFile->write("CONTEST: " + comboBoxContestName->currentText().toLatin1()+"\n");
+    if (!lineEditLocation->text().isEmpty()) {
+        cbrFile->write("LOCATION: " + lineEditLocation->text().toLatin1() + "\n");
+    }
     tmpstr = "CLAIMED-SCORE: " + QString::number(score) + "\n";
     cbrFile->write(tmpstr.toLatin1().data());
-    if (comboBoxCabrillo1->isEnabled()) {
+    if (comboBoxCabrillo1->isEnabled() && comboBoxCabrillo1->currentText()!="NONE") {
         tmpstr = labelCabrillo1->text() + ": " + comboBoxCabrillo1->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    if (comboBoxCabrillo2->isEnabled()) {
+    if (comboBoxCabrillo2->isEnabled() && comboBoxCabrillo2->currentText()!="NONE") {
         tmpstr = labelCabrillo2->text() + ": " + comboBoxCabrillo2->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    if (comboBoxCabrillo3->isEnabled()) {
+    if (comboBoxCabrillo3->isEnabled() && comboBoxCabrillo3->currentText()!="NONE") {
         tmpstr = labelCabrillo3->text() + ": " + comboBoxCabrillo3->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    if (comboBoxCabrillo4->isEnabled()) {
+    if (comboBoxCabrillo4->isEnabled() && comboBoxCabrillo4->currentText()!="NONE") {
         tmpstr = labelCabrillo4->text() + ": " + comboBoxCabrillo4->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    if (comboBoxCabrillo5->isEnabled()) {
+    if (comboBoxCabrillo5->isEnabled() && comboBoxCabrillo5->currentText()!="NONE") {
         tmpstr = labelCabrillo5->text() + ": " + comboBoxCabrillo5->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    if (comboBoxCabrillo6->isEnabled()) {
+    if (comboBoxCabrillo6->isEnabled() && comboBoxCabrillo6->currentText()!="NONE") {
         tmpstr = labelCabrillo6->text() + ": " + comboBoxCabrillo6->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    if (comboBoxCabrillo7->isEnabled()) {
+    if (comboBoxCabrillo7->isEnabled() && comboBoxCabrillo7->currentText()!="NONE") {
         tmpstr = labelCabrillo7->text() + ": " + comboBoxCabrillo7->currentText() + "\n";
         cbrFile->write(tmpstr.toLatin1());
     }
-    cbrFile->write("OPERATORS: " + lineEditOperators->text().toLatin1() + "\n");
-    cbrFile->write("NAME: " + lineEditName->text().toLatin1() + "\n");
+    if (!lineEditOperators->text().isEmpty()) {
+        cbrFile->write("OPERATORS: " + lineEditOperators->text().toLatin1() + "\n");
+    }
+    if (!lineEditName->text().isEmpty()) {
+        cbrFile->write("NAME: " + lineEditName->text().toLatin1() + "\n");
+    }
     QString     tmp     = textEditAddress->toPlainText();
     QStringList tmppart = tmp.split("\n");
     for (int i = 0; i < tmppart.size(); i++) {
@@ -187,14 +197,17 @@ void CabrilloDialog::writeHeader(QFile *cbrFile,int score)
     cbrFile->write("ADDRESS-STATE-PROVINCE: " + lineEditAddressState->text().toLatin1() + "\n");
     cbrFile->write("ADDRESS-POSTALCODE: " + lineEditAddressPostalCode->text().toLatin1() + "\n");
     cbrFile->write("ADDRESS-COUNTRY: " + lineEditAddressCountry->text().toLatin1() + "\n");
-    cbrFile->write("CLUB: " + lineEditClub->text().toLatin1() + "\n");
-    settings->setValue(c_cab_club,lineEditClub->text());
-
-    tmp     = textEditSoapbox->toPlainText();
-    tmppart = tmp.split("\n");
-    for (int i = 0; i < tmppart.size(); i++) {
-        if (!tmppart[i].isEmpty()) {
-            cbrFile->write("SOAPBOX: " + tmppart[i].toLatin1() + "\n");
+    if (!lineEditClub->text().isEmpty())  {
+        cbrFile->write("CLUB: " + lineEditClub->text().toLatin1() + "\n");
+        settings->setValue(c_cab_club,lineEditClub->text());
+    }
+    if (!textEditSoapbox->toPlainText().isEmpty()) {
+        tmp     = textEditSoapbox->toPlainText();
+        tmppart = tmp.split("\n");
+        for (int i = 0; i < tmppart.size(); i++) {
+            if (!tmppart[i].isEmpty()) {
+                cbrFile->write("SOAPBOX: " + tmppart[i].toLatin1() + "\n");
+            }
         }
     }
     QByteArray exch[MAX_EXCH_FIELDS];

@@ -27,6 +27,7 @@
 #include <QTimer>
 #include "defines.h"
 #include "signal.h"
+#include "call.h"
 #ifdef Q_OS_WIN
 #include "fftw3.h"
 #endif
@@ -82,7 +83,7 @@ public slots:
     void processData(unsigned char *, unsigned char);
     void clearIQ();
     void setPlotPoints(bool);
-    void startFindCQ(int low, int high);
+    void startFindCQ(int low, int high, QList<Call> &callList);
     void updateParams();
 
 private:
@@ -127,7 +128,6 @@ private:
     QString       userDirectory;
     sampleSizes   sizes;
     Signal        sigListCQ[SIG_MAX];
-    Signal        sigListCQtmp[SIG_MAX];
     Signal        sigList[SIG_MAX];
     unsigned char background;
     unsigned char *output;
@@ -137,7 +137,7 @@ private:
     void complexMult(double a[], double b[], double c[]) const;
     void detectPeaks(double bg, double sigma, double spec[]);
     void fitErrors();
-    void findCQ(int flow, int fhigh);
+    void findCQ(int flow, int fhigh, QList<Call> &callList);
     void gaussElim(double a[FIT_ORDER][FIT_ORDER], double y[FIT_ORDER], int n);
     void interp2(double in[], double out[], double);
     void makeGainPhase();

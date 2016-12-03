@@ -750,7 +750,7 @@ void RigSerial::rxSocket(int nrig)
     const QByteArray cmdNames[] = { "get_freq:",
                                     "get_mode:",
                                     "get_level: ifctr"};
-    const int nCmdNames=2;
+    const int nCmdNames=3;
     const QByteArray modeNames[]= { "USB",
                                     "LSB",
                                     "CW",
@@ -805,10 +805,12 @@ void RigSerial::rxSocket(int nrig)
                         }
                     }
                     break;
-                case 2: // get IF center (K3). Response looks like "get_level: ifctr;8212940.000000"
+                case 2: // get IF center (K3). Response looks like "get_level: ifctr;8212940.000000\nRPRT 0"
+                    cmdList[1].truncate(14);
                     iff=cmdList.at(1).toDouble(&ok);
-                    if (ok)
-                        ifFreq_[i] = (int) (iff - 8210000.0);
+                    if (ok) {
+                        ifFreq_[nrig] = (int) (iff - 8210000.0);
+                    }
                     break;
                 }
             }

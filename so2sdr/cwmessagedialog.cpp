@@ -115,6 +115,7 @@ void CWMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         funcEditPtr[i]->setText(settings->value("func",c_cq_func_def[m]).toString());
+        funcEditPtr[i]->setCursorPosition(0);
         cqF[i]=funcEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
@@ -123,6 +124,7 @@ void CWMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         excFuncEditPtr[i]->setText(settings->value("func",c_ex_func_def[m]).toString());
+        excFuncEditPtr[i]->setCursorPosition(0);
         excF[i]=excFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
@@ -131,6 +133,7 @@ void CWMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         shiftFuncEditPtr[i]->setText(settings->value("func",c_shift_func_def[m]).toString());
+        shiftFuncEditPtr[i]->setCursorPosition(0);
         cqShiftF[i]=shiftFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
@@ -139,16 +142,23 @@ void CWMessageDialog::initialize(QSettings *s)
     for (int i=0;i<sz;i++) {
         settings->setArrayIndex(i);
         ctrlFuncEditPtr[i]->setText(settings->value("func",c_ctrl_func_def[m]).toString());
+        ctrlFuncEditPtr[i]->setCursorPosition(0);
         cqCtrlF[i]=ctrlFuncEditPtr[i]->text().toLatin1();
     }
     settings->endArray();
     // other special messages
     sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
+    sp_exc_edit->setCursorPosition(0);
     cq_exc_edit->setText(settings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
+    cq_exc_edit->setCursorPosition(0);
     qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
+    qsl_msg_edit->setCursorPosition(0);
     qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
+    qsl_updated_edit->setCursorPosition(0);
     dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
+    dupe_msg_edit->setCursorPosition(0);
     quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
+    quick_qsl_edit->setCursorPosition(0);
 }
 
 
@@ -158,17 +168,27 @@ void CWMessageDialog::rejectChanges()
 {
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setText(cqF[i]);
+        funcEditPtr[i]->setCursorPosition(0);
         ctrlFuncEditPtr[i]->setText(cqCtrlF[i]);
+        ctrlFuncEditPtr[i]->setCursorPosition(0);
         shiftFuncEditPtr[i]->setText(cqShiftF[i]);
+        shiftFuncEditPtr[i]->setCursorPosition(0);
         excFuncEditPtr[i]->setText(excF[i]);
+        excFuncEditPtr[i]->setCursorPosition(0);
     }
 
     qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
+    qsl_msg_edit->setCursorPosition(0);
     qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
+    qsl_updated_edit->setCursorPosition(0);
     cq_exc_edit->setText(settings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
+    cq_exc_edit->setCursorPosition(0);
     sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
+    sp_exc_edit->setCursorPosition(0);
     dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
+    dupe_msg_edit->setCursorPosition(0);
     quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
+    quick_qsl_edit->setCursorPosition(0);
     reject();
 }
 

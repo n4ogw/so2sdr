@@ -63,7 +63,6 @@ void OTRSP::switchAudio(int nr)
     if (!stereo) {
         OTRSPPort->write(rxcmd[nr],4);
     }
-
 }
 
 void OTRSP::switchTransmit(int nr)

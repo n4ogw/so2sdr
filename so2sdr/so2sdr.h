@@ -83,6 +83,7 @@ class QByteArray;
 class QTimer;
 class QCheckBox;
 class QPixmap;
+class QProcess;
 class QProgessDialog;
 class QSettings;
 class QWidgetAction;
@@ -104,6 +105,7 @@ public:
 public slots:
     void addSpot(QByteArray call, int f);
     void addSpot(QByteArray call, int f, bool d);
+    void expandMacro(QByteArray msg, bool stopcw = true);
     void removeSpot(QByteArray call, int band);
     void removeSpotFreq(int f, int band);
     void rescore();
@@ -273,6 +275,7 @@ private:
     QList<QByteArray>    *dupeCalls[NRIG];
     QList<QByteArray>    excludeMults[MMAX];
     QList<int>           searchList;
+    QProcess             *scriptProcess;
     Qso                  *qso[NRIG];
     QSqlRecord           origRecord;
     tableModel           *model;
@@ -321,7 +324,6 @@ private:
     bool enterFreqOrMode();
     void esc();
     void exchCheck(int nr,const QString &exch);
-    void expandMacro(QByteArray msg, int ssbnr, bool ssbRecord, bool stopcw = true);
     void fillSentExch(int nr);
     void initDupeSheet();
     void initLogView();
@@ -342,6 +344,7 @@ private:
     bool readContestList();
     void readStationSettings();
     void readExcludeMults();
+    void runScript(QByteArray cmd);
     void saveSpots();
     void searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QList<unsigned int>& worked, QList<int>& mult1, QList<int>& mult2);
     void selectContest(QByteArray name);

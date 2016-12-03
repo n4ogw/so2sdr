@@ -83,6 +83,7 @@ void SDRDialog::updateFromSettings()
     udpPortLineEdit->setText(settings.value(s_sdr_bandmap_udp_port,s_sdr_bandmap_udp_port_def).toString());
     comboBoxSdrType->setCurrentIndex(settings.value(s_sdr_type,s_sdr_type).toInt());
     lineEditIntegTime->setText(settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toString());
+    cqFinderCallsCheckbox->setChecked(settings.value(s_sdr_cq_finder_calls,s_sdr_cq_finder_calls_def).toBool());
     comboBoxIDNumber->setCurrentIndex(settings.value(s_sdr_nrig,s_sdr_nrig_def).toInt());
     reverseScrollCheckBox->setChecked(settings.value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool());
     switch ((SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt()) {
@@ -114,6 +115,8 @@ SDRDialog::~SDRDialog()
  */
 void SDRDialog::updateSDR()
 {
+    settings.setValue(s_sdr_cqtime,lineEditIntegTime->text().toInt());
+    settings.setValue(s_sdr_cq_finder_calls,cqFinderCallsCheckbox->isChecked());
     settings.setValue(s_sdr_n1mm,n1mmUdpCheckBox->isChecked());
     settings.setValue(s_sdr_n1mm_port,n1mmUdpLineEdit->text());
     settings.setValue(s_sdr_bandmap_tcp_port,tcpPortLineEdit->text().toInt());

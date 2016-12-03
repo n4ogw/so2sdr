@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.0.11
+## So2sdr-bandmap Help Version 2.1.0
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -107,8 +107,6 @@ value less than 30 seconds.
 
 ![Soundcard setup](./soundcard-setup.png)
 
-* Type: for Linux there is only one option, ALSA. In Windows there are several
-different sound API's.
 * Device: So2sdr-bandmap tries to test which available sound devices
 will work with the program, and puts a checkmark next to these. This
 check is not 100% effective however. Normally you want to use the line
@@ -135,9 +133,6 @@ pulseaudio:
 
         pasuspender -- so2sdr-bandmap
 
-* Windows: the audio API used by so2sdr-bandmap, portaudio,
-provides several Windows sound API's. Some may provide better
-performance than others.
 
 #### SDR-IP (Network) SDR
 
@@ -322,25 +317,6 @@ the UDP packet.
 
 ## Known issues
 
-* Windows: the program may not run on Windows XP. In my testing, so2sdr ran
-on one XP system but not another. So2sdr-bandmap ran on both systems. This
-is related to differences in Microsoft DLL's which are not handled by
-the mingw compiler.
-
-* Windows: the "Grab keyboard" setting in the windows menu does not
-work. Normally this setting is used when the bandmap window is open.
-With grab keyboard enabled, you can click on the bandmap and still
-have keyboard focus in the logging window. This does not work in
-Windows. There is one workaround, which is to make the following
-registry changes.  After the changes you will need to log out or restart the
-computer.
-
-
-        HKEY_CURRENT_USER\Control Panel\Desktop 
-        ForegroundFlashCount = REG_DWORD 0x00000003 
-        ForegroundLockTimeout = REG_DWORD 0x00000000
-
-
 * Linux: soundcard SDR's may not start on certain systems with an
 error "Audio device does not support stereo." A workaround is to use
 the pasuspender utility to stop Pulseaudio. If starting the bandmap
@@ -357,6 +333,19 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.0 (12/02/2016)
+
+* Add support for voice recording.  See new section in help.
+
+* So2sdr-bandmap: add option to also ignore spotted calls when searching for open cq frequencies.
+
+* NO3M: activeRadio is temporarily set to autoCQRadio in enter when
+AutoCQ is active and unpaused to prevent exchange being sent on CQ
+radio if a call is present in AltD radio field.
+
+* NO3M: AltD QSO is logged without interrupting CW on CQ radio.
+
 
 ## version 2.0.11 (11/08/2016)
 

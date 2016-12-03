@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = "2.0.11";
+const QByteArray Version = "2.1.0";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000
@@ -303,6 +303,9 @@ const bool s_sdr_iqcorrect_def=true;
 
 const QString s_sdr_cqtime="cqtime";
 const int s_sdr_cqtime_def=15;
+
+const QString s_sdr_cq_finder_calls="cq_finder_calls";
+const bool s_sdr_cq_finder_calls_def=false;
 
 const QString s_sdr_level="level";
 const int s_sdr_level_def=100;

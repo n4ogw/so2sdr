@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.0.11
+## SO2SDR Help file version 2.1.0
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -7,6 +7,7 @@
 * [Setup: So2sdr-bandmap setup](#bandmap_setup)
 * [Key Reference](#keyref)
 * [Message macros](#macros)
+* [Voice keyer setup](#ssb)
 * [Operating notes](#notes)
 * [Known issues](#issues)
 * [Changelog](#changes)
@@ -37,8 +38,7 @@ number of new ways.
 If you are going to use the SDR bandmap, you need to configure this
 first before so2sdr.  The first time either program is run it will
 create a directory to store user settings. The default location is
-~/.so2sdr (Linux) or C:/Documents and Settings/Username/so2sdr
-(Windows). In this directory, the default configuration file for
+~/.so2sdr. In this directory, the default configuration file for
 so2sdr is so2sdr.ini, and the default configuration file for
 so2sdr-bandmap is so2sdr-bandmap.ini. If you are using two copies
 of the bandmap for SO2R, you will need to make two separate
@@ -80,28 +80,6 @@ You will need the following development libraries installed: Qt4, FFTW, Hamlib, 
  
 6. Test and contribute!
 
-
-#### Windows
-
-There are two Windows installer packages (32 bit):
-
-1. So2sdr-x.x.x.exe : contains the
-logging program and SDR bandmap
-
-2. so2sdr-bandmap-x.x.x.exe : contains only the SDR bandmap
-(for use standalone or with other logging programs).
-
- To remove, run "uninstall" in the installation directory, or delete
-the install directory.  The program does not make any registry
-changes.
-
-#### Windows Issues 
-
-The GNU mingw compiler has some issues building for Windows. While the
-program is linked as "static", it still depends on several MS Windows
-DLL's, including msvcrt.dll. This DLL changes with the version of
-Windows. In some cases the program may not run on older versions of
-Windows (XP) because it is missing some dependency in msvcrt.dll.
 
  [Return to top](#top)
 
@@ -217,7 +195,7 @@ default), and the other 4534.
 * Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
 You may have to add your username to a particular group to access
-these ports. Under Windows ports are COM1, COM2, ...
+these ports. 
 * When the radios are configured correctly, after
 clicking "OK" in the radio dialog the "R1" and "R2"
 indicators at the bottom of the main window
@@ -309,8 +287,8 @@ If you have already operated this contest before, just make
 a copy of the ".cfg" file. This way you will not need to
 reconfigure CW macros and other settings again.
 * The list of contests known by so2sdr is in the "contest_list.dat"
-file (in /usr/local/share/so2sdr/ under Linux, and in the
-same directory as the executable under Windows). Each line of 
+file (in /usr/local/share/so2sdr/).
+ Each line of 
 this file is of the format Displayed name, config file.
 * Note that in some cases new contests can be easily added added to
 this list if they have rules that are similar to existing
@@ -479,8 +457,6 @@ value less than 30 seconds.
 
 ![Soundcard setup](./soundcard-setup.png)
 
-* Type: for Linux there is only one option, ALSA. In Windows there are several
-different sound API's.
 * Device: So2sdr-bandmap tries to test which available sound devices
 will work with the program, and puts a checkmark next to these. This
 check is not 100% effective however. Normally you want to use the line
@@ -604,10 +580,7 @@ Screenshot files are placed in the same directory as the log file.
 
 
 Two separate sets of macros are stored by the program, one for CW
-and one for SSB. So2sdr currently doesn't have a built-in way to record voice
-messages, but external devices can be used with CAT or OTRSP
-macros (see below).
-
+and one for SSB. For notes on voice keyer set, see  [voice keyer setup](#ssb).
 
 * {CALL} :     callsign
 * {#} :        qso number
@@ -648,10 +621,76 @@ will switch the RX antenna on the Elecraft K3.
 * {CALL_OK} : This will reset the check if the original call has been
 corrected. Used when repeating the exchange to a station, it will prevent
 the "Call Updated QSL" message from being sent when not needed.
+* {SCRIPT}{/SCRIPT} : run a script in the /share/so2sdr/scripts directory
+* {SCRIPTNR}{/SCRIPTNR} : run a script in the /share/so2sdr/scripts directory, where '#' is replaced with the active radio number (0 or 1)
+* {PTTON} {PTTOFF} : turn active radio PTT on/off
+* {PTTON1} {PTTOFF1} : turn radio 1 PTT on/off
+* {PTTON2} {PTTOFF2} : turn radio 2 PTT on/off
+* {PTTONR2} {PTTOFFR2} : turn inactive radio PTT on/off
 
 [Return to top](#top)
 
 ---
+
+<a name="ssb"></a>
+### Voice keyer setup
+
+So2sdr can record and play voice messages through external scripts. The default
+scripts are located in /usr/local/share/so2sdr/scripts, and set up to use
+the Pulseaudio sound system. Here is how to set it up:
+
+* The microphone should be connected to the sound card mic input.
+The sound card line out should be connected to the radio mic or line in. For so2r
+(two radios), the same output from the sound card is fed to both radios; PTT
+will be mapped to the correct radio for transmitting.
+
+* The pulseaudio loopback module needs to be loaded so the mic is looped back
+to the soundcard output. This can be
+done with the following command:
+
+    pactl load-module module-loopback latency_msec=1
+
+    You can also add "load-module module-loopback latency_msec=1" to the file
+	/etc/pulse/default.pa to  load this module automatically on boot.
+	
+* The voice keyer scripts require that the hamlib rigctld is used to
+control the radios in order to control the radio PTT line. The direct
+serial hamlib control built into so2sdr could be used if the radio is
+in VOX mode. A typical command line to start rigctld looks like:
+
+    rigctld --model=229 --port=4532 --rig-file=/dev/ttyS0
+
+    The second radio needs to use a different port such as 4534.
+
+* You may need to edit the settings in the file ~/.so2sdr/wav/wav_settings.
+The "mic" setting here is the number of the pulseaudio input device,
+which you can find using "pactl list short sources". There are also
+settings for the rigctld IP address and IP port numbers for radio 0
+and radio 1. 
+
+* For voice modes there are two sets of macros: F1-F12 for CQ mode, and
+F1-F12 for exchange/S&P mode. To record a message, press Ctrl+Shift and the
+function key. This will activate the macro under the corresponding "REC" setting.
+Some other macros have no corresponding key. For example, the Cancel macro
+is sent when Esc is pressed; other macros are for sending the callsign
+in S&P mode and other ESM functions. These can be recorded using the REC
+pushbutton in the "SSB Messages" dialog.
+
+    * A typical play message macro would look like this:
+
+        {SCRIPTNR}PLAY-MESSAGE # 1{\SCRIPTNR}
+
+        This will play the message in the file "1.WAV" located in the ~/.so2sdr/wav
+        directory. '#' will be either 0 or 1 corresponding to the active radio.
+
+    * A typical record message macro would look like this:
+
+        {SCRIPT}RECORD-MESSAGE 1{\SCRIPT}
+
+* As of version 2.1.0, basic CQ and S&P operation with voice messages works,
+but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.
+
+[Return to top](#top)
 
 <a name="notes"></a>
 ### Operating notes
@@ -830,35 +869,7 @@ to call CQ on in this situation.
 
 ## Known issues
 
-* Windows: the program may not run on Windows XP. In my testing, so2sdr ran
-on one XP system but not another. So2sdr-bandmap ran on both systems. This
-is related to differences in Microsoft DLL's which are not handled by
-the mingw compiler.
-
-* Windows: radio serial communications does not work with the virtual
-serial ports of LP-Bridge (tested with LP-Bridge_09985 and hamlib-git
-08/2015). This is because LP-Bridge does not fully reproduce the
-serial commands of the K3. While initializing the K3 interface, hamlib
-sends several requests to the K3 requesting information on what
-version of the Elecraft serial protocol the radio supports. These
-commands are ignored by LP-Bridge and hamlib assumes the serial
-connection is broken.
-
-* Windows: the "Grab keyboard" setting in the windows menu does not
-work. Normally this setting is used when the bandmap window is open.
-With grab keyboard enabled, you can click on the bandmap and still
-have keyboard focus in the logging window. This does not work in
-Windows. There is one workaround, which is to make the following
-registry changes.  After the changes you will need to log out or restart the
-computer.
-
-
-        HKEY_CURRENT_USER\Control Panel\Desktop 
-        ForegroundFlashCount = REG_DWORD 0x00000003 
-        ForegroundLockTimeout = REG_DWORD 0x00000000
-
-
-* Linux: soundcard SDR's may not start on certain systems with an
+* Soundcard SDR's may not start on certain systems with an
 error "Audio device does not support stereo." A workaround is to use
 the pasuspender utility to stop Pulseaudio. If starting the bandmap
 from so2sdr, do this
@@ -874,6 +885,19 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.0 (12/02/2016)
+
+* Add support for voice recording. See new section in help.
+
+* So2sdr-bandmap: add option to also ignore spotted calls when searching for open cq frequencies.
+
+* NO3M: activeRadio is temporarily set to autoCQRadio in enter when
+AutoCQ is active and unpaused to prevent exchange being sent on CQ
+radio if a call is present in AltD radio field.
+
+* NO3M: AltD QSO is logged without interrupting CW on CQ radio.
+
 
 ## version 2.0.11 (11/08/2016)
 

@@ -227,9 +227,9 @@ void Spectrum::clearCQ()
 /*! start CQ finding process
 
  */
-void Spectrum::startFindCQ(int low,int high)
+void Spectrum::startFindCQ(int low, int high, QList<Call> &callList)
 {
-    findCQ(low,high);
+    findCQ(low,high,callList);
     if (sigCQ) {
         emit(qsy(sigCQ));
         QString tmp = "QSY to " + QString::number(sigCQ / 1000) + " KHz";
@@ -240,18 +240,32 @@ void Spectrum::startFindCQ(int low,int high)
 /*! find best CQ freqs among detected signals. Once freq is found,
    qsy is emitted
  */
-void Spectrum::findCQ(int flow,int fhigh)
+void Spectrum::findCQ(int flow,int fhigh,QList<Call> &callList)
 {
     // peak detect must be turned on
     if (!peakDetect) {
         return;
     }
     sigCQ = 0;
+    Signal *sigListCQtmp;
+    int totSize=SIG_MAX;
+    if (settings.value(s_sdr_cq_finder_calls,s_sdr_cq_finder_calls_def).toBool()) {
+        totSize+=callList.size();
+    }
+    sigListCQtmp=new Signal[totSize];
 
     // make work copy of list
     for (int i = 0; i < SIG_MAX; i++) {
         sigListCQtmp[i].active = sigListCQ[i].active;
         sigListCQtmp[i].f      = sigListCQ[i].f;
+    }
+
+    // add spotted qso freqs
+    if (settings.value(s_sdr_cq_finder_calls,s_sdr_cq_finder_calls_def).toBool()) {
+        for (int i = SIG_MAX, j=0; i < totSize; i++,j++) {
+            sigListCQtmp[i].active = true;
+            sigListCQtmp[i].f  = callList.at(j).freq;
+        }
     }
 
     // add limits to list of freqs
@@ -265,7 +279,7 @@ void Spectrum::findCQ(int flow,int fhigh)
     if (findCQLimit[1]>endFreqs[1]) findCQLimit[1]=endFreqs[1];
 
     int indx = -1;
-    for (int i = 0; i < SIG_MAX; i++) {
+    for (int i = 0; i < totSize; i++) {
         if (!sigListCQtmp[i].active) {
             indx = i;
             break;
@@ -276,7 +290,7 @@ void Spectrum::findCQ(int flow,int fhigh)
         sigListCQtmp[indx].active = true;
 
         int indx2 = -1;
-        for (int i = indx + 1; i < SIG_MAX; i++) {
+        for (int i = indx + 1; i < totSize; i++) {
             if (!sigListCQtmp[i].active) {
                 indx2 = i;
                 break;
@@ -291,7 +305,7 @@ void Spectrum::findCQ(int flow,int fhigh)
     // sort signal list by frequency (insertion sort)
     // place "inactive" entries at end of list
     Signal s;
-    for (int i = 1; i < SIG_MAX; i++) {
+    for (int i = 1; i < totSize; i++) {
         s = sigListCQtmp[i];
         int  j    = i - 1;
         bool done = false;
@@ -311,7 +325,7 @@ void Spectrum::findCQ(int flow,int fhigh)
     }
 
     // find best cq freq based on max space between adjacent signals
-    for (int i = 0; i < SIG_MAX; i++) {
+    for (int i = 0; i < totSize; i++) {
         if (!sigListCQtmp[i].active) break;
 
         if (sigListCQtmp[i].f < findCQLimit[0]) {
@@ -330,13 +344,14 @@ void Spectrum::findCQ(int flow,int fhigh)
 
     sigSpace = 0;
     sigCQ    = 0;
-    for (int i = 1; i < SIG_MAX; i++) {
+    for (int i = 1; i < totSize; i++) {
         if (!sigListCQtmp[i].active) break;
         if (sigListCQtmp[i].space > sigSpace) {
             sigCQ    = sigListCQtmp[i].fcq - sigListCQtmp[i].space / 2;
             sigSpace = sigListCQtmp[i].space;
         }
     }
+    delete [] sigListCQtmp;
 }
 
 

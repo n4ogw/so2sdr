@@ -1081,7 +1081,7 @@ void So2sdrBandmap::readData()
             break;
         case BANDMAP_CMD_FIND_FREQ: // find open frequency
             if (centerFreq!=0 && flow!=0 && fhigh!=0) {
-                spectrumProcessor->startFindCQ(flow,fhigh);
+                spectrumProcessor->startFindCQ(flow,fhigh,callList);
             }
             break;
         case BANDMAP_CMD_SET_INVERT: // invert spectrum

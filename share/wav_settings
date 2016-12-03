@@ -1,0 +1,7 @@
+#!/bin/bash
+
+mic=1
+rigctld_ip0="127.0.0.1"
+rigctld_ip1="127.0.0.1"
+rigctld_port0=4532
+rigctld_port1=4534

@@ -10,6 +10,8 @@ Copyright 2010-2016 R. Torsten Clay N4OGW
 
 # News
 
+* 12/02/2016 support for voice keyer using sound card
+
 * 10/04/2016 Qt5 update: the main issue with Qt 5 (not creating the log Sqlite
 file correctly) hopefully has been fixed.
 
