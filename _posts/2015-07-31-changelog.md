@@ -5,6 +5,19 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.1.0 (12/02/2016)
+
+* Add support for voice recording. See new section in help.
+
+* So2sdr-bandmap: add option to also ignore spotted calls when searching for open cq frequencies.
+
+* NO3M: activeRadio is temporarily set to autoCQRadio in enter when
+AutoCQ is active and unpaused to prevent exchange being sent on CQ
+radio if a call is present in AltD radio field.
+
+* NO3M: AltD QSO is logged without interrupting CW on CQ radio.
+
+
 ## version 2.0.10 (10/26/2016)
 
 * Another fix for winkey status getting stuck in TX
