@@ -5,6 +5,10 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.1.1 (12/05/2016)
+
+* wav directory sometimes created in wrong place
+
 ## version 2.1.0 (12/02/2016)
 
 * Add support for voice recording. See new section in help.
