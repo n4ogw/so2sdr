@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.1.0
+## So2sdr-bandmap Help Version 2.1.1
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -333,6 +333,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.1 (12/05/2016)
+
+* wav directory sometimes created in wrong place
 
 ## version 2.1.0 (12/02/2016)
 

@@ -3730,6 +3730,7 @@ void So2sdr::updateNrDisplay()
 bool So2sdr::checkUserDirectory()
 {
     QDir dir;
+    dir.setCurrent(userDirectory());
     if (dir.exists(userDirectory())) {
         dir.mkdir("wav");
         if (!QFile::exists(userDirectory()+"/wav/wav_settings")) {

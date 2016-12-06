@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.1.0
+## SO2SDR Help file version 2.1.1
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -885,6 +885,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.1 (12/05/2016)
+
+* wav directory sometimes created in wrong place
 
 ## version 2.1.0 (12/02/2016)
 
