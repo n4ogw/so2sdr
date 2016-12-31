@@ -6,7 +6,7 @@ radio (SDR) spectral displays. Runs under Linux and Windows. Version
 and 2) so2sdr-bandmap, the SDR spectral display. So2sdr-bandmap
 can be used separately from so2sdr.
 
-Copyright 2010-2016 R. Torsten Clay N4OGW
+Copyright 2010-2017 R. Torsten Clay N4OGW
 
 # News
 

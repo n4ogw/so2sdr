@@ -1,4 +1,4 @@
- /*! Copyright 2010-2016 R. Torsten Clay N4OGW
+ /*! Copyright 2010-2017 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -169,7 +169,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 }
             }
 
-            esc();
+            esc(mod);
             r = true;
             break;
         case Qt::Key_QuoteLeft: // left quote ` Toggles audio stereo
@@ -299,6 +299,9 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
         case Qt::Key_Space:
             if (callFocus[activeRadio]) {
                 spaceBar();
+                r = true;
+            } else if (mod == Qt::AltModifier && altDActive == 2 && activeRadio != altDActiveRadio) {
+                spaceAltD();
                 r = true;
             }
             break;
@@ -884,15 +887,7 @@ void So2sdr::spaceSprint()
         }
         return;
     }
-    if (altDActive && altDActiveRadio == activeRadio) { // treat space like enter for alt-D, return to other radio
-        altDEnter(1, Qt::NoModifier);
-        return;
-    }
     if (callFocus[activeRadio]) {
-        if (altDActive) {
-            altd();
-            callSent[altDActiveRadio] = false;
-        }
         spMode(activeRadio);
         lineEditCall[activeRadio]->setModified(false);
         setEntryFocus();
@@ -967,6 +962,9 @@ void So2sdr::spaceSP(int nrig)
  */
 void So2sdr::spaceAltD()
 {
+    if (autoCQMode) {
+        autoCQModePause = true;
+    }
     switchRadios();
     spMode(activeRadio);
     callFocus[activeRadio] = false;
@@ -1132,11 +1130,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         switchTransmit(activeRadio);
     }
 
-    int activeRadioOrig = activeRadio;
-    if (autoCQMode && !autoCQModePause) { // temporarily set in case focus is on other radio
-        activeRadio = autoCQRadio;
-    }
-
     int                 i1;
     int                 i2;
     int                 i3;
@@ -1180,6 +1173,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
                 if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
                     MasterTextEdit->clear();
                 }
+                duelingCQActivate(false);
                 return; // qsy successful
             }
         }
@@ -1439,7 +1433,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     }
 
     // focus call field
-    if ((enterState[i1][i2][i3][i4] & 32 || lineEditCall[activeRadio]->text().contains("?")) && !(autoCQMode && !autoCQModePause)) {
+    if (enterState[i1][i2][i3][i4] & 32 || lineEditCall[activeRadio]->text().contains("?")) {
         callFocus[activeRadio] = true;
         setEntryFocus();
     }
@@ -1555,8 +1549,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         }
     }
 
-    activeRadio = activeRadioOrig; // reset in case switched by AutoCQ
-
     if (toggleMode) { // steer focus to opposite radio
         switchRadios(false);
     }
@@ -1612,7 +1604,7 @@ void So2sdr::prefillExch(int nr)
    <li> pause autoCQ                    12=4096
    </ol>
  */
-void So2sdr::esc()
+void So2sdr::esc(Qt::KeyboardModifiers mod)
 {
     int                 i1;
     int                 i2;
@@ -1621,14 +1613,13 @@ void So2sdr::esc()
     static unsigned int escState[2][2][2][2];
     unsigned int        x;
     static bool         first     = true;
-    bool                altdClear = true;
 
     ModeTypes mode=cat->modeType(activeTxRadio);
 
     // define states
     if (first) {
         // RTC: 128 not needed here (?), leads to multiple cancelCw being called
-        escState[0][0][0][0] = 256 + 512 + 2048;//+128
+        escState[0][0][0][0] = 1 + 2 + 8 + 32 + 64 + 256 + 512 + 2048;//+128
         escState[1][0][0][0] = 1 + 2 + 8 + 32 + 64 + 1024 + 2048;
         escState[0][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
         escState[1][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
@@ -1650,39 +1641,40 @@ void So2sdr::esc()
     qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
 
     // if sending CW or audio, stop
-    switch (mode) {
-    case CWType:
-    {
-        if (winkey->isSending()) {
-            winkey->cancelcw();
-            // de-activate dueling-CQ
-            if (duelingCQMode) duelingCQModePause = true;
-            // de-activate auto-CQ if call field empty on auto-CQ radio
-            if (autoCQMode &&
-                    (
-                      (!altDActive && lineEditCall[activeRadio]->text().isEmpty())
-                      || (altDActive && lineEditCall[altDActiveRadio ^ 1]->text().isEmpty())
-                    )
-            ) {
-                autoCQModePause = true;
+    if (mod != Qt::AltModifier) {
+        switch (mode) {
+        case CWType:
+        {
+            if (winkey->isSending()) {
+                winkey->cancelcw();
+                // de-activate dueling-CQ
+                if (duelingCQMode) duelingCQModePause = true;
+                // de-activate auto-CQ if call field empty on auto-CQ radio
+                if (autoCQMode &&
+                        (
+                            (!altDActive && lineEditCall[activeRadio]->text().isEmpty())
+                            || (altDActive && lineEditCall[altDActiveRadio ^ 1]->text().isEmpty())
+                            )
+                        ) {
+                    autoCQModePause = true;
+                }
+                if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
+                if (autoSend && !lineEditCall[activeRadio]->text().isEmpty()) {
+                    autoSendPause = true;
+                }
+                return;
             }
-            if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
-            if (autoSend && !lineEditCall[activeRadio]->text().isEmpty()) {
-                autoSendPause = true;
-            }
-            return;
+            break;
         }
-        break;
+        case PhoneType:
+        {
+            expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
+            break;
+        }
+        case DigiType:
+            break;
+        }
     }
-    case PhoneType:
-    {
-        expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
-        break;
-    }
-    case DigiType:
-        break;
-    }
-
     // ESC needs to return focus to call field if it
     // screwed up by the mouse
     if (callFocus[activeRadio] && !lineEditCall[activeRadio]->hasFocus()) {
@@ -1716,11 +1708,10 @@ void So2sdr::esc()
 
             // switch back to radio 1
             callFocus[altDActiveRadio] = true;
-            switchRadios();
+            switchRadios(false);
             callSent[altDActiveRadio] = false;
+            return;
 
-            // do not clear call/exchange field in this case
-            altdClear = false;
         } else if (altDActive == 2 && activeRadio == altDActiveRadio) {
             QPalette palette(lineEditCall[altDActiveRadio]->palette());
             palette.setColor(QPalette::Base, CQ_COLOR);
@@ -1741,7 +1732,7 @@ void So2sdr::esc()
     }
 
     // clear call field
-    if ((x & 1) && altdClear) {
+    if (x & 1) {
         lineEditCall[activeRadio]->clear();
         lineEditCall[activeRadio]->setModified(false);
         labelCountry[activeRadio]->clear();
@@ -1771,7 +1762,7 @@ void So2sdr::esc()
     }
 
     // clear exchange field
-    if ((x & 2) && altdClear) {
+    if (x & 2) {
         lineEditExchange[activeRadio]->clear();
         lineEditExchange[activeRadio]->setModified(false);
         lineEditExchange[activeRadio]->setCursorPosition(0);
@@ -1879,7 +1870,7 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
     }
     if (autoCQMode && !excMode[autoCQRadio] && autoCQRadio == activeRadio){
         if (i == 0 || i == 1) {
-            if (altDActive <= 2) { // F1/F2 CQ unpauses AutoCQ
+            if (altDActive < 3) { // F1/F2 CQ unpauses AutoCQ
                 autoCQModePause = false;
                 autoCQModeWait = true;
             }

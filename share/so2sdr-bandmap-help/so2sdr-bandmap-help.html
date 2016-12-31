@@ -1,6 +1,6 @@
 <p><a name="top"></a></p>
 
-<h2>So2sdr-bandmap Help Version 2.1.1</h2>
+<h2>So2sdr-bandmap Help Version 2.1.2</h2>
 
 <ul>
 <li><a href="#controls">Controls</a></li>
@@ -358,6 +358,27 @@ from so2sdr, do this</p>
 <hr />
 
 <p><a name="changes"></a></p>
+
+<h2>version 2.1.2 (12/30/2016)</h2>
+
+<ul>
+<li><p>Several fixes/enhancements from NO3M:</p></li>
+<li><p>Several AutoCQ bugs, esp in conjunction w/ Alt-D;
+AutoCQ calls sendFunc() instead of enter();
+Fix autoCQ related switchTransmit calls in expandMacro function</p></li>
+<li><p>Alt+Space to start Alt-D QSO at any time, including during active CQ
+QSO; space still works the same when focused in CQ call field.</p></li>
+<li><p>Alt+ESC to wipe focused field without killing CW</p></li>
+<li><p>Sometimes call or exchange field data would be selected when
+re-focused.  Added deselect() to several places</p></li>
+<li><p>CW speed under certain radio switching conditions (ie. cntrl-R) would
+not reflect current active radio speed.  Added conditional statements at
+the top of expandMacro to set tmp_wpm variable.</p></li>
+<li><p>Prevent literal spacebar processing when using Alt-space keypress to
+start Alt-D QSO during CQ QSO</p></li>
+<li><p>Silently switch radios with Alt-D esc in case alt-esc (silent) keypress
+is used</p></li>
+</ul>
 
 <h2>version 2.1.1 (12/05/2016)</h2>
 

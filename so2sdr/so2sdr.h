@@ -1,4 +1,4 @@
-/*! Copyright 2010-2016 R. Torsten Clay N4OGW
+/*! Copyright 2010-2017 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -322,7 +322,7 @@ private:
     void enableUI();
     void enter(Qt::KeyboardModifiers);
     bool enterFreqOrMode();
-    void esc();
+    void esc(Qt::KeyboardModifiers);
     void exchCheck(int nr,const QString &exch);
     void fillSentExch(int nr);
     void initDupeSheet();

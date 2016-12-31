@@ -1,4 +1,4 @@
-/*! Copyright 2010-2016 R. Torsten Clay N4OGW
+/*! Copyright 2010-2017 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -615,6 +615,7 @@ void So2sdr::setEntryFocus()
 {
     if (callFocus[activeRadio]) {
         lineEditCall[activeRadio]->setFocus();
+        lineEditCall[activeRadio]->deselect();
         if (grabbing) {
             lineEditCall[activeRadio]->grabKeyboard();
             lineEditCall[activeRadio]->activateWindow();
@@ -623,6 +624,7 @@ void So2sdr::setEntryFocus()
         grabWidget = lineEditCall[activeRadio];
     } else {
         lineEditExchange[activeRadio]->setFocus();
+        lineEditExchange[activeRadio]->deselect();
         if (grabbing) {
             lineEditExchange[activeRadio]->grabKeyboard();
             lineEditExchange[activeRadio]->activateWindow();
@@ -1723,7 +1725,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2016 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2017 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>QtSolutions_Telnet 2.1"
@@ -1822,15 +1824,13 @@ void So2sdr::autoCQActivate (bool state) {
         duelingCQActivate(false);
         clearR2CQ(activeRadio ^ 1);
         autoCQRadio = activeRadio;
-        if (activeTxRadio != activeRadio) {
-            switchTransmit(activeRadio);
-        }
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
         autoCQModePause = false;
         autoCQModeWait = true;
         sendLongCQ = true;
-        if (lineEditCall[activeRadio]->text().isEmpty() && !winkey->isSending()) {
+        if (lineEditCall[autoCQRadio]->text().isEmpty() && !winkey->isSending()) {
+            switchTransmit(autoCQRadio);
             sendFunc(0, Qt::NoModifier); // send F1 immediately
         }
     } else {
@@ -1855,6 +1855,10 @@ void So2sdr::autoSendActivate (bool state) {
 
 void So2sdr::duelingCQActivate (bool state) {
     if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return; // disabled in Sprint mode
+    if (band[0] == band[1]) {
+        So2sdrStatusBar->showMessage("Dueling CQ disabled: same band",5000);
+        state = false;
+    }
     duelingCQMode = state;
     if (duelingCQMode) {
         autoCQActivate(false);
@@ -1891,7 +1895,7 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQStatus->clear();
         toggleMode = false;
         toggleStatus->clear();
-        if (activeRadio != activeTxRadio) {
+        if (activeRadio != activeTxRadio && !autoCQMode && lineEditCall[activeRadio]->text().isEmpty()) {
             switchRadios(false); // move focus to where last transmit
         }
         autoSendStatus->show();
@@ -1994,6 +1998,7 @@ void So2sdr::autoSendExch_exch() {
         prefillExch(activeTxRadio);
         if (activeRadio == activeTxRadio) {
             lineEditExchange[activeTxRadio]->setFocus();
+            lineEditExchange[activeTxRadio]->deselect();
             if (grab) {
                 lineEditExchange[activeTxRadio]->grabKeyboard();
                 lineEditExchange[activeTxRadio]->activateWindow();
@@ -2031,7 +2036,11 @@ void So2sdr::autoCQ () {
     } else if (cqTimer.elapsed() > delay) {
         autoCQModeWait = true;
         switchTransmit(autoCQRadio);
-        enter(Qt::NoModifier);
+        if (sendLongCQ) {
+            sendFunc(0, Qt::NoModifier);
+        } else {
+            sendFunc(1, Qt::NoModifier);
+        }
     } else {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - ((double) cqTimer.elapsed() / 1000.0),'f',1) + "s)</font>");
@@ -3014,6 +3023,7 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
     wpmLineEditPtr[nrig]->setReadOnly(true);
     if (callFocus[nrig]) {
         lineEditCall[nrig]->setFocus();
+        lineEditCall[nrig]->deselect();
         if (grab) {
             lineEditCall[activeRadio]->grabKeyboard();
             lineEditCall[activeRadio]->activateWindow();
@@ -3021,6 +3031,7 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
         grabWidget = lineEditCall[activeRadio];
     } else {
         lineEditExchange[nrig]->setFocus();
+        lineEditExchange[nrig]->deselect();
         if (grab) {
             lineEditExchange[activeRadio]->grabKeyboard();
             lineEditExchange[activeRadio]->activateWindow();
@@ -3125,7 +3136,14 @@ void So2sdr::clearR2CQ(int nr)
  */
 void So2sdr::expandMacro(QByteArray msg, bool stopcw)
 {
-    int        tmp_wpm = wpm[activeTxRadio];
+    int        tmp_wpm;
+    if (toggleMode) {
+        tmp_wpm = wpm[activeTxRadio];
+    } else if (autoCQMode && !autoCQModePause) {
+        tmp_wpm = wpm[autoCQRadio];
+    } else {
+        tmp_wpm = wpm[activeRadio];
+    }
     QByteArray out     = "";
     QByteArray command = "";
 
@@ -3470,12 +3488,8 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                 // TOGGLESTEREOPIN, R2, R2CQ do not
                 if (toggleMode) {
                     switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
-                } else if (autoCQMode) {
-                    if (altDActive && activeRadio == altDActiveRadio && autoCQModePause) {
-                        switchTransmit(altDActiveRadio, tmp_wpm);
-                    } else {
-                        switchTransmit(activeTxRadio, tmp_wpm);
-                    }
+                } else if (autoCQMode && !autoCQModePause) {
+                    switchTransmit(autoCQRadio, tmp_wpm);
                 } else {
                     switchTransmit(activeRadio, tmp_wpm);
                 }
@@ -3502,12 +3516,8 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
         // no macro present send as-is
         if (toggleMode) {
             switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
-        } else if (autoCQMode) {
-            if (altDActive && activeRadio == altDActiveRadio && autoCQModePause) {
-                switchTransmit(altDActiveRadio, tmp_wpm);
-            } else {
-                switchTransmit(activeTxRadio, tmp_wpm);
-            }
+        } else if (autoCQMode && !autoCQModePause) {
+            switchTransmit(autoCQRadio, tmp_wpm);
         } else {
             switchTransmit(activeRadio, tmp_wpm);
         }
