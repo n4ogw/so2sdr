@@ -5,6 +5,32 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.1.2 (12/30/2016)
+
+* Several fixes/enhancements from NO3M:
+
+* Several AutoCQ bugs, esp in conjunction w/ Alt-D;
+AutoCQ calls sendFunc() instead of enter();
+Fix autoCQ related switchTransmit calls in expandMacro function
+
+* Alt+Space to start Alt-D QSO at any time, including during active CQ
+QSO; space still works the same when focused in CQ call field.
+
+* Alt+ESC to wipe focused field without killing CW
+
+* Sometimes call or exchange field data would be selected when
+re-focused.  Added deselect() to several places
+
+* CW speed under certain radio switching conditions (ie. cntrl-R) would
+not reflect current active radio speed.  Added conditional statements at
+the top of expandMacro to set tmp_wpm variable.
+
+* Prevent literal spacebar processing when using Alt-space keypress to
+start Alt-D QSO during CQ QSO
+
+* Silently switch radios with Alt-D esc in case alt-esc (silent) keypress
+is used
+
 ## version 2.1.1 (12/05/2016)
 
 * wav directory sometimes created in wrong place
