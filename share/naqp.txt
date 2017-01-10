@@ -6,6 +6,7 @@ AR
 CA
 CO
 CT
+DC
 DE
 FL
 GA
@@ -18,7 +19,7 @@ KS
 KY
 LA
 ME
-MD;DC
+MD
 MA
 MI
 MN

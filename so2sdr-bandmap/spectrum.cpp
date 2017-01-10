@@ -508,7 +508,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     for (int i = 0; i < fftSize; i++) {
         spec_tmp[i] = log(spec_tmp[i]);
 #ifdef Q_OS_LINUX
-        if (isinf(spec_tmp[i])) spec_tmp[i] = -1.0e-16;
+        if (qIsInf(spec_tmp[i])) spec_tmp[i] = -1.0e-16;
 #endif
     }
 

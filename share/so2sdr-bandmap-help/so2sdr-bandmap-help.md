@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.1.2
+## So2sdr-bandmap Help Version 2.1.3
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -333,6 +333,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.3 (01/10/2017)
+
+* Update multipliers for NAQP and Sprint contests
 
 ## version 2.1.2 (12/30/2016)
 
