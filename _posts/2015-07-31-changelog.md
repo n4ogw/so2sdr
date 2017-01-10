@@ -5,6 +5,10 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.1.3 (01/10/2017)
+
+* Update multipliers for NAQP and Sprint contests
+
 ## version 2.1.2 (12/30/2016)
 
 * Several fixes/enhancements from NO3M:
