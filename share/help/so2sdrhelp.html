@@ -1,6 +1,6 @@
 <p><a name="top"></a></p>
 
-<h2>SO2SDR Help file version 2.1.3</h2>
+<h2>SO2SDR Help file version 2.1.4</h2>
 
 <ul>
 <li><a href="#overview">Overview</a></li>
@@ -60,7 +60,8 @@ copies of so2sdr-bandmap.ini (see below).</p>
 
 <h4>Linux</h4>
 
-<p>You will need the following development libraries installed: Qt4, FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. </p>
+<p>You will need the following development libraries installed: Qt, FFTW, Hamlib, and PortAudio. Qt version 5.x is recommended.
+Other various development packages include g++, Git, and pkg-config. </p>
 
 <ol>
 <li><p>Clone the git repository to your local machine:</p>
@@ -265,21 +266,35 @@ enabled, clicking on a signal in either bandmap
 will change the active radio and QSY to this frequency.
 This can be used to search and pounce visually
 across two separate bands.</li>
-<li>CQ Finder: one function of the bandscope is to 
+<li><p>CQ Finder: one function of the bandscope is to 
 find unused frequencies in order to call CQ. The program
 records the location of all signals within a certain
 time (integration time) and looks for the largest
 open space between signals. This frequency
 can be set using the BEST_CQ macro (see CW macros in Reference).
-Settings controlling the CQ finder:
+When this macro is activated,  the program searches for 
+open frequencies on each band between a low and high
+frequency limit. It will find the largest open "hole" between
+any two detected signals. It will also optionally avoid the frequencies
+of spotted stations ("CQ Finder use calls" setting in so2sdr-bandmap).</p>
+
+<p>In practice, the BEST_CQ algorithm is not perfect because of
+several issues: weak signals may not be detected, and there
+may be other noise (like key clicks) that are not detected by the
+peak-detection algorithm. You may also want to avoid cqing in some
+otherwise empty frequencies (DX windows, calling frequencies, etc).
+However, the following procedure works
+very well:</p>
+
 <ol>
-<li>Frequency limits : the program searches for 
-open frequencies on each band between these limits.
-Note that the bandscope itself only covers 96 KHz
-and therefore may not cover the entire band in
-question. In this case, the limit will be change to
-reflect the frequency range actually 
-covered by the bandscope.</li>
+<li><p>Allow the bandmap to peak-detect for a period of time (at
+least the integration time length). "CQ Finder use calls" should
+be checked in the bandmap settings.</p></li>
+<li><p>Activate BEST_CQ</p></li>
+<li><p>If the frequency you get is good, keep it. If it is not good,
+simply put a "Dupe" mark on this frequency with the "-" key (or
+"=" key if this is the second radio). Keep repeating this
+sequence until you get a clear frequency.</p></li>
 </ol></li>
 </ul>
 
@@ -928,6 +943,14 @@ from so2sdr, do this</p>
 <hr />
 
 <p><a name="changes"></a></p>
+
+<h2>version 2.1.4 (05/31/2017)</h2>
+
+<ul>
+<li>Bug fixes for WPX contest</li>
+<li>Update help file</li>
+<li>Other bug fixes: fix fonts in some dialogs, make multipliers window scrollable</li>
+</ul>
 
 <h2>version 2.1.3 (01/10/2017)</h2>
 

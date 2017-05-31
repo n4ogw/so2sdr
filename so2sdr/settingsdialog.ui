@@ -48,6 +48,11 @@
      </property>
      <item row="0" column="0">
       <widget class="QCheckBox" name="QSYFocusCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Focus switches to QSY radio if no QSO in progress on active radio (mostly useful for Sprint mode)</string>
        </property>
@@ -58,6 +63,11 @@
      </item>
      <item row="1" column="0">
       <widget class="QCheckBox" name="FocusIndicatorsCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>LED indicators to show audio and transmit focus</string>
        </property>
@@ -68,6 +78,11 @@
      </item>
      <item row="2" column="0">
       <widget class="QCheckBox" name="ExchangeLogCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Immediately log QSO when sending exchange (S&amp;P mode)</string>
        </property>
@@ -78,6 +93,11 @@
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Automatically start CW when this many characters are entered in the callsign (Set to 0 to disable)</string>
        </property>
@@ -91,6 +111,11 @@
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Auto CQ Repeat Time (sec)</string>
        </property>
@@ -101,6 +126,11 @@
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Dueling CQ Delay (sec)</string>
        </property>
@@ -111,6 +141,11 @@
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Auto Send Mode</string>
        </property>

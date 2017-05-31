@@ -229,6 +229,11 @@ share/so2sdr in linux or in program directory in Windows.</string>
      </item>
      <item row="11" column="0">
       <widget class="QCheckBox" name="OffTimeCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Off Times</string>
        </property>
@@ -326,6 +331,11 @@ share/so2sdr in linux or in program directory in Windows.</string>
      </item>
      <item row="7" column="0">
       <widget class="QCheckBox" name="HistoryCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Enable Call History for exchange Pre-fill</string>
        </property>
@@ -339,6 +349,11 @@ share/so2sdr in linux or in program directory in Windows.</string>
      </item>
      <item row="8" column="0" colspan="2">
       <widget class="QCheckBox" name="HistoryUpdateCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Append Call History on-the-fly during contest</string>
        </property>

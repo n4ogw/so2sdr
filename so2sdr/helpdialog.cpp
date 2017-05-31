@@ -19,16 +19,22 @@
 #include <QDir>
 #include <QFile>
 #include <QIODevice>
+#include <QCommonStyle>
+#include <QStyle>
 #include <QTextStream>
 #include "helpdialog.h"
 
 HelpDialog::HelpDialog(QString fileName, QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
+    QCommonStyle style;
     connect(pushButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(homeButton,SIGNAL(clicked()),this,SLOT(home()));
+    homeButton->setIcon(style.standardIcon(QStyle::SP_ArrowUp));
     connect(backButton,SIGNAL(clicked()),HelpTextEdit,SLOT(backward()));
+    backButton->setIcon(style.standardIcon(QStyle::SP_ArrowBack));
     connect(forwardButton,SIGNAL(clicked()),HelpTextEdit,SLOT(forward()));
+    forwardButton->setIcon(style.standardIcon(QStyle::SP_ArrowForward));
 
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {

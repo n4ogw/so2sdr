@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.1.3
+## SO2SDR Help file version 2.1.4
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -53,7 +53,8 @@ copies of so2sdr-bandmap.ini (see below).
 
 #### Linux
 
-You will need the following development libraries installed: Qt4, FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
+You will need the following development libraries installed: Qt, FFTW, Hamlib, and PortAudio. Qt version 5.x is recommended.
+Other various development packages include g++, Git, and pkg-config. 
 
 
 1. Clone the git repository to your local machine:
@@ -259,15 +260,31 @@ records the location of all signals within a certain
 time (integration time) and looks for the largest
 open space between signals. This frequency
 can be set using the BEST_CQ macro (see CW macros in Reference).
-Settings controlling the CQ finder:
-    2. Frequency limits : the program searches for 
-     open frequencies on each band between these limits.
-     Note that the bandscope itself only covers 96 KHz
-      and therefore may not cover the entire band in
-      question. In this case, the limit will be change to
-     reflect the frequency range actually 
-     covered by the bandscope.
+When this macro is activated,  the program searches for 
+open frequencies on each band between a low and high
+frequency limit. It will find the largest open "hole" between
+any two detected signals. It will also optionally avoid the frequencies
+of spotted stations ("CQ Finder use calls" setting in so2sdr-bandmap).
 
+     In practice, the BEST_CQ algorithm is not perfect because of
+several issues: weak signals may not be detected, and there
+may be other noise (like key clicks) that are not detected by the
+peak-detection algorithm. You may also want to avoid cqing in some
+otherwise empty frequencies (DX windows, calling frequencies, etc).
+However, the following procedure works
+very well:
+
+     1. Allow the bandmap to peak-detect for a period of time (at
+     least the integration time length). "CQ Finder use calls" should
+	 be checked in the bandmap settings.
+
+     2. Activate BEST_CQ
+
+     3. If the frequency you get is good, keep it. If it is not good,
+     simply put a "Dupe" mark on this frequency with the "-" key (or
+     "=" key if this is the second radio). Keep repeating this
+	 sequence until you get a clear frequency.
+	 
 When  operating with the bandmap, you should enable "Grab
 keyboard" from the "Windows" menu, which will prevent the call
 and exchange entry lines from losing keyboard focus.
@@ -885,6 +902,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.4 (05/31/2017)
+
+* Bug fixes for WPX contest
+* Update help file
+* Other bug fixes: fix fonts in some dialogs, make multipliers window scrollable
 
 ## version 2.1.3 (01/10/2017)
 

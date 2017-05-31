@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.1.3
+## So2sdr-bandmap Help Version 2.1.4
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -102,6 +102,10 @@ a frequency is "empty."  This should be set to roughly the length of a typical
 qso in the contest being operated. With longer exchanges (like in the
 ARRL Sweepstakes) a longer time should be used here. Typically you should use a
 value less than 30 seconds.
+* CQ Finder use calls: if selected, spotted calls will also be used (in addition to
+detected signals) to determine what frequencies for the CQ finder.
+* Scroll right: reverses the scroll direction. Some people like this for one bandmap if two bandmaps
+are placed on either side of the logging window.
 
 #### Soundcard SDR setup
 
@@ -333,6 +337,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.4 (05/31/2017)
+
+* Bug fixes for WPX contest
+* Update help file
+* Other bug fixes: fix fonts in some dialogs, make multipliers window scrollable
 
 ## version 2.1.3 (01/10/2017)
 

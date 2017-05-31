@@ -174,55 +174,85 @@ bool WPX::validateExchange(Qso *qso)
 void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
 
 // determines prefix from call
+// rewritten 05/30/2017
+//  -may not correctly handle callsigns with two /'s: will assume pfx before FIRST / is correct
 {
     const char digits[10] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+    const int nIgnorePfx=8;
+    const QByteArray ignorePfx[nIgnorePfx]={"P","M","QRP","AE","AG","KT","MM","AM"};
+    bool changeDigit=false;
+    bool ignore=false;
+    QByteArray portPfx="";
+    pfx = "";
 
     // is it a portable?
-    pfx = "";
     if (call.contains("/")) {
-        // get the portable prefix
         int        j    = call.indexOf("/");
         QByteArray tmp1 = call.mid(0, j);
         QByteArray tmp2 = call.mid(j + 1, call.length() - j - 1);
 
         // the longer one is probably the call, the other the port pfx
+        // tmp1/tmp2
         if (tmp2.length() > tmp1.length()) {
-            pfx = tmp1;
+            portPfx = tmp1;
+            call=call.right(call.length()-tmp1.length()-1);
         } else {
-            pfx = tmp2;
+            portPfx = tmp2;
+            call.chop(tmp2.length()+1);
         }
 
-        // if there is no digit in the pfx, add a zero
-        bool isdigit = false;
-        for (int i = 0; i < 10; i++) {
-            if (pfx.contains(digits[i])) {
-                isdigit = true;
+        // certain portable prefixes do not count as new pfx
+        for (int i=0;i<nIgnorePfx;i++) {
+            if (portPfx==ignorePfx[i]) {
+                portPfx.clear();
+                ignore=true;
                 break;
             }
         }
-        if (!isdigit) {
-            pfx = pfx + "0";
-        }
-    } else {
-        // is there a digit in the call?
-        int j = -1;
-        for (int i = 0; i < 10; i++) {
-            for (int k = 0; k < call.length(); k++) {
-                if ((call.at(k) == digits[i]) && k > j) {
-                    j = k;
+        if (!ignore) {
+            // is there a digit in the portable pfx?
+            bool isdigit = false;
+            for (int i = 0; i < 10; i++) {
+                if (portPfx.contains(digits[i])) {
+                    isdigit = true;
+                    break;
+                }
+            }
+            if (portPfx.length()==1) {
+
+                if (isdigit) {
+                    // if the port Pfx is 1 character and a digit, it will modify the main pfx
+                    changeDigit=true;
+                } else {
+                    // single character pfx: must add '0' to form pfx
+                    portPfx = portPfx + "0";
                 }
             }
         }
-        if (j != -1) {
-            // take up to the last digit in the call
-            pfx = call.mid(0, j + 1);
-        } else {
-            // take first 2 letters and add zero
-            pfx = call.mid(0, 2) + "0";
+    }
+
+    // is there a digit in the call? Find LAST digit
+    int j = -1;
+    for (int i = 0; i < 10; i++) {
+        for (int k = 0; k < call.length(); k++) {
+            if ((call.at(k) == digits[i]) && k > j) {
+                j = k;
+            }
         }
     }
+    if (j != -1) {
+        // take up to the last digit in the call
+        pfx = call.mid(0, j + 1);
+    } else {
+        // take first 2 letters and add zero
+        pfx = call.mid(0, 2) + "0";
+    }
+
+    // apply change from portable digit
+    if (changeDigit) {
+        pfx.chop(1);
+        pfx=pfx+portPfx;
+    } else if (portPfx.length()>1) {
+        pfx=portPfx;
+    }
 }
-
-
-
-

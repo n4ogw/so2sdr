@@ -146,7 +146,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         clearWorked(i);
     }
     MultTextEdit->setReadOnly(true);
-    MultTextEdit->setDisabled(true); // this prevents text from being selectable
+    MultTextEdit->setTextInteractionFlags(Qt::NoTextInteraction);
     MasterTextEdit->setReadOnly(true);
     MasterTextEdit->setDisabled(true);
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
