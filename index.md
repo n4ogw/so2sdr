@@ -13,6 +13,8 @@ The program is primarily developed for Linux.
 
 ### News
 
+* 05/31/2017 2.1.4 fix bugs for WPX contest
+
 * 12/02/2016 2.1.0 new support for voice keyer using the sound card
 
 * 10/06/2016 2.0.8 should hopefully work correctly with Qt5.
