@@ -82,5 +82,5 @@ So2sdr does not decode CW. That is up to the operator.
 signals. This is a fast way to find a run frequency on a crowded
 band.
 
-![bandmap](images/bandmap.png)
+![bandmap](images/bandmap.png "Bandmap")
 
