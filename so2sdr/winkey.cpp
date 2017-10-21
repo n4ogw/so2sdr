@@ -362,7 +362,7 @@ void Winkey::closeWinkey()
         winkeyPort->flush();
     }
     winkeyPort->close();
-    disconnect(winkeyPort,SIGNAL(readyRead()));
+    disconnect(winkeyPort,SIGNAL(readyRead()),0,0);
     winkeyOpen=false;
 }
 

@@ -12,17 +12,6 @@ Copyright 2010-2017 R. Torsten Clay N4OGW
 
 * 12/02/2016 support for voice keyer using sound card
 
-* 10/04/2016 Qt5 update: the main issue with Qt 5 (not creating the log Sqlite
-file correctly) hopefully has been fixed.
-
-* 02/07/2016 Qt4 versus Qt5: currently the code compiles with either Qt4 or Qt5.
-The version of Qt is selected by using the appropriate version of qmake.
-However, there are a number of issues with Qt5 that make the program unusable.
-These are a combination of Qt bugs and undocumented differences between Qt4 and Qt5.
-For example, UDP socket support was broken in Qt 5.4.x but fixed in Qt 5.5.x.
-There also appear to be differences in the SQL database classes in Qt5 versus Qt4.
-It's going to take me a while to figure them out- for now I recommend sticking with
-Qt 4.8.x
 
 ------------------------
 
@@ -37,7 +26,7 @@ You will need the following development libraries installed: Qt4 or Qt5, FFTW, H
 ```
 or download one of the source code distributions and extract it:
 ````
-    tar xzvof so2sdr-2.0.6.tgz
+    tar xzvof so2sdr-2.1.5.tgz
 ````
 
 2. By default, so2sdr will be installed in /usr/local/bin, and associated

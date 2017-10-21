@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.1.4
+## So2sdr-bandmap Help Version 2.1.5
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.1.5 (10/21/2017)
+
+* update SCP and CTY files
+* fix winkey bug- changing parameters now works without restart
 
 ## version 2.1.4 (05/31/2017)
 
