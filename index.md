@@ -13,21 +13,11 @@ The program is primarily developed for Linux.
 
 ### News
 
+* 10/21/2017 update SCP and CTY files; winkey bug fix
+
 * 05/31/2017 2.1.4 fix bugs for WPX contest
 
 * 12/02/2016 2.1.0 new support for voice keyer using the sound card
-
-* 10/06/2016 2.0.8 should hopefully work correctly with Qt5.
-
-* 02/07/2016 Qt4 versus Qt5: currently the code compiles with either Qt4 or Qt5.
-The version of Qt is selected by using the appropriate version of qmake.
-However, there are a number of issues with Qt5 that make the program unusable.
-These are a combination of Qt bugs and undocumented differences between Qt4 and Qt5.
-For example, UDP socket support was broken in Qt 5.4.x but fixed in Qt 5.5.x.
-There also appear to be differences in the SQL database classes in Qt5 versus Qt4.
-It's going to take me a while to figure them out- for now I recommend sticking with
-Qt 4.8.x
-
 
 ### Features
 

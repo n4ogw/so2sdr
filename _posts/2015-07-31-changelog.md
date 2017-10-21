@@ -5,6 +5,11 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.1.5 (10/21/2017)
+
+* update SCP and CTY files
+* fix winkey bug- changing parameters now works without restart
+
 ## version 2.1.4 (05/31/2017)
 
 * Bug fixes for WPX contest
