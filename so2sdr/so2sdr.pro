@@ -168,16 +168,14 @@ SOURCES += cwmessagedialog.cpp \
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
-        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts; \
         install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
         install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
         install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
         install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
         install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
-        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png; \
-        install -o root -m 755 ../share/scripts/PLAY-MESSAGE $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts; \
-        install -o root -m 755 ../share/scripts/RECORD-MESSAGE $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts; \
-        install -o root -m 755 ../share/scripts/STOP $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts
+        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png;
+
+
     } else {
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
         install -d $$SO2SDR_INSTALL_DIR/lib; \
@@ -186,16 +184,12 @@ SOURCES += cwmessagedialog.cpp \
         install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
         install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
-        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts; \
         install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
         install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
         install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
         install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
         install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
-        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png; \
-        install -o root -m 755 ../share/scripts/PLAY-MESSAGE  $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts; \
-        install -o root -m 755 ../share/scripts/RECORD-MESSAGE  $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts; \
-        install -o root -m 755 ../share/scripts/STOP  $$SO2SDR_INSTALL_DIR/share/so2sdr/scripts
+        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png;
     }
     QMAKE_EXTRA_TARGETS += install
 }

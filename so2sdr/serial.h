@@ -27,7 +27,9 @@
 #include <QTimer>
 #include <QTimerEvent>
 #include <QMutex>
+#include <QReadWriteLock>
 #include "defines.h"
+#include "utils.h"
 
 // using C rather than C++ bindings for hamlib because I don't
 // want to have to deal with exceptions
@@ -58,7 +60,6 @@ const int nModes=21;
 const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
                             "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
 
-
 class QSettings;
 class QTcpSocket;
 
@@ -72,23 +73,23 @@ class RigSerial : public QObject
 Q_OBJECT
 
 public:
-    RigSerial(QString);
+    RigSerial(int,QString);
     ~RigSerial();
-    void clearRIT(int nrig);
+    void clearRIT();
     ModeTypes getModeType(rmode_t mode) const;
-    int getRigFreq(int nrig);
+    int getRigFreq();
     QString hamlibModelName(int i, int indx) const;
     int hamlibNMfg() const;
     int hamlibNModels(int i) const;
     int hamlibModelIndex(int, int) const;
     void hamlibModelLookup(int, int&, int&) const;
     QString hamlibMfgName(int i) const;
-    int ifFreq(int nrig);
-    rmode_t mode(int nrig) const;
-    QString modeStr(int nrig) const;
-    ModeTypes modeType(int nrig) const;
-    bool radioOpen(int nrig);
-    void sendRaw(int nrig,QByteArray cmd);
+    int ifFreq();
+    rmode_t mode();
+    QString modeStr();
+    ModeTypes modeType();
+    bool radioOpen();
+    void sendRaw(QByteArray cmd);
 
     static QList<hamlibmfg>        mfg;
     static QList<QByteArray>       mfgName;
@@ -96,9 +97,9 @@ signals:
     void radioError(const QString &);
 
 public slots:
-    void setPtt(int nrig,int state);
-    void qsyExact(int nrig, int f);
-    void setRigMode(int nrig, rmode_t m, pbwidth_t pb);
+    void setPtt(int state);
+    void qsyExact(int f);
+    void setRigMode(rmode_t m, pbwidth_t pb);
     void run();
     void stopSerial();
 
@@ -106,41 +107,40 @@ protected:
     void timerEvent(QTimerEvent *event);
 
 private slots:
-    void rxSocket(int nrig);
-    void rxSocket1();
-    void rxSocket2();
-    void tcpError1(QAbstractSocket::SocketError e);
-    void tcpError2(QAbstractSocket::SocketError e);
+    void rxSocket();
+    void tcpError(QAbstractSocket::SocketError e);
 
 private:
     static int list_caps(const struct rig_caps *caps, void *data);
 
     // number of timers
-    const static int nRigSerialTimers=4;
+    const static int nRigSerialTimers=2;
 
     void closeRig();
     void openRig();
     void openSocket();
 
-    bool                    clearRitFlag[NRIG];
-    bool                    pttOnFlag[NRIG];
-    bool                    pttOffFlag[NRIG];
-    const struct confparams *confParamsIF[NRIG];
-    const struct confparams *confParamsRIT[NRIG];
-    int                     qsyFreq[NRIG];
-    rmode_t                 chgMode[NRIG];
-    pbwidth_t               passBW[NRIG];
-    bool                    radioOK[NRIG];
-    int                     rigFreq[NRIG];
-    int                     model[NRIG];
-    int                     ifFreq_[NRIG];
-    rmode_t                 Mode[NRIG];
-    QMutex                  mutex[NRIG];
-    RIG                     *rig[NRIG];
+    bool                    clearRitFlag;
+    bool                    pttOnFlag;
+    bool                    pttOffFlag;
+    const struct confparams *confParamsIF;
+    const struct confparams *confParamsRIT;
+    int                     qsyFreq;
+    rmode_t                 chgMode;
+    pbwidth_t               passBW;
+    bool                    radioOK;
+    int                     rigFreq;
+    int                     model;
+    int                     ifFreq_;
+    int                     nrig;
+    rmode_t                 Mode;
+    QMutex                  pttMutex;
+    QReadWriteLock          lock;
+    RIG                     *rig;
     int                     timerId[nRigSerialTimers];
     QSettings              *settings;
     QString                 settingsFile;
-    QTcpSocket             *socket[NRIG];
+    QTcpSocket             *socket;
 };
 
 #endif

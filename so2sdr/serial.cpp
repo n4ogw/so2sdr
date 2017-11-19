@@ -54,9 +54,10 @@ bool hamlibModel::operator<(const hamlibModel &other) const
 }
 
 
-RigSerial::RigSerial(QString s)
+RigSerial::RigSerial(int nr,QString s)
 {
     settingsFile=s;
+    nrig=nr;
 
     // turn off all the debug crud coming from hamlib
     rig_set_debug_level(RIG_DEBUG_NONE);
@@ -75,21 +76,22 @@ RigSerial::RigSerial(QString s)
     }
     settings=0;
     for (int i=0;i<nRigSerialTimers;i++) timerId[i]=0;
-    for (int i = 0; i < NRIG; i++) {
-        rig[i]=0;
-        socket[i]=0;
-        pttOffFlag[i]=    false;
-        pttOnFlag[i]=     false;
-        clearRitFlag[i] = 0;
-        qsyFreq[i]      = 0;
-        chgMode[i]      = RIG_MODE_NONE;
-        radioOK[i]      = false;
-        ifFreq_[i]      = 0;
-        passBW[i]       = 0;
-        Mode[i]=RIG_MODE_NONE;
-        rigFreq[i]=0;
-        model[i]=1;
-    }
+    rig=0;
+    socket=0;
+    pttOffFlag=    false;
+    pttOnFlag=     false;
+    clearRitFlag = 0;
+    qsyFreq      = 0;
+    chgMode      = RIG_MODE_NONE;
+    radioOK      = false;
+    ifFreq_      = 0;
+    passBW      = 0;
+    Mode=RIG_MODE_NONE;
+    rigFreq=0;
+    model=1;
+    lock.unlock();
+    pttMutex.unlock();
+    lock.unlock();
 }
 
 /*! static function passed to rig_list_foreach
@@ -203,10 +205,8 @@ int RigSerial::hamlibModelIndex(int indx1, int indx2) const
 RigSerial::~RigSerial()
 {
     closeRig();
-    rig_cleanup(rig[0]);
-    rig_cleanup(rig[1]);
-    if (socket[0]) delete socket[0];
-    if (socket[1]) delete socket[1];
+    rig_cleanup(rig);
+    if (socket) delete socket;
     delete settings;
 }
 
@@ -219,11 +219,8 @@ void RigSerial::run()
     if (!settings) settings=new QSettings(settingsFile,QSettings::IniFormat);
     openRig();
     openSocket();
-    timerId[0] = startTimer(settings->value(s_radios_poll[0],500).toInt());
-    timerId[1] = startTimer(settings->value(s_radios_poll[1],500).toInt());
-    timerId[2] = startTimer(RIG_SEND_TIMER);
-    timerId[3] = startTimer(RIG_SEND_TIMER);
-
+    timerId[0] = startTimer(settings->value(s_radios_poll[nrig],500).toInt());
+    timerId[1] = startTimer(0);
 }
 
 /*! stop timers
@@ -238,15 +235,15 @@ void RigSerial::stopSerial()
 /*! set ptt on or off
  * state=0 : off  state=1 : on
  */
-void RigSerial::setPtt(int nrig, int state)
+void RigSerial::setPtt(int state)
 {
-    mutex[nrig].lock();
+    pttMutex.lock();
     if (state) {
-        pttOnFlag[nrig]=true;
+        pttOnFlag=true;
     } else {
-        pttOffFlag[nrig]=true;
+        pttOffFlag=true;
     }
-    mutex[nrig].unlock();
+    pttMutex.unlock();
 }
 
 /*!
@@ -254,189 +251,195 @@ void RigSerial::setPtt(int nrig, int state)
  */
 void RigSerial::timerEvent(QTimerEvent *event)
 {
-    for (int i = 0; i < NRIG; i++) {
+    // using rigctld for this radio
+    if (settings->value(s_radios_rigctld_enable[nrig],s_radios_rigctld_enable_def[nrig]).toBool() &&
+            socket->isOpen()) {
 
-        // using rigctld for this radio
-
-        if (settings->value(s_radios_rigctld_enable[i],s_radios_rigctld_enable_def[i]).toBool()) {
-
-            if (socket[i]) {
-                if (!socket[i]->isOpen()) continue;
+        if (event->timerId() == timerId[0]) {
+            socket->write(";\\get_freq\n");
+            socket->write(";\\get_mode\n");
+            if (model==229) {
+                socket->write(";\\get_level ifctr\n");
             }
+        }
+        if (event->timerId() == timerId[1]) {
+            // clear RIT if flag set
+            // behavior of hamlib over serial and via rigctld is different. At least with hamlib/rigctld
+            // v 3.0.1, set_rit 0 does not turn off RIT like docs say.
+            lock.lockForWrite();
+            if (clearRitFlag) {
+                clearRitFlag = false;
+                lock.unlock();
+                socket->write(";\\set_rit 0\n");
+            }
+            lock.unlock();
+            pttMutex.lock();
+            if (pttOnFlag) {
+                pttOnFlag=false;
+                pttMutex.unlock();
+                socket->write(";\\set_ptt 1\n");
+            }
+            pttMutex.unlock();
 
-            if (event->timerId() == timerId[i]) {
-                socket[i]->write(";\\get_freq\n");
-                socket[i]->write(";\\get_mode\n");
-                if (model[i]==229) {
-                    socket[i]->write(";\\get_level ifctr\n");
+            pttMutex.lock();
+            if (pttOffFlag) {
+                pttOffFlag=false;
+                pttMutex.unlock();
+                socket->write(";\\set_ptt 0\n");
+            }
+            pttMutex.unlock();
+
+            lock.lockForWrite();
+            if (qsyFreq) {
+                rigFreq = qsyFreq;
+                qsyFreq = 0;
+                lock.unlock();
+                QByteArray cmd=";\\set_freq "+QByteArray::number(rigFreq)+"\n";
+                socket->write(cmd);
+            }
+            lock.lockForWrite();
+            if ((chgMode > RIG_MODE_NONE) && (chgMode < RIG_MODE_TESTS_MAX)) {
+                int j=chgMode;
+                chgMode=RIG_MODE_NONE;
+                lock.unlock();
+                QByteArray width=QByteArray::number((int)passBW)+"\n";
+                switch (j) {
+                case RIG_MODE_CW:
+                    socket->write(";\\set_mode CW "+width);
+                    Mode=RIG_MODE_CW;
+                    break;
+                case RIG_MODE_CWR:
+                    socket->write(";\\set_mode CWR "+width);
+                    Mode=RIG_MODE_CWR;
+                    break;
+                case RIG_MODE_USB:
+                    socket->write(";\\set_mode USB "+width);
+                    Mode=RIG_MODE_USB;
+                    break;
+                case RIG_MODE_LSB:
+                    socket->write(";\\set_mode LSB "+width);
+                    Mode=RIG_MODE_LSB;
+                    break;
+                case RIG_MODE_RTTY:
+                    socket->write(";\\set_mode RTTY "+width);
+                    Mode=RIG_MODE_RTTY;
+                    break;
+                case RIG_MODE_RTTYR:
+                    socket->write(";\\set_mode RTTYR "+width);
+                    Mode=RIG_MODE_RTTYR;
+                    break;
+                case RIG_MODE_FM:
+                    socket->write(";\\set_mode FM "+width);
+                    Mode=RIG_MODE_FM;
+                    break;
+                case RIG_MODE_AM:
+                    socket->write(";\\set_mode AM "+width);
+                    Mode=RIG_MODE_AM;
+                    break;
+                case RIG_MODE_AMS:
+                    socket->write(";\\set_mode AMS "+width);
+                    Mode=RIG_MODE_AMS;
+                    break;
+                case RIG_MODE_DSB:
+                    socket->write(";\\set_mode DSB "+width);
+                    Mode=RIG_MODE_DSB;
+                    break;
+                default:
+                    break;
                 }
             }
+            lock.unlock();
+        }
+    } else {
+        // using hamlib over serial port
 
-            if (event->timerId() == timerId[i + 2]) {
-                mutex[i].lock();
-
-                // clear RIT if flag set
-                // behavior of hamlib over serial and via rigctld is different. At least with hamlib/rigctld
-                // v 3.0.1, set_rit 0 does not turn off RIT like docs say.
-                if (clearRitFlag[i]) {
-                    socket[i]->write(";\\set_rit 0\n");
-                    clearRitFlag[i] = false;
-                }
-
-                if (pttOnFlag[i]) {
-                    socket[i]->write(";\\set_ptt 1\n");
-                    pttOnFlag[i]=false;
-                }
-
-                if (pttOffFlag[i]) {
-                    socket[i]->write(";\\set_ptt 0\n");
-                    pttOffFlag[i]=false;
-                }
-
-                if (qsyFreq[i]) {
-                    QByteArray cmd=";\\set_freq "+QByteArray::number(qsyFreq[i])+"\n";
-                    socket[i]->write(cmd);
-                    rigFreq[i] = qsyFreq[i];
-                    qsyFreq[i] = 0;
-                }
-                if ((chgMode[i] > RIG_MODE_NONE) && (chgMode[i] < RIG_MODE_TESTS_MAX)) {
-                    QByteArray width=QByteArray::number((int)passBW[i])+"\n";
-                    switch (chgMode[i]) {
-                    case RIG_MODE_CW:
-                        socket[i]->write(";\\set_mode CW "+width);
-                        Mode[i]=RIG_MODE_CW;
-                        break;
-                    case RIG_MODE_CWR:
-                        socket[i]->write(";\\set_mode CWR "+width);
-                        Mode[i]=RIG_MODE_CWR;
-                        break;
-                    case RIG_MODE_USB:
-                        socket[i]->write(";\\set_mode USB "+width);
-                        Mode[i]=RIG_MODE_USB;
-                        break;
-                    case RIG_MODE_LSB:
-                        socket[i]->write(";\\set_mode LSB "+width);
-                        Mode[i]=RIG_MODE_LSB;
-                        break;
-                    case RIG_MODE_RTTY:
-                        socket[i]->write(";\\set_mode RTTY "+width);
-                        Mode[i]=RIG_MODE_RTTY;
-                        break;
-                    case RIG_MODE_RTTYR:
-                        socket[i]->write(";\\set_mode RTTYR "+width);
-                        Mode[i]=RIG_MODE_RTTYR;
-                        break;
-                    case RIG_MODE_FM:
-                        socket[i]->write(";\\set_mode FM "+width);
-                        Mode[i]=RIG_MODE_FM;
-                        break;
-                    case RIG_MODE_AM:
-                        socket[i]->write(";\\set_mode AM "+width);
-                        Mode[i]=RIG_MODE_AM;
-                        break;
-                    case RIG_MODE_AMS:
-                        socket[i]->write(";\\set_mode AMS "+width);
-                        Mode[i]=RIG_MODE_AMS;
-                        break;
-                    case RIG_MODE_DSB:
-                        socket[i]->write(";\\set_mode DSB "+width);
-                        Mode[i]=RIG_MODE_DSB;
-                        break;
-                    default:
-                        break;
-                    }
-                    chgMode[i]=RIG_MODE_NONE;
-                }
-                mutex[i].unlock();
+        // timers for sending data to radios (change freq, RIT clear,...)
+        // timerID[1] is polled more frequently than the regular
+        // radio poll timer
+        if (radioOK && event->timerId() == timerId[1]) {
+            // set PTT on
+            pttMutex.lock();
+            if (pttOnFlag) {
+                pttOnFlag=false;
+                pttMutex.unlock();
+                rig_set_ptt(rig,RIG_VFO_CURR,RIG_PTT_ON);
             }
-        } else {
-            // using hamlib over serial port
+            pttMutex.unlock();
 
-            // timers for sending data to radios (change freq, RIT clear,...)
-            // timerID[2] and timerId[3] are polled more frequently than the regular
-            // radio poll timer
-            if (radioOK[i] && event->timerId() == timerId[i + 2]) {
-                // set PTT on
-                mutex[i].lock();
-                if (pttOnFlag[i]) {
-                    rig_set_ptt(rig[i],RIG_VFO_CURR,RIG_PTT_ON);
-                    pttOnFlag[i]=false;
-                }
-                mutex[i].unlock();
-
-                // set PTT off
-                mutex[i].lock();
-                if (pttOffFlag[i]) {
-                    rig_set_ptt(rig[i],RIG_VFO_CURR,RIG_PTT_OFF);
-                    pttOffFlag[i]=false;
-                }
-                mutex[i].unlock();
-
-                // clear RIT if flag set
-                mutex[i].lock();
-                if (clearRitFlag[i]) {
-                    if (confParamsRIT[i]) {
-                        value_t val;
-                        val.i = 0;
-                        rig_set_ext_level(rig[i], RIG_VFO_CURR, confParamsRIT[i]->token, val);
-                    } else {
-                        // not preferred, as this turns RIT off completely
-                        rig_set_rit(rig[i], RIG_VFO_CURR, 0);
-                    }
-                    clearRitFlag[i] = false;
-                }
-                mutex[i].unlock();
-
-                // qsy radio
-                mutex[i].lock();
-                if (qsyFreq[i]) {
-                    int status = rig_set_freq(rig[i], RIG_VFO_CURR, qsyFreq[i]);
-                    if (status == RIG_OK) {
-                        rigFreq[i] = qsyFreq[i];
-                    }
-                    qsyFreq[i] = 0;
-                }
-
-                mutex[i].unlock();
-
-                // change mode on radio
-                mutex[i].lock();
-                if ((chgMode[i] > RIG_MODE_NONE) && (chgMode[i] < RIG_MODE_TESTS_MAX)) {
-                    int status = rig_set_mode(rig[i], RIG_VFO_CURR, chgMode[i], passBW[i]);
-                    if (status == RIG_OK) {
-                        Mode[i] = chgMode[i];
-                    }
-                    chgMode[i] = RIG_MODE_NONE; // reset for next change
-                }
-
-                mutex[i].unlock();
+            // set PTT off
+            pttMutex.lock();
+            if (pttOffFlag) {
+                pttOffFlag=false;
+                pttMutex.unlock();
+                rig_set_ptt(rig,RIG_VFO_CURR,RIG_PTT_OFF);
             }
+            pttMutex.unlock();
 
-            // poll frequency, mode, and IF freq from radio
-            if (radioOK[i] && event->timerId() == timerId[i]) {
-                freq_t freq;
-
-                int    status = rig_get_freq(rig[i], RIG_VFO_CURR, &freq);
-                if (status == RIG_OK) {
-                    int ff = Hz(freq);
-                    if (ff != 0) rigFreq[i] = ff;
-                }
-                rmode_t   m;
-                pbwidth_t width;
-                status = rig_get_mode(rig[i], RIG_VFO_CURR, &m, &width);
-                if (status == RIG_OK) {
-                    Mode[i] = m;
-                }
-
-                // if using K3, get IF center frequency
-                if (model[i] == 229) {
+            // clear RIT if flag set
+            lock.lockForWrite();
+            if (clearRitFlag) {
+                clearRitFlag=false;
+                lock.unlock();
+                if (confParamsRIT) {
                     value_t val;
-                    int     status = rig_get_ext_level(rig[i], RIG_VFO_CURR, confParamsIF[i]->token, &val);
-                    if (status == RIG_OK) {
-                        mutex[i].lock();
-                        ifFreq_[i] = (int) (val.f - 8210000.0);
-                        mutex[i].unlock();
-                    }
+                    val.i = 0;
+                    rig_set_ext_level(rig, RIG_VFO_CURR, confParamsRIT->token, val);
+                } else {
+                    // not preferred, as this turns RIT off completely
+                    rig_set_rit(rig, RIG_VFO_CURR, 0);
+                }
+            }
+            lock.unlock();
+
+            // qsy radio
+            lock.lockForWrite();
+            if (qsyFreq) {
+                int f=qsyFreq;
+                qsyFreq=0;
+                lock.unlock();
+                int status = rig_set_freq(rig, RIG_VFO_CURR, f);
+                if (status == RIG_OK) {
+                    rigFreq = f;
+                }
+            }
+            lock.unlock();
+
+            // change mode on radio
+            lock.lockForWrite();
+            if ((chgMode > RIG_MODE_NONE) && (chgMode < RIG_MODE_TESTS_MAX)) {
+                int status = rig_set_mode(rig, RIG_VFO_CURR, chgMode, passBW);
+                if (status == RIG_OK) {
+                    Mode = chgMode;
+                }
+                chgMode = RIG_MODE_NONE; // reset for next change
+            }
+            lock.unlock();
+        }
+
+        // poll frequency, mode, and IF freq from radio
+        if (radioOK && event->timerId() == timerId[0]) {
+            freq_t freq;
+
+            int    status = rig_get_freq(rig, RIG_VFO_CURR, &freq);
+            if (status == RIG_OK) {
+                int ff = Hz(freq);
+                if (ff != 0) rigFreq = ff;
+            }
+
+            rmode_t   m;
+            pbwidth_t width;
+            status = rig_get_mode(rig, RIG_VFO_CURR, &m, &width);
+            if (status == RIG_OK) {
+                Mode = m;
+            }
+
+            // if using K3, get IF center frequency
+            if (model == 229) {
+                value_t val;
+                int     status = rig_get_ext_level(rig, RIG_VFO_CURR, confParamsIF->token, &val);
+                if (status == RIG_OK) {
+                    // no mutex protection since ifFreq is read-only from outside class
+                    ifFreq_ = (int) (val.f - 8210000.0);
                 }
             }
         }
@@ -446,61 +449,64 @@ void RigSerial::timerEvent(QTimerEvent *event)
 /*!
    clear RIT
  */
-void RigSerial::clearRIT(int nrig)
+void RigSerial::clearRIT()
 {
-    mutex[nrig].lock();
-    clearRitFlag[nrig] = true;
-
-    mutex[nrig].unlock();
+    lock.lockForWrite();
+    clearRitFlag = true;
+    lock.unlock();
 }
 
 /*! returns true if radio opened successfully
  */
-bool RigSerial::radioOpen(int nrig)
+bool RigSerial::radioOpen()
 {
-    mutex[nrig].lock();
-    bool b = radioOK[nrig];
-
-    mutex[nrig].unlock();
+    lock.lockForRead();
+    bool b = radioOK;
+    lock.unlock();
     return(b);
 }
 
 /*! returns current radio frequency in Hz
  */
-int RigSerial::getRigFreq(int nrig)
+int RigSerial::getRigFreq()
 {
-    mutex[nrig].lock();
-    int f = rigFreq[nrig];
-
-    mutex[nrig].unlock();
+    lock.lockForRead();
+    int f = rigFreq;
+    lock.unlock();
     return(f);
 }
 
 /*! returns current radio IF frequency (K3 only, others return 0)
  */
-int RigSerial::ifFreq(int nrig)
+int RigSerial::ifFreq()
 {
-    mutex[nrig].lock();
-    int f = ifFreq_[nrig];
-    mutex[nrig].unlock();
-    return(f);
+    lock.lockForRead();
+    int f=ifFreq_;
+    lock.unlock();
+    return f;
 }
 
 /*! returns current radio mode
 
    rmode_t defined in hamlib
  */
-rmode_t RigSerial::mode(int nrig) const
+rmode_t RigSerial::mode()
 {
-    return Mode[nrig];
+    lock.lockForRead();
+    rmode_t m=Mode;
+    lock.unlock();
+    return m;
 }
 
 /*! return string describing the current mode for
  radio nrig
  */
-QString RigSerial::modeStr(int nrig) const
+QString RigSerial::modeStr()
 {
-    switch (Mode[nrig]) {
+    lock.lockForRead();
+    rmode_t m=Mode;
+    lock.unlock();
+    switch (m) {
     case RIG_MODE_NONE: return modes[0];
     case RIG_MODE_AM: return modes[1];
     case RIG_MODE_CW: return modes[2];
@@ -559,44 +565,36 @@ ModeTypes RigSerial::getModeType(rmode_t mode) const
 
 /*! return current type of mode: CW, PHONE, DIGI
  */
-ModeTypes RigSerial::modeType(int nrig) const
+ModeTypes RigSerial::modeType()
 {
-    return getModeType(Mode[nrig]);
+    lock.lockForRead();
+    rmode_t m=Mode;
+    lock.unlock();
+    return getModeType(m);
 }
 
 /*! initialize TcpSocket for rigctld
  */
 void RigSerial::openSocket()
 {
-    for (int i=0;i<NRIG;i++) {
-        if (socket[i]) {
-            if (socket[i]->isOpen()) socket[i]->close();
-            disconnect(socket[i],0,0,0);
-        }
-        if (settings->value(s_radios_rigctld_enable[i],s_radios_rigctld_enable_def[i]).toBool()) {
-            radioOK[i]=true;
-            if (!socket[i]) socket[i]=new QTcpSocket();
+    if (socket) {
+        if (socket->isOpen()) socket->close();
+        disconnect(socket,0,0,0);
+    }
+    if (settings->value(s_radios_rigctld_enable[nrig],s_radios_rigctld_enable_def[nrig]).toBool()) {
+        radioOK=true;
+        if (!socket) socket=new QTcpSocket();
 
-            // QHostAddress doesn't understand "localhost"
-            if (settings->value(s_radios_rigctld_ip[i],s_radios_rigctld_ip_def[i]).toString().simplified()=="localhost") {
-                socket[i]->connectToHost(QHostAddress::LocalHost,
-                                         settings->value(s_radios_rigctld_port[i],s_radios_rigctld_port_def[i]).toInt());
-            } else {
-                socket[i]->connectToHost(QHostAddress(settings->value(s_radios_rigctld_ip[i],s_radios_rigctld_ip_def[i]).toString()).toString(),
-                                         settings->value(s_radios_rigctld_port[i],s_radios_rigctld_port_def[i]).toInt());
-            }
-
-            switch (i) {
-            case 0:
-                connect(socket[0],SIGNAL(readyRead()),this,SLOT(rxSocket1()));
-                connect(socket[0],SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(tcpError1(QAbstractSocket::SocketError)));
-                break;
-            case 1:
-                connect(socket[1],SIGNAL(readyRead()),this,SLOT(rxSocket2()));
-                connect(socket[1],SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(tcpError2(QAbstractSocket::SocketError)));
-                break;
-            }
+        // QHostAddress doesn't understand "localhost"
+        if (settings->value(s_radios_rigctld_ip[nrig],s_radios_rigctld_ip_def[nrig]).toString().simplified()=="localhost") {
+            socket->connectToHost(QHostAddress::LocalHost,
+                                  settings->value(s_radios_rigctld_port[nrig],s_radios_rigctld_port_def[nrig]).toInt());
+        } else {
+            socket->connectToHost(QHostAddress(settings->value(s_radios_rigctld_ip[nrig],s_radios_rigctld_ip_def[nrig]).toString()).toString(),
+                                  settings->value(s_radios_rigctld_port[nrig],s_radios_rigctld_port_def[nrig]).toInt());
         }
+        connect(socket,SIGNAL(readyRead()),this,SLOT(rxSocket()));
+        connect(socket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(tcpError(QAbstractSocket::SocketError)));
     }
 }
 
@@ -606,65 +604,82 @@ void RigSerial::openSocket()
  */
 void RigSerial::openRig()
 {
-    for (int i = 0; i < NRIG; i++) {
-        pttOffFlag[i]=    false;
-        pttOnFlag[i]=     false;
-        clearRitFlag[i] = 0;
-        qsyFreq[i]      = 0;
-        chgMode[i]      = RIG_MODE_NONE;
-        radioOK[i]      = false;
-        ifFreq_[i]      = 0;
-        model[i]=settings->value(s_radios_rig[i],RIG_MODEL_DUMMY).toInt();
-        if (rig[i]) {
-            rig_close(rig[i]);
-            rig_cleanup(rig[i]);
-        }
-        rig[i] = rig_init(model[i]);
-        token_t t = rig_token_lookup(rig[i], "rig_pathname");
-        rig_set_conf(rig[i],t,settings->value(s_radios_port[i],defaultSerialPort[i]).toString().toLatin1().data());
-        rig[i]->state.rigport.parm.serial.rate=settings->value(s_radios_baud[i],s_radios_baud_def[i]).toInt();
+    pttOffFlag=    false;
+    pttOnFlag=     false;
+    clearRitFlag = 0;
+    qsyFreq      = 0;
+    chgMode      = RIG_MODE_NONE;
+    radioOK      = false;
+    ifFreq_      = 0;
+    model=settings->value(s_radios_rig[nrig],RIG_MODEL_DUMMY).toInt();
+    if (rig) {
+        rig_close(rig);
+        rig_cleanup(rig);
+    }
+    rig = rig_init(model);
+    token_t t = rig_token_lookup(rig, "rig_pathname");
+    rig_set_conf(rig,t,settings->value(s_radios_port[nrig],defaultSerialPort[nrig]).toString().toLatin1().data());
+    rig->state.rigport.parm.serial.rate=settings->value(s_radios_baud[nrig],s_radios_baud_def[nrig]).toInt();
+    t = rig_token_lookup(rig,"ptt_type");
+    token_t t_rts = rig_token_lookup(rig,"rts_state");
+    token_t t_dtr = rig_token_lookup(rig,"dtr_state");
+    switch (settings->value(s_radios_ptt_type[nrig],s_radios_ptt_type_def).toInt()) {
+    case 0:
+        rig_set_conf(rig,t,"RIG");
+        rig_set_conf(rig,t_rts,"OFF");
+        rig_set_conf(rig,t_dtr,"OFF");
+        break;
+    case 1:
+        rig_set_conf(rig,t_rts,"OFF");
+        //  rig_set_conf(rig,t_dtr,"OFF");
+        rig_set_conf(rig,t,"DTR");
+        break;
+    case 2:
+        //  rig_set_conf(rig,t_rts,"OFF");
+        rig_set_conf(rig,t_dtr,"OFF");
+        rig_set_conf(rig,t,"RTS");
+        break;
+    default:
+        rig_set_conf(rig,t,"RIG");
     }
 
     // default starting freq/mode if communications to rigs
     // initially fails (or rig==RIG_MODEL_DUMMY)
-    if (rigFreq[0]==0) rigFreq[0] = 14000000;
-    if (rigFreq[1]==0) rigFreq[1] = 7000000;
-    if (Mode[0]==RIG_MODE_NONE)   Mode[0] = RIG_MODE_CW;
-    if (Mode[1]==RIG_MODE_NONE)   Mode[1] = RIG_MODE_CW;
+    if (rigFreq==0 && nrig==0) rigFreq = 14000000;
+    if (rigFreq==0 && nrig==1) rigFreq = 7000000;
+    if (Mode==RIG_MODE_NONE)   Mode = RIG_MODE_CW;
 
-    for (int i = 0; i < NRIG; i++) {
-        int r = rig_open(rig[i]);
-        if (model[i] == RIG_MODEL_DUMMY) {
-            rig_set_freq(rig[i], RIG_VFO_A, rigFreq[i]);
-            rig_set_vfo(rig[i], RIG_VFO_A);
-            rig_set_mode(rig[i], RIG_VFO_A, Mode[i], RIG_PASSBAND_NORMAL);
+    int r = rig_open(rig);
+    if (model == RIG_MODEL_DUMMY) {
+        rig_set_freq(rig, RIG_VFO_A, rigFreq);
+        rig_set_vfo(rig, RIG_VFO_A);
+        rig_set_mode(rig, RIG_VFO_A, Mode, RIG_PASSBAND_NORMAL);
+    }
+    if (r == RIG_OK) {
+        radioOK = true;
+
+        // get ext params struct for K3 in order to get IF center freq
+        if (model == 229) {
+            confParamsIF = rig_ext_lookup(rig, "ifctr");
         }
-        if (r == RIG_OK) {
-            radioOK[i] = true;
 
-            // get ext params struct for K3 in order to get IF center freq
-            if (model[i] == 229) {
-                confParamsIF[i] = rig_ext_lookup(rig[i], "ifctr");
-            }
-
-            // ext param for RIT clear
-            confParamsRIT[i] = rig_ext_lookup(rig[i], "ritclr");
-        } else {
-            emit(radioError("ERROR: radio "+QString::number(i+1)+" could not be opened"));
-            radioOK[i] = false;
-            rig_close(rig[i]);
-        }
+        // ext param for RIT clear
+        confParamsRIT = rig_ext_lookup(rig, "ritclr");
+    } else {
+        emit(radioError("ERROR: radio "+QString::number(nrig+1)+" could not be opened"));
+        radioOK = false;
+        rig_close(rig);
     }
 }
 
 /*! qsy radio
    f=freq in Hz (no checking done)
  */
-void RigSerial::qsyExact(int nrig, int f)
+void RigSerial::qsyExact(int f)
 {
-    mutex[nrig].lock();
-    qsyFreq[nrig] = f;
-    mutex[nrig].unlock();
+    lock.lockForWrite();
+    qsyFreq = f;
+    lock.unlock();
 }
 
 /*! Set radio mode
@@ -672,30 +687,28 @@ void RigSerial::qsyExact(int nrig, int f)
  * m = Hamlib mode, no checking is done
  * pb = Passband width in Hz
  */
-void RigSerial::setRigMode(int nrig, rmode_t m, pbwidth_t pb)
+void RigSerial::setRigMode(rmode_t m, pbwidth_t pb)
 {
-    mutex[nrig].lock();
-    chgMode[nrig] = m;
-    passBW[nrig] = pb;
-    mutex[nrig].unlock();
+    lock.lockForWrite();
+    chgMode = m;
+    passBW = pb;
+    lock.unlock();
 }
 
 /*! shut down radio interface
  */
 void RigSerial::closeRig()
 {
-    rig_close(rig[0]);
-    rig_close(rig[1]);
-    radioOK[0] = false;
-    radioOK[1] = false;
+    rig_close(rig);
+    radioOK = false;
 }
 
 /*! send a raw byte string to the radio: careful, there is no checking here!
  */
-void RigSerial::sendRaw(int nrig, QByteArray cmd)
+void RigSerial::sendRaw(QByteArray cmd)
 {
     if (!cmd.contains('<')) {
-        write_block(&rig[nrig]->state.rigport,cmd.data(),cmd.size());
+        write_block(&rig->state.rigport,cmd.data(),cmd.size());
     } else {
         // numbers inside "< >" will be interpreted as hexadecimal bytes
         QByteArray data;
@@ -721,22 +734,8 @@ void RigSerial::sendRaw(int nrig, QByteArray cmd)
         if ((i0+1)<cmd.size()) {
             data=data+cmd.mid(i0,-1);
         }
-        write_block(&rig[nrig]->state.rigport,data.data(),data.size());
+        write_block(&rig->state.rigport,data.data(),data.size());
     }
-}
-
-/*! slot called from readyRead of tcp socket for rigctld radio 1
- */
-void RigSerial::rxSocket1()
-{
-    rxSocket(0);
-}
-
-/*! slot called from readyRead of tcp socket for rigctld radio 2
- */
-void RigSerial::rxSocket2()
-{
-    rxSocket(1);
 }
 
 /*!
@@ -745,7 +744,7 @@ void RigSerial::rxSocket2()
  *
  * Parse data coming from rigctld
  */
-void RigSerial::rxSocket(int nrig)
+void RigSerial::rxSocket()
 {
     const QByteArray cmdNames[] = { "get_freq:",
                                     "get_mode:",
@@ -779,10 +778,10 @@ void RigSerial::rxSocket(int nrig)
                             RIG_MODE_PKTFM,RIG_MODE_ECSSUSB,RIG_MODE_ECSSLSB,RIG_MODE_FAX,RIG_MODE_SAM,
                             RIG_MODE_SAL,RIG_MODE_SAH,RIG_MODE_DSB};
 
-    radioOK[nrig]=true;
-    mutex[nrig].lock();
-    while (socket[nrig]->bytesAvailable()) {
-        QByteArray data=socket[nrig]->readAll();
+    radioOK=true;
+    lock.lockForWrite();
+    while (socket->bytesAvailable()) {
+        QByteArray data=socket->readAll();
         QList<QByteArray> cmdList=data.split(';');
         bool ok;
         int f;
@@ -793,14 +792,14 @@ void RigSerial::rxSocket(int nrig)
                 case 0: // get_freq. Response looks like "get_freq:;Frequency: 28009360;RPRT 0"
                     cmdList[1].remove(0,10);
                     f=cmdList[1].toInt(&ok);
-                    if (ok) rigFreq[nrig]=f;
+                    if (ok) rigFreq=f;
                     break;
                 case 1: // get_mode. Response looks like "get_mode:;Mode: CW;Passband: 600;RPRT 0"
                     cmdList[1].remove(0,5);
                     cmdList[1]=cmdList[1].simplified();
                     for (int j=0;j<nModeNames;j++) {
                         if (cmdList.at(1)==modeNames[j]) {
-                            Mode[nrig]=modes[j];
+                            Mode=modes[j];
                             break;
                         }
                     }
@@ -809,27 +808,22 @@ void RigSerial::rxSocket(int nrig)
                     cmdList[1].truncate(14);
                     iff=cmdList.at(1).toDouble(&ok);
                     if (ok) {
-                        ifFreq_[nrig] = (int) (iff - 8210000.0);
+                        ifFreq_ = (int) (iff - 8210000.0);
                     }
                     break;
                 }
             }
         }
     }
-    mutex[nrig].unlock();
+    lock.unlock();
 }
 
 /*! Slot called on error of tcpsocket of radio 1 (rigctld) */
-void RigSerial::tcpError1(QAbstractSocket::SocketError e)
+void RigSerial::tcpError(QAbstractSocket::SocketError e)
 {
-    radioOK[0]=false;
-    emit(radioError("ERROR: Rigctld radio 1: "+ socket[0]->errorString().toLatin1()));
+    Q_UNUSED(e)
+    radioOK=false;
+    emit(radioError("ERROR: Rigctld radio "+QString::number(nrig+1)+" "+ socket->errorString().toLatin1()));
 }
 
-/*! Slot called on error of tcpsocket of radio 2 (rigctld) */
-void RigSerial::tcpError2(QAbstractSocket::SocketError e)
-{
-    radioOK[1]=false;
-    emit(radioError("ERROR: Rigctld radio 2: "+ socket[1]->errorString().toLatin1()));
-}
 

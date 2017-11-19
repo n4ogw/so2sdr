@@ -70,7 +70,6 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
         radioBaudComboBox[i]->insertItem(0, "9600");
         radioBaudComboBox[i]->insertItem(0, "19200");
         radioBaudComboBox[i]->insertItem(0, "38400");
-        radioPttComboBox[i]->insertItem(0,"None");
         radioPttComboBox[i]->insertItem(0,"RTS");
         radioPttComboBox[i]->insertItem(0,"DTR");
         radioPttComboBox[i]->insertItem(0,"Hamlib");
@@ -179,7 +178,7 @@ void RadioDialog::updateRadio()
         settings.setValue(s_radios_poll[i],radioPollTimeEdit[i]->text());
         settings.setValue(s_radios_port[i],radioDevEdit[i]->text());
         settings.setValue(s_radios_rig[i],catptr.hamlibModelIndex(radioMfgComboBox[i]->currentIndex(),
-                                                                   radioModelComboBox[i]->currentIndex()));
+                                                                       radioModelComboBox[i]->currentIndex()));
     }
     settings.setValue(s_radios_rigctld_enable[0],checkBoxRigctld1->isChecked());
     settings.setValue(s_radios_rigctld_enable[1],checkBoxRigctld2->isChecked());
@@ -192,6 +191,8 @@ void RadioDialog::updateRadio()
     settings.setValue(s_radios_stereo,StereoPinComboBox->currentIndex() + 2);
     settings.setValue(s_radios_focusinvert,RadioInvertCheckBox->isChecked());
     settings.setValue(s_radios_txfocusinvert,TransmitInvertCheckBox->isChecked());
+    settings.setValue(s_radios_ptt_type[0],radioPttComboBox[0]->currentIndex());
+    settings.setValue(s_radios_ptt_type[1],radioPttComboBox[1]->currentIndex());
     bool pportUpdate=false;
     if (settings.value(s_radios_pport,defaultParallelPort).toString()!=ParallelPortComboBox->currentText()) {
         settings.setValue(s_radios_pport,ParallelPortComboBox->currentText());
@@ -251,6 +252,7 @@ void RadioDialog::updateFromSettings()
     lineEditPort1->setText(settings.value(s_radios_rigctld_port[0],s_radios_rigctld_port_def[0]).toString());
     lineEditPort2->setText(settings.value(s_radios_rigctld_port[1],s_radios_rigctld_port_def[1]).toString());
     for (int i=0;i<NRIG;i++) {
+        radioPttComboBox[i]->setCurrentIndex(settings.value(s_radios_ptt_type[i],s_radios_ptt_type_def).toInt());
         radioDevEdit[i]->setText(settings.value(s_radios_port[i],defaultSerialPort[i]).toString());
         radioPollTimeEdit[i]->setText(settings.value(s_radios_poll[i],s_radios_poll_def[i]).toString());
         int indx1;

@@ -152,13 +152,18 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     updateNrDisplay();
 
-    cat = new RigSerial(settingsFile);
-    cat->moveToThread(&catThread);
-    connect(&catThread, SIGNAL(started()), cat, SLOT(run()));
-    connect(cat, SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(this, SIGNAL(qsyExact(int, int)), cat, SLOT(qsyExact(int, int)));
-    connect(this, SIGNAL(setRigMode(int, rmode_t, pbwidth_t)), cat, SLOT(setRigMode(int, rmode_t, pbwidth_t)));
-
+    cat[0] = new RigSerial(0,settingsFile);
+    cat[1] = new RigSerial(1,settingsFile);
+    cat[0]->moveToThread(&catThread[0]);
+    cat[1]->moveToThread(&catThread[1]);
+    connect(&catThread[0], SIGNAL(started()), cat[0], SLOT(run()));
+    connect(&catThread[1], SIGNAL(started()), cat[1], SLOT(run()));
+    connect(cat[0], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(cat[1], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(this, SIGNAL(qsyExact1(int)), cat[0], SLOT(qsyExact(int)));
+    connect(this, SIGNAL(qsyExact2(int)), cat[1], SLOT(qsyExact(int)));
+    connect(this, SIGNAL(setRigMode1(rmode_t, pbwidth_t)), cat[0], SLOT(setRigMode(rmode_t, pbwidth_t)));
+    connect(this, SIGNAL(setRigMode2(rmode_t, pbwidth_t)), cat[1], SLOT(setRigMode(rmode_t, pbwidth_t)));
     options = new ContestOptionsDialog(this);
     connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -183,7 +188,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(progsettings, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(progsettings, SIGNAL(settingsUpdate()), this, SLOT(settingsUpdate()));
     progsettings->hide();
-
     cwMessage = new CWMessageDialog(CWType,this);
     connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -191,10 +195,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     ssbMessage = new SSBMessageDialog(this);
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
-    connect(ssbMessage,SIGNAL(recordMsg(QByteArray,bool)),this,SLOT(expandMacro(QByteArray,bool)));
+    connect(ssbMessage,SIGNAL(sendMsg(QByteArray,bool)),this,SLOT(expandMacro(QByteArray,bool)));
+    connect(ssbMessage,SIGNAL(setPtt1(int)),cat[0],SLOT(setPtt(int)));
+    connect(ssbMessage,SIGNAL(setPtt2(int)),cat[1],SLOT(setPtt(int)));
     ssbMessage->hide();
-
-    radios = new RadioDialog(*settings,*cat, this);
+    radios = new RadioDialog(*settings,*cat[0], this);
     connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
     radios->hide();
@@ -208,10 +213,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
-
     bandmap=new BandmapInterface(*settings,this);
     connect(bandmap,SIGNAL(removeCall(QByteArray,int)),this,SLOT(removeSpot(QByteArray,int)));
-    connect(bandmap,SIGNAL(qsy(int,int)),cat,SLOT(qsyExact(int,int)));
+    connect(bandmap,SIGNAL(qsy1(int)),cat[0],SLOT(qsyExact(int)));
+    connect(bandmap,SIGNAL(qsy2(int)),cat[1],SLOT(qsyExact(int)));
     connect(bandmap,SIGNAL(sendMsg(QString)),So2sdrStatusBar,SLOT(showMessage(QString)));
     notes = new NoteDialog(this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
@@ -253,7 +258,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(sdr,SIGNAL(accepted()),this,SLOT(regrab()));
     connect(sdr,SIGNAL(rejected()),this,SLOT(regrab()));
-
     //RTC 07/11/2012 disabled About Qt unless a solution is found
     // instead added Qt version number to So2sdr About dialog
     //connect(actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -283,7 +287,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(bandmapAction1,SIGNAL(triggered(bool)),this,SLOT(showBandmap1(bool)));
     connect(bandmapAction2,SIGNAL(triggered(bool)),this,SLOT(showBandmap2(bool)));
     connect(grabAction,SIGNAL(triggered(bool)),this,SLOT(setGrab(bool)));
-
     // ungrab keyboard when menubar menus are open
     connect(SetupMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
     connect(SetupMenu,SIGNAL(aboutToHide()),this,SLOT(regrab()));
@@ -328,7 +331,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
         microham->openMicroHam();
     }
-
     WPMLineEdit->setReadOnly(true);
     // set background of WPM speed edit box to grey
     QPalette palette(wpmLineEditPtr[0]->palette());
@@ -347,7 +349,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkey,SIGNAL(textSent(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
     connect(winkey,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
     connect(winkey, SIGNAL(winkeyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-
     startWinkey();
 
     openRadios();
@@ -370,8 +371,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     menubar->setNativeMenuBar(false);
     disableUI();
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
-    connect(qApp,SIGNAL(aboutToQuit()),cat,SLOT(stopSerial()));
-
+    connect(qApp,SIGNAL(aboutToQuit()),cat[0],SLOT(stopSerial()));
+    connect(qApp,SIGNAL(aboutToQuit()),cat[1],SLOT(stopSerial()));
     // restore window geometry
     settings->beginGroup("MainWindow");
     resize(settings->value("size", QSize(720, 579)).toSize());
@@ -393,11 +394,16 @@ So2sdr::~So2sdr()
         QSqlDatabase::removeDatabase("QSQLITE");
     }
     // stop hamlib thread
-    if (catThread.isRunning()) {
-        catThread.quit();
-        catThread.wait();
+    if (catThread[0].isRunning()) {
+        catThread[0].quit();
+        catThread[0].wait();
     }
-    cat->deleteLater();
+    if (catThread[1].isRunning()) {
+        catThread[1].quit();
+        catThread[1].wait();
+    }
+    cat[0]->deleteLater();
+    cat[1]->deleteLater();
     delete cabrillo;
     delete detail;
     delete radios;
@@ -651,11 +657,16 @@ void So2sdr::quit()
 void So2sdr::openRadios()
 {
     stopTimers();
-    if (catThread.isRunning()) {
-        catThread.quit();
-        catThread.wait(0); // wait for the thread to stop
+    if (catThread[0].isRunning()) {
+        catThread[0].quit();
+        catThread[0].wait(0); // wait for the thread to stop
     }
-    catThread.start();
+    catThread[0].start();
+    if (catThread[1].isRunning()) {
+        catThread[1].quit();
+        catThread[1].wait(0); // wait for the thread to stop
+    }
+    catThread[1].start();
     startTimers();
 }
 
@@ -1439,7 +1450,7 @@ void So2sdr::importCabrillo()
             m = RIG_MODE_CW;
         }
         qso.mode = (rmode_t) m;
-        qso.modeType=cat->getModeType(qso.mode);
+        qso.modeType=cat[0]->getModeType(qso.mode);
         cnt++;
 
         // Field3 = date
@@ -1912,7 +1923,7 @@ void So2sdr::duelingCQActivate (bool state) {
  */
 void So2sdr::autoSendExch() {
 
-    if (cat->modeType(activeTxRadio)!=CWType) return;
+    if (cat[activeTxRadio]->modeType()!=CWType) return;
     if (autoSendTrigger && !autoSendPause) {
         if (!activeR2CQ && !duelingCQMode && !toggleMode) {
 
@@ -1976,7 +1987,7 @@ void So2sdr::autoSendExch_exch() {
         } else {
             nrReserved[activeTxRadio] = nrSent;
         }
-        int m=(int)cat->modeType(activeTxRadio);
+        int m=(int)cat[activeTxRadio]->modeType();
         QByteArray tmpExch;
         if (qso[activeTxRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == STRICT_DUPES) {
             tmpExch = csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toByteArray();
@@ -2180,21 +2191,6 @@ void So2sdr::switchAudio(int r)
  */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
-    switch (cat->modeType(activeTxRadio)) {
-     case CWType:
-        winkey->cancelcw();
-        break;
-    case PhoneType:
-        expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
-        break;
-    case DigiType:
-        break;
-    }
-    if (CWspeed) {
-        winkey->setSpeed(CWspeed);
-    } else {
-        winkey->setSpeed(wpm[r]);
-    }
     if (r != activeTxRadio) {
         autoSendTrigger=false;
         autoSendPause=false;
@@ -2223,6 +2219,21 @@ void So2sdr::switchTransmit(int r, int CWspeed)
         TX2->setStyleSheet(clearLED);
     }
     activeTxRadio = r;
+    switch (cat[activeTxRadio]->modeType()) {
+     case CWType:
+        winkey->cancelcw();
+        break;
+    case PhoneType:
+        expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
+        break;
+    case DigiType:
+        break;
+    }
+    if (CWspeed) {
+        winkey->setSpeed(CWspeed);
+    } else {
+        winkey->setSpeed(wpm[r]);
+    }
 }
 
 /*!
@@ -2433,8 +2444,8 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
     if (qso[nrig]->call.size() > 1) {
         qso[nrig]->prefill.clear();
         qso[nrig]->dupe = false;
-        qso[nrig]->mode = cat->mode(nrig);
-        qso[nrig]->modeType = cat->modeType(nrig);
+        qso[nrig]->mode = cat[nrig]->mode();
+        qso[nrig]->modeType = cat[nrig]->modeType();
         qso[nrig]->freq = rigFreq[nrig];
         qso[nrig]->band = band[nrig];
         qso[nrig]->time = QDateTime::currentDateTimeUtc();
@@ -2650,7 +2661,7 @@ bool So2sdr::enterFreqOrMode()
         }
         if (bandmap->bandmapon(nr)) {
             bandmap->bandmapSetFreq(f,nr);
-            bandmap->setAddOffset(cat->ifFreq(nr),nr);
+            bandmap->setAddOffset(cat[nr]->ifFreq(),nr);
             // invert spectrum if needed
             // bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
         }
@@ -2671,22 +2682,40 @@ bool So2sdr::enterFreqOrMode()
          */
         if (rx.cap(1) == "CWR") {
             modeTypeShown=CWType;
-            emit setRigMode(nr, RIG_MODE_CWR, pb);
+            if (nr==0)
+                emit setRigMode1(RIG_MODE_CWR, pb);
+            else
+                emit setRigMode2(RIG_MODE_CWR, pb);
         } else if (rx.cap(1) == "CW") {
             modeTypeShown=CWType;
-            emit setRigMode(nr, RIG_MODE_CW, pb);
+            if (nr==0)
+                emit setRigMode1(RIG_MODE_CW, pb);
+            else
+                emit setRigMode2(RIG_MODE_CW, pb);
         } else if (rx.cap(1) == "LSB") {
             modeTypeShown=PhoneType;
-            emit setRigMode(nr, RIG_MODE_LSB, pb);
+            if (nr==0)
+                emit setRigMode1(RIG_MODE_LSB, pb);
+            else
+                emit setRigMode2(RIG_MODE_LSB, pb);
         } else if (rx.cap(1) == "USB") {
             modeTypeShown=PhoneType;
-            emit setRigMode(nr, RIG_MODE_USB, pb);
+            if (nr==0)
+                emit setRigMode1(RIG_MODE_USB, pb);
+            else
+                emit setRigMode2(RIG_MODE_USB, pb);
         } else if (rx.cap(1) == "FM") {
             modeTypeShown=PhoneType;
-            emit setRigMode(nr, RIG_MODE_FM, pb);
+            if (nr==0)
+                emit setRigMode1(RIG_MODE_FM, pb);
+            else
+                emit setRigMode2(RIG_MODE_FM, pb);
         } else if (rx.cap(1) == "AM") {
             modeTypeShown=PhoneType;
-            emit setRigMode(nr, RIG_MODE_AM, pb);
+            if (nr==0)
+                emit setRigMode1(RIG_MODE_AM, pb);
+            else
+                emit setRigMode2(RIG_MODE_AM, pb);
         }
         setSummaryGroupBoxTitle();
 
@@ -2806,7 +2835,7 @@ void So2sdr::updateRadioFreq()
     label_10->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     for (int i = 0; i < NRIG; i++) {
 
-        rigFreq[i] = cat->getRigFreq(i);
+        rigFreq[i] = cat[i]->getRigFreq();
         tmp[i]     = band[i];
         int b = getBand(rigFreq[i]);
 
@@ -2832,10 +2861,10 @@ void So2sdr::updateRadioFreq()
         if (bandmap->bandmapon(i)) {
             bandmap->bandmapSetFreq(rigFreq[i],i);
             //add additional offset if specified by radio (like K3)
-            bandmap->setAddOffset(cat->ifFreq(i),i);
+            bandmap->setAddOffset(cat[i]->ifFreq(),i);
         }
         double f = rigFreq[i] / 1000.0;
-        if (cat->radioOpen(i)) {
+        if (cat[i]->radioOpen()) {
             rLabelPtr[i]->setText("R" + QString::number(i + 1) + ":ON");
         } else {
             rLabelPtr[i]->setText("<font color=#FF0000>R" + QString::number(i + 1) + ":OFF </font>");
@@ -2862,10 +2891,10 @@ void So2sdr::updateRadioFreq()
         }
         if (i == activeRadio) {
             freqDisplayPtr[i]->setText("<b>" + QString::number(f, 'f', 1) + "</b>");
-            modeDisplayPtr[i]->setText("<b>" + cat->modeStr(i) + "</b>");
+            modeDisplayPtr[i]->setText("<b>" + cat[i]->modeStr() + "</b>");
         } else {
             freqDisplayPtr[i]->setText(QString::number(f, 'f', 1));
-            modeDisplayPtr[i]->setText(cat->modeStr(i));
+            modeDisplayPtr[i]->setText(cat[i]->modeStr());
         }
     }
     if (winkey->winkeyIsOpen()) {
@@ -3100,7 +3129,7 @@ void So2sdr::setCqMode(int i)
  */
 void So2sdr::send(QByteArray text, bool stopcw)
 {
-    if (cat->modeType(activeTxRadio)!=CWType) return;
+    if (cat[activeTxRadio]->modeType()!=CWType) return;
     if (!settings->value(s_winkey_cwon,s_winkey_cwon_def).toBool()) return;
 
     if (winkey->isSending() && stopcw) {
@@ -3174,7 +3203,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                                        "BEST_CQ",
                                        "BEST_CQ_R2",
                                        "CANCEL",
-                                       "AUDIO",
+                                       "PLAY",
                                        "SWITCH_RADIOS",
                                        "MCP",
                                        "OTRSP",
@@ -3192,9 +3221,10 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                                        "PTTOFF",
                                        "PTTOFF1",
                                        "PTTOFF2",
-                                       "PTTOFFR2"
+                                       "PTTOFFR2",
+                                       "RECORD"
                                      };
-    const int        n_token_names = 44;
+    const int        n_token_names = 45;
 
     /*!
        cw/ssb message macros
@@ -3225,7 +3255,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
        - {RIG2_FREQ} send current inactive rig freq in KHz
        - {BEST_CQ} qsy current radio to "best" CQ freq
        - {BEST_CQ_R2} qsy 2nd radio to "best" CQ freq
-       - {AUDIO} message contains DVK audio
+       - {PLAY}file play an audio message in the file "file.wav"
        - {SWITCH_RADIOS} same as alt-R
        - {MCP}{/MCP} Microham Control Protocol commands
        - {OTRSP}{/OTRSP} OTRSP Control Protocol commands
@@ -3240,6 +3270,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
        - {PTTON1} {PTTOFF1} turn radio 1 PTT on/off
        - {PTTON2} {PTTOFF2} turn radio 2 PTT on/off
        - {PTTONR2} {PTTOFFR2} turn inactive radio PTT on/off
+       - {RECORD}file  record audio to file "file.wav"
     */
     bool switchradio=true;
     bool first=true;
@@ -3361,7 +3392,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         }
                         break;
                     case 19: // clear RIT
-                        cat->clearRIT(activeTxRadio);
+                        cat[activeTxRadio]->clearRIT();
                         break;
                     case 20: // RIG_FREQ
                         out.append(QByteArray::number(qRound(rigFreq[activeRadio] / 1000.0)));
@@ -3388,8 +3419,9 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                     case 24: // cancel speed change
                         out.append(0x1e);
                         break;
-                    case 25: // play/record audio
-                        // REMOVED
+                    case 25: // play
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        ssbMessage->playMessage(activeRadio,command);
                         break;
                     case 26: // switch radios
                         switchRadios();
@@ -3408,22 +3440,22 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         break;
                     case 29: // CAT
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
-                        cat->sendRaw(activeRadio,command);
+                        cat[activeRadio]->sendRaw(command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     case 30: // CATR2
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
-                        cat->sendRaw(activeRadio ^ 1,command);
+                        cat[activeRadio ^ 1]->sendRaw(command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     case 31: // CAT1
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
-                        cat->sendRaw(0,command);
+                        cat[0]->sendRaw(command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     case 32: // CAT2
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
-                        cat->sendRaw(1,command);
+                        cat[1]->sendRaw(command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     case 33: // CALL_OK
@@ -3448,36 +3480,40 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         break;
                     case 36: // PTTON
                         // fixme add winkey option
-                        cat->setPtt(activeRadio,1);
+                        cat[activeRadio]->setPtt(1);
                         switchradio=false;
                         break;
                     case 37: // PTTON1
-                        cat->setPtt(0,1);
+                        cat[0]->setPtt(1);
                         switchradio=false;
                         break;
                     case 38: // PTTON2
-                        cat->setPtt(1,1);
+                        cat[1]->setPtt(1);
                         switchradio=false;
                         break;
                     case 39: // PTTONR2
-                        cat->setPtt(activeRadio ^ 1,1);
+                        cat[activeRadio ^ 1]->setPtt(1);
                         switchradio=false;
                         break;
                     case 40: // PTTOFF
-                        cat->setPtt(activeRadio,0);
+                        cat[activeRadio]->setPtt(0);
                         switchradio=false;
                         break;
                     case 41: // PTTOFF1
-                        cat->setPtt(0,0);
+                        cat[0]->setPtt(0);
                         switchradio=false;
                         break;
                     case 42: // PTTOFF2
-                        cat->setPtt(1,0);
+                        cat[1]->setPtt(0);
                         switchradio=false;
                         break;
                     case 43: // PTTOFFR2
-                        cat->setPtt(activeRadio ^ 1,0);
+                        cat[activeRadio ^ 1]->setPtt(0);
                         switchradio=false;
+                        break;
+                    case 44: // RECORD
+                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        ssbMessage->recMessage(command);
                         break;
                     }
                     break;
@@ -3597,7 +3633,7 @@ void So2sdr::rescore()
             tmpqso.exch = tmpqso.exch + tmp[j] + " ";
         }
         tmpqso.mode = (rmode_t) m.record(i).value("mode").toInt();
-        tmpqso.modeType = cat->getModeType(tmpqso.mode);
+        tmpqso.modeType = cat[0]->getModeType(tmpqso.mode);
         tmpqso.band = m.record(i).value("band").toInt();
         tmpqso.pts  = m.record(i).value("pts").toInt();
 
@@ -3806,12 +3842,18 @@ void So2sdr::stopTimers()
 void So2sdr::qsy(int nrig, int &freq, bool exact)
 {
     if (exact) {
-        emit qsyExact(nrig, freq);
+        if (nrig==0)
+            emit qsyExact1(freq);
+        else
+            emit qsyExact2(freq);
     } else {
         // entered in KHz?
         if (freq > 1799 && freq <= 148000) {
             freq *= 1000;
-            emit qsyExact(nrig, freq);
+            if (nrig==0)
+                emit qsyExact1(freq);
+            else
+                emit qsyExact2(freq);
         }
     }
 }
@@ -3899,7 +3941,7 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
     for (int i = 0; i < m.rowCount(); i++) {
         // if multi-mode contest, check for matching mode
         if (csettings->value(c_multimode).toBool(),c_multimode_def) {
-            if (cat->getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
+            if (cat[0]->getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
                 continue;
             }
         }
@@ -4098,7 +4140,8 @@ void So2sdr::initPointers()
     help          = 0;
     cty           = 0;
     contest       = 0;
-    cat           = 0;
+    cat[0]        = 0;
+    cat[1]        = 0;
     cabrillo      = 0;
     mylog         = 0;
     cwMessage     = 0;

@@ -52,7 +52,8 @@ public:
 signals:
     void bandmap1state(bool);
     void bandmap2state(bool);
-    void qsy(int,int);
+    void qsy1(int);
+    void qsy2(int);
     void removeCall(QByteArray,int);
     void sendMsg(const QString &msg);
 

@@ -297,9 +297,10 @@ void BandmapInterface::xmlParse()
 
                 if (attr.hasAttribute("freq")) {
                     f=attr.value("freq").toString().toInt();
-                    if (nr==0 || nr==1) {
-                        emit(qsy(nr,f));
-                    }
+                    if (nr==0)
+                        emit(qsy1(f));
+                    else
+                        emit(qsy2(f));
                 }
 
                 if (attr.hasAttribute("call")) {

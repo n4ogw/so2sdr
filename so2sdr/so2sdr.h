@@ -118,8 +118,10 @@ public slots:
     void updateRecord(QSqlRecord);
 
 signals:
-    void qsyExact(int, int);
-    void setRigMode(int, rmode_t, pbwidth_t);
+    void qsyExact1(int);
+    void qsyExact2(int);
+    void setRigMode1(rmode_t, pbwidth_t);
+    void setRigMode2(rmode_t, pbwidth_t);
 
 private slots:
     void about();
@@ -290,11 +292,11 @@ private:
     QString              redLED;
     QString              clearLED;
     QString              tmpCall;
-    QThread              catThread;
+    QThread              catThread[NRIG];
     QTime                cqTimer;
     QWidget              *grabWidget;
     RadioDialog          *radios;
-    RigSerial            *cat;
+    RigSerial            *cat[NRIG];
     SDRDialog            *sdr;
     SettingsDialog       *progsettings;
     StationDialog        *station;

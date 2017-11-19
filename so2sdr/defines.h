@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.1.5";
+const QByteArray Version = "2.2.0";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000
@@ -789,4 +789,24 @@ const int c_off_time_min_def=30;
 const QString c_off_time_enable="contest/offtime_enable";
 const bool c_off_time_enable_def=false;
 
+const QString s_play_command="play_command";
+const QString s_play_command_def="gst-launch-1.0 -q filesrc location=$.wav ! wavparse ! audioconvert ! pulsesink";
+
+const QString s_rec_command="rec_command";
+const QString s_rec_command_def="gst-launch-1.0 -q pulsesrc ! wavenc ! filesink location=$.wav";
+
+const QString s_before_rec="before_rec";
+const QString s_before_rec_def="pactl set-source-mute 1 0";
+
+const QString s_after_rec="after_rec";
+const QString s_after_rec_def="";
+
+const QString s_before_play="before_play";
+const QString s_before_play_def="pactl set-source-mute 1 1";
+
+const QString s_after_play="after_play";
+const QString s_after_play_def="pactl set-source-mute 1 0";
+
+const QString s_radios_ptt_type[NRIG]={"radios/ptt1_type","radios/ptt2_type"};
+const int s_radios_ptt_type_def=0;
 #endif // DEFINES_H

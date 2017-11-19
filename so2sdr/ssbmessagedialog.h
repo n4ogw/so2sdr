@@ -30,8 +30,8 @@
 
 class QPushButton;
 class QLineEdit;
+class QProcess;
 class So2sdr;
-
 
 /*!
    Dialog for entering SSB messages
@@ -47,21 +47,37 @@ public:
     friend class So2sdr;
 
 signals:
-    void recordMsg(QByteArray,bool);
+    void sendMsg(QByteArray,bool);
+    void setPtt1(int);
+    void setPtt2(int);
 
 public slots:
+    void recMessage(QString);
+    void cancelMessage();
+    void playMessage(int nrig, QString);
     void updateSSBMsg();
     void rejectChanges();
 
 private slots:
+    void recMessage2(int);
+    void recMessage3(int);
+    void playMessage2(int);
+    void playMessage3(int);
+    void playButtons(int id);
+    void playExcButtons(int id);
     void recButtons(int id);
     void excRecButtons(int id);
+    void otherPlayButtons(int id);
     void otherRecButtons(int id);
 
 private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     const static int  m=1;
 
+    bool           recording;
+    QButtonGroup   excPlayGroup;
+    QButtonGroup   playGroup;
+    QButtonGroup   otherPlayGroup;
     QButtonGroup   recGroup;
     QButtonGroup   excRecGroup;
     QButtonGroup   otherRecGroup;
@@ -72,11 +88,16 @@ private:
     QLineEdit      *excFuncEditPtr[N_FUNC];
     QLineEdit      *excFuncRecEditPtr[N_FUNC];
     QPushButton    *excFuncRecPtr[N_FUNC];
+    QPushButton    *excFuncPlayPtr[N_FUNC];
     QLineEdit      *funcEditPtr[N_FUNC];
     QLineEdit      *funcRecEditPtr[N_FUNC];
     QPushButton    *funcRecPtr[N_FUNC];
+    QPushButton    *funcPlayPtr[N_FUNC];
     UpperValidator *upperValidate;
     QSettings      *settings;
+    QString         message;
+    int             playMessageRig;
+    QProcess        *scriptProcess;
 };
 
 #endif

@@ -1,6 +1,6 @@
 <p><a name="top"></a></p>
 
-<h2>So2sdr-bandmap Help Version 2.1.5</h2>
+<h2 id="so2sdr-bandmaphelpversion2.2.0">So2sdr-bandmap Help Version 2.2.0</h2>
 
 <ul>
 <li><a href="#controls">Controls</a></li>
@@ -12,11 +12,11 @@
 
 <hr />
 
-<p>So2sdr-bandmap provides a "visual bandmap" that shows the activity on
+<p>So2sdr-bandmap provides a &#8220;visual bandmap&#8221; that shows the activity on
 the band for nearby frequencies. To use it you will need a SDR
 receiver connected to the IF of your contesting radio. With this type
 of setup, the SDR front end is automatically protected from
-transmitted RF and gains the benefit of the main radio's front end
+transmitted RF and gains the benefit of the main radio&#8217;s front end
 tuned circuits. There is also no need to tune the SDR frequency as the
 radio is tuned; the SDR stays tuned at the IF frequency of the host
 radio.</p>
@@ -30,17 +30,17 @@ radio.</p>
 ethernet.</li>
 </ul>
 
-<p>Other SDR's may work if they supply an I/Q stream over the sound card interface
+<p>Other SDR&#8217;s may work if they supply an I/Q stream over the sound card interface
 or via ethernet with the SDR-IP protocol. The program has been tested most with the
 Elecraft K3.</p>
 
 <p><strong>Important for SO2R:</strong> For SO2R usage, you need to provide two
 different configurations for so2sdr-bandmap, with different bandmap ID
-numbers (see below).  Test each radio's bandmap separately, and then
+numbers (see below). Test each radio&#8217;s bandmap separately, and then
 copy the .ini file so2sdr-bandmap.ini to a separate copy for that
-bandmap, such as so2sdr-bandmap1.ini and so2sdr-bandmap2.ini.  So2sdr
+bandmap, such as so2sdr-bandmap1.ini and so2sdr-bandmap2.ini. So2sdr
 has a setting to use different so2sdr-bandmap.ini files for each
-radio.  You can also make a separate desktop shortcut to start the
+radio. You can also make a separate desktop shortcut to start the
 bandmap for each radio, and so2sdr will detect when each has been
 started.</p>
 
@@ -50,9 +50,12 @@ started.</p>
 
 <p><a name="controls"></a></p>
 
-<h3>Bandmap controls</h3>
+<h3 id="bandmapcontrols">Bandmap controls</h3>
 
-<p><img src="./bandmap-controls.png" alt="Bandmap controls" /></p>
+<figure>
+<img src="./bandmap-controls.png" alt="Bandmap controls" />
+<figcaption>Bandmap controls</figcaption>
+</figure>
 
 <p>Controls from left to right:</p>
 
@@ -77,12 +80,13 @@ squelch control).</li>
 
 <ul>
 <li>Mouse:
+
 <ul>
 <li>Left clicking on the bandmap signals will tune the radio to
 this frequency.</li>
 <li>In the frequency scale: holding down the left mouse button and
-drag to  move
-the center marker.</li>
+drag to move
+ the center marker.</li>
 <li>Right click brings up several options: an option to hide the
 upper toolbar; zoom (scale) setting; call delete function (if
 near a callsign); and IQ balance status dialog.</li>
@@ -95,11 +99,14 @@ near a callsign); and IQ balance status dialog.</li>
 
 <p><a name="bandmap_setup"></a></p>
 
-<h3>Setting up So2sdr-bandmap</h3>
+<h3 id="settingupso2sdr-bandmap">Setting up So2sdr-bandmap</h3>
 
-<p>When the program starts, click the "wrench" icon. The main setup dialog opens:</p>
+<p>When the program starts, click the &#8220;wrench&#8221; icon. The main setup dialog opens:</p>
 
-<p><img src="./so2sdr-bandmap-setup.png" alt="so2sdr-bandmap setup" /></p>
+<figure>
+<img src="./so2sdr-bandmap-setup.png" alt="so2sdr-bandmap setup" />
+<figcaption>so2sdr-bandmap setup</figcaption>
+</figure>
 
 <ul>
 <li>Bandmap ID number corresponds to the radio number in so2sdr; 1 or 2.</li>
@@ -112,7 +119,7 @@ from N1MM+ logger and use them to set the center frequency. Fill in the port num
 below.</li>
 <li>SDR type: the type of SDR receiver. Click configure for further details.</li>
 <li>CQ Finder time (in seconds): the length of time the program waits to determine if
-a frequency is "empty."  This should be set to roughly the length of a typical
+a frequency is &#8220;empty.&#8221; This should be set to roughly the length of a typical
 qso in the contest being operated. With longer exchanges (like in the
 ARRL Sweepstakes) a longer time should be used here. Typically you should use a
 value less than 30 seconds.</li>
@@ -122,9 +129,12 @@ detected signals) to determine what frequencies for the CQ finder.</li>
 are placed on either side of the logging window.</li>
 </ul>
 
-<h4>Soundcard SDR setup</h4>
+<h4 id="soundcardsdrsetup">Soundcard SDR setup</h4>
 
-<p><img src="./soundcard-setup.png" alt="Soundcard setup" /></p>
+<figure>
+<img src="./soundcard-setup.png" alt="Soundcard setup" />
+<figcaption>Soundcard setup</figcaption>
+</figure>
 
 <ul>
 <li>Device: So2sdr-bandmap tries to test which available sound devices
@@ -157,42 +167,48 @@ pulseaudio:</p>
 </code></pre></li>
 </ul>
 
-<h4>SDR-IP (Network) SDR</h4>
+<h4 id="sdr-ipnetworksdr">SDR-IP (Network) SDR</h4>
 
-<p>This is a generic interface for network-based SDR's using the
+<p>This is a generic interface for network-based SDR&#8217;s using the
 SDR-IP protocol.</p>
 
-<p><img src="./network-setup.png" alt="Network setup" /></p>
+<figure>
+<img src="./network-setup.png" alt="Network setup" />
+<figcaption>Network setup</figcaption>
+</figure>
 
-<h4>Afedri Net SDR</h4>
+<h4 id="afedrinetsdr">Afedri Net SDR</h4>
 
 <p>This is an interface for the Afedri SDR using the network
 interface. Note that it can also be used via the Soundcard
 interface.</p>
 
-<p><img src="./afedri-setup.png" alt="Afedri setup" /></p>
+<figure>
+<img src="./afedri-setup.png" alt="Afedri setup" />
+<figcaption>Afedri setup</figcaption>
+</figure>
 
 <ol>
 <li><p>For single-receiver Afedri SDR: fill in IP address, TCP
-and UDP ports. Set Multichannel to "Single", Channel to 1,
+and UDP ports. Set Multichannel to &#8220;Single&#8221;, Channel to 1,
 and fill in Freq. 1. Make sure that Broadcast is set to off.
-In my testing, "swap IQ" needed to be checked. Note that
+In my testing, &#8220;swap IQ&#8221; needed to be checked. Note that
 not all sample rates are supported by the Afedri hardware
 (check documentation). If a sample rate is entered that is
 not supported, the SDR will use the nearest available sample
 rate, which will cause frequency inaccuracies in the bandmap
 display.</p></li>
 <li><p>Multi-channel Afedri SDR: so2sdr-bandmap also supports the
-multi-channel Afedri SDR's. In this mode, a single unit can be used to
+multi-channel Afedri SDR&#8217;s. In this mode, a single unit can be used to
 provide bandmaps for two radios. The broadcast option of the Afedri is
 set so that two copies of so2sdr-bandmap can receive the SDR data.
-One copy of so2sdr-bandmap should run as "Master" and one as "Slave".
+One copy of so2sdr-bandmap should run as &#8220;Master&#8221; and one as &#8220;Slave&#8221;.
 The Master bandmap controls the frequency for both SDR receivers.
 Start the Master bandmap first followed by the Slave.</p>
 
 <p>This mode is somewhat experimental. Sometimes the 2nd SDR receiver
 does not start; a workaround seems to be to stop the Master
-bandmap (square "stop" button) and then restart it again.</p></li>
+bandmap (square &#8220;stop&#8221; button) and then restart it again.</p></li>
 </ol>
 
 <p><a href="#top">Return to top</a></p>
@@ -201,107 +217,102 @@ bandmap (square "stop" button) and then restart it again.</p></li>
 
 <p><a name="tcp"></a></p>
 
-<h3>TCP interface</h3>
+<h3 id="tcpinterface">TCP interface</h3>
 
 <p>So2sdr-bandmap uses TCP/UDP as the most portable and flexible option.
 So2sdr-bandmap accepts commands via TCP using a very simple
 protocol. Commands are sent to so2sdr-bandmap as a string of bytes
 (little-endian for multiple byte data):</p>
 
-<p>byte 1  : command</p>
+<p>byte 1 : command</p>
 
-<p>byte 2  : length in bytes (up to 255) of following data packet. 
-            minimum length is 0 if no data follows.</p>
+<p>byte 2 : length in bytes (up to 255) of following data packet.
+ minimum length is 0 if no data follows.</p>
 
 <p>following bytes: data (optional), format depends on command</p>
 
-<h4>General commands</h4>
+<h4 id="generalcommands">General commands</h4>
 
 <ul>
-<li><p>Set Center Frequency: 'f' 0x66 dec 102
+<li><p>Set Center Frequency: &#8216;f&#8217; 0x66 dec 102
+ followed by ascii characters giving frequency in Hz</p></li>
+<li><p>Exit program: &#8216;q&#8217; 0x71 dec 113
+ No data follows (length=0). Using this command before terminating
+ the bandmap process allows the bandmap to shut down properly and
+ update its config files.</p></li>
+<li><p>Set TX state: &#8216;t&#8217; 0x74 dec 116
+ No data follows (length=0). If transmit state is set, the bandmap will stop peak detecting signals and display the red &#8220;TX&#8221; icon.</p></li>
+<li><p>Set RX state: &#8216;r&#8217; 0x72 dec 114 Cancels transmit state (see 0x74)</p></li>
+<li><p>Find open frequency: &#8216;g&#8217; 0x67 dec 103 Finds an open frequency on the bandmap. This will only function after the center frequency has been set. The found frequency will be returned via UDP (see below).</p></li>
+<li><p>Set freq finder lower limit: &#8216;l&#8217; 0x6C dec 108
+Set lower limit frequency for &#8220;Find open freq&#8221;
 followed by ascii characters giving frequency in Hz</p></li>
-<li><p>Exit program: 'q' 0x71 dec 113
-No data follows (length=0). Using this command before terminating
-the  bandmap process allows the bandmap to shut down properly and
-update its config files.</p></li>
-<li><p>Set TX state: 't' 0x74 dec 116
-No data follows (length=0). If transmit state is set, the bandmap will stop   peak detecting signals and display the red "TX" icon.</p></li>
-<li><p>Set RX state: 'r' 0x72 dec 114 Cancels transmit state (see 0x74)</p></li>
-<li><p>Find open frequency: 'g' 0x67 dec 103 Finds an open frequency on the bandmap. This will only function after the center frequency has been set. The found frequency will be returned via UDP (see below).</p></li>
-<li><p>Set freq finder lower limit: 'l' 0x6C dec 108
-Set lower limit frequency for "Find open freq"
+<li><p>Set freq finder upper limit: &#8216;u&#8217; 0x75 dec 117
+Set upper limit frequency for &#8220;Find open freq&#8221;
 followed by ascii characters giving frequency in Hz</p></li>
-<li><p>Set freq finder upper limit: 'u' 0x75 dec 117
-Set upper limit frequency for "Find open freq"
-followed by ascii characters giving frequency in Hz</p></li>
-<li><p>Set bandmap offset: 'o' 0x6f dec 111
-Set offset in Hz between frequency displayed and actual center freq.
-Followed by ascii characters giving offset in Hz.</p></li>
-<li><p>Set bandmap invert: 'i'  0x69 dec 105
-If turned on, spectrum will be inverted. Useful for CW-reverse mode
-and some radios that have inverted IF on certain bands.
-Followed by single byte- if 0x00, sets invert off, any other byte
-sets invert on.</p></li>
-<li><p>Qsy to next higher signal:  'U' 0x55 dec 85
-Length zero. Qsy's to next higher marked signal (black dot) on band. The new frequency is returned to the controlling program via UDP.</p></li>
-<li><p>Qsy to next lower signal:  'D' 0x44 dec 68
-Length zero. Qsy's to next lower marked signal (black dot) on band. The new frequency  is returned to the controlling program via UDP.</p></li>
+<li><p>Set bandmap offset: &#8216;o&#8217; 0x6f dec 111
+ Set offset in Hz between frequency displayed and actual center freq.
+ Followed by ascii characters giving offset in Hz.</p></li>
+<li><p>Set bandmap invert: &#8216;i&#8217; 0x69 dec 105
+ If turned on, spectrum will be inverted. Useful for CW-reverse mode
+ and some radios that have inverted IF on certain bands.
+ Followed by single byte- if 0x00, sets invert off, any other byte
+ sets invert on.</p></li>
+<li><p>Qsy to next higher signal: &#8216;U&#8217; 0x55 dec 85
+ Length zero. Qsy&#8217;s to next higher marked signal (black dot) on band. The new frequency is returned to the controlling program via UDP.</p></li>
+<li><p>Qsy to next lower signal: &#8216;D&#8217; 0x44 dec 68
+ Length zero. Qsy&#8217;s to next lower marked signal (black dot) on band. The new frequency is returned to the controlling program via UDP.</p></li>
 </ul>
 
-<h4>Call marking</h4>
+<h4 id="callmarking">Call marking</h4>
 
 <p>So2sdr-bandmap can display callsigns and optionally highlight the
 actual CW signal of a station with a specific color. The program
 stores a list of callsigns and frequencies that are currently being
-displayed.  TCP commands are used to manage this list. The program is
+displayed. TCP commands are used to manage this list. The program is
 not designed to intelligently manage this list (for example finding
 dupes or removing calls after a set time), this is left up to the
 managing TCP connection.</p>
 
 <ol>
-<li><p>Add callsign: 'a' 0x61 dec 97
-followed by</p>
-
-<ul>
-<li>command string length byte</li>
+<li><p>Add callsign: &#8216;a&#8217; 0x61 dec 97
+ followed by</p></li>
+<li><p>command string length byte</p></li>
 <li><p>command string:</p>
 
-<p>callsign,frequency,R1G1B1R2G2B2flag</p>
+<pre><code>callsign,frequency,R1G1B1R2G2B2flag
 
-<ul>
-<li>callsign = ASCII callsign data</li>
-<li>frequency = frequency in Hz</li>
-<li>R1 = byte giving red color value (0:255) for call</li>
-<li>G1 = byte giving green color value (0:255) for call</li>
-<li>B1 = byte giving blue color value (0:255) for call</li>
-<li>R2 = byte giving red color byte for signal: 0 or 1</li>
-<li>G2 = byte giving green color byte for signal: 0 or 1</li>
-<li>B2 = byte giving blue color byte for signal: 0 or 1</li>
-<li>flag = 0x00 means no highlight, any other value means highlight</li>
-</ul></li>
-</ul>
-
-<p>example: puts N4OGW on bandmap at 14035100 Hz, callsign in magenta
-and signal higlighted in magenta:</p></li>
++ callsign = ASCII callsign data
++ frequency = frequency in Hz
++ R1 = byte giving red color value (0:255) for call
++ G1 = byte giving green color value (0:255) for call
++ B1 = byte giving blue color value (0:255) for call
++ R2 = byte giving red color byte for signal: 0 or 1
++ G2 = byte giving green color byte for signal: 0 or 1
++ B2 = byte giving blue color byte for signal: 0 or 1
++ flag = 0x00 means no highlight, any other value means highlight
+</code></pre></li>
 </ol>
 
-<p><code>
-    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
-</code></p>
+<p>example: puts N4OGW on bandmap at 14035100 Hz, callsign in magenta
+and signal higlighted in magenta:</p>
+
+<pre><code>    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
+</code></pre>
 
 <ol>
-<li><p>Delete callsign: 'd'  0x64 dec 100
-followed by</p>
+<li>Delete callsign: &#8216;d&#8217; 0x64 dec 100
+ followed by
 
 <ul>
 <li>length byte</li>
 <li>callsign</li>
 </ul></li>
-<li><p>Clear all calls: 'x' 0x78 dec 120
-command length 0</p></li>
+<li><p>Clear all calls: &#8216;x&#8217; 0x78 dec 120
+ command length 0</p></li>
 </ol>
 
-<h4>UDP broadcasts</h4>
+<h4 id="udpbroadcasts">UDP broadcasts</h4>
 
 <p>So2sdr-bandmap sends out UDP packets in response to several types
 of events:</p>
@@ -310,9 +321,9 @@ of events:</p>
 <li><p>clicking on the bandmap or a marked signal. The UDP packet contains
 the new frequency:</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;So2sdr&gt;
-&lt;bandmap RadioNr="1" freq="14037726"/&gt;
+&lt;bandmap RadioNr=&quot;1&quot; freq=&quot;14037726&quot;/&gt;
 &lt;/So2sdr&gt;
 </code></pre></li>
 </ul>
@@ -327,9 +338,9 @@ to delete a call. The bandmap itself does not delete the call from its
 list, this should be done by the controlling program in response to
 the UDP packet.</p>
 
-<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;So2sdr&gt;
-&lt;bandmap RadioNr="1" freq="14022977" call="N4OGW" operation="delete"/&gt;
+&lt;bandmap RadioNr=&quot;1&quot; freq=&quot;14022977&quot; call=&quot;N4OGW&quot; operation=&quot;delete&quot;/&gt;
 &lt;/So2sdr&gt;
 </code></pre></li>
 </ul>
@@ -340,11 +351,11 @@ the UDP packet.</p>
 
 <p><a name="issues"></a></p>
 
-<h2>Known issues</h2>
+<h2 id="knownissues">Known issues</h2>
 
 <ul>
-<li><p>Linux: soundcard SDR's may not start on certain systems with an
-error "Audio device does not support stereo." A workaround is to use
+<li><p>Linux: soundcard SDR&#8217;s may not start on certain systems with an
+error &#8220;Audio device does not support stereo.&#8221; A workaround is to use
 the pasuspender utility to stop Pulseaudio. If starting the bandmap
 from so2sdr, do this</p>
 
@@ -363,14 +374,21 @@ from so2sdr, do this</p>
 
 <p><a name="changes"></a></p>
 
-<h2>version 2.1.5 (10/21/2017)</h2>
+<h2 id="version2.2.011xx2017">version 2.2.0 (11/xx/2017)</h2>
+
+<ul>
+<li>rewrite and simplification of the audio play and record features. See the section
+in the help file on voice messages.</li>
+</ul>
+
+<h2 id="version2.1.510212017">version 2.1.5 (10/21/2017)</h2>
 
 <ul>
 <li>update SCP and CTY files</li>
 <li>fix winkey bug- changing parameters now works without restart</li>
 </ul>
 
-<h2>version 2.1.4 (05/31/2017)</h2>
+<h2 id="version2.1.405312017">version 2.1.4 (05/31/2017)</h2>
 
 <ul>
 <li>Bug fixes for WPX contest</li>
@@ -378,13 +396,13 @@ from so2sdr, do this</p>
 <li>Other bug fixes: fix fonts in some dialogs, make multipliers window scrollable</li>
 </ul>
 
-<h2>version 2.1.3 (01/10/2017)</h2>
+<h2 id="version2.1.301102017">version 2.1.3 (01/10/2017)</h2>
 
 <ul>
 <li>Update multipliers for NAQP and Sprint contests</li>
 </ul>
 
-<h2>version 2.1.2 (12/30/2016)</h2>
+<h2 id="version2.1.212302016">version 2.1.2 (12/30/2016)</h2>
 
 <ul>
 <li><p>Several fixes/enhancements from NO3M:</p></li>
@@ -395,9 +413,9 @@ Fix autoCQ related switchTransmit calls in expandMacro function</p></li>
 QSO; space still works the same when focused in CQ call field.</p></li>
 <li><p>Alt+ESC to wipe focused field without killing CW</p></li>
 <li><p>Sometimes call or exchange field data would be selected when
-re-focused.  Added deselect() to several places</p></li>
+re-focused. Added deselect() to several places</p></li>
 <li><p>CW speed under certain radio switching conditions (ie. cntrl-R) would
-not reflect current active radio speed.  Added conditional statements at
+not reflect current active radio speed. Added conditional statements at
 the top of expandMacro to set tmp_wpm variable.</p></li>
 <li><p>Prevent literal spacebar processing when using Alt-space keypress to
 start Alt-D QSO during CQ QSO</p></li>
@@ -405,16 +423,16 @@ start Alt-D QSO during CQ QSO</p></li>
 is used</p></li>
 </ul>
 
-<h2>version 2.1.1 (12/05/2016)</h2>
+<h2 id="version2.1.112052016">version 2.1.1 (12/05/2016)</h2>
 
 <ul>
 <li>wav directory sometimes created in wrong place</li>
 </ul>
 
-<h2>version 2.1.0 (12/02/2016)</h2>
+<h2 id="version2.1.012022016">version 2.1.0 (12/02/2016)</h2>
 
 <ul>
-<li><p>Add support for voice recording.  See new section in help.</p></li>
+<li><p>Add support for voice recording. See new section in help.</p></li>
 <li><p>So2sdr-bandmap: add option to also ignore spotted calls when searching for open cq frequencies.</p></li>
 <li><p>NO3M: activeRadio is temporarily set to autoCQRadio in enter when
 AutoCQ is active and unpaused to prevent exchange being sent on CQ
@@ -422,7 +440,7 @@ radio if a call is present in AltD radio field.</p></li>
 <li><p>NO3M: AltD QSO is logged without interrupting CW on CQ radio.</p></li>
 </ul>
 
-<h2>version 2.0.11 (11/08/2016)</h2>
+<h2 id="version2.0.1111082016">version 2.0.11 (11/08/2016)</h2>
 
 <ul>
 <li><p>Bug fix: editing call or report broken in Qt5 (cursor jumps to end of line)</p></li>
@@ -430,13 +448,13 @@ radio if a call is present in AltD radio field.</p></li>
 <li><p>clean up in serial code</p></li>
 </ul>
 
-<h2>version 2.0.10 (10/26/2016)</h2>
+<h2 id="version2.0.1010262016">version 2.0.10 (10/26/2016)</h2>
 
 <ul>
 <li>Another fix for winkey status getting stuck in TX</li>
 </ul>
 
-<h2>version 2.0.9 (10/22/2016)</h2>
+<h2 id="version2.0.910222016">version 2.0.9 (10/22/2016)</h2>
 
 <ul>
 <li><p>Add support for radio control via hamlib rigctld</p></li>
@@ -444,21 +462,21 @@ radio if a call is present in AltD radio field.</p></li>
 <li><p>shorten some delays in winkey initialization</p></li>
 </ul>
 
-<h2>version 2.0.8 (10/06/2016)</h2>
+<h2 id="version2.0.810062016">version 2.0.8 (10/06/2016)</h2>
 
 <ul>
 <li><p>Bug fix for Qt5- SQL changes broke dupe checking</p></li>
 <li><p>Activating AutoCQ or dueling CQ will not interrupt current CW/msg
-transmission.  Dueling will start on focused radio if no CW, otherwise
+transmission. Dueling will start on focused radio if no CW, otherwise
 focuses other radio ready for toggling sequence. (NO3M)</p></li>
 </ul>
 
-<h2>version 2.0.7 (10/04/2016)</h2>
+<h2 id="version2.0.710042016">version 2.0.7 (10/04/2016)</h2>
 
 <ul>
 <li><p>fixes to Winkey initialization (NO3M)</p></li>
 <li><p>fixes for Qt 5 sqlite</p></li>
-<li><p>Initialize activeTxRadio to -1 so switchTransmit is forced to
+<li><p>Initialize activeTxRadio to &#8211;1 so switchTransmit is forced to
 update SO2R device on startup (NO3M)</p></li>
 <li><p>Set QSO invalid if clearing Exchange line with ESC; wiping prefill
 would allow QSO to be logged with no text in Exchange line (NO3M)</p></li>
@@ -489,30 +507,30 @@ Toggle ESM, notes below (NO3M)</p></li>
 
 <p>*Toggle ESM / Dueling CQ (SLEEP): Numerous bug fixes and cleaner
 implementation, much better and more flexible than previously
-Re-implemented; toggleEnter() function removed.  Uses regular ESM
+Re-implemented; toggleEnter() function removed. Uses regular ESM
 enter() function now Focused radio behavior same as normal non-toggle
-operation.  ESM processed by enter(). ESM, Fx, "\" keypresses start CW
+operation. ESM processed by enter(). ESM, Fx, &#8220;&quot; keypresses start CW
 immediately on focused radio and shift focus to opposite radio Works
-with CTRL-ENTER and SHIFT-ENTER. Backslash "\" doesn't toggle ready
+with CTRL-ENTER and SHIFT-ENTER. Backslash &#8221;&quot; doesn&#8217;t toggle ready
 for next quick station ALT-R or CTRL-R allowed to manually toggle
 focus, next CW message (ESM, Fx, etc) goes out on focused radio and
 toggling resumes Can use empty Fx message to toggle w/o sending CW to
 maintain QSO flow control / timing or use ALT/CTRL-R as noted above (NO3M)</p>
 
-<h2>version 2.0.6 (02/02/2016)</h2>
+<h2 id="version2.0.602022016">version 2.0.6 (02/02/2016)</h2>
 
 <ul>
 <li><p>internal changes to dupesheet</p></li>
 <li><p>sunrise/sunset was displayed incorrectly for some calls in wl_cty.dat</p></li>
 <li><p>fix build for Qt 4 and Qt 5. To rebuild and switch Qt versions, you
-must run "make distclean". The version of qmake used selects the version
+must run &#8220;make distclean&#8221;. The version of qmake used selects the version
 of Qt.</p></li>
 <li><p>Another change to try to keep the TX status of the bandmap in sync</p></li>
 <li><p>Bug fix: under certain conditions, when logging a qso with ctrl-Enter, the
-sent qso number was logged as zero.</p></li>
+ sent qso number was logged as zero.</p></li>
 </ul>
 
-<h2>version 2.0.5</h2>
+<h2 id="version2.0.5">version 2.0.5</h2>
 
 <ul>
 <li><p>Bug fix: telnet spots were not working</p></li>
@@ -531,39 +549,39 @@ closing them from within so2sdr.</p></li>
 missing state in exchange.</p></li>
 </ul>
 
-<h2>version 2.0.4</h2>
+<h2 id="version2.0.4">version 2.0.4</h2>
 
 <ul>
 <li><p>Bug fix: when cancelling CW (for example when switch radios), the
-"TX" indicator on the bandmap should be turned off.</p></li>
+&#8220;TX&#8221; indicator on the bandmap should be turned off.</p></li>
 <li><p>Bug fix for autosend: if CNTRL-R is pressed before the callsign is
-done being sent in Autosend mode, the CW pauses for as long as focus
-is on the other radio, and then starts sending the callsign from the
-begnning if CNTRL-R back to the original radio. (NO3M)</p></li>
+ done being sent in Autosend mode, the CW pauses for as long as focus
+ is on the other radio, and then starts sending the callsign from the
+ begnning if CNTRL-R back to the original radio. (NO3M)</p></li>
 <li><p>If already in a S/P QSO, call and exch fields populated, keyboard focus on
-exchange field, but QSY before logging.  QSO is wiped but Sprint space no
-longer works, required hitting ESC to restore. Added extra cleanups to 'qso'
-object, et.al., and set focus to call field when QSYing. (NO3M)</p></li>
+ exchange field, but QSY before logging. QSO is wiped but Sprint space no
+ longer works, required hitting ESC to restore. Added extra cleanups to &#8216;qso&#8217;
+ object, et.al., and set focus to call field when QSYing. (NO3M)</p></li>
 <li><p>When QSYing active radio before a QSO was logged, and active radio was
-also the active TX radio (last to transmit),  activeR2CQ was set to false
-but inactive radio callsign field remained "CQCQCQ"/colorized.  Fixed
-activeR2CQ check during QSY to always match inactive radio as QSYing radio
-before clearing R2CQ status. R2CQ radio should always be inactive since
-making that radio active requires [CNTRL/ALT]-R or mouse click focus, which
-all clear R2CQ status. (NO3M)</p></li>
+ also the active TX radio (last to transmit), activeR2CQ was set to false
+ but inactive radio callsign field remained &#8220;CQCQCQ&#8221;/colorized. Fixed
+ activeR2CQ check during QSY to always match inactive radio as QSYing radio
+ before clearing R2CQ status. R2CQ radio should always be inactive since
+ making that radio active requires [CNTRL/ALT]-R or mouse click focus, which
+ all clear R2CQ status. (NO3M)</p></li>
 <li><p>add option to scroll to the right in so2sdr-bandmap (NO3M)</p></li>
 <li><p>check for a standard contest config file in the user directory
 (i.e. ~/.sosdr) when starting a new contest. If this file exists,
 it will be used instead of the program default from share/so2sdr (NO3M)</p></li>
 </ul>
 
-<h2>version 2.0.3</h2>
+<h2 id="version2.0.3">version 2.0.3</h2>
 
 <ul>
 <li>remove line leftover from testing preventing callsign clearing on radio 2</li>
 </ul>
 
-<h2>version 2.0.2</h2>
+<h2 id="version2.0.2">version 2.0.2</h2>
 
 <ul>
 <li>fix some bugs related to setting the config file for so2sdr-bandmap,
@@ -571,27 +589,27 @@ and choosing the executable for the bandmap in so2sdr.</li>
 <li>hopefully fix some bugs related to S&amp;P mode</li>
 </ul>
 
-<h2>version 2.0.1</h2>
+<h2 id="version2.0.1">version 2.0.1</h2>
 
 <ul>
 <li>update help files in so2sdr and so2sdr-bandmap</li>
 </ul>
 
-<h2>version 2.0.0</h2>
+<h2 id="version2.0.0">version 2.0.0</h2>
 
 <ul>
-<li>add network interface SDRs and Afedri SDR</li>
-<li>some unfinished features removed for the moment (click filter and
-DVK setup)</li>
-<li>rewrite of SDR bandmap; it is now a separate executable and can
-be used with other programs (see Documentation for use with 
-N1MM).</li>
-<li><p>known problems:</p>
+<li><p>add network interface SDRs and Afedri SDR</p></li>
+<li><p>some unfinished features removed for the moment (click filter and
+ DVK setup)</p></li>
+<li><p>rewrite of SDR bandmap; it is now a separate executable and can
+ be used with other programs (see Documentation for use with
+ N1MM).</p></li>
+<li>known problems:
 
 <ul>
 <li><p>control of Afedri SDRs is somewhat buggy for dual-receiver
 models (when using both receivers).</p></li>
-<li><p>under some Linux distributions  so2sdr-bandmap may have trouble 
+<li><p>under some Linux distributions so2sdr-bandmap may have trouble
 accessing the sound card if Pulseaudio is in use. A workaround is to
 use the pasuspender utility to stop Pulseaudio while so2sdr is
 running. If starting the bandmap from so2sdr, do this</p>

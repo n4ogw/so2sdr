@@ -198,7 +198,7 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
         if (dupe) {
             // replace previous spot, reset timer
             for (int nr=0;nr<NRIG;nr++) {
-                if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                if (bandmap->bandmapon(nr) && b==getBand(cat[nr]->getRigFreq())) {
                     bandmap->removeSpot(nr,spotList[b][idupe]);
                 }
             }
@@ -207,14 +207,14 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
             spotList[b][idupe].createdTime = t;
             spotList[b][idupe].dupe = d;
             for (int nr=0;nr<NRIG;nr++) {
-                if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                if (bandmap->bandmapon(nr) && b==getBand(cat[nr]->getRigFreq())) {
                     bandmap->addSpot(nr,spotList[b][idupe]);
                 }
             }
         } else {
             spotList[b].append(spot);
             for (int nr=0;nr<NRIG;nr++) {
-                if (bandmap->bandmapon(nr) && b==getBand(cat->getRigFreq(nr))) {
+                if (bandmap->bandmapon(nr) && b==getBand(cat[nr]->getRigFreq())) {
                     bandmap->addSpot(nr,spot);
                 }
             }
@@ -235,10 +235,10 @@ void So2sdr::checkSpot(int nr)
     static int lastFreq[2] = { 0, 0 };
     // initialize last freq
     if (lastFreq[nr] == 0) {
-        lastFreq[nr] = cat->getRigFreq(nr);
+        lastFreq[nr] = cat[nr]->getRigFreq();
         return;
     }
-    int f = cat->getRigFreq(nr);
+    int f = cat[nr]->getRigFreq();
 
     // freq changed, so recheck spot list
     if (f != lastFreq[nr]) spotListPopUp[nr] = false;
@@ -474,6 +474,6 @@ void So2sdr::sendCalls2(bool b)
 
 void So2sdr::sendCalls(int nr)
 {
-    int b=getBand(cat->getRigFreq(nr));
+    int b=getBand(cat[nr]->getRigFreq());
     bandmap->syncCalls(nr,spotList[b]);
 }

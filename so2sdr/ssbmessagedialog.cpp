@@ -16,10 +16,12 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QProcess>
 #include <QPushButton>
 #include <QDialog>
 #include <QFormLayout>
 #include <QSettings>
+#include <QTextDocument>
 #include "ssbmessagedialog.h"
 #include "defines.h"
 
@@ -33,6 +35,9 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     recGroup.setExclusive(false);
     excRecGroup.setExclusive(false);
     otherRecGroup.setExclusive(false);
+    otherPlayGroup.setExclusive(false);
+    playGroup.setExclusive(false);
+    excPlayGroup.setExclusive(false);
 
     funcEditPtr[0]  = cq_f1_edit;
     funcEditPtr[1]  = cq_f2_edit;
@@ -73,9 +78,24 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     funcRecPtr[10]   = recF11;
     funcRecPtr[11]   = recF12;
 
+    funcPlayPtr[0]   = playF1;
+    funcPlayPtr[1]   = playF2;
+    funcPlayPtr[2]   = playF3;
+    funcPlayPtr[3]   = playF4;
+    funcPlayPtr[4]   = playF5;
+    funcPlayPtr[5]   = playF6;
+    funcPlayPtr[6]   = playF7;
+    funcPlayPtr[7]   = playF8;
+    funcPlayPtr[8]   = playF9;
+    funcPlayPtr[9]   = playF10;
+    funcPlayPtr[10]   = playF11;
+    funcPlayPtr[11]   = playF12;
+
+
     for (int i=0;i<N_FUNC;i++) {
         funcRecPtr[i]->setCheckable(true);
         recGroup.addButton(funcRecPtr[i],i);
+        playGroup.addButton(funcPlayPtr[i],i);
     }
 
     excFuncEditPtr[0]  = exc_f1_edit;
@@ -117,35 +137,59 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     excFuncRecPtr[10]   = recExcF11;
     excFuncRecPtr[11]   = recExcF12;
 
+    excFuncPlayPtr[0]   = playExcF1;
+    excFuncPlayPtr[1]   = playExcF2;
+    excFuncPlayPtr[2]   = playExcF3;
+    excFuncPlayPtr[3]   = playExcF4;
+    excFuncPlayPtr[4]   = playExcF5;
+    excFuncPlayPtr[5]   = playExcF6;
+    excFuncPlayPtr[6]   = playExcF7;
+    excFuncPlayPtr[7]   = playExcF8;
+    excFuncPlayPtr[8]   = playExcF9;
+    excFuncPlayPtr[9]   = playExcF10;
+    excFuncPlayPtr[10]   = playExcF11;
+    excFuncPlayPtr[11]   = playExcF12;
+
     for (int i=0;i<N_FUNC;i++) {
         excFuncRecPtr[i]->setCheckable(true);
         excRecGroup.addButton(excFuncRecPtr[i],i);
+        excPlayGroup.addButton(excFuncPlayPtr[i],i);
     }
 
     recQsl->setCheckable(true);
     otherRecGroup.addButton(recQsl,0);
+    otherPlayGroup.addButton(playQslMsg,0);
 
     recQuick->setCheckable(true);
     otherRecGroup.addButton(recQuick,1);
+    otherPlayGroup.addButton(playQuickQsl,1);
 
     recDupe->setCheckable(true);
     otherRecGroup.addButton(recDupe,2);
+    otherPlayGroup.addButton(playDupeMsg,2);
 
     recCallUpdate->setCheckable(true);
     otherRecGroup.addButton(recCallUpdate,3);
+    otherPlayGroup.addButton(playCallUpdated,3);
 
     recCqExc->setCheckable(true);
     otherRecGroup.addButton(recCqExc,4);
+    otherPlayGroup.addButton(playCqExch,4);
 
     recSpExc->setCheckable(true);
     otherRecGroup.addButton(recSpExc,5);
+    otherPlayGroup.addButton(playSpExch,5);
 
     recCall->setCheckable(true);
     otherRecGroup.addButton(recCall,6);
+    otherPlayGroup.addButton(playCall,6);
 
     connect(&recGroup,SIGNAL(buttonClicked(int)),this,SLOT(recButtons(int)));
     connect(&excRecGroup,SIGNAL(buttonClicked(int)),this,SLOT(excRecButtons(int)));
+    connect(&playGroup,SIGNAL(buttonClicked(int)),this,SLOT(playButtons(int)));
+    connect(&excPlayGroup,SIGNAL(buttonClicked(int)),this,SLOT(playExcButtons(int)));
     connect(&otherRecGroup,SIGNAL(buttonClicked(int)),this,SLOT(otherRecButtons(int)));
+    connect(&otherPlayGroup,SIGNAL(buttonClicked(int)),this,SLOT(otherPlayButtons(int)));
 
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setValidator(upperValidate);
@@ -159,6 +203,7 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     }
 
     call_edit->setValidator(upperValidate);
+    call_rec_edit->setValidator(upperValidate);
     qsl_msg_edit->setValidator(upperValidate);
     qsl_msg_rec_edit->setValidator(upperValidate);
     qsl_updated_edit->setValidator(upperValidate);
@@ -172,41 +217,83 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     quick_qsl_edit->setValidator(upperValidate);
     quick_qsl_rec_edit->setValidator(upperValidate);
     cancel_edit->setValidator(upperValidate);
+    message.clear();
+    scriptProcess=0;
+    playMessageRig=0;
+    recording=false;
+    if (!scriptProcess) scriptProcess=new QProcess();
+    scriptProcess->setWorkingDirectory(userDirectory()+"/wav");
+}
+
+void SSBMessageDialog::playButtons(int id)
+{
+    emit(sendMsg(funcEditPtr[id]->text().toLatin1(),false));
+}
+
+void SSBMessageDialog::playExcButtons(int id)
+{
+    emit(sendMsg(excFuncEditPtr[id]->text().toLatin1(),false));
 }
 
 void SSBMessageDialog::recButtons(int id)
 {
-    emit(recordMsg(funcRecEditPtr[id]->text().toLatin1(),false));
+    emit(sendMsg(funcRecEditPtr[id]->text().toLatin1(),false));
 }
 
 void SSBMessageDialog::excRecButtons(int id)
 {
-    emit(recordMsg(excFuncRecEditPtr[id]->text().toLatin1(),false));
+    emit(sendMsg(excFuncRecEditPtr[id]->text().toLatin1(),false));
+}
+
+void SSBMessageDialog::otherPlayButtons(int id)
+{
+    switch (id) {
+    case 0:
+        emit(sendMsg(qsl_msg_edit->text().toLatin1(),false));
+        break;
+    case 1:
+        emit(sendMsg(quick_qsl_edit->text().toLatin1(),false));
+        break;
+    case 2:
+        emit(sendMsg(dupe_msg_edit->text().toLatin1(),false));
+        break;
+    case 3:
+        emit(sendMsg(qsl_updated_edit->text().toLatin1(),false));
+        break;
+    case 4:
+        emit(sendMsg(cq_exc_edit->text().toLatin1(),false));
+        break;
+    case 5:
+        emit(sendMsg(sp_exc_edit->text().toLatin1(),false));
+        break;
+    case 6:
+        emit(sendMsg(call_edit->text().toLatin1(),false));
+    }
 }
 
 void SSBMessageDialog::otherRecButtons(int id)
 {
     switch (id) {
     case 0:
-        emit(recordMsg(qsl_msg_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(qsl_msg_rec_edit->text().toLatin1(),false));
         break;
     case 1:
-        emit(recordMsg(quick_qsl_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(quick_qsl_rec_edit->text().toLatin1(),false));
         break;
     case 2:
-        emit(recordMsg(dupe_msg_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(dupe_msg_rec_edit->text().toLatin1(),false));
         break;
     case 3:
-        emit(recordMsg(qsl_updated_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(qsl_updated_rec_edit->text().toLatin1(),false));
         break;
     case 4:
-        emit(recordMsg(cq_exc_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(cq_exc_rec_edit->text().toLatin1(),false));
         break;
     case 5:
-        emit(recordMsg(sp_exc_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(sp_exc_rec_edit->text().toLatin1(),false));
         break;
     case 6:
-        emit(recordMsg(call_rec_edit->text().toLatin1(),false));
+        emit(sendMsg(call_rec_edit->text().toLatin1(),false));
     }
 }
 
@@ -297,6 +384,23 @@ void SSBMessageDialog::initialize(QSettings *s)
 
     cancel_edit->setText(settings->value(c_ssb_cancel,c_ssb_cancel_def).toString());
     cancel_edit->setCursorPosition(0);
+
+    // audio script settings
+    // PLAY settings
+    beforePlayLineEdit->setText(settings->value(s_before_play,s_before_play_def).toString());
+    beforePlayLineEdit->setCursorPosition(0);
+    afterPlayLineEdit->setText(settings->value(s_after_play,s_after_play_def).toString());
+    afterPlayLineEdit->setCursorPosition(0);
+    playLineEdit->setText(settings->value(s_play_command,s_play_command_def).toString());
+    playLineEdit->setCursorPosition(0);
+
+    // REC settings
+    beforeRecLineEdit->setText(settings->value(s_before_rec,s_before_rec_def).toString());
+    beforeRecLineEdit->setCursorPosition(0);
+    afterRecLineEdit->setText(settings->value(s_after_rec,s_after_rec_def).toString());
+    afterRecLineEdit->setCursorPosition(0);
+    recLineEdit->setText(settings->value(s_rec_command,s_rec_command_def).toString());
+    recLineEdit->setCursorPosition(0);
 }
 
 
@@ -344,12 +448,28 @@ void SSBMessageDialog::rejectChanges()
     quick_qsl_edit->setCursorPosition(0);
     quick_qsl_rec_edit->setText(settings->value(c_qqsl_msg_rec,c_qqsl_msg_rec_def).toString());
     quick_qsl_rec_edit->setCursorPosition(0);
+    beforePlayLineEdit->setText(settings->value(s_before_play,s_before_play_def).toString());
+    beforePlayLineEdit->setCursorPosition(0);
+    afterPlayLineEdit->setText(settings->value(s_after_play,s_after_play_def).toString());
+    afterPlayLineEdit->setCursorPosition(0);
+    playLineEdit->setText(settings->value(s_play_command,s_play_command_def).toString());
+    playLineEdit->setCursorPosition(0);
+    beforeRecLineEdit->setText(settings->value(s_before_rec,s_before_rec_def).toString());
+    beforeRecLineEdit->setCursorPosition(0);
+    afterRecLineEdit->setText(settings->value(s_after_rec,s_after_rec_def).toString());
+    afterRecLineEdit->setCursorPosition(0);
+    recLineEdit->setText(settings->value(s_rec_command,s_rec_command_def).toString());
+    recLineEdit->setCursorPosition(0);
     reject();
 }
 
 SSBMessageDialog::~SSBMessageDialog()
 {
     delete upperValidate;
+    if (scriptProcess) {
+        scriptProcess->close();
+        delete scriptProcess;
+    }
 }
 
 /*!
@@ -409,5 +529,108 @@ void SSBMessageDialog::updateSSBMsg()
     settings->setValue(c_dupe_msg[m],dupe_msg_edit->text());
     settings->setValue(c_dupe_msg_rec,dupe_msg_rec_edit->text());
     settings->sync();
+    settings->setValue(s_play_command,playLineEdit->text());
+    settings->setValue(s_rec_command,recLineEdit->text());
+    settings->setValue(s_before_play,beforePlayLineEdit->text());
+    settings->setValue(s_after_play,afterPlayLineEdit->text());
+    settings->setValue(s_before_rec,beforeRecLineEdit->text());
+    settings->setValue(s_after_rec,afterRecLineEdit->text());
     accept();
+}
+
+//
+// Audio play and record functions. These launch external scripts that record and play audio
+// messages.
+//
+
+/* Begin playing an audio message. Intended to be called from the main program thread
+ *
+ * m is the filename of the audio file (without .wav extension) in ~/.so2sdr/wav
+ *
+ */
+void SSBMessageDialog::playMessage(int nrig,QString m)
+{
+    if (nrig) {
+        emit(setPtt2(1));
+    } else {
+        emit(setPtt1(1));
+    }
+    message=m;
+    playMessageRig=nrig;
+    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    scriptProcess->close();
+    connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage2(int)));
+    scriptProcess->start(settings->value(s_before_play,s_before_play_def).toString());
+}
+
+void SSBMessageDialog::playMessage2(int signal)
+{
+    Q_UNUSED(signal)
+    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage3(int)));
+    if (playMessageRig) {
+        emit(setPtt2(1));
+    } else {
+        emit(setPtt1(1));
+    }
+    QString t=settings->value(s_play_command,s_play_command_def).toString();
+    t=t.replace("$",message);
+    scriptProcess->start(t);
+}
+
+void SSBMessageDialog::playMessage3(int signal)
+{
+    Q_UNUSED(signal)
+    if (playMessageRig) {
+        emit(setPtt2(0));
+    } else {
+        emit(setPtt1(0));
+    }
+    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    scriptProcess->start(settings->value(s_after_play,s_after_play_def).toString());
+}
+
+void SSBMessageDialog::recMessage(QString m)
+{
+    if (!recording) {
+        recording=true;
+        message=m;
+        disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+        scriptProcess->close();
+        connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage2(int)));
+        scriptProcess->start(settings->value(s_before_rec,s_before_rec_def).toString());
+    } else {
+        disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+        scriptProcess->close();
+        recMessage3(0);
+    }
+}
+
+void SSBMessageDialog::recMessage2(int signal)
+{
+    Q_UNUSED(signal)
+    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage3(int)));
+    QString t=settings->value(s_rec_command,s_rec_command_def).toString();
+    t=t.replace("$",message);
+    scriptProcess->start(t);
+}
+
+void SSBMessageDialog::recMessage3(int signal)
+{
+    Q_UNUSED(signal)
+    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    scriptProcess->start(settings->value(s_after_rec,s_after_rec_def).toString());
+    recording=false;
+}
+
+void SSBMessageDialog::cancelMessage()
+{
+    scriptProcess->close();
+    if (playMessageRig) {
+        emit(setPtt2(0));
+    } else {
+        emit(setPtt1(0));
+    }
+    if (recording) recMessage3(0);
 }

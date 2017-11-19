@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.1.5
+## SO2SDR Help file version 2.2.0
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -652,9 +652,9 @@ the "Call Updated QSL" message from being sent when not needed.
 <a name="ssb"></a>
 ### Voice keyer setup
 
-So2sdr can record and play voice messages through external scripts. The default
-scripts are located in /usr/local/share/so2sdr/scripts, and set up to use
-the Pulseaudio sound system. Here is how to set it up:
+So2sdr can record and play voice messages through external scripts or
+devices (OTRSP or similar). The default scripts are set up to use the
+Pulseaudio sound system. Here is how to set it up:
 
 * The microphone should be connected to the sound card mic input.
 The sound card line out should be connected to the radio mic or line in. For so2r
@@ -667,44 +667,40 @@ done with the following command:
 
     pactl load-module module-loopback latency_msec=1
 
-    You can also add "load-module module-loopback latency_msec=1" to the file
+    I suggest adding "load-module module-loopback latency_msec=1" to the file
 	/etc/pulse/default.pa to  load this module automatically on boot.
-	
-* The voice keyer scripts require that the hamlib rigctld is used to
-control the radios in order to control the radio PTT line. The direct
-serial hamlib control built into so2sdr could be used if the radio is
-in VOX mode. A typical command line to start rigctld looks like:
 
-    rigctld --model=229 --port=4532 --rig-file=/dev/ttyS0
+* The external script commands are defined in the configuration menu
+for Voice Messages. There are separate tabs for playing and recording
+audio. Three different external programs can be called:
 
-    The second radio needs to use a different port such as 4534.
+    1. A command executed before playing or recording. This can for example mute or unmute the computer microphone input as needed.
+    2. A command executed to play or record audio. So2sdr will turn on the PTT on
+the appropriate radio before the play command, and turn it off when this command
+finishes.
+    3. A command executed after playing or recording is complete. This can
+reset the microphone state for example.
 
-* You may need to edit the settings in the file ~/.so2sdr/wav/wav_settings.
-The "mic" setting here is the number of the pulseaudio input device,
-which you can find using "pactl list short sources". There are also
-settings for the rigctld IP address and IP port numbers for radio 0
-and radio 1. 
-
-* For voice modes there are two sets of macros: F1-F12 for CQ mode, and
-F1-F12 for exchange/S&P mode. To record a message, press Ctrl+Shift and the
-function key. This will activate the macro under the corresponding "REC" setting.
-Some other macros have no corresponding key. For example, the Cancel macro
-is sent when Esc is pressed; other macros are for sending the callsign
-in S&P mode and other ESM functions. These can be recorded using the REC
+* For voice modes there are two sets of macros: F1-F12 for CQ mode,
+and F1-F12 for exchange/S&P mode. To record a message, press
+Ctrl+Shift and the function key.  Buttons to test and record these
+messages are also in the configuration menu.  Some other macros have
+no corresponding key, such as the macro for sending the callsign in
+S&P mode and other ESM functions. These can be recorded using the REC
 pushbutton in the "SSB Messages" dialog.
 
-    * A typical play message macro would look like this:
+    * A typical play message macro for the F1 slot  looks like this
 
-        {SCRIPTNR}PLAY-MESSAGE # 1{\SCRIPTNR}
+        {PLAY}1
 
         This will play the message in the file "1.WAV" located in the ~/.so2sdr/wav
-        directory. '#' will be either 0 or 1 corresponding to the active radio.
+        directory. 
 
     * A typical record message macro would look like this:
 
-        {SCRIPT}RECORD-MESSAGE 1{\SCRIPT}
+        {RECORD}1
 
-* As of version 2.1.0, basic CQ and S&P operation with voice messages works,
+* As of version 2.2.0, basic CQ and S&P operation with voice messages works,
 but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.
 
 [Return to top](#top)
@@ -902,6 +898,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.2.0 (11/xx/2017)
+
+* rewrite and simplification of the audio play and record features. See the section
+in the help file on voice messages.
 
 ## version 2.1.5 (10/21/2017)
 
