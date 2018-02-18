@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -370,7 +370,7 @@ int Cty::idPfx2(Qso *qso, int sz) const
 
 /*! parses .cty file, makes country list
 
-      -  lat=latitude of station +=N
+   -  lat=latitude of station +=N
    -  lon=longitude of station +=W
    -  ZoneType: 0: read CQ zones/countries  1: read ITU zones/ARRL countries
 
@@ -808,9 +808,9 @@ bool Cty::isDigit(char c) const
    local sunrise/set times for current date (utc)
 
  */
-void Cty::mySunTimes(QString &sunTime)
+QString Cty::mySunTimes() const
 {
-    sunTime = mySun;
+    return mySun;
 }
 
 /*!

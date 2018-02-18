@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,76 +19,45 @@
 #ifndef SO2SDR_H
 #define SO2SDR_H
 
-#include <QAction>
+#include <QByteArray>
+#include <QPixmap>
+#include <QProgressDialog>
 #include <QSqlRecord>
+#include <QString>
+#include <QThread>
+#include <QTime>
+
 #include "ui_so2sdr.h"
 #include "bandmapentry.h"
-#include "bandmapinterface.h"
-#include "cabrillodialog.h"
-#include "winkeydialog.h"
-#include "cwmessagedialog.h"
-#include "stationdialog.h"
-#include "radiodialog.h"
-#include "sdrdialog.h"
-#include "contestoptdialog.h"
-#include "newcontestdialog.h"
-#include "settingsdialog.h"
-#include "notedialog.h"
-#include "dupesheet.h"
-#include "logedit.h"
-#include "cty.h"
-#include "helpdialog.h"
-#include "serial.h"
-#include "contest.h"
-#include "contest_arrldx.h"
-#include "contest_arrl10.h"
-#include "contest_arrl160.h"
-#include "contest_cqp.h"
-#include "contest_cq160.h"
-#include "contest_cqww.h"
-#include "contest_cwops.h"
-#include "contest_fd.h"
-#include "contest_dxped.h"
-#include "contest_iaru.h"
-#include "contest_kqp.h"
-#include "contest_naqp.h"
-#include "contest_sprint.h"
-#include "contest_stew.h"
-#include "contest_sweepstakes.h"
-#include "contest_wpx.h"
-#include "contest_paqp.h"
-#include "master.h"
-#include "microham.h"
-#include "otrsp.h"
-#include "qso.h"
-#include "ssbmessagedialog.h"
-#include "telnet.h"
 #include "utils.h"
-#include "winkey.h"
-#include "detailededit.h"
-#include "mytableview.h"
-#ifdef Q_OS_WIN
-#include "win_pp.h"
-#endif
-#ifdef Q_OS_LINUX
-#include "linux_pp.h"
-#endif
-#include "history.h"
-#include <QThread>
 
+class BandmapInterface;
+class CabrilloDialog;
+class ContestOptionsDialog;
+class CWMessageDialog;
+class DupeSheet;
+class HelpDialog;
+class History;
 class Log;
-class QDir;
-class QString;
-class QByteArray;
-class QTimer;
-class QCheckBox;
-class QPixmap;
-class QProcess;
-class QProgessDialog;
+class Master;
+class NewDialog;
+class NoteDialog;
+class QTimerEevent;
 class QSettings;
-class QWidgetAction;
 class QErrorMessage;
-class QTime;
+class QProcess;
+class Qso;
+class QWidget;
+class RadioDialog;
+class RigSerial;
+class SettingsDialog;
+class SDRDialog;
+class So2r;
+class SSBMessageDialog;
+class StationDialog;
+class Telnet;
+class Winkey;
+class WinkeyDialog;
 
 /*!
    Main window
@@ -105,6 +74,7 @@ public:
 public slots:
     void addSpot(QByteArray call, int f);
     void addSpot(QByteArray call, int f, bool d);
+    void bandChange(int nr,int band);
     void expandMacro(QByteArray msg, bool stopcw = true);
     void removeSpot(QByteArray call, int band);
     void removeSpotFreq(int f, int band);
@@ -115,9 +85,10 @@ public slots:
     void stationUpdate();
     void startWinkey();
     void updateOffTime();
-    void updateRecord(QSqlRecord);
+    void updateSpotlistEdit(QSqlRecord origRecord, QSqlRecord r);
 
 signals:
+    void contestReady();
     void qsyExact1(int);
     void qsyExact2(int);
     void setRigMode1(rmode_t, pbwidth_t);
@@ -127,8 +98,6 @@ private slots:
     void about();
     void cleanup();
     void clearEditSelection(QWidget *);
-    void detailEditDone();
-    void editLogDetail(QModelIndex);
     void enterCWSpeed(int nrig, const QString & text);
     void exchCheck1(const QString &exch);
     void exchCheck2(const QString &exch);
@@ -137,7 +106,6 @@ private slots:
     void importCabrillo();
     void launch_WPMDialog();
     void launch_enterCWSpeed(const QString &text);
-    void logEdited(const QModelIndex & topLeft, const QModelIndex & bottomRight);
     void openFile();
     void openRadios();
     void prefixCheck1(const QString &call);
@@ -157,6 +125,7 @@ private slots:
     void showDupesheet1(bool checkboxState);
     void showDupesheet2(bool checkboxState);
     void showHelp();
+    void showRecordingStatus(bool);
     void showTelnet(bool checkboxState);
     void speedDn(int nrig);
     void speedUp(int nrig);
@@ -200,6 +169,7 @@ private:
     bool                 grabbing;
     bool                 initialized;
     bool                 logSearchFlag;
+    bool                 editingExchange[NRIG];
     bool                 sendLongCQ;
     bool                 spotListPopUp[NRIG];
     bool                 statusBarDupe;
@@ -207,12 +177,9 @@ private:
     bool                 toggleMode;
     bool                 uiEnabled;
     CabrilloDialog       *cabrillo;
-    Contest              * contest;
     ContestOptionsDialog *options;
-    Cty                  *cty;
     CWMessageDialog      *cwMessage;
-    SSBMessageDialog      *ssbMessage;
-    DetailedEdit         *detail;
+    SSBMessageDialog     *ssbMessage;
     DupeSheet            *dupesheet[NRIG];
     HelpDialog           *help;
     int                  activeRadio;
@@ -221,33 +188,29 @@ private:
     int                  altDActiveRadio;
     int                  altDOrigMode;
     int                  autoCQRadio;
-    int                  band[NRIG];
     int                  multMode;
-    int                  nqso[N_BANDS];
     int                  nrReserved[NRIG];
     int                  nrSent;
     int                  rateCount[60];
     int                  ratePtr;
-    int                  rigFreq[NRIG];
     int                  timerId[N_TIMERS];
-    int                  usveIndx[MMAX];
     int                  wpm[NRIG];
-    Log                  *mylog;
-    logDelegate          *logdel;
+    Log                  *log;
     Master               *master;
-    MicroHam             *microham;
     ModeTypes             modeTypeShown;
     NewDialog            *newContest;
     NoteDialog           *notes;
-    OTRSP                *otrsp;
-    ParallelPort         *pport;
+    So2r                 *so2r;
     QByteArray           lastMsg;
     QByteArray           origCallEntered[NRIG];
-    QDir                 *directory;
     QErrorMessage        *errorBox;
     QPixmap              iconValid;
     QLabel               *autoCQStatus;
     QLabel               *autoSendStatus;
+    QLabel               *bandLabel[6];
+    QLabel               *bandQsoLabel[6];
+    QLabel               *bandMult1Label[6];
+    QLabel               *bandMult2Label[6];
     QLabel               *duelingCQStatus;
     QLabel               *freqDisplayPtr[NRIG];
     QLabel               *grabLabel;
@@ -272,26 +235,18 @@ private:
     QLineEdit            *lineEditExchange[NRIG];
     QLineEdit            *wpmLineEditPtr[NRIG];
     QList<BandmapEntry>  spotList[N_BANDS];
-    QList<char>          *dupeCallsKey[NRIG];
-    QList<QByteArray>    configFiles;
-    QList<QByteArray>    *dupeCalls[NRIG];
     QList<QByteArray>    excludeMults[MMAX];
-    QList<int>           searchList;
     QProcess             *scriptProcess;
     Qso                  *qso[NRIG];
-    QSqlRecord           origRecord;
-    tableModel           *model;
     BandmapInterface     *bandmap;
     QSettings            *csettings;
     QSettings            *settings;
     History              *history;
+    QProgressDialog      progress;
     QString              contestDirectory;
     QString              fileName;
     QString              settingsFile;
-    QString              greenLED;
-    QString              redLED;
-    QString              clearLED;
-    QString              tmpCall;
+    QString              autoSendCall;
     QThread              catThread[NRIG];
     QTime                cqTimer;
     QWidget              *grabWidget;
@@ -305,7 +260,7 @@ private:
     Winkey               *winkey;
 
     void bandmapSetFreq(int f,int nr);
-    void addQso(const Qso *qso);
+    void addQso(Qso *qso);
     void altd();
     void altDEnter(int level, Qt::KeyboardModifiers mod);
     void backSlash();
@@ -313,6 +268,7 @@ private:
     void keyCtrlUp();
     void checkSpot(int nr);
     bool checkUserDirectory();
+    void clearDisplays(int nr);
     void clearLogSearch();
     void clearWorked(int i);
     void clearR2CQ(int nr);
@@ -326,7 +282,7 @@ private:
     bool enterFreqOrMode();
     void esc(Qt::KeyboardModifiers);
     void exchCheck(int nr,const QString &exch);
-    void fillSentExch(int nr);
+    void fillSentExch(Qso *qso,int nr);
     void initDupeSheet();
     void initLogView();
     void initPointers();
@@ -343,7 +299,6 @@ private:
     void prefixCheck(int nrig, const QString &call);
     void prefillExch(int nr);
     void qsy(int nrig, int &freq, bool exact);
-    bool readContestList();
     void readStationSettings();
     void readExcludeMults();
     void runScript(QByteArray cmd);
@@ -353,8 +308,8 @@ private:
     void selectContest2();
     void sendCalls(int);
     void sendFunc(int i, Qt::KeyboardModifiers mode);
+    void setDupeColor(int nr,bool dupe);
     bool setupContest();
-    void setDefaultFreq(int nrig);
     void showDupesheet(int nr, bool checkboxState);
     void spaceAltD();
     void spaceBar();
@@ -371,7 +326,7 @@ private:
     void updateBandmapDupes(const Qso *qso);
     void updateBreakdown();
     void updateDupesheet(QByteArray call,int nr);
-    void updateMults(int ir);
+    void updateMults(int ir, int bandOverride=-1);
     void updateNrDisplay();
     void updateRate();
     void updateWorkedDisplay(int nr,unsigned int worked);

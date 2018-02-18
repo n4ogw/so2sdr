@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,22 +23,16 @@
 
 class KQP : public Contest {
 public:
-    KQP();
+    KQP(QSettings &cs,QSettings &ss);
     ~KQP();
-    QString cabrilloName() const
-    {
-        return("KQP");
-    }
-    ContestType contestType() const
-    {
-        return Kqp_t;
-    }
+    ContestType contestType() const { return Kqp_t;}
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;
     unsigned int rcvFieldShown() const;
+    bool showQsoPtsField() const { return true;}
     unsigned int sntFieldShown() const;
     void setWithinState(bool);
 private:

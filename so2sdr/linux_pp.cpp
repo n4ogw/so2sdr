@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -46,17 +46,16 @@ ParallelPort::ParallelPort(QSettings& s):settings(s)
 
 ParallelPort::~ParallelPort()
 {
-    QString port= settings.value(s_radios_pport,defaultParallelPort).toString();
     if (parallelFD != -1) {
         int err = ioctl(parallelFD, PPRELEASE);
         if (err == -1) {
-            QString tmp = "Error releasing " + port;
+            QString tmp = "Error releasing parallel port";
             emit(parallelPortError(tmp));
             return;
         }
         err = close(parallelFD);
         if (err == -1) {
-            QString tmp = "Error closing " +  port;
+            QString tmp = "Error closing parallel port";
             emit(parallelPortError(tmp));
             return;
         }

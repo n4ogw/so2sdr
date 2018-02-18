@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,25 +24,19 @@
 
 class FD : public Contest {
 public:
-    FD();
+    FD(QSettings &cs,QSettings &ss);
     ~FD();
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("ARRL-FD");
-    }
     QVariant columnName(int c) const;
-    ContestType contestType() const
-    {
-        return Fd_t;
-    }
+    ContestType contestType() const { return Fd_t;}
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     int Score() const;
+    bool showQsoPtsField() const { return true;}
 };
 
 #endif

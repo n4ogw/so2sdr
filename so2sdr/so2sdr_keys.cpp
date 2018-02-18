@@ -1,4 +1,4 @@
- /*! Copyright 2010-2017 R. Torsten Clay N4OGW
+ /*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,8 +18,22 @@
  */
 #include <QKeyEvent>
 #include <QSettings>
-#include <QSqlTableModel>
 #include "so2sdr.h"
+#include "bandmapinterface.h"
+#include "cabrillodialog.h"
+#include "contestoptdialog.h"
+#include "cwmessagedialog.h"
+#include "dupesheet.h"
+#include "helpdialog.h"
+#include "log.h"
+#include "notedialog.h"
+#include "radiodialog.h"
+#include "serial.h"
+#include "sdrdialog.h"
+#include "settingsdialog.h"
+#include "ssbmessagedialog.h"
+#include "stationdialog.h"
+#include "winkeydialog.h"
 
 /*! event filter handling key presses. This gets installed in
    -main window
@@ -33,7 +47,6 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
     if (!uiEnabled) {
         return QObject::eventFilter(o,e);
     }
-
     // out-of-focus event: refocus line edits
     // on Windows, this eats all mouse presses into the bandmap!
 #ifdef Q_OS_LINUX
@@ -224,7 +237,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             } else if (mod == Qt::AltModifier) {
                 if (csettings->value(c_multimode,c_multimode_def).toBool()) {
                     // switch to next modeType if it is allowed
-                    modeTypeShown=contest->nextModeType(modeTypeShown);
+                    modeTypeShown=log->nextModeType(modeTypeShown);
                     setSummaryGroupBoxTitle();
                 }
                 r=true;
@@ -261,10 +274,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     exchangeSent[altDActiveRadio] = false;
                     qso[altDActiveRadio]->prefill.clear();
                     origCallEntered[altDActiveRadio].clear();
-                    labelCountry[altDActiveRadio]->clear();
-                    labelBearing[altDActiveRadio]->clear();
-                    labelLPBearing[altDActiveRadio]->clear();
-                    sunLabelPtr[altDActiveRadio]->clear();
+                    clearDisplays(altDActiveRadio);
                     clearWorked(altDActiveRadio);
                     cqMode[altDActiveRadio]=true;
                     qso[altDActiveRadio]->dupe = false;
@@ -501,7 +511,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (lineEditCall[activeRadio]->text().isEmpty()) {
                 autoSendTrigger = false;
                 autoSendPause = false;
-                tmpCall.clear();
+                autoSendCall.clear();
             }
             break;
         default:
@@ -517,9 +527,11 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
 
 /*!
  set title of group box surrounding qso totals
+ @todo remove this
  */
 void So2sdr::setSummaryGroupBoxTitle()
 {
+    return;
     if (csettings->value(c_multimode,c_multimode_def).toBool()) {
         switch (modeTypeShown) {
         case CWType:
@@ -544,7 +556,7 @@ void So2sdr::controlE()
 {
     QModelIndexList indices=LogTableView->selectionModel()->selectedIndexes();
     if (indices.size()) {
-        logdel->startDetailedEdit();
+        log->startDetailedEdit();
     }
 }
 
@@ -554,9 +566,9 @@ void So2sdr::controlE()
 void So2sdr::markDupe(int nrig)
 {
     int f = cat[nrig]->getRigFreq();
-    if (isaSpot(f, band[nrig])) {
+    if (isaSpot(f, cat[nrig]->band())) {
         // remove spot and reset status
-        removeSpotFreq(f, band[nrig]);
+        removeSpotFreq(f, cat[nrig]->band());
         callSent[nrig]=false;
         exchangeSent[nrig]=false;
         qso[nrig]->dupe=false;
@@ -594,10 +606,7 @@ void So2sdr::altd()
         exchangeSent[altDActiveRadio] = false;
         qso[altDActiveRadio]->prefill.clear();
         origCallEntered[altDActiveRadio].clear();
-        labelCountry[altDActiveRadio]->clear();
-        labelBearing[altDActiveRadio]->clear();
-        labelLPBearing[altDActiveRadio]->clear();
-        sunLabelPtr[altDActiveRadio]->clear();
+        clearDisplays(altDActiveRadio);
         clearWorked(altDActiveRadio);
         validLabel[altDActiveRadio]->clear();
         qso[altDActiveRadio]->dupe = false;
@@ -750,7 +759,7 @@ void So2sdr::backSlash()
     qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toLatin1();
     qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
     if (!qso[activeRadio]->call.isEmpty() &&
-        (qso[activeRadio]->valid=contest->validateExchange(qso[activeRadio])) &&
+        (qso[activeRadio]->valid=log->validateExchange(qso[activeRadio])) &&
         !(qso[activeRadio]->dupe && csettings->value(c_dupemode,c_dupemode_def).toInt() == 0) &&
         cqMode[activeRadio] &&
         exchangeSent[activeRadio])
@@ -763,39 +772,33 @@ void So2sdr::backSlash()
 
         // log qso
         clearLogSearch();
-        if (!qso[activeRadio]->dupe && qso[activeRadio]->valid)
-            nqso[band[activeRadio]]++;
-
         updateBreakdown();
         updateOffTime();
 
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
-            qso[activeRadio]->freq = rigFreq[activeRadio];
+            qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
             addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
             spotListPopUp[activeRadio] = true;
         } else {
             // remove any spot that is on freq, update other spots if in CQ mode
-            qso[activeRadio]->freq = rigFreq[activeRadio];
-            removeSpotFreq(qso[activeRadio]->freq, band[activeRadio]);
+            qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
+            removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
             updateBandmapDupes(qso[activeRadio]);
         }
         qso[activeRadio]->mode = cat[activeRadio]->mode();
-        fillSentExch(activeRadio);
-        contest->addQso(qso[activeRadio]);
+        fillSentExch(qso[activeRadio],nrReserved[activeRadio]);
         qso[activeRadio]->time = QDateTime::currentDateTimeUtc(); // update time just before logging qso
         addQso(qso[activeRadio]);
-        updateDupesheet(qso[activeRadio]->call,activeRadio);
+        dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;
+        editingExchange[activeRadio] = false;
         if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
             sprintMode();
         }
-        labelCountry[activeRadio]->clear();
-        labelBearing[activeRadio]->clear();
-        labelLPBearing[activeRadio]->clear();
-        sunLabelPtr[activeRadio]->clear();
+        clearDisplays(activeRadio);
         qso[activeRadio]->prefill.clear();
         qso[activeRadio]->zone=0;
 
@@ -829,7 +832,7 @@ void So2sdr::backSlash()
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
-            tmpCall.clear();
+            autoSendCall.clear();
         }
 
         // exit echange mode
@@ -840,7 +843,7 @@ void So2sdr::backSlash()
 
         // check for new call entered in exchange line
         QByteArray tmp;
-        if (contest->newCall(tmp)) {
+        if (log->newCall(tmp)) {
             lineEditCall[activeRadio]->setText(tmp);
             prefixCheck(activeRadio, tmp);
         }
@@ -938,14 +941,14 @@ void So2sdr::spaceSprint()
 void So2sdr::spaceSP(int nrig)
 {
     if (!dupeCheckDone) {
-        qso[nrig]->dupe = mylog->isDupe(qso[nrig], contest->dupeCheckingByBand(), true) &&
+        qso[nrig]->dupe = log->isDupe(qso[nrig], log->dupeCheckingByBand(), true) &&
                           csettings->value(c_dupemode,c_dupemode_def).toInt() < NO_DUPE_CHECKING;
     }
     // update displays
     updateWorkedDisplay(nrig,qso[nrig]->worked);
 
     // put call on bandmap
-    qso[nrig]->freq = rigFreq[nrig];
+    qso[nrig]->freq = cat[nrig]->getRigFreq();
     addSpot(qso[nrig]->call, qso[nrig]->freq, qso[nrig]->dupe);
     // if dupe, clear call field
     if (qso[nrig]->dupe) {
@@ -1007,7 +1010,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             enter(mod);
             return;
         }
-        qso[activeRadio]->freq = rigFreq[activeRadio];
+        qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
         addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, qso[activeRadio]->dupe);
         if (qso[activeRadio]->dupe || lineEditCall[activeRadio]->text().isEmpty()) {
             // call is a dupe- clear everything
@@ -1022,10 +1025,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
             exchangeSent[activeRadio] = false;
             qso[activeRadio]->prefill.clear();
             origCallEntered[activeRadio].clear();
-            labelCountry[activeRadio]->clear();
-            labelBearing[activeRadio]->clear();
-            labelLPBearing[activeRadio]->clear();
-            sunLabelPtr[activeRadio]->clear();
+            clearDisplays(activeRadio);
             clearWorked(activeRadio);
             qso[activeRadio]->dupe = false;
             altDActive             = 0;
@@ -1055,7 +1055,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
 
             // popup any call entered after "/" on original radio
             QByteArray tmp;
-            if (contest->newCall(tmp)) {
+            if (log->newCall(tmp)) {
                 lineEditCall[activeRadio]->setText(tmp);
                 prefixCheck(activeRadio, tmp);
                 if (autoSend) autoSendPause = true;
@@ -1241,7 +1241,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             switchRadios();
 
             // remove any band spot that is present
-            removeSpotFreq(cat[activeRadio]->getRigFreq(), band[activeRadio]);
+            removeSpotFreq(cat[activeRadio]->getRigFreq(), cat[activeRadio]->band());
 
             // copy call to other radio
             qso[activeRadio]->call = qso[activeRadio ^ 1]->call;
@@ -1347,7 +1347,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (lineEditExchange[activeRadio]->text().simplified().isEmpty()) {
             lineEditExchange[activeRadio]->clear();
         } else {
-            if (contest->contestType()!=Sweepstakes_t) {
+            if (log->contestType()!=Sweepstakes_t) {
                 lineEditExchange[activeRadio]->setText(lineEditExchange[activeRadio]->text().simplified() + " ");
             }
         }
@@ -1372,39 +1372,32 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     // log qso
     if (enterState[i1][i2][i3][i4] & 8) {
         clearLogSearch();
-        fillSentExch(activeRadio);
+        fillSentExch(qso[activeRadio],nrReserved[activeRadio]);
         qso[activeRadio]->mode = cat[activeRadio]->mode();
-        contest->addQso(qso[activeRadio]);
         qso[activeRadio]->time = QDateTime::currentDateTimeUtc(); // update time just before logging qso
         addQso(qso[activeRadio]);
-        if (!qso[activeRadio]->dupe && qso[activeRadio]->valid) {
-            nqso[band[activeRadio]]++;
-        }
         updateBreakdown();
         updateOffTime();
         qso[activeRadio]->dupe = true;
         if (!cqMode[activeRadio]) {
             // add to bandmap if in S&P mode
-            qso[activeRadio]->freq = rigFreq[activeRadio];
+            qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
             addSpot(qso[activeRadio]->call, qso[activeRadio]->freq, true);
             spotListPopUp[activeRadio]=true; // this prevents the call from immediately popping up
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
-            qso[activeRadio]->freq = rigFreq[activeRadio];
-            removeSpotFreq(qso[activeRadio]->freq, band[activeRadio]);
+            qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
+            removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
             updateBandmapDupes(qso[activeRadio]);
         }
-        updateDupesheet(qso[activeRadio]->call,activeRadio);
+        dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;
         if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
             sprintMode();
         }
-        labelCountry[activeRadio]->clear();
-        labelBearing[activeRadio]->clear();
-        labelLPBearing[activeRadio]->clear();
-        sunLabelPtr[activeRadio]->clear();
+        clearDisplays(activeRadio);
         qso[activeRadio]->prefill.clear();
         qso[activeRadio]->zone=0;
 
@@ -1420,6 +1413,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         qso[activeRadio]->dupe = false;
         qso[activeRadio]->valid = false;
         callSent[activeRadio]  = false;
+        editingExchange[activeRadio] = false;
         if (mod != Qt::ShiftModifier) { // don't unpause autoCQ or dueling CQ if silently logged
             if (autoCQMode) {
                 autoCQModePause = false;
@@ -1498,6 +1492,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // clear call field
     if (enterState[i1][i2][i3][i4] & 128) {
+        setDupeColor(activeRadio,false);
         lineEditCall[activeRadio]->clear();
         lineEditCall[activeRadio]->setModified(false);
         qso[activeRadio]->call.clear();
@@ -1510,7 +1505,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
-            tmpCall.clear();
+            autoSendCall.clear();
         }
     }
 
@@ -1520,6 +1515,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         if (cqMode[activeRadio]) {
             lineEditExchange[activeRadio]->hide();
         }
+        editingExchange[activeRadio]=false;
     }
 
     // clear radio 2 cq
@@ -1532,7 +1528,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     // check for new call entered in exchange line
     if (enterState[i1][i2][i3][i4] & 4096) {
         QByteArray tmp;
-        if (contest->newCall(tmp)) {
+        if (log->newCall(tmp)) {
             lineEditCall[activeRadio]->setText(tmp);
             prefixCheck(activeRadio, tmp);
         }
@@ -1554,17 +1550,22 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
     }
 }
 
+/*! prefill exchange with default (zone, etc)
+ * if exchange field has been edited, do not prefill
+ */
 void So2sdr::prefillExch(int nr)
 {
-    if (!qso[nr]->prefill.isEmpty()) {
-        // prefill from log
-        lineEditExchange[nr]->setText(qso[nr]->prefill.trimmed());
-        // in ARRL Sweepstakes, put cursor in correct position for qso #
-        if (contest->contestType()==Sweepstakes_t) {
-            lineEditExchange[nr]->setCursorPosition(0);
+    if (!editingExchange[nr]) {
+        if (!qso[nr]->prefill.isEmpty()) {
+            // prefill from log
+            lineEditExchange[nr]->setText(qso[nr]->prefill.trimmed());
+            // in ARRL Sweepstakes, put cursor in correct position for qso #
+            if (log->contestType()==Sweepstakes_t) {
+                lineEditExchange[nr]->setCursorPosition(0);
+            }
+        } else if (log->hasPrefill()) { // && !log->prefillExchange(qso[nr]).isEmpty()) {
+            lineEditExchange[nr]->setText(log->prefillExchange(qso[nr]));
         }
-    } else if (contest->hasPrefill() && !contest->prefillExchange(qso[nr]).isEmpty()) {
-        lineEditExchange[nr]->setText(contest->prefillExchange(qso[nr]));
     }
     exchCheck(nr,lineEditExchange[nr]->text());
 }
@@ -1709,6 +1710,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
             // hide exchange line
             lineEditExchange[activeRadio]->hide();
             validLabel[activeRadio]->clear();
+            editingExchange[activeRadio] = false;
 
             // switch back to radio 1
             callFocus[altDActiveRadio] = true;
@@ -1723,10 +1725,8 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
             lineEditCall[altDActiveRadio]->clear();
             lineEditExchange[altDActiveRadio]->setPalette(palette);
             lineEditExchange[altDActiveRadio]->clear();
-            labelCountry[altDActiveRadio]->clear();
-            labelBearing[altDActiveRadio]->clear();
-            labelLPBearing[altDActiveRadio]->clear();
-            sunLabelPtr[altDActiveRadio]->clear();
+            editingExchange[altDActiveRadio] = false;
+            clearDisplays(altDActiveRadio);
             clearWorked(altDActiveRadio);
             qso[altDActiveRadio]->call.clear();
             altDActive = 0;
@@ -1737,12 +1737,11 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
 
     // clear call field
     if (x & 1) {
+        // reset color if red for a dupe
+        setDupeColor(activeRadio,false);
         lineEditCall[activeRadio]->clear();
         lineEditCall[activeRadio]->setModified(false);
-        labelCountry[activeRadio]->clear();
-        labelBearing[activeRadio]->clear();
-        labelLPBearing[activeRadio]->clear();
-        sunLabelPtr[activeRadio]->clear();
+        clearDisplays(activeRadio);
         lineEditCall[activeRadio]->setCursorPosition(0);
         qso[activeRadio]->call.clear();
         qso[activeRadio]->valid=false;
@@ -1757,7 +1756,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
-            tmpCall.clear();
+            autoSendCall.clear();
         }
         for (int ii = 0; ii < MMAX; ii++) {
             qso[activeRadio]->mult[ii]=-1;
@@ -1775,12 +1774,14 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
         qso[activeRadio]->valid=false;
         nrReserved[activeRadio] = 0;
         validLabel[activeRadio]->clear();
+        editingExchange[activeRadio] = false;
     }
 
     // exit S&P, set CQ
     if (x & 4) {
         setCqMode(activeRadio);
         callSent[activeRadio] = false;
+        editingExchange[activeRadio] = false;
     }
 
     // return focus to call
@@ -1800,8 +1801,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
         excMode[activeRadio] = false;
         lineEditExchange[activeRadio]->hide();
         cqQsoInProgress[activeRadio] = false;
-
-        // callFocus[activeRadio]=false;
+        editingExchange[activeRadio] = false;
     }
 
     // exch sent=false
@@ -1828,10 +1828,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
             lineEditCall[altDActiveRadio]->clear();
             lineEditExchange[altDActiveRadio]->setPalette(palette);
             lineEditExchange[altDActiveRadio]->clear();
-            labelCountry[altDActiveRadio]->clear();
-            labelBearing[altDActiveRadio]->clear();
-            labelLPBearing[altDActiveRadio]->clear();
-            sunLabelPtr[altDActiveRadio]->clear();
+            clearDisplays(altDActiveRadio);
             clearWorked(altDActiveRadio);
             qso[altDActiveRadio]->call.clear();
             if (activeRadio == altDActiveRadio) {
@@ -1845,6 +1842,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
             }
             callSent[altDActiveRadio] = false;
             spotListPopUp[altDActiveRadio]=false;
+            editingExchange[altDActiveRadio]=false;
         }
     }
     // clear log search
@@ -1991,4 +1989,12 @@ void So2sdr::sendFunc(int i,Qt::KeyboardModifiers mod)
     if (toggleMode) { // steer focus to opposite radio
         switchRadios(false);
     }
+}
+
+void So2sdr::clearDisplays(int nr)
+{
+    labelBearing[nr]->clear();
+    labelLPBearing[nr]->clear();
+    labelCountry[nr]->clear();
+    sunLabelPtr[nr]->clear();
 }

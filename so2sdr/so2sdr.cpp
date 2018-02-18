@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,7 +19,6 @@
 #include <QByteArray>
 #include <QCheckBox>
 #include <QColor>
-#include <QDataStream>
 #include <QDateTime>
 #include <QDebug>
 #include <QDialog>
@@ -29,34 +28,43 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
-#include <QHostAddress>
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QModelIndex>
-#include <QObject>
 #include <QPixmap>
 #include <QPalette>
 #include <QProgressDialog>
 #include <QSettings>
-#include <QScrollBar>
-#include <QSqlDatabase>
-#include <QSqlError>
-#include <QSqlField>
-#include <QSqlQuery>
-#include <QSqlQueryModel>
-#include <QSqlRecord>
-#include <QSqlTableModel>
 #include <QString>
 #include <QStringList>
 #include <QStyle>
 #include <QThread>
 #include <QTimer>
-#include "hamlib/rig.h"
+
+#include "bandmapinterface.h"
+#include "cabrillodialog.h"
+#include "contestoptdialog.h"
+#include "cwmessagedialog.h"
 #include "defines.h"
-#include "so2sdr.h"
-#include "utils.h"
+#include "dupesheet.h"
+#include "helpdialog.h"
+#include "history.h"
 #include "log.h"
+#include "master.h"
+#include "newcontestdialog.h"
+#include "notedialog.h"
+#include "qso.h"
+#include "radiodialog.h"
+#include "sdrdialog.h"
+#include "serial.h"
+#include "settingsdialog.h"
+#include "so2r.h"
+#include "so2sdr.h"
+#include "ssbmessagedialog.h"
+#include "stationdialog.h"
+#include "telnet.h"
+#include "winkey.h"
+#include "winkeydialog.h"
 
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
 {
@@ -88,13 +96,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // pointers for each radio
     for (int i=0;i<NRIG;i++) {
         wpmLineEditPtr[i]->setFocusPolicy(Qt::NoFocus);
-        // RTC 02/02/16 Qt5 bug/change: textEdited() signal is not emitted when
-        // a validator is used; screws up prefixCheck
-        // see https://bugreports.qt.io/browse/QTBUG-44046
-#if QT_VERSION < 0x050000	
-        lineEditCall[i]->setValidator(new UpperValidator(lineEditCall[i]));
-        lineEditExchange[i]->setValidator(new UpperValidator(lineEditExchange[i]));
-#endif
     }
     rLabelPtr[0]      = new QLabel("<font color=#FF0000>R1:OFF /font>");
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
@@ -104,32 +105,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     autoCQStatus      = new QLabel("");
     duelingCQStatus   = new QLabel("");
     toggleStatus      = new QLabel("");
-    autoSendStatus      = new QLabel("");
-    redLED    = "QLabel { background-color : red; border-radius: 4px; }";
-    greenLED  = "QLabel { background-color : green; border-radius: 4px; }";
-    clearLED  = "QLabel { background-color : none; border-radius: 4px; }";
-    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
-        switch (activeRadio) {
-        case 0:
-            RX1->setStyleSheet(redLED);
-            RX2->setStyleSheet(clearLED);
-            break;
-        case 1:
-            RX2->setStyleSheet(redLED);
-            RX1->setStyleSheet(clearLED);
-            break;
-        }
-        switch (activeTxRadio) {
-        case 0:
-            TX1->setStyleSheet(redLED);
-            TX2->setStyleSheet(clearLED);
-            break;
-        case 1:
-            TX2->setStyleSheet(redLED);
-            TX1->setStyleSheet(clearLED);
-            break;
-        }
-    }
+    autoSendStatus    = new QLabel("");
+    progress.setMinimum(0);
+    progress.setMaximum(100);
+    progress.setValue(100);
     scriptProcess=new QProcess();
     scriptProcess->setWorkingDirectory(userDirectory()+"/wav");
     So2sdrStatusBar->addPermanentWidget(offPtr);
@@ -152,18 +131,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     updateNrDisplay();
 
+    // start radio 1; radio 2 will be started after radiodialog mfg and model info is filled out
     cat[0] = new RigSerial(0,settingsFile);
-    cat[1] = new RigSerial(1,settingsFile);
-    cat[0]->moveToThread(&catThread[0]);
-    cat[1]->moveToThread(&catThread[1]);
-    connect(&catThread[0], SIGNAL(started()), cat[0], SLOT(run()));
-    connect(&catThread[1], SIGNAL(started()), cat[1], SLOT(run()));
-    connect(cat[0], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(cat[1], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(this, SIGNAL(qsyExact1(int)), cat[0], SLOT(qsyExact(int)));
-    connect(this, SIGNAL(qsyExact2(int)), cat[1], SLOT(qsyExact(int)));
-    connect(this, SIGNAL(setRigMode1(rmode_t, pbwidth_t)), cat[0], SLOT(setRigMode(rmode_t, pbwidth_t)));
-    connect(this, SIGNAL(setRigMode2(rmode_t, pbwidth_t)), cat[1], SLOT(setRigMode(rmode_t, pbwidth_t)));
+
     options = new ContestOptionsDialog(this);
     connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -171,11 +141,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(options,SIGNAL(multiModeChanged()),this,SLOT(setSummaryGroupBoxTitle()));
     connect(options,SIGNAL(updateOffTime()),this,SLOT(updateOffTime()));
     options->hide();
-    detail=new DetailedEdit();
-    connect(detail,SIGNAL(editedRecord(QSqlRecord)),this,SLOT(updateRecord(QSqlRecord)));
-    connect(detail,SIGNAL(accepted()),this,SLOT(detailEditDone()));
-    connect(detail,SIGNAL(rejected()),this,SLOT(detailEditDone()));
-    detail->hide();
     cabrillo = new CabrilloDialog(this);
     cabrillo->hide();
     station = new StationDialog(*settings,this);
@@ -196,19 +161,34 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(ssbMessage,SIGNAL(sendMsg(QByteArray,bool)),this,SLOT(expandMacro(QByteArray,bool)));
-    connect(ssbMessage,SIGNAL(setPtt1(int)),cat[0],SLOT(setPtt(int)));
-    connect(ssbMessage,SIGNAL(setPtt2(int)),cat[1],SLOT(setPtt(int)));
+    connect(ssbMessage,SIGNAL(recordingStatus(bool)),this,SLOT(showRecordingStatus(bool)));
     ssbMessage->hide();
     radios = new RadioDialog(*settings,*cat[0], this);
     connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
     radios->hide();
+
+    // move radio 1 to its thread and connect signals
+    cat[0]->moveToThread(&catThread[0]);
+    connect(&catThread[0], SIGNAL(started()), cat[0], SLOT(run()));
+    connect(cat[0], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(this, SIGNAL(qsyExact1(int)), cat[0], SLOT(qsyExact(int)));
+    connect(this, SIGNAL(setRigMode1(rmode_t, pbwidth_t)), cat[0], SLOT(setRigMode(rmode_t, pbwidth_t)));
+
+    // start radio 2
+    cat[1] = new RigSerial(1,settingsFile);
+    cat[1]->moveToThread(&catThread[1]);
+    connect(&catThread[1], SIGNAL(started()), cat[1], SLOT(run()));
+    connect(cat[1], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(this, SIGNAL(qsyExact2(int)), cat[1], SLOT(qsyExact(int)));
+    connect(this, SIGNAL(setRigMode2(rmode_t, pbwidth_t)), cat[1], SLOT(setRigMode(rmode_t, pbwidth_t)));
+
     winkeyDialog = new WinkeyDialog(*settings,this);
     winkeyDialog->setWinkeyVersionLabel(0);
     connect(winkeyDialog, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
-    directory->setCurrent(dataDirectory());
+    QDir::setCurrent(dataDirectory());
     sdr = new SDRDialog(*settings,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -224,8 +204,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     newContest = new NewDialog(this);
     connect(newContest, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(newContest, SIGNAL(rejected()), this, SLOT(regrab()));
+    connect(newContest, SIGNAL(newContestError(QString)), errorBox, SLOT(showMessage(QString)));
+    newContest->readContestList(dataDirectory()+"contest_list.dat");
     newContest->hide();
-    readContestList();
     connect(newContest, SIGNAL(finished(int)), this, SLOT(setupNewContest(int)));
     RateLabel->setText("Rate=0");
     HourRateLabel->setText("0/hr");
@@ -258,12 +239,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(sdr,SIGNAL(accepted()),this,SLOT(regrab()));
     connect(sdr,SIGNAL(rejected()),this,SLOT(regrab()));
-    //RTC 07/11/2012 disabled About Qt unless a solution is found
-    // instead added Qt version number to So2sdr About dialog
-    //connect(actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    /* @todo problem here: with the aboutQt() dialog, there is no way to connect
-     to its accepted or rejected signals, so no way to reset the keyboard grab */
-
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(showHelp()));
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(lineEditCall1, SIGNAL(textEdited(const QString &)), this, SLOT(prefixCheck1(const QString &)));
@@ -296,7 +271,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(menuWindows,SIGNAL(aboutToHide()),this,SLOT(regrab()));
     connect(HelpMenu,SIGNAL(aboutToShow()),this,SLOT(ungrab()));
     connect(HelpMenu,SIGNAL(aboutToHide()),this,SLOT(regrab()));
-
     connect(telnetAction,SIGNAL(triggered(bool)),this,SLOT(showTelnet(bool)));
     lineEditCall[0]->installEventFilter(this);
     lineEditCall[1]->installEventFilter(this);
@@ -307,30 +281,17 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         clist.at(i)->installEventFilter(this);
     }
     contestDirectory = QDir::homePath();
-    directory = new QDir(contestDirectory);
-
-    // parallel port
-    pport = new ParallelPort(*settings);
-    connect(pport, SIGNAL(parallelPortError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(radios, SIGNAL(setParallelPort()), pport, SLOT(initialize()));
+    so2r=new So2r(*settings,this);
+    connect(so2r,SIGNAL(error(QString)),errorBox,SLOT(showMessage(const QString &)));
+    connect(actionSo2r,SIGNAL(triggered()),so2r,SLOT(showDialog()));
+    connect(so2r,SIGNAL(So2rDialogAccepted()),this,SLOT(regrab()));
+    connect(so2r,SIGNAL(So2rDialogRejected()),this,SLOT(regrab()));
+    connect(so2r,SIGNAL(setRX1(const QString &)),RX1,SLOT(setStyleSheet(const QString &)));
+    connect(so2r,SIGNAL(setRX2(const QString &)),RX2,SLOT(setStyleSheet(const QString &)));
+    connect(so2r,SIGNAL(setTX1(const QString &)),TX1,SLOT(setStyleSheet(const QString &)));
+    connect(so2r,SIGNAL(setTX2(const QString &)),TX2,SLOT(setStyleSheet(const QString &)));
+    connect(ssbMessage,SIGNAL(setPtt(int,int)),so2r,SLOT(setPtt(int,int)));
     readStationSettings();
-    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-        pport->initialize();
-    }
-    // otrsp device
-    otrsp = new OTRSP(*settings);
-    connect(radios,SIGNAL(setOTRSP()),otrsp,SLOT(openOTRSP()));
-    connect(otrsp, SIGNAL(otrspError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-        otrsp->openOTRSP();
-    }
-    // microHam device
-    microham = new MicroHam(*settings);
-    connect(radios,SIGNAL(setMicroHam()),microham,SLOT(openMicroHam()));
-    connect(microham, SIGNAL(microhamError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
-        microham->openMicroHam();
-    }
     WPMLineEdit->setReadOnly(true);
     // set background of WPM speed edit box to grey
     QPalette palette(wpmLineEditPtr[0]->palette());
@@ -350,13 +311,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkey,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
     connect(winkey, SIGNAL(winkeyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
     startWinkey();
-
     openRadios();
-    toggleStereo();
-    toggleStereo();
     switchAudio(activeRadio);
     switchTransmit(activeRadio);
-
     callFocus[activeRadio]=true;
     setEntryFocus();
     for (int i = 0; i < NRIG; i++) {
@@ -364,13 +321,11 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         lineEditCall[i]->setEnabled(false);
         lineEditExchange[i]->setEnabled(false);
     }
-    setDefaultFreq(0);
-    setDefaultFreq(1);
     updateRadioFreq();
 
     menubar->setNativeMenuBar(false);
     disableUI();
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
+    connect(qApp,SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
     connect(qApp,SIGNAL(aboutToQuit()),cat[0],SLOT(stopSerial()));
     connect(qApp,SIGNAL(aboutToQuit()),cat[1],SLOT(stopSerial()));
     // restore window geometry
@@ -378,22 +333,13 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     resize(settings->value("size", QSize(720, 579)).toSize());
     move(settings->value("pos", QPoint(200, 200)).toPoint());
     settings->endGroup();
-
     show();
 }
 
 So2sdr::~So2sdr()
 {
-    if (model) {
-        model->clear();
-        delete model;
-    }
     if (history) delete history;
-    if (mylog) delete mylog;
-    if (model) {
-        QSqlDatabase::removeDatabase("QSQLITE");
-    }
-    // stop hamlib thread
+    if (log) delete log;
     if (catThread[0].isRunning()) {
         catThread[0].quit();
         catThread[0].wait();
@@ -405,7 +351,6 @@ So2sdr::~So2sdr()
     cat[0]->deleteLater();
     cat[1]->deleteLater();
     delete cabrillo;
-    delete detail;
     delete radios;
     delete cwMessage;
     delete ssbMessage;
@@ -422,80 +367,26 @@ So2sdr::~So2sdr()
     delete winkeyLabel;
     delete grabLabel;
     if (master) delete master;
-    if (contest) delete contest;
-    delete [] dupeCalls[0];
-    delete [] dupeCalls[1];
-    delete [] dupeCallsKey[0];
-    delete [] dupeCallsKey[1];
     delete dupesheet[0];
     delete dupesheet[1];
-    delete telnet;
-    delete directory;
+    if (telnet) delete telnet;
     delete winkey;
-    delete pport;
-    delete otrsp;
     delete bandmap;
     scriptProcess->close();
     delete scriptProcess;
-
     if (qso[0]) delete qso[0];
     if (qso[1]) delete qso[1];
     settings->sync();
     delete settings;
-    delete csettings;
+    if (csettings) delete csettings;
 }
 
 /*!
    add a new qso to the log
 */
-void So2sdr::addQso(const Qso *qso)
+void So2sdr::addQso(Qso *qso)
 {
-    QSqlQuery query(model->database());
-    query.prepare("INSERT INTO log (nr,time,freq,call,band,date,mode,snt1,snt2,snt3,snt4,rcv1,rcv2,rcv3,rcv4,pts,valid)"
-                    "VALUES (:nr,:time,:freq,:call,:band,:date,:mode,:snt1,:snt2,:snt3,:snt4,:rcv1,:rcv2,:rcv3,:rcv4,:pts,:valid)");
-    query.bindValue(":nr",model->rowCount()+1);
-    query.bindValue(":time",qso->time.toUTC().toString("hhmm"));
-    query.bindValue(":freq",qso->freq);
-    query.bindValue(":call",qso->call);
-    query.bindValue(":band",qso->band);
-    query.bindValue(":date",qso->time.toUTC().toString("MMddyyyy"));
-    query.bindValue(":mode",qso->mode);
-    if (contest->nExchange()>0) {
-        query.bindValue(":snt1",qso->snt_exch[0]);
-        query.bindValue(":rcv1",qso->rcv_exch[0]);
-    } else {
-        query.bindValue(":snt1",QVariant(QVariant::String));
-        query.bindValue(":rcv1",QVariant(QVariant::String));
-    }
-    if (contest->nExchange()>1) {
-        query.bindValue(":snt2",qso->snt_exch[1]);
-        query.bindValue(":rcv2",qso->rcv_exch[1]);
-    } else {
-        query.bindValue(":snt2",QVariant(QVariant::String));
-        query.bindValue(":rcv2",QVariant(QVariant::String));
-    }
-    if (contest->nExchange()>2) {
-        query.bindValue(":snt3",qso->snt_exch[2]);
-        query.bindValue(":rcv3",qso->rcv_exch[2]);
-    } else {
-        query.bindValue(":snt3",QVariant(QVariant::String));
-        query.bindValue(":rcv3",QVariant(QVariant::String));
-    }
-    if (contest->nExchange()>3) {
-        query.bindValue(":snt4",qso->snt_exch[3]);
-        query.bindValue(":rcv4",qso->rcv_exch[3]);
-    } else {
-        query.bindValue(":snt4",QVariant(QVariant::String));
-        query.bindValue(":rcv4",QVariant(QVariant::String));
-    }
-    query.bindValue(":pts",qso->pts);
-    query.bindValue(":valid",qso->valid);
-    query.exec();
-    model->select();
-
-    while (model->canFetchMore()) {
-        model->fetchMore();
-    }
+    log->addQso(qso);
     LogTableView->scrollToBottom();
 }
 
@@ -503,20 +394,20 @@ void So2sdr::addQso(const Qso *qso)
  */
 void So2sdr::stationUpdate()
 {
-    // in case called before contest loaded
-    if (!contest) {
+    // called before contest loaded, callsign changed
+    if (!log) {
         setWindowTitle("SO2SDR:" + settings->value(s_call,s_call_def).toString());
         return;
     }
 
     // zone
-    if (contest->zoneType() == 0) {
-        contest->setMyZone(settings->value(s_cqzone,s_cqzone_def).toInt());
+    if (log->zoneType() == 0) {
+        log->setMyZone(settings->value(s_cqzone,s_cqzone_def).toInt());
     } else {
-        contest->setMyZone(settings->value(s_ituzone,s_ituzone_def).toInt());
+        log->setMyZone(settings->value(s_ituzone,s_ituzone_def).toInt());
     }
 
-    // callsign
+    // callsign changed, with contest loaded
     if (csettings) {
         QString name=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
         int     indx = fileName.lastIndexOf("/");
@@ -527,8 +418,8 @@ void So2sdr::stationUpdate()
     Qso  tmp(2);
     tmp.call = settings->value(s_call,s_call_def).toString().toLatin1();
     bool b;
-    contest->setCountry(cty->idPfx(&tmp, b));
-    contest->setContinent(tmp.continent);
+    log->setCountry(log->idPfx(&tmp, b));
+    log->setContinent(tmp.continent);
 }
 
 /*!
@@ -659,15 +550,21 @@ void So2sdr::openRadios()
     stopTimers();
     if (catThread[0].isRunning()) {
         catThread[0].quit();
-        catThread[0].wait(0); // wait for the thread to stop
+        catThread[0].wait();
     }
     catThread[0].start();
     if (catThread[1].isRunning()) {
         catThread[1].quit();
-        catThread[1].wait(0); // wait for the thread to stop
+        catThread[1].wait();
     }
     catThread[1].start();
     startTimers();
+    if (settings->value(s_radios_ptt_type[0],s_radios_ptt_type_def).toInt()>0) {
+        ssbMessage->setPtt(0,0);
+    }
+    if (settings->value(s_radios_ptt_type[1],s_radios_ptt_type_def).toInt()>0) {
+        ssbMessage->setPtt(1,0);
+    }
 }
 
 /*!
@@ -748,10 +645,7 @@ void So2sdr::enableUI()
 void So2sdr::setupNewContest(int result)
 {
     if (!result) return;
-    int indx = newContest->newIndx();
-
-    // set the standard config file for this contest
-    QString fname = configFiles[indx];
+    QString fname=newContest->selectedContest();
 
     // set an initial name
     QString tmp = contestDirectory + "/" + QString(fname);
@@ -808,7 +702,10 @@ void So2sdr::setupNewContest(int result)
         contestDirectory = fileName;
         contestDirectory.truncate(i);
     }
-    directory->setCurrent(contestDirectory);
+    QDir::setCurrent(contestDirectory);
+    // show the contest options dialog, put cursor on sent exchange entry
+    options->show();
+    options->sent[0]->setFocus();
 }
 
 /*!
@@ -850,46 +747,55 @@ bool So2sdr::setupContest()
     QFileInfo info(fileName);
     if (!info.exists()) return false;
     csettings=new QSettings(fileName,QSettings::IniFormat);
-
     if (!QFile::exists(fileName)) return(false);
 
     // construct dialogs that depend on contest ini file settings
     QString cname=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
     if (cname.isEmpty()) return(false);
-    selectContest(cname.toLatin1());
     cwMessage->initialize(csettings);
-    ssbMessage->initialize(csettings);
-    options->initialize(csettings);
-    cty = new Cty(*csettings);
-    connect(cty, SIGNAL(ctyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    if (contest->zoneType() == 0) {
-        contest->setMyZone(settings->value(s_cqzone,s_cqzone_def).toInt());
-    } else {
-        contest->setMyZone(settings->value(s_ituzone,s_ituzone_def).toInt());
+    ssbMessage->initialize(csettings,settings);
+    log = new Log(*csettings,*settings,this);
+    log->setLatLon(station->lat(),station->lon());
+    log->selectContest();
+    connect(log,SIGNAL(logEditDone(QSqlRecord,QSqlRecord)),this,SLOT(updateSpotlistEdit(QSqlRecord,QSqlRecord)));
+    connect(log,SIGNAL(startLogEdit()),this,SLOT(ungrab()));
+    connect(log,SIGNAL(ungrab()),this,SLOT(ungrab()));
+    connect(log,SIGNAL(startLogEdit()),this,SLOT(startLogEdit()));
+    connect(log,SIGNAL(errorMessage(QString)),errorBox,SLOT(showMessage(QString)));
+    connect(log,SIGNAL(progressCnt(int)),&progress,SLOT(setValue(int)));
+    connect(log,SIGNAL(progressMax(int)),&progress,SLOT(setMaximum(int)));
+    connect(log,SIGNAL(multByBandEnabled(bool)),options->MultsByBandCheckBox,SLOT(setEnabled(bool)));
+    log->initializeContest();
+    // make extra exchange fields inactive/hidden. Focus sent exchange entry
+    for (int i=log->nExch();i<4;i++) {
+        options->sent[i]->setEnabled(false);
+        options->sent[i]->hide();
+        options->sentName[i]->setEnabled(false);
+        options->sentName[i]->hide();
+        cabrillo->sent[i]->setEnabled(false);
+        cabrillo->sent[i]->hide();
     }
-    cty->initialize(station->lat(), station->lon(), contest->zoneType());
-
-    /* @todo disable changing the grid square
-      need to figure work-around */
-    station->GridLineEdit->setEnabled(false);
-
-    // fill in local sunrise/set times
-    QString sTime;
-    cty->mySunTimes(sTime);
-    station->SunLabel->setText("Sunrise/Sunset: " +sTime + " z");
-
-    // now in stationupdate
-    Qso  tmp(2);
-    tmp.call = settings->value(s_call,s_call_def).toString().toLatin1();
-    bool b;
-    contest->setCountry(cty->idPfx(&tmp, b));
-    contest->setContinent(tmp.continent);
-    master = new Master();
-    connect(master, SIGNAL(masterError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    startMaster();
+    // disable user from changing some specific exchange fields (RST, #). The actual text 'RST' and '#' will be taken
+    // from the value in the .cfg file
+    for (int i=0;i<log->nExch();i++) {
+        if (log->exchType(i)==RST || log->exchType(i)==QsoNumber) {
+            options->sent[i]->setEnabled(false);
+        }
+    }
+    options->initialize(csettings);
+    options->sent[0]->setFocus();
+    // setup band totals on screen
+    for (int i=0;i<6;i++) {
+        bandLabel[i]->setText(log->bandLabel(i));
+        if (!log->bandLabelEnable(i)) {
+            bandQsoLabel[i]->hide();
+            bandMult1Label[i]->hide();
+            bandMult2Label[i]->hide();
+        }
+    }
     history = new History(*csettings,this);
     connect(history,SIGNAL(message(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
-
+    connect(log,SIGNAL(addQsoHistory(const Qso*)),history,SLOT(addQso(const Qso*)));
     if (csettings->value(c_historymode,c_historymode_def).toBool()) {
         history->startHistory();
         if (history->isOpen()) {
@@ -900,24 +806,40 @@ bool So2sdr::setupContest()
             actionHistory->setText("Update History from Log");
         }
     }
-    mylog = new Log(*csettings,contest->nExchange(), this);
-    connect(contest,SIGNAL(mobileDupeCheck(Qso*)),mylog,SLOT(mobileDupeCheck(Qso*)));
-    connect(contest,SIGNAL(clearDupe()),So2sdrStatusBar,SLOT(clearMessage()));
-    mylog->setRstField(contest->rstField());
-    mylog->setupQsoNumbers(contest->numberField());
-    mylog->setFieldsShown(contest->sntFieldShown(), contest->rcvFieldShown());
+    connect(log,SIGNAL(clearDupe()),So2sdrStatusBar,SLOT(clearMessage()));
+    connect(log,SIGNAL(errorMessage(QString)),errorBox,SLOT(showMessage(QString)));
+    connect(log,SIGNAL(progressCnt(int)),&progress,SLOT(setValue(int)));
+    connect(log,SIGNAL(progressMax(int)),&progress,SLOT(setMaximum(int)));
+    station->SunLabel->setText("Sunrise/Sunset: " +log->ctyPtr()->mySunTimes() + " z");
+    master = new Master();
+    connect(master, SIGNAL(masterError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    startMaster();
+    qso[0] = new Qso(log->nExch());
+    qso[1] = new Qso(log->nExch());
+    for (int i = 0; i < log->nExch(); i++) {
+        qso[0]->setExchangeType(i, log->exchType(i));
+        qso[1]->setExchangeType(i, log->exchType(i));
+    }
+    QDir::setCurrent(contestDirectory);
+    log->openLogFile(fileName,false);
 
-    // additional contest-specific configs
-    selectContest2();
-    contest->initialize(settings,csettings,cty);
-
-    for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
-    directory->setCurrent(contestDirectory);
-    mylog->openLogFile(fileName,false);
+    QString name=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
+    int     indx = fileName.lastIndexOf("/");
+    QString tmp  = fileName.mid(indx + 1, fileName.size() - indx);
+    setWindowTitle(settings->value(s_call,s_call_def).toString() + " : " + tmp + " : " +
+                   csettings->value(c_contestname_displayed,name).toString());
+    multNameLabel[0]->setText(csettings->value(c_mult_name1,c_mult_name1_def).toString());
+    multNameLabel[1]->setText(csettings->value(c_mult_name2,c_mult_name2_def).toString());
+    readExcludeMults();
+    for (int i = 0; i < NRIG; i++) {
+        lineEditCall[i]->setEnabled(true);
+        lineEditExchange[i]->setEnabled(true);
+    }
+    callFocus[activeRadio]=true;
+    setEntryFocus();
     initLogView();
     loadSpots();
     rescore();
-
     connect(actionADIF, SIGNAL(triggered()), this, SLOT(exportADIF()));
     connect(actionCabrillo, SIGNAL(triggered()), this, SLOT(showCabrillo()));
     connect(actionCabrillo,SIGNAL(triggered()),this,SLOT(ungrab()));
@@ -926,287 +848,19 @@ bool So2sdr::setupContest()
     connect(cabrillo,SIGNAL(accepted()),this,SLOT(regrab()));
     connect(cabrillo,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionHistory, SIGNAL(triggered()), this, SLOT(updateHistory()));
-    nrSent = model->rowCount() + 1;
+    nrSent = log->rowCount()+1;
     updateNrDisplay();
     updateBreakdown();
     updateMults(activeRadio);
     clearWorked(0);
     clearWorked(1);
-    enableUI();
     So2sdrStatusBar->showMessage("Read " + fileName, 3000);
     setSummaryGroupBoxTitle();
     if (csettings->value(c_off_time_enable,c_off_time_enable_def).toBool()) updateOffTime();
+    enableUI();
+    emit(contestReady());
     return(true);
 }
-
-/*!
-   Select contest
- */
-void So2sdr::selectContest(QByteArray name)
-{
-    if (name == "ARRLDX") {
-        // from US/VE
-        contest = new ARRLDX(true);
-    }
-    if (name == "ARRLDX-DX") {
-        // from DX
-        contest = new ARRLDX(false);
-    }
-    if (name == "ARRL10") {
-        contest = new ARRL10;
-    }
-    if (name == "ARRL160") {
-        contest = new ARRL160(true);
-    }
-    if (name == "ARRL160-DX") {
-        contest = new ARRL160(false);
-    }
-    if (name == "CQP-CA") {
-        contest = new CQP();
-        static_cast<CQP*>(contest)->setWithinState(true);
-    }
-    if (name == "CQP") {
-        contest = new CQP();
-        static_cast<CQP*>(contest)->setWithinState(false);
-    }
-    if (name == "CQ160") {
-        contest = new CQ160();
-    }
-    if (name == "CQWW") {
-        contest = new CQWW;
-    }
-    if (name == "CWOPS") {
-        contest = new Cwops;
-        // disable changing mults by band status
-        options->MultsByBandCheckBox->setDisabled(true);
-    }
-    if (name == "DXPED") {
-        contest = new Dxped;
-    }
-    if (name == "FD") {
-        contest = new FD;
-    }
-    if (name == "IARU") {
-        contest = new IARU;
-    }
-    if (name == "KQP-KS") {
-        contest = new KQP;
-        static_cast<KQP*>(contest)->setWithinState(true);
-    }
-    if (name == "KQP") {
-        contest = new KQP;
-        static_cast<KQP*>(contest)->setWithinState(false);
-    }
-    if (name == "NAQP") {
-        contest = new Naqp;
-    }
-    if (name == "SPRINT") {
-        contest = new Sprint;
-    }
-    if (name == "STEW") {
-        contest = new Stew;
-    }
-    if (name == "SWEEPSTAKES") {
-        contest = new Sweepstakes;
-    }
-    if (name == "WPX") {
-        contest = new WPX;
-        // disable changing mults by band status
-        options->MultsByBandCheckBox->setDisabled(true);
-    }
-    if (name == "PAQP-PA") {
-        contest = new PAQP();
-        static_cast<PAQP*>(contest)->setWithinState(true);
-    }
-    if (name == "PAQP") {
-        contest = new PAQP();
-        static_cast<PAQP*>(contest)->setWithinState(false);
-    }
-    if (contest) {
-        int sz=csettings->beginReadArray(c_qso_type1);
-        for (int i=0;i<sz;i++) {
-            csettings->setArrayIndex(i);
-            QByteArray tmp=csettings->value("pfx","").toByteArray();
-            contest->addQsoType(tmp,0);
-        }
-        csettings->endArray();
-        sz=csettings->beginReadArray(c_qso_type2);
-        for (int i=0;i<sz;i++) {
-            csettings->setArrayIndex(i);
-            QByteArray tmp=csettings->value("pfx","").toByteArray();
-            contest->addQsoType(tmp,1);
-        }
-        csettings->endArray();
-        // make extra exchange fields inactive/hidden
-        for (int i=contest->nExchange();i<4;i++) {
-            options->sent[i]->setEnabled(false);
-            options->sent[i]->hide();
-            cabrillo->sent[i]->setEnabled(false);
-            cabrillo->sent[i]->hide();
-        }
-
-        contest->setContestName(name);
-        int     indx = fileName.lastIndexOf("/");
-        QString tmp  = fileName.mid(indx + 1, fileName.size() - indx);
-        setWindowTitle(settings->value(s_call,s_call_def).toString() + " : " + tmp + " : " +
-                       csettings->value(c_contestname_displayed,name).toString());
-        multNameLabel[0]->setText(csettings->value(c_mult_name1,c_mult_name1_def).toString());
-        multNameLabel[1]->setText(csettings->value(c_mult_name2,c_mult_name2_def).toString());
-        readExcludeMults();
-        for (int i = 0; i < NRIG; i++) {
-            lineEditCall[i]->setEnabled(true);
-            lineEditExchange[i]->setEnabled(true);
-        }
-        callFocus[activeRadio]=true;
-        setEntryFocus();
-    }
-}
-
-/*!
-   contains additional initializations for specific cases
-
- */
-void So2sdr::selectContest2()
-{
-    // for several ARRL contests need to know whether station is US/VE or DX
-    Qso  tmp(1);
-    tmp.call = settings->value(s_call,s_call_def).toString().toLatin1();
-    QString snt_exch[MAX_EXCH_FIELDS];
-    for (int i=0;i<contest->nExchange();i++) {
-        snt_exch[i].clear();
-    }
-    QByteArray name=contest->contestName();
-    if (name == "ARRLDX") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "ARRLDX-DX") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-    }
-    if (name == "ARRL10") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "ARRL160") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-        snt_exch[1]=settings->value(s_section,s_section_def).toString();
-    }
-    if (name == "SWEEPSTAKES") {
-        snt_exch[0]="#";
-        snt_exch[3]=settings->value(s_section,s_section_def).toString();
-    }
-    if (name == "CQP") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]="#";
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "CQP-CA") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]="#";
-    }
-    if (name == "CQ160") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "CQWW") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-        snt_exch[1]=settings->value(s_cqzone,s_cqzone_def).toString();
-    }
-    if (name == "CWOPS") {
-        snt_exch[0]=settings->value(s_name,s_name_def).toString();
-    }
-    if (name == "DXPED") {
-        snt_exch[0] = "599";
-    }
-    if (name == "FD") {
-        mylog->setQsoPtsField(true);
-        snt_exch[1]=settings->value(s_section,s_section_def).toString();
-    }
-    if (name == "GeneralQSO") {
-        mylog->setQsoPtsField(false);
-        snt_exch[1] = "599";
-    }
-    if (name == "IARU") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0] = "599";
-        snt_exch[1]=settings->value(s_ituzone,s_ituzone_def).toString();
-    }
-    if (name == "KQP") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]="599";
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "KQP-KS") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]="599";
-    }
-    if (name == "NAQP") {
-        snt_exch[0]=settings->value(s_name,s_name_def).toString();
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "SPRINT") {
-        snt_exch[0]="#";
-        snt_exch[1]=settings->value(s_name,s_name_def).toString();
-        snt_exch[2]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "STEW") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]=settings->value(s_grid,s_grid_def).toString();
-    }
-    if (name == "WPX") {
-        snt_exch[0] = "599";
-        snt_exch[1] = "#";
-        mylog->setQsoPtsField(true);
-    }
-    if (name == "PAQP") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]="#";
-        snt_exch[1]=settings->value(s_state,s_state_def).toString();
-    }
-    if (name == "PAQP-PA") {
-        mylog->setQsoPtsField(true);
-        snt_exch[0]="#";
-    }
-    // fill in sent exchange fields with typical values if they are
-    // not already entered
-    for (int i=0;i<contest->nExchange();i++) {
-        if (options->sent[i]->text().isEmpty()) {
-            options->sent[i]->setText(snt_exch[i]);
-            switch (i) {
-            case 0:
-                csettings->setValue(c_sentexch1,snt_exch[0]);
-                break;
-            case 1:
-                csettings->setValue(c_sentexch2,snt_exch[1]);
-                break;
-            case 2:
-                csettings->setValue(c_sentexch3,snt_exch[2]);
-                break;
-            case 3:
-                csettings->setValue(c_sentexch4,snt_exch[3]);
-                break;
-            }
-        }
-    }
-    // set which fields get prefilled from previous qso's in log
-    for (int i = 0; i < contest->nExchange(); i++) {
-        if (contest->logPrefill(i)) mylog->setPrefill(i);
-    }
-
-    qso[0] = new Qso(contest->nExchange());
-    qso[1] = new Qso(contest->nExchange());
-    for (int i = 0; i < contest->nExchange(); i++) {
-        qso[0]->setExchangeType(i, contest->exchType(i));
-        qso[1]->setExchangeType(i, contest->exchType(i));
-    }
-}
-
 
 
 /*!
@@ -1216,7 +870,7 @@ void So2sdr::selectContest2()
 void So2sdr::startMaster()
 {
     if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
-        directory->setCurrent(dataDirectory());
+        QDir::setCurrent(dataDirectory());
         QString filename=csettings->value(c_masterfile,c_masterfile_def).toString();
         QFile file(filename);
         if (file.open(QIODevice::ReadOnly)) {
@@ -1234,30 +888,7 @@ void So2sdr::startMaster()
  */
 void So2sdr::updateHistory() {
     if (csettings->value(c_historymode,c_historymode_def).toBool()) {
-        QSqlQueryModel log;
-#if QT_VERSION < 0x050000
-        QString query_log = "SELECT call,rcv1,rcv2,rcv3,rcv4 from log where valid='true'";
-#else
-        QString query_log = "SELECT call,rcv1,rcv2,rcv3,rcv4 from log where valid=1";
-#endif
-        log.setQuery(query_log, mylog->db);
-        while (log.canFetchMore()) log.fetchMore();
-        QProgressDialog progress("Updating history file (" + csettings->value(c_historyfile,c_historyfile_def).toString() + ") from current log" , "Cancel", 0, log.rowCount(), this);
-        progress.setWindowModality(Qt::WindowModal);
-        progress.setMinimumDuration(0);
-        Qso tmpqso(contest->nExchange());
-        for (int i = 0; i < contest->nExchange(); i++) {
-            tmpqso.setExchangeType(i, contest->exchType(i));
-        }
-        for (int row = 0; row < log.rowCount() && !progress.wasCanceled(); row++) {
-            tmpqso.call=log.record(row).value("Call").toString().toLatin1();
-            for (int i = 0; i < contest->nExchange(); i++) {
-                tmpqso.rcv_exch[i]=log.record(row).value(i+1).toString().toLatin1();
-            }
-            history->addQso(&tmpqso);
-            progress.setValue(row);
-        }
-        progress.setValue(log.rowCount());
+        log->updateHistory();
     }
 }
 
@@ -1293,7 +924,7 @@ void So2sdr::exportADIF()
     if (!adifFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return;
     }
-    if (mylog->exportADIF(&adifFile)) {
+    if (log->exportADIF(&adifFile)) {
         So2sdrStatusBar->showMessage("Saved ADIF " + afname, 3000);
     } else {
         So2sdrStatusBar->showMessage("error creating ADIF " + afname, 3000);
@@ -1307,7 +938,7 @@ void So2sdr::exportADIF()
 void So2sdr::showCabrillo()
 {
     bool ok=true;
-    for (int i=0;i<contest->nExchange();i++) {
+    for (int i=0;i<log->nExch();i++) {
         if (options->sent[i]->text().isEmpty()) {
             ok=false;
         }
@@ -1319,6 +950,7 @@ void So2sdr::showCabrillo()
         return;
     }
     cabrillo->initialize(settings,csettings);
+    cabrillo->labelClaimedScore->setNum(log->score());
     cabrillo->show();
 }
 
@@ -1357,8 +989,8 @@ void So2sdr::exportCabrillo()
         So2sdrStatusBar->showMessage("Can't write Cabrillo file " + cfname, 3000);
         return;
     }
-    cabrillo->writeHeader(&cbrFile,contest->Score());
-    mylog->exportCabrillo(&cbrFile,settings->value(s_call,s_call_def).toString(),
+    cabrillo->writeHeader(&cbrFile,log->score());
+    log->exportCabrillo(&cbrFile,settings->value(s_call,s_call_def).toString(),
                           csettings->value(c_sentexch1,c_sentexch1_def).toString(),
                           csettings->value(c_sentexch2,c_sentexch2_def).toString(),
                           csettings->value(c_sentexch3,c_sentexch3_def).toString(),
@@ -1366,183 +998,25 @@ void So2sdr::exportCabrillo()
     So2sdrStatusBar->showMessage("Saved Cabrillo " + cfname, 3000);
 }
 
+
 /*! import a Cabrillo log
-
-   note: the number of exchange fields must be correct for this contest, otherwise
-   bad things happen. @todo check for this and abort if wrong number of fields
-
-   @todo give option to delete previous qso's or append to them
  */
 void So2sdr::importCabrillo()
 {
-    int n=0;
-    for (int i=0;i<N_BANDS;i++) n+=nqso[i];
-    if (n) {
-         errorBox->showMessage("ERROR: log must be empty to import cabrillo");
-         return;
-    }
-    // search for files in directory set by contestDirectory
-    directory->setCurrent(contestDirectory);
+    QDir::setCurrent(contestDirectory);
+    QString cabFile = QFileDialog::getOpenFileName(this,tr("Import Cabrillo log"), contestDirectory, tr("Cabrillo Files (*.cbr)"));
+    if (cabFile.isEmpty()) return;
 
-    // get filename
-    QString CabFile = QFileDialog::getOpenFileName(this, tr("Import Cabrillo log"), contestDirectory, tr("Cabrillo Files (*.cbr)"));
-    if (CabFile.isEmpty()) return;
-
-    // open the file
-    QFile file(CabFile);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
-
-    // count number of lines in file to get estimate of time needed to read
-    int maxLines = 0;
-    while (!file.atEnd()) {
-        QString buffer;
-        buffer = file.readLine();
-        maxLines++;
-    }
-    file.close();
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
-
-    QProgressDialog progress("Importing cabrillo", "Cancel", 0, maxLines, this);
+    progress.setLabelText("Importing Cabrillo");
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(1000);
-    QDataStream s(&file);
-    int         cnt = 0;
     progress.setValue(0);
-    for (int i = 0; i < N_BANDS; i++) nqso[i] = 0;
-    Qso qso(contest->nExchange());
-    contest->zeroScore();
-    model->database().transaction();
 
-    QString buffer;
-    QStringList field;
-    while (!file.atEnd() && !progress.wasCanceled()) {
-        buffer = file.readLine();
-        buffer = buffer.trimmed();
-        if (!buffer.contains("QSO:") && !buffer.contains("qso:")) {
-            continue;  // ignore header data
-        }
-        field = buffer.split(" ", QString::SkipEmptyParts);
-        int         nf    = field.size();
-
-        // Field1 = frequency in KHz
-        int f = field.at(1).toInt() * 1000;
-        qso.freq=f;
-
-        int b = getBand(f);
-        qso.band = b;
-
-        // Field2 = mode
-        int m;
-        if (field.at(2).toUpper() == "CW") {
-            m = RIG_MODE_CW;
-        } else if (field.at(2).toUpper() == "RY") {
-            m = RIG_MODE_RTTY;
-        } else if (field.at(2).toUpper() == "PH") {
-            // Cabrillo doesn't store LSB/USB?
-            if (f < 14000000) {
-                m = RIG_MODE_LSB;
-            } else {
-                m = RIG_MODE_USB;
-            }
-        } else if (field.at(2).toUpper() == "FM") {
-            m = RIG_MODE_FM;
-        } else {
-            m = RIG_MODE_CW;
-        }
-        qso.mode = (rmode_t) m;
-        qso.modeType=cat[0]->getModeType(qso.mode);
-        cnt++;
-
-        // Field3 = date
-        QDateTime time;
-        time.setTimeSpec(Qt::UTC);
-        int       y = field.at(3).mid(0, 4).toInt();
-        m = field[3].mid(5, 2).toInt();
-        int       d = field.at(3).mid(8, 2).toInt();
-        time.setDate(QDate(y, m, d));
-
-        // Field4=time
-        time.setTime(QTime(field.at(4).left(2).toInt(),field.at(4).right(2).toInt()));
-        qso.time=time;
-
-        // Field5=station call. ignore this
-
-        // Field6+
-        // next fields are sent exchange
-        int i, j;
-        for (i = 6, j = 0; i < (6 + contest->nExchange()); i++, j++) {
-            switch (j) {
-            case 0:
-                qso.snt_exch[0]=field.at(i).toLatin1().toUpper();
-                break;
-            case 1:
-                qso.snt_exch[1]=field.at(i).toLatin1().toUpper();
-                break;
-            case 2:
-                qso.snt_exch[2]=field.at(i).toLatin1().toUpper();
-                break;
-            case 3:
-                qso.snt_exch[3]=field.at(i).toLatin1().toUpper();
-                break;
-            }
-        }
-
-        // next field=call worked
-        qso.call = field.at(6 + contest->nExchange()).toLatin1().toUpper();
-        bool bb;
-        qso.country = cty->idPfx(&qso, bb);
-
-        // next received report
-        qso.exch.clear();
-        for (i = 7 + contest->nExchange(), j = 0; i < (7 + 2 * contest->nExchange()); i++, j++) {
-            // some fields may be empty (flaw in Cabrillo spec?)
-            if (i >= nf) {
-                continue;
-            }
-            switch (j) {
-            case 0:
-                qso.exch = qso.exch + field.at(i).toLatin1().toUpper();
-                qso.rcv_exch[0]=field.at(i).toLatin1().toUpper();
-                break;
-            case 1:
-                qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
-                qso.rcv_exch[1]=field.at(i).toLatin1().toUpper();
-                break;
-            case 2:
-                qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
-                qso.rcv_exch[2]=field.at(i).toLatin1().toUpper();
-                break;
-            case 3:
-                qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
-                qso.rcv_exch[3]=field.at(i).toLatin1().toUpper();
-                break;
-            }
-        }
-        qso.valid=true;
-        addQso(&qso);
-        contest->addQso(&qso);
-        progress.setValue(cnt);
-    }
-    model->database().commit();
-    rescore();
-    nrSent = model->rowCount() + 1;
-    progress.setValue(maxLines);
-}
-
-/*! triggered after log edit. Rescore the log and scroll to the bottom
- */
-void So2sdr::logEdited(const QModelIndex & topLeft, const QModelIndex & bottomRight)
-{
-    Q_UNUSED(topLeft);
-    Q_UNUSED(bottomRight);
-
-    rescore();
-    while (model->canFetchMore()) {
-        model->fetchMore();
-    }
+    log->importCabrillo(cabFile);
     LogTableView->scrollToBottom();
-    regrab();
+    nrSent = log->rowCount()+1;
 }
+
 
 /*!
 Clear any selected cells in log and remove log editing message from status bar
@@ -1563,57 +1037,30 @@ void So2sdr::startLogEdit()
 }
 
 /*!
- start detail qso editor. Connected to signal from LogDelegate
+ after a qso edit, update callsign in list of spots. Also reset cursor.
  */
-void So2sdr::editLogDetail(QModelIndex index)
+void So2sdr::updateSpotlistEdit(QSqlRecord origRecord, QSqlRecord r)
 {
-    QSqlRecord rec = model->record(index.row());
-    origRecord = model->record(index.row());
-    detail->loadRecord(rec,contest->nExchange());
-    detail->show();
-    detail->callLineEdit->setFocus();
-    detail->callLineEdit->deselect();
-    if (grab) {
-        ungrab();
-    }
-}
-
-/*!
-Clean up after detailed qso edit
-*/
-void So2sdr::detailEditDone()
-{
-    LogTableView->clearSelection();
-    if (grab) {
-        regrab();
-    }
-}
-
-/*!
- update a qso from detailed qso edit
- */
-void So2sdr::updateRecord(QSqlRecord r)
-{
-    if (!model->setRecord(r.value(SQL_COL_NR).toInt()-1,r)) {
-        qDebug("setRecord failed"); /*! @todo how should this be handled? */
-    }
-    model->submitAll();
-    rescore();
-    while (model->canFetchMore()) {
-        model->fetchMore();
-    }
-    // update spot list; replace orig call/freq/dupe status
-    int b=origRecord.value(SQL_COL_BAND).toInt();
+    // update spot list; replace any occurence of this call with the updated one;
+    // dupe status will be updated as well
     QByteArray call=origRecord.value(SQL_COL_CALL).toByteArray();
-    for (int i=0;i<spotList[b].size();i++) {
-        if (call==spotList[b].at(i).call) {
-            spotList[b][i].call=r.value(SQL_COL_CALL).toByteArray();
-            spotList[b][i].f=r.value(SQL_COL_FREQ).toInt();
-            /*! @todo dupe status */
+    QByteArray newCall=r.value(SQL_COL_CALL).toByteArray();
+     for (int b=0;b<N_BANDS;b++) {
+        for (int i=0;i<spotList[b].size();i++) {
+            if (call==spotList[b][i].call) {
+                int f=spotList[b].at(i).f;
+                removeSpot(call,b);
+                addSpot(newCall,f);
+            }
         }
     }
-
+    regrab();
+    if (!grab) {
+        lineEditCall[activeRadio]->setFocus();
+    }
+    LogTableView->clearSelection();
 }
+
 
 /*!
    initialize log view
@@ -1623,21 +1070,9 @@ void So2sdr::initLogView()
     LogTableView->setShowGrid(true);
     LogTableView->verticalHeader()->hide();
     LogTableView->verticalHeader()->setDefaultAlignment(Qt::AlignLeft);
-#if QT_VERSION < 0x050000
-    LogTableView->verticalHeader()->setClickable(false);
-#else
-   LogTableView->verticalHeader()->setSectionsClickable(false);
-#endif
+    LogTableView->verticalHeader()->setSectionsClickable(false);
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
-
-    model = new tableModel(this,mylog->db);
-    model->setTable("log");
-    model->select();
-    connect(model, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(logEdited(QModelIndex, QModelIndex)));
-    while (model->canFetchMore()) {
-        model->fetchMore();
-    }
-    LogTableView->setModel(model);
+    LogTableView->setModel(log->mod());
     int ncol=csettings->beginReadArray(c_col_width_group);
     for (int i=0;i<SQL_N_COL;i++) {
         if (ncol) csettings->setArrayIndex(i);
@@ -1645,13 +1080,8 @@ void So2sdr::initLogView()
     }
     csettings->endArray();
 
-    logdel=new logDelegate(this,contest,&logSearchFlag,&searchList);
-    connect(logdel,SIGNAL(startLogEdit()),this,SLOT(ungrab()));
-    connect(logdel,SIGNAL(startLogEdit()),this,SLOT(startLogEdit()));
-    connect(logdel,SIGNAL(closeEditor(QWidget*)),this,SLOT(clearEditSelection(QWidget*)));
-    connect(logdel,SIGNAL(editLogRow(QModelIndex)),this,SLOT(editLogDetail(QModelIndex)));
     for (int i=0;i < SQL_N_COL;i++) {
-        LogTableView->setItemDelegateForColumn(i,logdel);
+        LogTableView->setItemDelegateForColumn(i,log->delegate());
     }
     LogTableView->setEditTriggers(QAbstractItemView::DoubleClicked);
     LogTableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -1674,55 +1104,55 @@ void So2sdr::initLogView()
 
     // columns 6+ are contest-specific
     // first are sent data fields
-    unsigned f   = contest->sntFieldShown();
+    unsigned f   = log->sntFieldShown();
     int      cnt = 0;
     if (f & 1) {
         LogTableView->setColumnHidden(SQL_COL_SNT1, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT1, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT1, log->fieldWidth(cnt));
         cnt++;
     }
     if (f & 2) {
         LogTableView->setColumnHidden(SQL_COL_SNT2, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT2, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT2, log->fieldWidth(cnt));
         cnt++;
     }
     if (f & 4) {
         LogTableView->setColumnHidden(SQL_COL_SNT3, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT3, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT3, log->fieldWidth(cnt));
         cnt++;
     }
     if (f & 8) {
         LogTableView->setColumnHidden(SQL_COL_SNT4, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT4, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT4, log->fieldWidth(cnt));
         cnt++;
     }
-    f = contest->rcvFieldShown();
+    f = log->rcvFieldShown();
     if (f & 1) {
         LogTableView->setColumnHidden(SQL_COL_RCV1, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV1, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV1, log->fieldWidth(cnt));
         cnt++;
     }
     if (f & 2) {
         LogTableView->setColumnHidden(SQL_COL_RCV2, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV2, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV2, log->fieldWidth(cnt));
         cnt++;
     }
     if (f & 4) {
         LogTableView->setColumnHidden(SQL_COL_RCV3, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV3, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV3, log->fieldWidth(cnt));
         cnt++;
     }
     if (f & 8) {
         LogTableView->setColumnHidden(SQL_COL_RCV4, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV4, contest->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV4, log->fieldWidth(cnt));
     }
-    if (mylog->qsoPtsField()) {
+    if (log->showQsoPtsField()) {
         LogTableView->setColumnHidden(SQL_COL_PTS, false);
         LogTableView->setColumnWidth(SQL_COL_PTS, 30);
     }
     for (int i=0;i<SQL_N_COL;i++) {
-        model->setHeaderData(i,Qt::Horizontal,contest->columnName(i),Qt::DisplayRole);
-        model->setHeaderData(i,Qt::Horizontal,Qt::AlignLeft,Qt::TextAlignmentRole);
+        LogTableView->model()->setHeaderData(i,Qt::Horizontal,log->columnName(i),Qt::DisplayRole);
+        LogTableView->model()->setHeaderData(i,Qt::Horizontal,Qt::AlignLeft,Qt::TextAlignmentRole);
     }
     LogTableView->horizontalHeader()->setStretchLastSection(true);
     LogTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -1736,7 +1166,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2017 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2018 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>QtSolutions_Telnet 2.1"
@@ -1786,7 +1216,7 @@ void So2sdr::updateRate()
  */
 void So2sdr::updateOffTime() {
     if (csettings->value(c_off_time_enable,c_off_time_enable_def).toBool()) {
-        offPtr->setText(mylog->offTime(options->offMinimumLineEdit->text().toInt(),options->startDateTimeEdit->dateTime(),
+        offPtr->setText(log->offTime(options->offMinimumLineEdit->text().toInt(),options->startDateTimeEdit->dateTime(),
                        options->endDateTimeEdit->dateTime()));
     } else {
         offPtr->clear();
@@ -1820,7 +1250,7 @@ void So2sdr::timerEvent(QTimerEvent *event)
         // clock update; every 1000 mS
         TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
         // update rate display at beginning of minute
-        if (QDateTime::currentDateTimeUtc().time().second()==0 && contest) {
+        if (QDateTime::currentDateTimeUtc().time().second()==0 && log) {
             updateRate();
         }
         // check bandmap tcp connection
@@ -1866,7 +1296,7 @@ void So2sdr::autoSendActivate (bool state) {
 
 void So2sdr::duelingCQActivate (bool state) {
     if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return; // disabled in Sprint mode
-    if (band[0] == band[1]) {
+    if (cat[0]->band()==cat[1]->band()) {
         So2sdrStatusBar->showMessage("Dueling CQ disabled: same band",5000);
         state = false;
     }
@@ -1931,21 +1361,21 @@ void So2sdr::autoSendExch() {
             if (activeTxRadio == activeRadio && !exchangeSent[activeRadio] && cqMode[activeRadio]
                     && !(altDActive && altDActiveRadio == activeRadio) ) {
 
-                int comp = QString::compare(tmpCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
+                int comp = QString::compare(autoSendCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
                 if ( comp < 0) {
                     winkey->setEchoMode(false);
-                    int cindx = lineEditCall[activeRadio]->text().length() - tmpCall.length();
-                    tmpCall = lineEditCall[activeRadio]->text();
+                    int cindx = lineEditCall[activeRadio]->text().length() - autoSendCall.length();
+                    autoSendCall = lineEditCall[activeRadio]->text();
                     QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
                     send(callDiff.toLatin1(), false);
                 } else if (comp > 0) {
                     winkey->setEchoMode(true);
                     winkey->cancelcw();
                     autoSendPause = true;
-                    tmpCall.clear();
+                    autoSendCall.clear();
                 } else { // calls equal
                     autoSendExch_exch();
-                    So2sdrStatusBar->showMessage(QString::number(activeRadio+1)+":"+tmpCall,1700);
+                    So2sdrStatusBar->showMessage(QString::number(activeRadio+1)+":"+autoSendCall,1700);
                     winkey->setEchoMode(true);
                 }
 
@@ -1955,11 +1385,11 @@ void So2sdr::autoSendExch() {
                 autoSendExch_exch();
 
             } else {
-                tmpCall.clear();
+                autoSendCall.clear();
             }
 
         } else {
-            tmpCall.clear();
+            autoSendCall.clear();
         }
 
     } else {
@@ -2022,7 +1452,7 @@ void So2sdr::autoSendExch_exch() {
         } else {
             lineEditExchange[activeTxRadio]->setText(lineEditExchange[activeTxRadio]->text().simplified() + " ");
         }
-        tmpCall.clear();
+        autoSendCall.clear();
     }
 }
 
@@ -2060,6 +1490,8 @@ void So2sdr::autoCQ () {
 
 /*!
   Increment AutoCQ +/- 0.1 sec: alt-PgUP / alt-PgDN
+
+  @todo: this does not work properly if a Winkey is not connected
  */
 void So2sdr::autoCQdelay (bool incr) {
     if (incr) {
@@ -2120,27 +1552,18 @@ void So2sdr::swapRadios()
 {
     duelingCQActivate(false);
     autoCQActivate(false);
-    int old_f[NRIG]={rigFreq[0],rigFreq[1]};
-    band[1]  = getBand(old_f[0]);
-    band[0]  = getBand(old_f[1]);
+
+    int old_f[NRIG]={cat[0]->getRigFreq(),cat[1]->getRigFreq()};
     updateMults(0);
     updateMults(1);
-    if (!cat) return;
+    if (!cat[0] || !cat[1]) return;
     qsy(0, old_f[1], true);
     qsy(1, old_f[0], true);
 }
 
 void So2sdr::toggleStereo() {
-    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-        pport->toggleStereoPin();
-    }
-    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-        otrsp->toggleStereo(activeRadio);
-    }
-    if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
-        microham->toggleStereo(activeRadio);
-    }
-    switchAudio(activeRadio); //update indicators
+    so2r->toggleStereo(activeRadio);
+    so2r->updateIndicators(activeRadio);
 }
 
 /*!
@@ -2148,42 +1571,8 @@ void So2sdr::toggleStereo() {
  */
 void So2sdr::switchAudio(int r)
 {
-    if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-        pport->switchAudio(r);
-    }
-    if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-        otrsp->switchAudio(r);
-    }
-    if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
-        microham->switchAudio(r);
-    }
-    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
-        bool stereo = false;
-        if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-            stereo = pport->stereoActive();
-        }
-        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-            stereo = otrsp->stereoActive();
-        }
-        if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
-            stereo = microham->stereoActive();
-        }
-        if (stereo) {
-            RX1->setStyleSheet(greenLED);
-            RX2->setStyleSheet(greenLED);
-        } else {
-            if (activeRadio) {
-                RX1->setStyleSheet(clearLED);
-                RX2->setStyleSheet(greenLED);
-            } else {
-                RX1->setStyleSheet(greenLED);
-                RX2->setStyleSheet(clearLED);
-            }
-        }
-    } else {
-        RX1->setStyleSheet(clearLED);
-        RX2->setStyleSheet(clearLED);
-    }
+    so2r->switchAudio(r);
+    so2r->updateIndicators(activeRadio);
 }
 
 /*!
@@ -2191,49 +1580,22 @@ void So2sdr::switchAudio(int r)
  */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
-    if (r != activeTxRadio) {
-        autoSendTrigger=false;
-        autoSendPause=false;
-        winkey->switchTransmit(r);
-
-        if (settings->value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()) {
-            pport->switchTransmit(r);
-        }
-        if (settings->value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-            otrsp->switchTransmit(r);
-        }
-        if (settings->value(s_microham_enabled,s_microham_enabled_def).toBool()) {
-            microham->switchTransmit(r);
-        }
-    }
-    if (settings->value(s_settings_focusindicators,s_settings_focusindicators_def).toBool()) {
-        if (r) {
-            TX1->setStyleSheet(clearLED);
-            TX2->setStyleSheet(redLED);
-        } else {
-            TX1->setStyleSheet(redLED);
-            TX2->setStyleSheet(clearLED);
-        }
-    }    else {
-        TX1->setStyleSheet(clearLED);
-        TX2->setStyleSheet(clearLED);
-    }
-    activeTxRadio = r;
-    switch (cat[activeTxRadio]->modeType()) {
-     case CWType:
+    if (cat[r]->modeType()==CWType) {
         winkey->cancelcw();
-        break;
-    case PhoneType:
-        expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
-        break;
-    case DigiType:
-        break;
     }
     if (CWspeed) {
         winkey->setSpeed(CWspeed);
     } else {
         winkey->setSpeed(wpm[r]);
     }
+    if (r != activeTxRadio) {
+        autoSendTrigger=false;
+        autoSendPause=false;
+        winkey->switchTransmit(r);
+        so2r->switchTransmit(r);
+    }
+    so2r->updateIndicators(activeRadio);
+    activeTxRadio = r;
 }
 
 /*!
@@ -2262,7 +1624,6 @@ void So2sdr::switchRadios(bool switchcw)
             lineEditExchange[activeRadio]->setCursorPosition(0);
         }
     }
-
     MasterTextEdit->clear();
     updateRadioFreq();
     updateBreakdown();
@@ -2280,14 +1641,10 @@ void So2sdr::switchRadios(bool switchcw)
  */
 void So2sdr::prefixCheck1(const QString &call)
 {
-#if QT_VERSION >= 0x050000  
     int i=lineEditCall[0]->cursorPosition();
     lineEditCall[0]->setText(call.toUpper());
     lineEditCall[0]->setCursorPosition(i);
     prefixCheck(0, call.toUpper());
-#else
-    prefixCheck(0, call);
-#endif
 }
 
 /*!
@@ -2295,14 +1652,10 @@ void So2sdr::prefixCheck1(const QString &call)
  */
 void So2sdr::prefixCheck2(const QString &call)
 {
-#if QT_VERSION >= 0x050000  
     int i=lineEditCall[1]->cursorPosition();
     lineEditCall[1]->setText(call.toUpper());
     lineEditCall[1]->setCursorPosition(i);
     prefixCheck(1, call.toUpper());
-#else
-    prefixCheck(1, call);
-#endif
 }
 
 /*!
@@ -2310,14 +1663,11 @@ void So2sdr::prefixCheck2(const QString &call)
  */
 void So2sdr::exchCheck1(const QString &exch)
 {
-#if QT_VERSION >= 0x050000
     int i=lineEditExchange[0]->cursorPosition();
     lineEditExchange[0]->setText(exch.toUpper());
     lineEditExchange[0]->setCursorPosition(i);
+    editingExchange[0]=true;
     exchCheck(0,exch.toUpper());
-#else    
-    exchCheck(0,exch);
-#endif
 }
 
 /*!
@@ -2325,14 +1675,11 @@ void So2sdr::exchCheck1(const QString &exch)
  */
 void So2sdr::exchCheck2(const QString &exch)
 {
-#if QT_VERSION >= 0x050000
-     int i=lineEditExchange[1]->cursorPosition();
+    int i=lineEditExchange[1]->cursorPosition();
     lineEditExchange[1]->setText(exch.toUpper());
     lineEditExchange[1]->setCursorPosition(i);
+    editingExchange[1]=true;
     exchCheck(1,exch.toUpper());
-#else    
-    exchCheck(1,exch);
-#endif    
 }
 
 /*!
@@ -2348,7 +1695,7 @@ void So2sdr::exchCheck(int nr,const QString &exch)
     // exchange edit
     qso[nr]->call=lineEditCall[nr]->text().toLatin1();
     qso[nr]->exch=exch.toLatin1();
-    qso[nr]->valid=contest->validateExchange(qso[nr]);
+    qso[nr]->valid=log->validateExchange(qso[nr]);
     if (qso[nr]->valid) {
         updateWorkedMult(nr);
         validLabel[nr]->setPixmap(iconValid);
@@ -2396,7 +1743,7 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
     const int nc = calls.size();
     for (int i = 0; i < nc; i++) {
         // for contests where stations can be worked only once on any band
-        if (!contest->dupeCheckingByBand()) {
+        if (!log->dupeCheckingByBand()) {
             // all are dupes; show in red
             if (calls.at(i) == partial) {
                 dupe               = true;
@@ -2408,7 +1755,7 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
             txt.append("<font color=#FF0000>" + calls.at(i) + " <font color=#000000>");
         } else {
             // show dupe with current band in grey, available calls from other bands in blue
-            if (bits[band[nrig]] & worked[i]) {
+            if (bits[cat[nrig]->band()] & worked[i]) {
                 txt.append("<font color=#AAAAAA>" + calls.at(i) + " <font color=#000000>");
                 if (calls.at(i) == partial) {
                     dupe          = true;
@@ -2435,30 +1782,20 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
  */
 void So2sdr::prefixCheck(int nrig, const QString &call)
 {
+    qso[nrig]->clear();
     qso[nrig]->call = call.toLatin1();
     qso[nrig]->call = qso[nrig]->call.toUpper();
-    for (int ii = 0; ii < MMAX; ii++) qso[nrig]->mult[ii] = -1;
-    qso[nrig]->valid = false;
+
     // check/supercheck partial callsign fragment
     // don't do anything unless at least 2 chars entered
     if (qso[nrig]->call.size() > 1) {
-        qso[nrig]->prefill.clear();
-        qso[nrig]->dupe = false;
         qso[nrig]->mode = cat[nrig]->mode();
         qso[nrig]->modeType = cat[nrig]->modeType();
-        qso[nrig]->freq = rigFreq[nrig];
-        qso[nrig]->band = band[nrig];
+        qso[nrig]->freq = cat[nrig]->getRigFreq();
+        qso[nrig]->band = getBand(qso[nrig]->freq);
         qso[nrig]->time = QDateTime::currentDateTimeUtc();
-        qso[nrig]->mult_name.clear();
-        for (int i = 0; i < MMAX; i++) {
-            qso[nrig]->isamult[i] = false;
-            qso[nrig]->mult[i]    = -1;
-            qso[nrig]->newmult[i] = -1;
-        }
-        qso[nrig]->zone = 0;
-        qso[nrig]->pts  = 0;
         bool qsy;
-        int  pp = cty->idPfx(qso[nrig], qsy);
+        int  pp = log->idPfx(qso[nrig], qsy);
 
         // 2nd radio CQ is active, display these on the other radio
         // unless in S/P on active radio
@@ -2466,13 +1803,7 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         if (activeR2CQ && cqMode[activeRadio]) {
             nr = nr ^ 1;
         }
-        // WPX contest: check the callsign prefix
-        // @todo create a generic callsign "pre-check" for contest.cpp, have contest_wpx check the prefix there
-        if (csettings->value(c_contestname,c_contestname_def).toString().toUpper()=="WPX") {
-            ((WPX*) contest)->wpxPrefix(qso[nrig]->call, qso[nrig]->mult_name);
-            qso[nrig]->isamult[0]=true;
-            contest->multIndx(qso[nrig]);
-        }
+
         labelCountry[nr]->setText(qso[nrig]->country_name);
         if (pp != -1) {
             // prefix ID successful
@@ -2480,22 +1811,17 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             // working oneself? Fill in 0 heading and exact sun times
             // (useful shortcut to recall exact sunrise/sunset)
             if (qso[nrig]->call==settings->value(s_call,s_call_def)) {
-                labelBearing[nr]->setText("0");
-                labelLPBearing[nr]->setText("<font color=#0000FF>0");
-                QString sun;
-                cty->mySunTimes(sun);
-                sunLabelPtr[nr]->setText(sun);
+                clearDisplays(nr);
+                sunLabelPtr[nr]->setText(log->mySunTimes());
             } else {
                 labelBearing[nr]->setNum(qso[nrig]->bearing);
                 labelLPBearing[nr]->setText("<font color=#0000FF>"+QString::number(((qso[nrig]->bearing+180)%360)));
                 sunLabelPtr[nr]->setText(qso[nrig]->sun);
             }
-            contest->guessMult(qso[nrig]);
+            log->guessMult(qso[nrig]);
         } else {
             // prefix ID failed, just leave these blank
-            labelBearing[nr]->clear();
-            labelLPBearing[nr]->clear();
-            sunLabelPtr[nr]->clear();
+            clearDisplays(nrig);
         }
         // if dupe option is 2 (no dupe checking), dupes will not be recorded and will
         // be scored
@@ -2513,18 +1839,16 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         if (qso[nrig]->dupe) {
             // show information from most recent previous qso with dupe message
             if (csettings->value(c_dupemode,c_dupemode_def).toInt()==STRICT_DUPES) {
-                So2sdrStatusBar->showMessage("** " + qso[nrig]->call + " DUPE ** : " +
-                                             qso[nrig]->logInfo +
-                                             " Ctrl+Enter to log");
+                So2sdrStatusBar->showMessage("** " + qso[nrig]->call + " DUPE ** : Ctrl+Enter to log");
             } else if (csettings->value(c_dupemode,c_dupemode_def).toInt()==WORK_DUPES) {
-                So2sdrStatusBar->showMessage("** " + qso[nrig]->call + " DUPE ** : " +
-                                             qso[nrig]->logInfo);
+                So2sdrStatusBar->showMessage("** " + qso[nrig]->call + " DUPE ** ");
             }
             statusBarDupe = true;
         } else {
             So2sdrStatusBar->clearMessage();
             statusBarDupe = false;
         }
+        setDupeColor(nrig,qso[nrig]->dupe);
         // if exchange isn't empty, should recheck it now
         if (!lineEditExchange[nrig]->text().isEmpty()) {
             exchCheck(nrig,lineEditExchange[nrig]->text());
@@ -2539,10 +1863,7 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         if (activeR2CQ && cqMode[activeRadio]) {
             nr = nr ^ 1;
         }
-        labelCountry[nr]->clear();
-        labelBearing[nr]->clear();
-        labelLPBearing[nr]->clear();
-        sunLabelPtr[nr]->clear();
+        clearDisplays(nr);
         clearWorked(nr);
     }
 }
@@ -2585,7 +1906,7 @@ void So2sdr::clearWorked(int i)
 void So2sdr::updateWorkedMult(int nr)
 {
     unsigned int worked[2]={0,0};
-    contest->workedMults(qso[nr], worked);
+    log->workedMults(qso[nr], worked);
     for (int ii = 0; ii < MMAX; ii++) {
         QString tmp = multNameLabel[ii]->text();
         if (tmp.isEmpty()) continue;
@@ -2647,17 +1968,16 @@ bool So2sdr::enterFreqOrMode()
     // validate we have a positive integer
     if (f > 0 && ok) {
         // qsy returns "corrected" rigFreq in event there is no radio CAT connection
-        if (cat) {
+        if (cat[nr]) {
             qsy(nr, f, true);
         }
 
         int b;
         if ((b = getBand(f)) != -1) {
             // if band change, update bandmap calls
-            if (b!=band[nr] && bandmap->bandmapon(nr)) {
+            if (b!=cat[nr]->band() && bandmap->bandmapon(nr)) {
                 bandmap->syncCalls(nr,spotList[b]);
             }
-            band[nr] = b;
         }
         if (bandmap->bandmapon(nr)) {
             bandmap->bandmapSetFreq(f,nr);
@@ -2737,18 +2057,13 @@ bool So2sdr::enterFreqOrMode()
     grabWidget = lineEditCall[activeRadio];
     lineEditCall[activeRadio]->setModified(false);
     updateBreakdown();
-    updateMults(activeRadio);
+    updateMults(activeRadio,getBand(f));
 
     if (nDupesheet()) {
         populateDupesheet();
     }
-
     clearWorked(activeRadio);
-    labelCountry[activeRadio]->clear();
-    labelBearing[activeRadio]->clear();
-    labelLPBearing[activeRadio]->clear();
-    sunLabelPtr[activeRadio]->clear();
-
+    clearDisplays(activeRadio);
     return true;
 }
 
@@ -2760,16 +2075,16 @@ void So2sdr::updateBreakdown()
 {
     int n = 0;
     for (int i = 0; i < N_BANDS; i++) {
-        n += nqso[i];
+        n+=log->nQso(i);
         if (i==N_BANDS_SCORED) break;
-
-        qsoLabel[i]->setNum(nqso[i]);
+        qsoLabel[i]->setNum(log->columnCount(i));
     }
     int nm[2]={0,0};
     int nb[2]={0,0};
     for (int ii = 0; ii < csettings->value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int i = 0; i < N_BANDS; i++) {
-            int m = contest->nMultsBWorked(ii, i);
+           // int m = log->nMultsBWorked(ii, i);
+            int m=log->nMultsColumn(i,ii);
             nm[ii] += m;
             if (i==N_BANDS_SCORED) break;
 
@@ -2777,7 +2092,7 @@ void So2sdr::updateBreakdown()
         }
 
         // for contests where mults are not per-band
-        nb[ii] += contest->nMultsBWorked(ii, N_BANDS);
+        nb[ii] += log->nMultsBWorked(ii, N_BANDS);
         if (csettings->value(c_multsband,c_multsband_def).toBool()) {
             multTotal[ii]->setNum(nm[ii]);
         } else {
@@ -2785,23 +2100,35 @@ void So2sdr::updateBreakdown()
         }
     }
     TotalQsoLabel->setNum(n);
-    ScoreLabel->setText(QString::number(contest->Score()) + " pts");
+    ScoreLabel->setText(QString::number(log->score()) + " pts");
 }
 
 
 /*!
    update needed mults display for radio ir
  */
-void So2sdr::updateMults(int ir)
+void So2sdr::updateMults(int ir,int bandOverride)
 {
+    if (!log) return; // do nothing if contest not loaded
+
+    int band;
+    if (bandOverride!=-1) band=bandOverride;
+    else band=cat[ir]->band();
+
     MultTextEdit->clear();
     if (!csettings->value(c_showmults,c_showmults_def).toBool()) return;
 
     QByteArray tmp;
     tmp.clear();
-    for (int i = 0; i < contest->nMults(multMode); i++) {
+    for (int i = 0; i < log->nMults(multMode); i++) {
         bool       needed_band, needed;
-        QByteArray mult = contest->neededMultName(multMode, band[ir], i, needed_band, needed);
+        QByteArray mult;
+        if (csettings->value(c_multsmode,c_multsmode_def).toBool()) {
+            // per-mode mults
+            mult=log->neededMultNameMode(multMode, band,cat[ir]->modeType(), i, needed_band, needed);
+        } else {
+            mult = log->neededMultName(multMode, band, i, needed_band, needed);
+        }
         if (excludeMults[multMode].contains(mult)) continue;
         if (csettings->value(c_multsband,c_multsband_def).toBool()) {
             if (needed_band) {
@@ -2818,7 +2145,13 @@ void So2sdr::updateMults(int ir)
         }
     }
     MultTextEdit->setHtml(tmp);
-    MultGroupBox->setTitle("Mults: Radio " + QString::number(ir + 1) + ": " + bandName[band[ir]]);
+    if (csettings->value(c_multsmode,c_multsmode_def).toBool()) {
+        // per-mode mults
+        MultGroupBox->setTitle("Mults: Radio " + QString::number(ir + 1) + ": " + bandName[band]+
+                " "+modeNames[cat[ir]->modeType()]);
+    } else {
+        MultGroupBox->setTitle("Mults: Radio " + QString::number(ir + 1) + ": " + bandName[band]);
+    }
 }
 
 /*!
@@ -2826,38 +2159,27 @@ void So2sdr::updateMults(int ir)
  */
 void So2sdr::updateRadioFreq()
 {
-    int           tmp[NRIG];
-    label_160->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
-    label_80->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
-    label_40->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
-    label_20->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
-    label_15->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
-    label_10->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
+    static ModeTypes oldModeType[2]={CWType,CWType};
+    static bool init=false;
+
+    if (!init) {
+        oldModeType[0]=cat[0]->modeType();
+        oldModeType[1]=cat[1]->modeType();
+        init=true;
+    } else {
+        // for per-mode multipliers, need to switch mult display if the mode has changed
+        if (log && csettings->value(c_multsmode,c_multsmode_def).toBool() && cat[activeRadio]->modeType()!=oldModeType[activeRadio]) {
+            updateMults(activeRadio);
+            oldModeType[activeRadio]=cat[activeRadio]->modeType();
+        }
+    }
+
+    for (int i=0;i<6;i++) {
+        bandLabel[i]->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
+    }
+    int rigFreq[NRIG];
     for (int i = 0; i < NRIG; i++) {
-
         rigFreq[i] = cat[i]->getRigFreq();
-        tmp[i]     = band[i];
-        int b = getBand(rigFreq[i]);
-
-        if (b != -1) {
-            if (b!=band[i] && bandmap->bandmapon(i)) {
-                bandmap->syncCalls(i,spotList[b]);
-            }
-            band[i] = b;
-        }
-
-        // band change event
-        // note: entering the frequency from the keyboard will not
-        // register as a band change here, but in enterFreqOrMode
-        if (contest && tmp[i] != band[i]) {
-            if (i == activeRadio) {
-                updateMults(i);
-                if (nDupesheet()) {
-                    populateDupesheet();
-                }
-            }
-
-        }
         if (bandmap->bandmapon(i)) {
             bandmap->bandmapSetFreq(rigFreq[i],i);
             //add additional offset if specified by radio (like K3)
@@ -2869,26 +2191,17 @@ void So2sdr::updateRadioFreq()
         } else {
             rLabelPtr[i]->setText("<font color=#FF0000>R" + QString::number(i + 1) + ":OFF </font>");
         }
-        switch (band[i]) {
-        case BAND160:
-            label_160->setStyleSheet("QLabel { background-color : grey; color : white; }");
-            break;
-        case BAND80:
-            label_80->setStyleSheet("QLabel { background-color : grey; color : white; }");
-            break;
-        case BAND40:
-            label_40->setStyleSheet("QLabel { background-color : grey; color : white; }");
-            break;
-        case BAND20:
-            label_20->setStyleSheet("QLabel { background-color : grey; color : white; }");
-            break;
-        case BAND15:
-            label_15->setStyleSheet("QLabel { background-color : grey; color : white; }");
-            break;
-        case BAND10:
-            label_10->setStyleSheet("QLabel { background-color : grey; color : white; }");
-            break;
+        // highlight the active bands
+        int t;
+        if (!log) {
+            t=cat[i]->band();
+        } else if (log->bandLabelEnable(cat[i]->band())) {
+            t=log->highlightBand(cat[i]->band(),cat[i]->modeType());
+        } else {
+            t=-1;
         }
+        if (t>=0 && t<6) bandLabel[t]->setStyleSheet("QLabel { background-color : grey; color : white; }");
+
         if (i == activeRadio) {
             freqDisplayPtr[i]->setText("<b>" + QString::number(f, 'f', 1) + "</b>");
             modeDisplayPtr[i]->setText("<b>" + cat[i]->modeStr() + "</b>");
@@ -2902,27 +2215,7 @@ void So2sdr::updateRadioFreq()
     } else {
         winkeyLabel->setText("<font color=#FF0000>WK:OFF </font>");
     }
-}
 
-/*!
-   set a default freq based on band if there is no radio serial connection
- */
-void So2sdr::setDefaultFreq(int nrig)
-{
-    switch (band[nrig]) {
-    case BAND160: rigFreq[nrig] = 1800000; break;
-    case BAND80: rigFreq[nrig] = 3500000; break;
-    case BAND40: rigFreq[nrig] = 7000000; break;
-    case BAND20: rigFreq[nrig] = 14000000; break;
-    case BAND15: rigFreq[nrig] = 21000000; break;
-    case BAND10: rigFreq[nrig] = 28000000; break;
-    case BAND60: rigFreq[nrig] = 5900000; break;
-    case BAND30: rigFreq[nrig] = 10100000; break;
-    case BAND17: rigFreq[nrig] = 18068000; break;
-    case BAND12: rigFreq[nrig] = 24890000;break;
-    case BAND6: rigFreq[nrig] = 50000000; break;
-    case BAND2: rigFreq[nrig] = 144000000; break;
-    }
 }
 
 /*!
@@ -3156,6 +2449,7 @@ void So2sdr::clearR2CQ(int nr)
         lineEditCall[nr]->setPalette(palette);
         lineEditExchange[nr]->setPalette(palette);
         lineEditExchange[nr]->clear();
+        editingExchange[nr]=false;
     }
 }
 
@@ -3379,7 +2673,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         int nr;
                         if (lineEditCall[activeTxRadio]->text().isEmpty()) {
                             // send last logged number
-                            nr = mylog->lastNr();
+                            nr = log->lastNr();
                         } else {
                             if (nrReserved[activeTxRadio]) {
                                 nr = nrReserved[activeTxRadio];
@@ -3395,23 +2689,23 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         cat[activeTxRadio]->clearRIT();
                         break;
                     case 20: // RIG_FREQ
-                        out.append(QByteArray::number(qRound(rigFreq[activeRadio] / 1000.0)));
+                        out.append(QByteArray::number(qRound(cat[activeRadio]->getRigFreq() / 1000.0)));
                         break;
                     case 21: // RIG2_FREQ
-                        out.append(QByteArray::number(qRound(rigFreq[activeRadio ^ 1] / 1000.0)));
+                        out.append(QByteArray::number(qRound(cat[activeRadio ^ 1]->getRigFreq()/ 1000.0)));
                         break;
                     case 22: // best cq
-                        bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[band[activeRadio]],
-                                               cqlimit_default_low[band[activeRadio]]).toInt(),
-                                settings->value(s_sdr_cqlimit_high[band[activeRadio]],
-                                cqlimit_default_high[band[activeRadio]]).toInt());
+                        bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[cat[activeRadio]->band()],
+                                               cqlimit_default_low[cat[activeRadio]->band()]).toInt(),
+                                settings->value(s_sdr_cqlimit_high[cat[activeRadio]->band()],
+                                cqlimit_default_high[cat[activeRadio]->band()]).toInt());
                         bandmap->findFreq(activeRadio);
                         break;
                     case 23: // best cq radio2
-                        bandmap->setFreqLimits(activeRadio^1,settings->value(s_sdr_cqlimit_low[band[activeRadio^1]],
-                                cqlimit_default_low[band[activeRadio]]).toInt(),
-                                settings->value(s_sdr_cqlimit_high[band[activeRadio^1]],
-                                cqlimit_default_high[band[activeRadio^1]]).toInt());
+                        bandmap->setFreqLimits(activeRadio^1,settings->value(s_sdr_cqlimit_low[cat[activeRadio^1]->band()],
+                                cqlimit_default_low[cat[activeRadio]->band()]).toInt(),
+                                settings->value(s_sdr_cqlimit_high[cat[activeRadio^1]->band()],
+                                cqlimit_default_high[cat[activeRadio^1]->band()]).toInt());
                         bandmap->findFreq(activeRadio ^ 1);
                         // return immediately to avoid stopping cw on current radio
                         return;
@@ -3429,13 +2723,14 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                     case 27: // MCP
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
                         command.append("\r");
-                        microham->sendCommand(command);
+                        so2r->sendMicrohamCommand(command);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
-                    case 28: // OTRSP
+                    case 28: // OTRSP (send to both devices)
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
                         command.append("\r");
-                        otrsp->sendCommand(command);
+                        so2r->sendOtrspCommand(command,0);
+                        so2r->sendOtrspCommand(command,1);
                         i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         break;
                     case 29: // CAT
@@ -3479,36 +2774,36 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         switchradio=false;
                         break;
                     case 36: // PTTON
-                        // fixme add winkey option
-                        cat[activeRadio]->setPtt(1);
+                        //@todo add winkey option
+                        so2r->setPtt(activeRadio,1);
                         switchradio=false;
                         break;
                     case 37: // PTTON1
-                        cat[0]->setPtt(1);
+                        so2r->setPtt(0,1);
                         switchradio=false;
                         break;
                     case 38: // PTTON2
-                        cat[1]->setPtt(1);
+                        so2r->setPtt(1,1);
                         switchradio=false;
                         break;
                     case 39: // PTTONR2
-                        cat[activeRadio ^ 1]->setPtt(1);
+                        so2r->setPtt(activeRadio ^1,1);
                         switchradio=false;
                         break;
                     case 40: // PTTOFF
-                        cat[activeRadio]->setPtt(0);
+                        so2r->setPtt(activeRadio,0);
                         switchradio=false;
                         break;
                     case 41: // PTTOFF1
-                        cat[0]->setPtt(0);
+                        so2r->setPtt(0,0);
                         switchradio=false;
                         break;
                     case 42: // PTTOFF2
-                        cat[1]->setPtt(0);
+                        so2r->setPtt(1,0);
                         switchradio=false;
                         break;
                     case 43: // PTTOFFR2
-                        cat[activeRadio ^ 1]->setPtt(0);
+                        so2r->setPtt(activeRadio ^ 1,0);
                         switchradio=false;
                         break;
                     case 44: // RECORD
@@ -3579,7 +2874,7 @@ void So2sdr::showMessage(QString s)
 void So2sdr::openFile()
 {
     // search for files in directory set by contestDirectory
-    directory->setCurrent(contestDirectory);
+    QDir::setCurrent(contestDirectory);
     fileName = QFileDialog::getOpenFileName(this, tr("Open config file"), contestDirectory, tr("Config Files (*.cfg)"));
     if (fileName.isNull()) {
         return;
@@ -3604,94 +2899,7 @@ void So2sdr::openFile()
  */
 void So2sdr::rescore()
 {
-    Qso tmpqso(contest->nExchange());
-    QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", mylog->db);
-    while (m.canFetchMore()) {
-        m.fetchMore();
-    }
-    bool              b;
-    QList<QByteArray> dupes[N_BANDS];
-    contest->zeroScore();
-    for (int i = 0; i < N_BANDS; i++) {
-        nqso[i] = 0;
-        dupes[i].clear();
-    }
-    for (int i = 0; i < m.rowCount(); i++) {
-        tmpqso.call    = m.record(i).value("call").toString().toLatin1();
-        // run prefix check on call: need to check for /MM, etc
-        tmpqso.country = cty->idPfx(&tmpqso, b);
-        tmpqso.exch.clear();
-        QByteArray tmp[4];
-        tmp[0] = m.record(i).value("rcv1").toString().toLatin1();
-        tmp[1] = m.record(i).value("rcv2").toString().toLatin1();
-        tmp[2] = m.record(i).value("rcv3").toString().toLatin1();
-        tmp[3] = m.record(i).value("rcv4").toString().toLatin1();
-        tmpqso.nr=m.record(i).value("nr").toInt();
-
-        for (int j = 0; j < contest->nExchange(); j++) {
-            tmpqso.exch = tmpqso.exch + tmp[j] + " ";
-        }
-        tmpqso.mode = (rmode_t) m.record(i).value("mode").toInt();
-        tmpqso.modeType = cat[0]->getModeType(tmpqso.mode);
-        tmpqso.band = m.record(i).value("band").toInt();
-        tmpqso.pts  = m.record(i).value("pts").toInt();
-
-        // valid can be changed to ways:
-        // 1) when user unchecks checkbox
-        // 2) if program can't parse the exchange
-        //
-        // first check for user changing check status
-        bool userValid=m.record(i).value("valid").toBool();
-        tmpqso.valid=userValid;
-
-        // dupe check
-        // qsos marked invalid are excluded from log and dupe check
-        tmpqso.dupe = false;
-        if (tmpqso.valid) {
-            if (csettings->value(c_dupemode,c_dupemode_def).toInt()!=NO_DUPE_CHECKING) {
-                // can work station on other bands, just check this one
-                QByteArray check=tmpqso.call;
-                // multi-mode contest: append a mode index to the call
-                if (csettings->value(c_multimode,c_multimode_def).toBool()) {
-                    check=check+QByteArray::number((int)tmpqso.modeType);
-                }
-                if (contest->dupeCheckingByBand()) {
-                    if (dupes[tmpqso.band].contains(check)) {
-                        tmpqso.dupe = true;
-                    }
-                } else {
-                    // qsos count only once on any band
-                    for (int j = 0; j < N_BANDS; j++) {
-                        if (dupes[j].contains(check)) {
-                            tmpqso.dupe = true;
-                        }
-                    }
-                }
-                dupes[tmpqso.band].append(check);
-            }
-        } else {
-            tmpqso.pts=0;
-            tmpqso.mult[0]=-1;
-            tmpqso.mult[1]=-1;
-            tmpqso.newmult[0]=-1;
-            tmpqso.newmult[1]=-1;
-        }
-        // next check exchange
-        // in the case of mobiles, this might change dupe status!
-        bool exchValid=contest->validateExchange(&tmpqso);
-        tmpqso.valid=userValid & exchValid;
-
-        if (!tmpqso.dupe && tmpqso.valid) nqso[tmpqso.band]++;
-        if (!tmpqso.valid || tmpqso.dupe) {
-            tmpqso.pts=0;
-            tmpqso.mult[0]=-1;
-            tmpqso.mult[1]=-1;
-            tmpqso.newmult[0]=-1;
-            tmpqso.newmult[1]=-1;
-        }
-        contest->addQso(&tmpqso);
-    }
+    log->rescore();
     updateBreakdown();
     updateMults(activeRadio);
     if (nDupesheet()) populateDupesheet();
@@ -3699,28 +2907,40 @@ void So2sdr::rescore()
 
 
 /*!
-   fill in sent exchange fields
- */
-void So2sdr::fillSentExch(int nr)
+   fill in sent exchange fields. Two fields are auto-filled: qso # and RST. All others are taken
+   from values entered in contest options dialog.
+*/
+void So2sdr::fillSentExch(Qso *qso,int nr)
 {
-    for (int i = 0; i < contest->nExchange(); i++) {
-        switch (i) {
-        case 0:
-            qso[nr]->snt_exch[0]=csettings->value(c_sentexch1,c_sentexch1_def).toByteArray();
+    for (int i = 0; i < log->nExch(); i++) {
+        switch (qso->exchange_type[i]) {
+        case QsoNumber:
+            qso->snt_exch[i] = QByteArray::number(nr);
             break;
-        case 1:
-            qso[nr]->snt_exch[1]=csettings->value(c_sentexch2,c_sentexch2_def).toByteArray();
+        case RST:
+            switch (qso->modeType) {
+            case CWType:case DigiType:
+                qso->snt_exch[i] = "599";
+                break;
+            case PhoneType:
+                qso->snt_exch[i] = "59";
+            }
             break;
-        case 2:
-            qso[nr]->snt_exch[2]=csettings->value(c_sentexch3,c_sentexch3_def).toByteArray();
-            break;
-        case 3:
-            qso[nr]->snt_exch[3]=csettings->value(c_sentexch4,c_sentexch4_def).toByteArray();
-            break;
-        }
-        // put in qso number
-        if (contest->exchType(i) == QsoNumber) {
-            qso[nr]->snt_exch[i] = QByteArray::number(nrReserved[nr]);
+        default:
+            switch (i) {
+            case 0:
+                qso->snt_exch[0]=csettings->value(c_sentexch1,c_sentexch1_def).toByteArray();
+                break;
+            case 1:
+                qso->snt_exch[1]=csettings->value(c_sentexch2,c_sentexch2_def).toByteArray();
+                break;
+            case 2:
+                qso->snt_exch[2]=csettings->value(c_sentexch3,c_sentexch3_def).toByteArray();
+                break;
+            case 3:
+                qso->snt_exch[3]=csettings->value(c_sentexch4,c_sentexch4_def).toByteArray();
+                break;
+            }
         }
     }
 }
@@ -3732,7 +2952,7 @@ void So2sdr::showHelp()
 {
     if (help == 0) {
         // open help file and display it
-        directory->setCurrent(dataDirectory()+"/help");
+        QDir::setCurrent(dataDirectory()+"/help");
         help = new HelpDialog("so2sdrhelp.html", this);
         connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
         connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
@@ -3867,28 +3087,12 @@ void So2sdr::qsy(int nrig, int &freq, bool exact)
 void So2sdr::logSearch()
 {
     QByteArray searchFrag=lineEditCall[activeRadio]->text().toLatin1();
-    if (searchFrag.size()<2) return;
-
     So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\"");
-    model->setFilter("CALL LIKE '%"+searchFrag+"%'");
-    model->select();
-    while (model->canFetchMore()) {
-        model->fetchMore();
-    }
-    if (model->rowCount()==0) {
+    if (!log->logSearch(searchFrag)) {
         So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\" : NOT FOUND");
-        model->setFilter("");
-        model->select();
-        while (model->canFetchMore())
-            model->fetchMore();
     } else {
-        // save a list of rows found by the search
-        searchList.clear();
-        for (int i=0;i<model->rowCount();i++) {
-            searchList.append(model->record(i).value(SQL_COL_NR).toInt()-1);
-        }
         LogTableView->scrollToBottom();
-        logSearchFlag=true;
+         logSearchFlag=true;
     }
 }
 
@@ -3898,13 +3102,11 @@ void So2sdr::logSearch()
 void So2sdr::clearLogSearch()
 {
     if (logSearchFlag) {
-        model->setFilter("");
-        model->select();
-        while (model->canFetchMore())
-            model->fetchMore();
+        log->logSearchClear();
         LogTableView->scrollToBottom();
         logSearchFlag=false;
         So2sdrStatusBar->clearMessage();
+        LogTableView->clearSelection();
     }
 }
 
@@ -3919,73 +3121,12 @@ void So2sdr::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, 
     mult1.clear();
     mult2.clear();
 
-    clearLogSearch();
-
     // only do partial call search if we have >= 2 characters
     const int psz = part.size();
     if (psz < 2) {
         return;
     }
-
-    // query for partial fragment
-    QSqlQueryModel m;
-#if QT_VERSION < 0x050000
-    m.setQuery("SELECT * FROM log WHERE VALID='true' AND (CALL LIKE'%" + part + "%' )", mylog->db);
-#else
-    m.setQuery("SELECT * FROM log WHERE VALID=1 AND (CALL LIKE'%" + part + "%' )", mylog->db);
-#endif
-    while (m.canFetchMore()) {
-        m.fetchMore();
-    }
-
-    for (int i = 0; i < m.rowCount(); i++) {
-        // if multi-mode contest, check for matching mode
-        if (csettings->value(c_multimode).toBool(),c_multimode_def) {
-            if (cat[0]->getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
-                continue;
-            }
-        }
-        QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
-        //
-        /* @todo  the following could probably be simplified  using SQL commands... */
-        //
-        // see if this call is already in list
-        int j=calls.indexOf(tmp);
-        if (j != -1) {
-            // add this band
-            worked[j] = worked[j] | bits[m.record(i).value(SQL_COL_BAND).toInt()];
-        } else {
-            // new call fragment, or same call and different mode
-            // insert call so list is sorted
-            int isrt = 0;
-            for (int k = 0; k < calls.size(); k++) {
-                if (tmp < calls.at(k)) break;
-                isrt++;
-            }
-            calls.insert(isrt, tmp);
-            unsigned int w = bits[m.record(i).value(SQL_COL_BAND).toInt()];
-            worked.insert(isrt, w);
-            int          row = m.record(i).value(SQL_COL_NR).toInt() - 1;
-            mult1.insert(isrt, contest->mult(row, 0));
-            mult2.insert(isrt, contest->mult(row, 1));
-        }
-    }
-
-    // if call matches, prefill most recent exchange and mult information from log
-    for (int i = m.rowCount() - 1; i >= 0; i--) {
-        QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
-        if (tmp == qso->call) {
-            qso->prefill.clear();
-            int row = m.record(i).value(SQL_COL_NR).toInt() - 1;
-            qso->mult[0] = contest->mult(row, 0);
-            qso->mult[1] = contest->mult(row, 1);
-            qso->prefill = m.record(i).value(SQL_COL_RCV1).toString().toLatin1() + " " +
-                           m.record(i).value(SQL_COL_RCV2).toString().toLatin1() + " " +
-                           m.record(i).value(SQL_COL_RCV3).toString().toLatin1() + " " +
-                           m.record(i).value(SQL_COL_RCV4).toString().toLatin1();
-            break;
-        }
-    }
+    log->searchPartial(qso,part,calls,worked,mult1,mult2);
 
     // fill exchange with history if not in log
     if (qso->prefill.simplified().isEmpty() && csettings->value(c_historymode,c_historymode_def).toBool()) {
@@ -4077,7 +3218,7 @@ void So2sdr::closeEvent(QCloseEvent *event)
  */
 void So2sdr::readExcludeMults()
 {
-    directory->setCurrent(dataDirectory());
+    QDir::setCurrent(dataDirectory());
     for (int ii=0;ii<MMAX;ii++) {
         QString filename;
         switch (ii) {
@@ -4107,29 +3248,7 @@ void So2sdr::readExcludeMults()
         file.close();
     }
     // return to contest directory
-    directory->setCurrent(contestDirectory);
-}
-
-/*!
-   reads list of known contests/config files
- */
-bool So2sdr::readContestList()
-{
-    directory->setCurrent(dataDirectory());
-    QFile file("contest_list.dat");
- 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug("can't open %s/contest_list.dat", dataDirectory().toLatin1().data());
-        return(false);
-    }
-    while (!file.atEnd()) {
-        QByteArray buffer = file.readLine();
-        int        i      = buffer.indexOf(",");
-        QByteArray name   = buffer.mid(0, i).trimmed();
-        newContest->addContest(name);
-        configFiles.append(buffer.right(buffer.size() - i - 1).trimmed());
-    }
-    file.close();
-    return(true);
+    QDir::setCurrent(contestDirectory);
 }
 
 void So2sdr::initPointers()
@@ -4138,12 +3257,10 @@ void So2sdr::initPointers()
     settings=0;
     multMode      = 0;
     help          = 0;
-    cty           = 0;
-    contest       = 0;
     cat[0]        = 0;
     cat[1]        = 0;
     cabrillo      = 0;
-    mylog         = 0;
+    log         = 0;
     cwMessage     = 0;
     ssbMessage    = 0;
     newContest    = 0;
@@ -4155,17 +3272,12 @@ void So2sdr::initPointers()
     winkey        = 0;
     winkeyDialog  = 0;
     master        = 0;
-    model         = 0;
     history       = 0;
     dupesheet[0] = 0;
     dupesheet[1] = 0;
     qso[0]       = 0;
     qso[1]       = 0;
     bandmap      = 0;
-    dupeCalls[0]=0;
-    dupeCalls[1]=0;
-    dupeCallsKey[0]=0;
-    dupeCallsKey[1]=0;
     scriptProcess = 0;
     telnet            = 0;
     wpmLineEditPtr[0] = WPMLineEdit;
@@ -4196,6 +3308,32 @@ void So2sdr::initPointers()
     multWorkedLabel[0][1] = Mult1Label2;
     multWorkedLabel[1][0] = Mult2Label;
     multWorkedLabel[1][1] = Mult2Label2;
+    bandLabel[0]=label_160;
+    bandLabel[1]=label_80;
+    bandLabel[2]=label_40;
+    bandLabel[3]=label_20;
+    bandLabel[4]=label_15;
+    bandLabel[5]=label_10;
+    bandQsoLabel[0]=qso160Label;
+    bandQsoLabel[1]=qso80Label;
+    bandQsoLabel[2]=qso40Label;
+    bandQsoLabel[3]=qso20Label;
+    bandQsoLabel[4]=qso15Label;
+    bandQsoLabel[5]=qso10Label;
+    bandMult1Label[0]=mult160Label;
+    bandMult1Label[1]=mult80Label;
+    bandMult1Label[2]=mult40Label;
+    bandMult1Label[3]=mult20Label;
+    bandMult1Label[4]=mult15Label;
+    bandMult1Label[5]=mult10Label;
+    bandMult2Label[0]=mult160Label2;
+    bandMult2Label[1]=mult80Label2;
+    bandMult2Label[2]=mult40Label2;
+    bandMult2Label[3]=mult20Label2;
+    bandMult2Label[4]=mult15Label2;
+    bandMult2Label[5]=mult10Label2;
+
+
 
     // the following is needed to get a monospace font under Windows
 #ifdef Q_OS_WIN
@@ -4235,8 +3373,6 @@ void So2sdr::initVariables()
 {
     initialized = true;
     uiEnabled   = false;
-    usveIndx[0] = 0;
-    usveIndx[1] = 0;
     labelCountry1->clear();
     labelCountry2->clear();
     labelBearing1->clear();
@@ -4279,10 +3415,6 @@ void So2sdr::initVariables()
     origCallEntered[0].clear();
     origCallEntered[1].clear();
     fileName.clear();
-    band[0]    = 3;
-    rigFreq[0] = 14000000;
-    band[1]    = 2;
-    rigFreq[1] = 7000000;
     for (int i = 0; i < N_BANDS; i++) {
         bandInvert[0][i] = false;
         bandInvert[1][i] = false;
@@ -4301,6 +3433,8 @@ void So2sdr::initVariables()
     cqQsoInProgress[1] = false;
     grab               = false;
     grabbing           = false;
+    editingExchange[0] = false;
+    editingExchange[1] = false;
 
     cqTimer.start();
     toggleMode = false;
@@ -4314,7 +3448,7 @@ void So2sdr::initVariables()
     autoSendPause = false;
     autoSendTrigger = false;
     sendLongCQ = true;
-    tmpCall.clear();
+    autoSendCall.clear();
 }
 
 /*!
@@ -4329,12 +3463,12 @@ void So2sdr::screenShot()
     QPixmap p=QPixmap::grabWindow(winId());
     QCoreApplication::processEvents();
     QString format = "png";
-    directory->setCurrent(contestDirectory);
+    QDir::setCurrent(contestDirectory);
     QString filename="screenshot-main-"+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
     p.save(filename,format.toLatin1());
     QCoreApplication::processEvents();
 
-    // bandmap windows
+    // @todo bandmap windows
     // this could be handled by sending a TCP message to the
     // bandmap process telling it to take a screenshot
     /*
@@ -4366,4 +3500,85 @@ void So2sdr::runScript(QByteArray cmd)
     QString program = dataDirectory()+"/scripts/"+cmd;
     scriptProcess->close();
     scriptProcess->start(program);
+}
+
+void So2sdr::bandChange(int nr, int band)
+{
+    if (bandmap->bandmapon(nr)) {
+        bandmap->syncCalls(nr,spotList[band]);
+    }
+    if (nr == activeRadio) {
+        updateMults(nr);
+        if (nDupesheet()) {
+            populateDupesheet();
+        }
+    }
+}
+
+void So2sdr::showRecordingStatus(bool b)
+{
+    if (b) {
+        So2sdrStatusBar->showMessage("RECORDING AUDIO");
+    } else {
+        So2sdrStatusBar->clearMessage();
+    }
+}
+
+void So2sdr::setDupeColor(int nr,bool dupe)
+{
+    /*
+    if (dupe) {
+        if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
+
+        } else {
+            lineEditCall[nr]->setPalette(QPalette(DUPE_COLOR));
+        }
+        if (lineEditExchange[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
+
+        } else {
+            lineEditExchange[nr]->setPalette(QPalette(DUPE_COLOR));
+        }
+    } else {
+        if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
+            if (!altDActive || nr!=altDActiveRadio) {
+                if (cqMode[nr]) {
+                    lineEditCall[nr]->setPalette(QPalette(CQ_COLOR));
+                } else {
+                    lineEditCall[nr]->setPalette(QPalette(SP_COLOR));
+                }
+            }
+        }
+    }
+    */
+    if (dupe) {
+        if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
+
+        } else {
+            QPalette palette(lineEditCall[nr]->palette());
+            palette.setColor(QPalette::Base, DUPE_COLOR);
+            lineEditCall[nr]->setPalette(palette);
+        }
+        if (lineEditExchange[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
+
+        } else {            QPalette palette(lineEditExchange[nr]->palette());
+            palette.setColor(QPalette::Base, DUPE_COLOR);
+            lineEditExchange[nr]->setPalette(palette);
+        }
+    } else {
+        if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
+            if (!altDActive || nr!=altDActiveRadio) {
+                QPalette palette(lineEditCall[nr]->palette());
+                QPalette palette2(lineEditExchange[nr]->palette());
+                if (cqMode[nr]) {
+                    palette.setColor(QPalette::Base, CQ_COLOR);
+                    palette2.setColor(QPalette::Base, CQ_COLOR);
+                } else {
+                    palette.setColor(QPalette::Base, SP_COLOR);
+                    palette2.setColor(QPalette::Base, SP_COLOR);
+                }
+                lineEditCall[nr]->setPalette(palette);
+                lineEditExchange[nr]->setPalette(palette2);
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,24 +23,19 @@
 
 class IARU : public Contest {
 public:
-    IARU();
+    IARU(QSettings &cs,QSettings &ss);
     ~IARU();
     void addQso(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("IARU-HF");
-    }
-    ContestType contestType() const
-    {
-        return Iaru_t;
-    }
+    ContestType contestType() const { return Iaru_t;}
     int fieldWidth(int col) const;
+    int nMultsWorked() const;
     int numberField() const;
-    QByteArray prefillExchange(int cntry, int zone);
     unsigned int rcvFieldShown() const;
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     unsigned int sntFieldShown() const;
     bool validateExchange(Qso *qso);
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
 };
 
 #endif

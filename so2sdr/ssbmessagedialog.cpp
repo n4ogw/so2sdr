@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -221,6 +221,7 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     scriptProcess=0;
     playMessageRig=0;
     recording=false;
+    playing=false;
     if (!scriptProcess) scriptProcess=new QProcess();
     scriptProcess->setWorkingDirectory(userDirectory()+"/wav");
 }
@@ -300,106 +301,107 @@ void SSBMessageDialog::otherRecButtons(int id)
 
 /*!
  * \brief SSBMessageDialog::initialize Initialize dialog from settings file
- * \param s  contest settings file
+ * \param s  contest csettings file
   */
-void SSBMessageDialog::initialize(QSettings *s)
+void SSBMessageDialog::initialize(QSettings *cs,QSettings *s)
 {
+    csettings=cs;
     settings=s;
 
     // function keys: cq
-    int sz=settings->beginReadArray(c_cq_func[m]);
+    int sz=csettings->beginReadArray(c_cq_func[m]);
     for (int i=0;i<sz;i++) {
-        settings->setArrayIndex(i);
-        funcEditPtr[i]->setText(settings->value("func",c_cq_func_def[m]).toString());
+        csettings->setArrayIndex(i);
+        funcEditPtr[i]->setText(csettings->value("func",c_cq_func_def[m]).toString());
         funcEditPtr[i]->setCursorPosition(0);
         cqF[i]=funcEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // function keys: cq, record
-    sz=settings->beginReadArray(c_cq_rec_func);
+    sz=csettings->beginReadArray(c_cq_rec_func);
     for (int i=0;i<sz;i++) {
-        settings->setArrayIndex(i);
-        funcRecEditPtr[i]->setText(settings->value("func",c_cq_rec_func_def).toString());
+        csettings->setArrayIndex(i);
+        funcRecEditPtr[i]->setText(csettings->value("func",c_cq_rec_func_def).toString());
         funcRecEditPtr[i]->setCursorPosition(0);
         cqRecF[i]=funcRecEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // function keys: exchange
-    sz=settings->beginReadArray(c_ex_func[m]);
+    sz=csettings->beginReadArray(c_ex_func[m]);
     for (int i=0;i<sz;i++) {
-        settings->setArrayIndex(i);
-        excFuncEditPtr[i]->setText(settings->value("func",c_ex_func_def[m]).toString());
+        csettings->setArrayIndex(i);
+        excFuncEditPtr[i]->setText(csettings->value("func",c_ex_func_def[m]).toString());
         excFuncEditPtr[i]->setCursorPosition(0);
         excF[i]=excFuncEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // function keys: ex, record
-    sz=settings->beginReadArray(c_ex_rec_func);
+    sz=csettings->beginReadArray(c_ex_rec_func);
     for (int i=0;i<sz;i++) {
-        settings->setArrayIndex(i);
-        excFuncRecEditPtr[i]->setText(settings->value("func",c_ex_rec_func_def).toString());
+        csettings->setArrayIndex(i);
+        excFuncRecEditPtr[i]->setText(csettings->value("func",c_ex_rec_func_def).toString());
         excFuncRecEditPtr[i]->setCursorPosition(0);
         excRecF[i]=excFuncRecEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // other special messages
-    call_edit->setText(settings->value(c_call_msg,c_call_msg_def).toString());
+    call_edit->setText(csettings->value(c_call_msg,c_call_msg_def).toString());
     call_edit->setCursorPosition(0);
-    call_rec_edit->setText(settings->value(c_call_msg_rec,c_call_msg_rec_def).toString());
+    call_rec_edit->setText(csettings->value(c_call_msg_rec,c_call_msg_rec_def).toString());
     call_rec_edit->setCursorPosition(0);
 
-    sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
+    sp_exc_edit->setText(csettings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
     sp_exc_edit->setCursorPosition(0);
-    sp_exc_rec_edit->setText(settings->value(c_sp_exc_rec,c_sp_exc_rec_def).toString());
+    sp_exc_rec_edit->setText(csettings->value(c_sp_exc_rec,c_sp_exc_rec_def).toString());
     sp_exc_rec_edit->setCursorPosition(0);
 
-    cq_exc_edit->setText(settings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
+    cq_exc_edit->setText(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
     cq_exc_edit->setCursorPosition(0);
-    cq_exc_rec_edit->setText(settings->value(c_cq_exc_rec,c_cq_exc_rec_def).toString());
+    cq_exc_rec_edit->setText(csettings->value(c_cq_exc_rec,c_cq_exc_rec_def).toString());
     cq_exc_rec_edit->setCursorPosition(0);
 
-    qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
+    qsl_msg_edit->setText(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
     qsl_msg_edit->setCursorPosition(0);
-    qsl_msg_rec_edit->setText(settings->value(c_qsl_msg_rec,c_qsl_msg_rec_def).toString());
+    qsl_msg_rec_edit->setText(csettings->value(c_qsl_msg_rec,c_qsl_msg_rec_def).toString());
     qsl_msg_rec_edit->setCursorPosition(0);
 
-    qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
+    qsl_updated_edit->setText(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
     qsl_updated_edit->setCursorPosition(0);
-    qsl_updated_rec_edit->setText(settings->value(c_qsl_msg_updated_rec,c_qsl_msg_updated_rec_def).toString());
+    qsl_updated_rec_edit->setText(csettings->value(c_qsl_msg_updated_rec,c_qsl_msg_updated_rec_def).toString());
     qsl_updated_rec_edit->setCursorPosition(0);
 
-    dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
+    dupe_msg_edit->setText(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
     dupe_msg_edit->setCursorPosition(0);
-    dupe_msg_rec_edit->setText(settings->value(c_dupe_msg_rec,c_dupe_msg_rec_def).toString());
+    dupe_msg_rec_edit->setText(csettings->value(c_dupe_msg_rec,c_dupe_msg_rec_def).toString());
     dupe_msg_rec_edit->setCursorPosition(0);
 
-    quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
+    quick_qsl_edit->setText(csettings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
     quick_qsl_edit->setCursorPosition(0);
-    quick_qsl_rec_edit->setText(settings->value(c_qqsl_msg_rec,c_qqsl_msg_rec_def).toString());
+    quick_qsl_rec_edit->setText(csettings->value(c_qqsl_msg_rec,c_qqsl_msg_rec_def).toString());
     quick_qsl_rec_edit->setCursorPosition(0);
 
-    cancel_edit->setText(settings->value(c_ssb_cancel,c_ssb_cancel_def).toString());
+    cancel_edit->setText(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toString());
     cancel_edit->setCursorPosition(0);
 
-    // audio script settings
-    // PLAY settings
-    beforePlayLineEdit->setText(settings->value(s_before_play,s_before_play_def).toString());
+    // audio script csettings
+    // PLAY csettings
+    beforePlayLineEdit->setText(csettings->value(s_before_play,s_before_play_def).toString());
     beforePlayLineEdit->setCursorPosition(0);
-    afterPlayLineEdit->setText(settings->value(s_after_play,s_after_play_def).toString());
+    afterPlayLineEdit->setText(csettings->value(s_after_play,s_after_play_def).toString());
     afterPlayLineEdit->setCursorPosition(0);
-    playLineEdit->setText(settings->value(s_play_command,s_play_command_def).toString());
+    playLineEdit->setText(csettings->value(s_play_command,s_play_command_def).toString());
     playLineEdit->setCursorPosition(0);
 
-    // REC settings
-    beforeRecLineEdit->setText(settings->value(s_before_rec,s_before_rec_def).toString());
+    // REC csettings
+    beforeRecLineEdit->setText(csettings->value(s_before_rec,s_before_rec_def).toString());
     beforeRecLineEdit->setCursorPosition(0);
-    afterRecLineEdit->setText(settings->value(s_after_rec,s_after_rec_def).toString());
+    afterRecLineEdit->setText(csettings->value(s_after_rec,s_after_rec_def).toString());
     afterRecLineEdit->setCursorPosition(0);
-    recLineEdit->setText(settings->value(s_rec_command,s_rec_command_def).toString());
+    recLineEdit->setText(csettings->value(s_rec_command,s_rec_command_def).toString());
     recLineEdit->setCursorPosition(0);
 }
 
@@ -418,47 +420,47 @@ void SSBMessageDialog::rejectChanges()
         excFuncRecEditPtr[i]->setText(excRecF[i]);
         excFuncRecEditPtr[i]->setCursorPosition(0);
     }
-    call_edit->setText(settings->value(c_call_msg,c_call_msg_def).toString());
+    call_edit->setText(csettings->value(c_call_msg,c_call_msg_def).toString());
     call_edit->setCursorPosition(0);
-    call_rec_edit->setText(settings->value(c_call_msg_rec,c_call_msg_rec_def).toString());
+    call_rec_edit->setText(csettings->value(c_call_msg_rec,c_call_msg_rec_def).toString());
     call_rec_edit->setCursorPosition(0);
-    cancel_edit->setText(settings->value(c_ssb_cancel,c_ssb_cancel_def).toString());
+    cancel_edit->setText(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toString());
     cancel_edit->setCursorPosition(0);
-    qsl_msg_edit->setText(settings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
+    qsl_msg_edit->setText(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toString());
     qsl_msg_edit->setCursorPosition(0);
-    qsl_msg_rec_edit->setText(settings->value(c_qsl_msg_rec,c_qsl_msg_rec_def).toString());
+    qsl_msg_rec_edit->setText(csettings->value(c_qsl_msg_rec,c_qsl_msg_rec_def).toString());
     qsl_msg_rec_edit->setCursorPosition(0);
-    qsl_updated_edit->setText(settings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
+    qsl_updated_edit->setText(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toString());
     qsl_updated_edit->setCursorPosition(0);
-    qsl_updated_rec_edit->setText(settings->value(c_qsl_msg_updated_rec,c_qsl_msg_updated_rec_def).toString());
+    qsl_updated_rec_edit->setText(csettings->value(c_qsl_msg_updated_rec,c_qsl_msg_updated_rec_def).toString());
     qsl_updated_rec_edit->setCursorPosition(0);
-    cq_exc_edit->setText(settings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
+    cq_exc_edit->setText(csettings->value(c_cq_exc[m],c_cq_exc_def[m]).toString());
     cq_exc_edit->setCursorPosition(0);
-    cq_exc_rec_edit->setText(settings->value(c_cq_exc_rec,c_cq_exc_rec_def).toString());
+    cq_exc_rec_edit->setText(csettings->value(c_cq_exc_rec,c_cq_exc_rec_def).toString());
     cq_exc_rec_edit->setCursorPosition(0);
-    sp_exc_edit->setText(settings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
+    sp_exc_edit->setText(csettings->value(c_sp_exc[m],c_sp_exc_def[m]).toString());
     sp_exc_edit->setCursorPosition(0);
-    sp_exc_rec_edit->setText(settings->value(c_sp_exc_rec,c_sp_exc_rec_def).toString());
+    sp_exc_rec_edit->setText(csettings->value(c_sp_exc_rec,c_sp_exc_rec_def).toString());
     sp_exc_rec_edit->setCursorPosition(0);
-    dupe_msg_edit->setText(settings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
+    dupe_msg_edit->setText(csettings->value(c_dupe_msg[m],c_dupe_msg_def[m]).toString());
     dupe_msg_edit->setCursorPosition(0);
-    dupe_msg_rec_edit->setText(settings->value(c_dupe_msg_rec,c_dupe_msg_rec_def).toString());
+    dupe_msg_rec_edit->setText(csettings->value(c_dupe_msg_rec,c_dupe_msg_rec_def).toString());
     dupe_msg_rec_edit->setCursorPosition(0);
-    quick_qsl_edit->setText(settings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
+    quick_qsl_edit->setText(csettings->value(c_qqsl_msg[m],c_qqsl_msg_def[m]).toString());
     quick_qsl_edit->setCursorPosition(0);
-    quick_qsl_rec_edit->setText(settings->value(c_qqsl_msg_rec,c_qqsl_msg_rec_def).toString());
+    quick_qsl_rec_edit->setText(csettings->value(c_qqsl_msg_rec,c_qqsl_msg_rec_def).toString());
     quick_qsl_rec_edit->setCursorPosition(0);
-    beforePlayLineEdit->setText(settings->value(s_before_play,s_before_play_def).toString());
+    beforePlayLineEdit->setText(csettings->value(s_before_play,s_before_play_def).toString());
     beforePlayLineEdit->setCursorPosition(0);
-    afterPlayLineEdit->setText(settings->value(s_after_play,s_after_play_def).toString());
+    afterPlayLineEdit->setText(csettings->value(s_after_play,s_after_play_def).toString());
     afterPlayLineEdit->setCursorPosition(0);
-    playLineEdit->setText(settings->value(s_play_command,s_play_command_def).toString());
+    playLineEdit->setText(csettings->value(s_play_command,s_play_command_def).toString());
     playLineEdit->setCursorPosition(0);
-    beforeRecLineEdit->setText(settings->value(s_before_rec,s_before_rec_def).toString());
+    beforeRecLineEdit->setText(csettings->value(s_before_rec,s_before_rec_def).toString());
     beforeRecLineEdit->setCursorPosition(0);
-    afterRecLineEdit->setText(settings->value(s_after_rec,s_after_rec_def).toString());
+    afterRecLineEdit->setText(csettings->value(s_after_rec,s_after_rec_def).toString());
     afterRecLineEdit->setCursorPosition(0);
-    recLineEdit->setText(settings->value(s_rec_command,s_rec_command_def).toString());
+    recLineEdit->setText(csettings->value(s_rec_command,s_rec_command_def).toString());
     recLineEdit->setCursorPosition(0);
     reject();
 }
@@ -478,63 +480,63 @@ SSBMessageDialog::~SSBMessageDialog()
 void SSBMessageDialog::updateSSBMsg()
 {
     // function keys: cq
-    settings->beginWriteArray(c_cq_func[m],N_FUNC);
+    csettings->beginWriteArray(c_cq_func[m],N_FUNC);
     for (int i=0;i<N_FUNC;i++) {
-        settings->setArrayIndex(i);
-        settings->setValue("func",funcEditPtr[i]->text());
+        csettings->setArrayIndex(i);
+        csettings->setValue("func",funcEditPtr[i]->text());
         cqF[i]=funcEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // function keys: cq record
-    settings->beginWriteArray(c_cq_rec_func,N_FUNC);
+    csettings->beginWriteArray(c_cq_rec_func,N_FUNC);
     for (int i=0;i<N_FUNC;i++) {
-        settings->setArrayIndex(i);
-        settings->setValue("func",funcRecEditPtr[i]->text());
+        csettings->setArrayIndex(i);
+        csettings->setValue("func",funcRecEditPtr[i]->text());
         cqRecF[i]=funcRecEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // function keys: exchange
-    settings->beginWriteArray(c_ex_func[m],N_FUNC);
+    csettings->beginWriteArray(c_ex_func[m],N_FUNC);
     for (int i=0;i<N_FUNC;i++) {
-        settings->setArrayIndex(i);
-        settings->setValue("func",excFuncEditPtr[i]->text());
+        csettings->setArrayIndex(i);
+        csettings->setValue("func",excFuncEditPtr[i]->text());
         excF[i]=excFuncEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
     // function keys: exc record
-    settings->beginWriteArray(c_ex_rec_func,N_FUNC);
+    csettings->beginWriteArray(c_ex_rec_func,N_FUNC);
     for (int i=0;i<N_FUNC;i++) {
-        settings->setArrayIndex(i);
-        settings->setValue("func",excFuncRecEditPtr[i]->text());
+        csettings->setArrayIndex(i);
+        csettings->setValue("func",excFuncRecEditPtr[i]->text());
         excRecF[i]=excFuncRecEditPtr[i]->text().toLatin1();
     }
-    settings->endArray();
+    csettings->endArray();
 
-    settings->setValue(c_call_msg,call_edit->text());
-    settings->setValue(c_call_msg_rec,call_rec_edit->text());
-    settings->setValue(c_ssb_cancel,cancel_edit->text());
-    settings->setValue(c_cq_exc[m],cq_exc_edit->text());
-    settings->setValue(c_cq_exc_rec,cq_exc_rec_edit->text());
-    settings->setValue(c_sp_exc[m],sp_exc_edit->text());
-    settings->setValue(c_sp_exc_rec,sp_exc_rec_edit->text());
-    settings->setValue(c_qsl_msg[m],qsl_msg_edit->text());
-    settings->setValue(c_qsl_msg_rec,qsl_msg_rec_edit->text());
-    settings->setValue(c_qsl_msg_updated[m],qsl_updated_edit->text());
-    settings->setValue(c_qsl_msg_updated_rec,qsl_updated_rec_edit->text());
-    settings->setValue(c_qqsl_msg[m],quick_qsl_edit->text());
-    settings->setValue(c_qqsl_msg_rec,quick_qsl_rec_edit->text());
-    settings->setValue(c_dupe_msg[m],dupe_msg_edit->text());
-    settings->setValue(c_dupe_msg_rec,dupe_msg_rec_edit->text());
-    settings->sync();
-    settings->setValue(s_play_command,playLineEdit->text());
-    settings->setValue(s_rec_command,recLineEdit->text());
-    settings->setValue(s_before_play,beforePlayLineEdit->text());
-    settings->setValue(s_after_play,afterPlayLineEdit->text());
-    settings->setValue(s_before_rec,beforeRecLineEdit->text());
-    settings->setValue(s_after_rec,afterRecLineEdit->text());
+    csettings->setValue(c_call_msg,call_edit->text());
+    csettings->setValue(c_call_msg_rec,call_rec_edit->text());
+    csettings->setValue(c_ssb_cancel,cancel_edit->text());
+    csettings->setValue(c_cq_exc[m],cq_exc_edit->text());
+    csettings->setValue(c_cq_exc_rec,cq_exc_rec_edit->text());
+    csettings->setValue(c_sp_exc[m],sp_exc_edit->text());
+    csettings->setValue(c_sp_exc_rec,sp_exc_rec_edit->text());
+    csettings->setValue(c_qsl_msg[m],qsl_msg_edit->text());
+    csettings->setValue(c_qsl_msg_rec,qsl_msg_rec_edit->text());
+    csettings->setValue(c_qsl_msg_updated[m],qsl_updated_edit->text());
+    csettings->setValue(c_qsl_msg_updated_rec,qsl_updated_rec_edit->text());
+    csettings->setValue(c_qqsl_msg[m],quick_qsl_edit->text());
+    csettings->setValue(c_qqsl_msg_rec,quick_qsl_rec_edit->text());
+    csettings->setValue(c_dupe_msg[m],dupe_msg_edit->text());
+    csettings->setValue(c_dupe_msg_rec,dupe_msg_rec_edit->text());
+    csettings->sync();
+    csettings->setValue(s_play_command,playLineEdit->text());
+    csettings->setValue(s_rec_command,recLineEdit->text());
+    csettings->setValue(s_before_play,beforePlayLineEdit->text());
+    csettings->setValue(s_after_play,afterPlayLineEdit->text());
+    csettings->setValue(s_before_rec,beforeRecLineEdit->text());
+    csettings->setValue(s_after_rec,afterRecLineEdit->text());
     accept();
 }
 
@@ -550,17 +552,12 @@ void SSBMessageDialog::updateSSBMsg()
  */
 void SSBMessageDialog::playMessage(int nrig,QString m)
 {
-    if (nrig) {
-        emit(setPtt2(1));
-    } else {
-        emit(setPtt1(1));
-    }
     message=m;
     playMessageRig=nrig;
     disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
     scriptProcess->close();
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage2(int)));
-    scriptProcess->start(settings->value(s_before_play,s_before_play_def).toString());
+    scriptProcess->start(csettings->value(s_before_play,s_before_play_def).toString());
 }
 
 void SSBMessageDialog::playMessage2(int signal)
@@ -568,26 +565,22 @@ void SSBMessageDialog::playMessage2(int signal)
     Q_UNUSED(signal)
     disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage3(int)));
-    if (playMessageRig) {
-        emit(setPtt2(1));
-    } else {
-        emit(setPtt1(1));
-    }
-    QString t=settings->value(s_play_command,s_play_command_def).toString();
-    t=t.replace("$",message);
-    scriptProcess->start(t);
+
+    emit(setPtt(playMessageRig,1));
+    cmd=csettings->value(s_play_command,s_play_command_def).toString();
+    cmd=cmd.replace("$",message);
+    scriptProcess->start(cmd);
+    playing=true;
 }
 
 void SSBMessageDialog::playMessage3(int signal)
 {
     Q_UNUSED(signal)
-    if (playMessageRig) {
-        emit(setPtt2(0));
-    } else {
-        emit(setPtt1(0));
-    }
+
+    playing=false;
+    emit(setPtt(playMessageRig,0));
     disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
-    scriptProcess->start(settings->value(s_after_play,s_after_play_def).toString());
+    scriptProcess->start(csettings->value(s_after_play,s_after_play_def).toString());
 }
 
 void SSBMessageDialog::recMessage(QString m)
@@ -595,10 +588,11 @@ void SSBMessageDialog::recMessage(QString m)
     if (!recording) {
         recording=true;
         message=m;
+        emit(recordingStatus(true));
         disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
         scriptProcess->close();
         connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage2(int)));
-        scriptProcess->start(settings->value(s_before_rec,s_before_rec_def).toString());
+        scriptProcess->start(csettings->value(s_before_rec,s_before_rec_def).toString());
     } else {
         disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
         scriptProcess->close();
@@ -611,7 +605,7 @@ void SSBMessageDialog::recMessage2(int signal)
     Q_UNUSED(signal)
     disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage3(int)));
-    QString t=settings->value(s_rec_command,s_rec_command_def).toString();
+    QString t=csettings->value(s_rec_command,s_rec_command_def).toString();
     t=t.replace("$",message);
     scriptProcess->start(t);
 }
@@ -620,17 +614,18 @@ void SSBMessageDialog::recMessage3(int signal)
 {
     Q_UNUSED(signal)
     disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
-    scriptProcess->start(settings->value(s_after_rec,s_after_rec_def).toString());
+    scriptProcess->start(csettings->value(s_after_rec,s_after_rec_def).toString());
+    emit(recordingStatus(false));
     recording=false;
 }
 
+/*! cancel a message (usually when ESC pressed). Kill the external script,
+ * which moves to the "after play" message.
+ * @todo need to handle case where this is called during the "before" or "after" scripts
+ */
 void SSBMessageDialog::cancelMessage()
 {
-    scriptProcess->close();
-    if (playMessageRig) {
-        emit(setPtt2(0));
-    } else {
-        emit(setPtt1(0));
+    if (playing || recording) {
+        scriptProcess->close();
     }
-    if (recording) recMessage3(0);
 }

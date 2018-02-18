@@ -1,6 +1,6 @@
-/*! Copyright 2010-2017 rec. Torsten Clay N4OGW
+/*! Copyright 2010-2018 rec. Torsten Clay N4OGW
 
-   This file is part of so2sdrec.
+   This file is part of so2sdr.
 
     so2sdr is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with so2sdrec.  If not, see <http://www.gnu.org/licenses/>.
+    along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 #include <QDateTime>

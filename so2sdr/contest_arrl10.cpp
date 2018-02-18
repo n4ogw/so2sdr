@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! ARRL 10m contest */
-ARRL10::ARRL10()
+ARRL10::ARRL10(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setZoneMax(0);
     setZoneType(1); // this also chooses ARRL rather than CQ countries
@@ -28,7 +28,8 @@ ARRL10::ARRL10()
     dupeCheckingEveryBand = true;
     nExch                 = 2;
     logFieldPrefill       = new bool[nExch];
-    for (int i = 0; i < nExch; i++) logFieldPrefill[i] = true;
+    logFieldPrefill[0]=false;
+    logFieldPrefill[1]=true;
     prefill               = false;
     finalExch             = new QByteArray[nExch];
     exchange_type         = new FieldTypes[nExch];
@@ -36,6 +37,43 @@ ARRL10::ARRL10()
     exchange_type[1]      = State;        // state
     multFieldHighlight[0] = SQL_COL_RCV2; // state
     multFieldHighlight[1] = SQL_COL_CALL; // highlight call for DX
+}
+
+/* default labels for bands in score summary */
+QString ARRL10::bandLabel(int i) const
+{
+    switch (i) {
+    case 0: return "";break;
+    case 1: return "";break;
+    case 2: return "";break;
+    case 3: return "";break;
+    case 4: return "10CW";break;
+    case 5: return "10SSB";break;
+    default: return "";
+    }
+}
+
+bool ARRL10::bandLabelEnable(int i) const
+{
+    switch (i) {
+    case 4: case 5: return true;break;
+    default: return false;
+    }
+}
+
+int ARRL10::nMultsColumn(int col,int ii) const
+{
+    switch (col) {
+    case 4:
+        return multsWorked[ii][CWType][5];
+        break;
+    case 5:
+        return multsWorked[ii][PhoneType][5];
+        break;
+    default:
+        return 0;
+        break;
+    }
 }
 
 void ARRL10::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
@@ -106,6 +144,21 @@ int ARRL10::fieldWidth(int col) const
     }
 }
 
+/*! ARRL10 uses non-default columns;
+ * column 5 = CW qsos
+ * column 6 = SSB qsos
+ */
+int ARRL10::highlightBand(int b,ModeTypes modeType) const
+{
+    if (b!=BAND10) {
+        return -1;
+    } else {
+        if (modeType==CWType) return BAND15;
+        if (modeType==PhoneType) return BAND10;
+    }
+    return -1;
+}
+
 /*!
    number shown in column 0 is sequential qso number
  */
@@ -116,12 +169,13 @@ int ARRL10::numberField() const
 
 unsigned int ARRL10::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return(2);  // show second exchange field (ST or #)
 }
 
 int ARRL10::Score() const
 {
-    return(qsoPts * (multsWorked[0][BAND10] + multsWorked[1][BAND10]));
+    return(qsoPts * (multsWorked[0][CWType][BAND10] + multsWorked[1][CWType][BAND10] +
+            multsWorked[0][PhoneType][BAND10] + multsWorked[1][PhoneType][BAND10]));
 }
 
 unsigned int ARRL10::sntFieldShown() const
@@ -133,7 +187,11 @@ bool ARRL10::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
     fillDefaultRST(qso);
-
+    if (qso->modeType==CWType) {
+        qso->bandColumn=BAND15;
+    } else if (qso->modeType==PhoneType) {
+        qso->bandColumn=BAND10;
+    }
     finalExch[1].clear();
     qso->rcv_exch[0].clear();
     qso->rcv_exch[1].clear();
@@ -163,7 +221,7 @@ bool ARRL10::validateExchange(Qso *qso)
     }
     if (qso->isamult[0]) {
         // Domestic call: (RST) state
-        ok = valExch_rst_state(0, qso->mult[0]);
+        ok = valExch_rst_state(0, qso->mult[0], qso);
     } else if (qso->isamult[1]) {
         // DX: (RST) #
         // two things entered; assume first is rst

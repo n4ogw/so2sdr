@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -22,7 +22,7 @@
 /*! ARRL 160m contest
 b=true: station in USA/VE
  =false:  DX*/
-ARRL160::ARRL160(bool b)
+ARRL160::ARRL160(bool b, QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     usVe=b;
     setZoneMax(0);
@@ -47,6 +47,23 @@ ARRL160::~ARRL160()
     delete[] logFieldPrefill;
     delete[] finalExch;
     delete[] exchange_type;
+}
+
+/* default labels for bands in score summary */
+QString ARRL160::bandLabel(int i) const
+{
+    switch (i) {
+    case 0: return "160CW";break;
+    default: return "";
+    }
+}
+
+bool ARRL160::bandLabelEnable(int i) const
+{
+    switch (i) {
+    case 0: return true;
+    default: return false;
+    }
 }
 
 void ARRL160::addQso(Qso *qso)
@@ -113,7 +130,7 @@ unsigned int ARRL160::rcvFieldShown() const
 
 int ARRL160::Score() const
 {
-    return(qsoPts * (multsWorked[0][BAND160] + multsWorked[1][BAND160]));
+    return(qsoPts * (multsWorked[0][CWType][BAND160] + multsWorked[1][CWType][BAND160]));
 }
 
 void ARRL160::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
@@ -133,7 +150,7 @@ unsigned int ARRL160::sntFieldShown() const
 bool ARRL160::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
-
+    qso->bandColumn=qso->band;
     fillDefaultRST(qso);
     finalExch[1].clear();
     qso->rcv_exch[0].clear();
@@ -162,7 +179,7 @@ bool ARRL160::validateExchange(Qso *qso)
     if (!qso->isMM) {
         if (qso->isamult[0]) {
             // Domestic call: (RST) SEC
-            ok = valExch_rst_state(0, qso->mult[0]);
+            ok = valExch_rst_state(0, qso->mult[0], qso);
             if (ok) {
                 qso->pts = 2;
             }

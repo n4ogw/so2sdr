@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,7 +24,7 @@
 #include "hamlib/rotator.h"
 #include "utils.h"
 
-Contest::Contest()
+Contest::Contest(QSettings &cs,QSettings &ss) : settings(cs),stnSettings(ss)
 {
     myGrid.clear();
     myLat = 0.0;
@@ -34,29 +34,72 @@ Contest::Contest()
         _nMults[ii] = 0;
         qsoTypeCntry[ii].clear();
         qsoTypeStr[ii].clear();
-        for (int i = 0; i <= N_BANDS; i++) {
-            multsWorked[ii][i] = 0;
-            multWorked[ii][i].clear();
+        for (int k=0;k<NModeTypes;k++) {
+            for (int i = 0; i <= N_BANDS; i++) {
+                multsWorked[ii][k][i] = 0;
+                multWorked[ii][k][i].clear();
+            }
         }
+
     }
     score.clear();
     nextCall.clear();
     _zoneType = 0;
     _zoneMax  = 40;
     _vExch    = false;
+    for (int i=0;i<6;i++) qsoCnt[i]=0;
 }
 
-void Contest::initialize(QSettings *ss,QSettings *cs,const Cty *cty)
+/* default labels for bands in score summary */
+QString Contest::bandLabel(int i) const
 {
-    settings=cs;
-    stnSettings=ss;
+    switch (i) {
+    case 0: return "160";break;
+    case 1: return "80";break;
+    case 2: return "40";break;
+    case 3: return "20";break;
+    case 4: return "15";break;
+    case 5: return "10";break;
+    default: return "";
+    }
+}
+
+bool Contest::bandLabelEnable(int i) const
+{
+    Q_UNUSED(i)
+    return true;
+}
+
+/* mapping for band to displayed band slot on main Ui. In most
+ * cases this is 1:1, but for some contests (ARRL10 for example),
+ * bands are displayed in non-standard positions. Those contests should
+ * redefine this function.
+ */
+int Contest::highlightBand(int b,ModeTypes modeType) const
+{
+    Q_UNUSED(modeType)
+  return b;
+}
+
+int Contest::columnCount(int col) const
+{
+    if (col>=0 && col<6) return qsoCnt[col];
+    else return 0;
+}
+
+void Contest::initialize(const Cty *cty)
+{
     setGrid();
     QByteArray tmp[MMAX];
-    tmp[0]=settings->value(c_multfile1,c_multfile1_def).toString().toLatin1();
-    tmp[1]=settings->value(c_multfile2,c_multfile2_def).toString().toLatin1();
-    availableModeTypes[0]=settings->value(c_multimode_cw,c_multimode_cw_def).toBool();
-    availableModeTypes[1]=settings->value(c_multimode_phone,c_multimode_phone_def).toBool();
-    availableModeTypes[2]=settings->value(c_multimode_digital,c_multimode_digital_def).toBool();
+    tmp[0]=settings.value(c_multfile1,c_multfile1_def).toString().toLatin1();
+    tmp[1]=settings.value(c_multfile2,c_multfile2_def).toString().toLatin1();
+    availableModeTypes[0]=settings.value(c_multimode_cw,c_multimode_cw_def).toBool();
+    availableModeTypes[1]=settings.value(c_multimode_phone,c_multimode_phone_def).toBool();
+    availableModeTypes[2]=settings.value(c_multimode_digital,c_multimode_digital_def).toBool();
+    exchName[0]=settings.value(c_exchname1,c_exchname1_def).toString();
+    exchName[1]=settings.value(c_exchname2,c_exchname2_def).toString();
+    exchName[2]=settings.value(c_exchname3,c_exchname3_def).toString();
+    exchName[3]=settings.value(c_exchname4,c_exchname4_def).toString();
     readMultFile(tmp, cty);
     zeroScore();
 }
@@ -64,6 +107,12 @@ void Contest::initialize(QSettings *ss,QSettings *cs,const Cty *cty)
 QByteArray Contest::contestName() const
 {
     return(_contestName);
+}
+
+
+QString Contest::exchangeName(int i) const
+{
+    return exchName[i];
 }
 
 // Default column names displayed above log window. Not all
@@ -206,16 +255,23 @@ void Contest::addQsoMult(Qso *qso)
     newrec->newmult[0] = -1;
     newrec->newmult[1] = -1;
     newrec->valid      = qso->valid;
+    newrec->modeType   = qso->modeType;
+
     // qsos marked invalid ignored
     if (!qso->valid) {
         score.append(newrec);
         return;
     }
-    for (int i = 0; i <= N_BANDS; i++) {
-        // mults worked counted per-band
-        // last index N_BANDS is for total number of mults regardless of band
-        for (int j = 0; j < MMAX; j++) {
-            multsWorked[j][i] = 0;
+    // counter for screen display of qsos
+    if (!qso->dupe && qso->bandColumn>=0 && qso->bandColumn<6) qsoCnt[qso->bandColumn]++;
+
+    // mults worked counted per-band
+    // last index N_BANDS is for total number of mults regardless of band
+    for (int j = 0; j < MMAX; j++) {
+        for (int k = 0; k < NModeTypes; k++) {
+            for (int i = 0; i <= N_BANDS; i++) {
+                multsWorked[j][k][i] = 0;
+            }
         }
     }
     bool new_m[MMAX]  = { false, false };
@@ -270,30 +326,38 @@ void Contest::addQsoMult(Qso *qso)
 
                 // must insert extra element in other arrays
                 for (int j = 0; j <= N_BANDS; j++) {
-                    multWorked[ii][j].insert(indx, false);
+                    multWorked[ii][qso->modeType][j].insert(indx, false);
                 }
                 _nMults[ii] = mults[ii].size();
             }
         }
-
         // count number of worked mults BEFORE this qso
-        int sz[N_BANDS + 1];
-        for (int i = 0; i <= N_BANDS; i++) {
-            sz[i] = multWorked[ii][i].size();
+        int sz[NModeTypes][N_BANDS + 1];
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            for (int i = 0; i <= N_BANDS; i++) {
+                sz[k][i] = multWorked[ii][k][i].size();
+            }
         }
-        // for all-band mults
-        for (int j = 0; j < sz[N_BANDS]; j++) {
-            if (!mults[ii].at(j)->isamult) continue;
-            if (multWorked[ii][N_BANDS].at(j)) {
-                multsWorked[ii][N_BANDS]++;
+        // for all-band mults: stored in (last+1) band array element
+        for (int k=0;k < NModeTypes; k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            for (int j = 0; j < sz[k][N_BANDS]; j++) {
+                if (!mults[ii].at(j)->isamult) continue;
+                if (multWorked[ii][k][N_BANDS].at(j)) {
+                    multsWorked[ii][k][N_BANDS]++;
+                }
             }
         }
         // band-by-band mults
-        for (int b = 0; b < N_BANDS_SCORED; b++) {
-            for (int j = 0; j < sz[b]; j++) {
-                if (!mults[ii].at(j)->isamult) continue;
-                if (multWorked[ii][b].at(j)) {
-                    multsWorked[ii][b]++;
+        for (int k = 0; k < NModeTypes; k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            for (int b = 0; b < N_BANDS_SCORED; b++) {
+                for (int j = 0; j < sz[k][b]; j++) {
+                    if (!mults[ii].at(j)->isamult) continue;
+                    if (multWorked[ii][k][b].at(j)) {
+                        multsWorked[ii][k][b]++;
+                    }
                 }
             }
         }
@@ -303,22 +367,25 @@ void Contest::addQsoMult(Qso *qso)
         if (_nMults[ii] == 0 || !qso->isamult[ii]) continue;
 
         if (qso->mult[ii] != -1) {
-            if (!multWorked[ii][qso->band][qso->mult[ii]] && mults[ii][qso->mult[ii]]->isamult) {
+            mode_t mode=CWType;
+            if (settings.value(c_multsmode,c_multsmode_def).toBool()) mode=qso->modeType;
+
+            if (!multWorked[ii][mode][qso->band][qso->mult[ii]] && mults[ii][qso->mult[ii]]->isamult) {
                 new_bm[ii] = true;
-                multsWorked[ii][qso->band]++;
-                multWorked[ii][qso->band][qso->mult[ii]] = true;
+                multsWorked[ii][mode][qso->band]++;
+                multWorked[ii][mode][qso->band][qso->mult[ii]] = true;
             }
             // all-band mults
-            if (!multWorked[ii][N_BANDS][qso->mult[ii]] && mults[ii][qso->mult[ii]]->isamult) {
+            if (!multWorked[ii][mode][N_BANDS][qso->mult[ii]] && mults[ii][qso->mult[ii]]->isamult) {
                 new_m[ii] = true;
-                multsWorked[ii][N_BANDS]++;
-                multWorked[ii][N_BANDS][qso->mult[ii]] = true;
+                multsWorked[ii][mode][N_BANDS]++;
+                multWorked[ii][mode][N_BANDS][qso->mult[ii]] = true;
             }
         }
     }
     qso->newmult[0] = -1;
     qso->newmult[1] = -1;
-    if (settings->value(c_multsband,c_multsband_def).toBool()) {
+    if (settings.value(c_multsband,c_multsband_def).toBool()) {
         // mults count per-band
         for (int ii = 0; ii < MMAX; ii++) {
             if (new_bm[ii]) {
@@ -382,7 +449,7 @@ int Contest::points(int row) const
  */
 void Contest::setGrid()
 {
-    QByteArray s=stnSettings->value(s_grid,s_grid_def).toByteArray();
+    QByteArray s=stnSettings.value(s_grid,s_grid_def).toByteArray();
     // check to see if this is a valid grid square
     if (s.size() != 4 || s.at(0) < 'A' || s.at(0) > 'R' ||
         s.at(1) < 'A' || s.at(1) > 'R' ||
@@ -420,23 +487,32 @@ QList<QByteArray> &Contest::qsoType(int ii)
 }
 
 /*! re-count mults
- */
+  */
 void Contest::count_mults()
 {
     for (int ii = 0; ii < MMAX; ii++) {
-        for (int i = 0; i <= N_BANDS; i++) {
-            multsWorked[ii][i] = 0;
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            for (int i = 0; i <= N_BANDS; i++) {
+                multsWorked[ii][k][i] = 0;
+            }
         }
     }
     for (int ii = 0; ii < MMAX; ii++) {
-        for (int j = 0; j < N_BANDS_SCORED; j++) {
-            for (int i = 0; i < _nMults[ii]; i++) {
-                if (multWorked[ii][j].at(i)) multsWorked[ii][j]++;
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            for (int j = 0; j < N_BANDS_SCORED; j++) {
+                for (int i = 0; i < _nMults[ii]; i++) {
+                    if (multWorked[ii][k][j].at(i)) multsWorked[ii][k][j]++;
+                }
             }
         }
         // all-band mults
-        for (int i = 0; i < _nMults[ii]; i++) {
-            if (multWorked[ii][N_BANDS].at(i)) multsWorked[ii][N_BANDS]++;
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            for (int i = 0; i < _nMults[ii]; i++) {
+                if (multWorked[ii][k][N_BANDS].at(i)) multsWorked[ii][k][N_BANDS]++;
+            }
         }
     }
 }
@@ -480,11 +556,11 @@ void Contest::guessMult(Qso *qso) const
 void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
 {
     for (int ii = 0; ii < MMAX; ii++) worked[ii] = 0;
-    if (settings->value(c_multsband,c_multsband_def).toBool()) {
+    if (settings.value(c_multsband,c_multsband_def).toBool()) {
         for (int ii = 0; ii < MMAX; ii++) {
             for (int i = 0; i < N_BANDS_SCORED; i++) {
                 if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
-                    worked[ii] += multWorked[ii][i][qso->mult[ii]] * bits[i];
+                    worked[ii] += multWorked[ii][qso->modeType][i][qso->mult[ii]] * bits[i];
                 }
             }
         }
@@ -492,7 +568,7 @@ void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
         // all-band mults
         for (int ii = 0; ii < MMAX; ii++) {
             if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
-                if (multWorked[ii][N_BANDS][qso->mult[ii]]) worked[ii] = 1 + 2 + 4 + 8 + 16 + 32;
+                if (multWorked[ii][qso->modeType][N_BANDS][qso->mult[ii]]) worked[ii] = 1 + 2 + 4 + 8 + 16 + 32;
             }
         }
     }
@@ -529,9 +605,12 @@ void Contest::readMultFile(QByteArray filename[MMAX], const Cty *cty)
             multType[ii] = None;
             continue;
         }
-        for (int i = 0; i <= N_BANDS; i++) {
-            multWorked[ii][i].clear();
+        for (int k=0;k<NModeTypes;k++) {
+            for (int i = 0; i <= N_BANDS; i++) {
+                multWorked[ii][k][i].clear();
+            }
         }
+
 
         // special cases
         if (multFile[ii].toLower() == "arrl_country") {
@@ -642,9 +721,11 @@ void Contest::readMultFile(QByteArray filename[MMAX], const Cty *cty)
             file.close();
             _nMults[ii] = mults[ii].size();
         }
-        for (int i = 0; i <= N_BANDS; i++) {
-            for (int j = 0; j < _nMults[ii]; j++) {
-                multWorked[ii][i].append(false);
+        for (int k=0;k<NModeTypes;k++) {
+            for (int i = 0; i <= N_BANDS; i++) {
+                for (int j = 0; j < _nMults[ii]; j++) {
+                    multWorked[ii][k][i].append(false);
+                }
             }
         }
     }
@@ -880,17 +961,6 @@ void Contest::determineMultType(Qso *qso)
     }
 }
 
-/*!
-   Field number containing RST. returns -1 if no rst
- */
-int Contest::rstField() const
-{
-    for (int i = 0; i < nExch; i++) {
-        if (exchange_type[i] == RST) return(i);
-    }
-    return(-1);
-}
-
 void Contest::selectCountries(int ii, const Cty *cty, Cont cont)
 {
     _nMults[ii] = cty->nCountries();
@@ -959,8 +1029,7 @@ FieldTypes Contest::exchType(int indx) const
     false:stations can only be worked once
 
     see setmultsByBand
-
-   @todo for SSB, will need to check also if per-mode qsos are ok*/
+    */
 bool Contest::dupeCheckingByBand() const
 {
     return(dupeCheckingEveryBand);
@@ -968,35 +1037,66 @@ bool Contest::dupeCheckingByBand() const
 
 /*!
    returns total number of mults worked
- */
+*/
 int Contest::nMultsWorked() const
 {
-    if (settings->value(c_multsband,c_multsband_def).toBool()) {
+    if (settings.value(c_multsband,c_multsband_def).toBool()) {
         int n = 0;
         for (int ii = 0; ii < MMAX; ii++) {
-            for (int i = 0; i < N_BANDS_SCORED; i++) {
-                n += multsWorked[ii][i];
+            for (int k=0;k<NModeTypes;k++) {
+                if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+                for (int i = 0; i < N_BANDS_SCORED; i++) {
+                    n += multsWorked[ii][k][i];
+                }
             }
         }
         return(n);
     } else {
         // all-band mults
-        return(multsWorked[0][N_BANDS] + multsWorked[1][N_BANDS]);
+        int tot=0;
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            tot+=multsWorked[0][k][N_BANDS];
+            tot+=multsWorked[1][k][N_BANDS];
+        }
+        return(tot);
     }
 }
 
 /*!
    number of mults on a single band
- */
+*/
 int Contest::nMultsBWorked(int ii, int band) const
 {
-    return(multsWorked[ii][band]);
+    int tot=0;
+    for (int k=0;k<NModeTypes;k++) {
+        if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+        tot+=multsWorked[ii][k][band];
+    }
+    return tot;
 }
 
+/*!
+   number of mults on a single band, mode
+*/
+int Contest::nMultsBMWorked(int ii, int band,int mode) const
+{
+    return multsWorked[ii][mode][band];
+}
+
+/*!
+  number of mults in column col. By default this
+  just returns the number of mults in the band with the same number. Some contests
+  redefine this
+  */
+int Contest::nMultsColumn(int col,int ii) const
+{
+    return nMultsBWorked(ii,col);
+}
 
 /*!
    return name of mult i, needed=true if it is still needed
- */
+  */
 QByteArray Contest::neededMultName(int ii, int band, int i, bool &needed_band, bool &needed) const
 {
     needed      = false;
@@ -1006,10 +1106,40 @@ QByteArray Contest::neededMultName(int ii, int band, int i, bool &needed_band, b
         if (!mults[ii][i]->isamult) {
             return("");
         }
-        if (multWorked[ii][band][i]) {
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            if (multWorked[ii][k][band][i]) {
+                needed_band = true;
+            }
+        }
+        for (int k=0;k<NModeTypes;k++) {
+            if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+            if (multWorked[ii][k][N_BANDS][i]) {
+                needed = true;
+            }
+        }
+        return(mults[ii][i]->name);
+    } else {
+        return("");
+    }
+}
+
+/*!
+   return name of mult i, needed=true if it is still needed, with specific mode
+  */
+QByteArray Contest::neededMultNameMode(int ii, int band, ModeTypes mode,int i, bool &needed_band, bool &needed) const
+{
+    needed      = false;
+    needed_band = false;
+
+    if (i < _nMults[ii]) {
+        if (!mults[ii][i]->isamult) {
+            return("");
+        }
+        if (multWorked[ii][mode][band][i]) {
             needed_band = true;
         }
-        if (multWorked[ii][N_BANDS][i]) {
+        if (multWorked[ii][mode][N_BANDS][i]) {
             needed = true;
         }
         return(mults[ii][i]->name);
@@ -1017,6 +1147,7 @@ QByteArray Contest::neededMultName(int ii, int band, int i, bool &needed_band, b
         return("");
     }
 }
+
 
 /*!
    Number of elements in exchange
@@ -1091,32 +1222,41 @@ bool Contest::newCall(QByteArray &b) const
  */
 int Contest::Score() const
 {
-    if (settings->value(c_multsband,c_multsband_def).toBool()) {
+    if (settings.value(c_multsband,c_multsband_def).toBool()) {
         int n = 0;
         for (int ii = 0; ii < MMAX; ii++) {
             switch (ii) {
             case 0:
-                if (settings->value(c_mult1_displayonly,c_mult1_displayonly_def).toBool())
+                if (settings.value(c_mult1_displayonly,c_mult1_displayonly_def).toBool())
                     continue;
                 break;
             case 1:
-                if (settings->value(c_mult2_displayonly,c_mult2_displayonly_def).toBool())
+                if (settings.value(c_mult2_displayonly,c_mult2_displayonly_def).toBool())
                     continue;
                 break;
             }
-            for (int i = 0; i < N_BANDS_SCORED; i++) {
-                n += multsWorked[ii][i];
+            for (int k=0;k<NModeTypes;k++) {
+                if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+                for (int i = 0; i < N_BANDS_SCORED; i++) {
+                    n += multsWorked[ii][k][i];
+                }
             }
         }
         return(qsoPts * n);
     } else {
         // all-band mults
         int n=0;
-        if (!settings->value(c_mult1_displayonly,c_mult1_displayonly_def).toBool()) {
-            n = multsWorked[0][N_BANDS];
+        if (!settings.value(c_mult1_displayonly,c_mult1_displayonly_def).toBool()) {
+            for (int k=0;k<NModeTypes;k++) {
+                if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+                n += multsWorked[0][k][N_BANDS];
+            }
         }
-        if (!settings->value(c_mult2_displayonly,c_mult2_displayonly_def).toBool()) {
-            n += multsWorked[1][N_BANDS];
+        if (!settings.value(c_mult2_displayonly,c_mult2_displayonly_def).toBool()) {
+            for (int k=0;k<NModeTypes;k++) {
+                if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
+                n += multsWorked[1][k][N_BANDS];
+            }
         }
         return(qsoPts * n);
     }
@@ -1237,18 +1377,24 @@ bool Contest::valExch_mm(Qso *qso)
       ii = mult list
       mult_indx = returned mult number, -1 if no match
  */
-bool Contest::valExch_rst_state(int ii, int &mult_indx)
+bool Contest::valExch_rst_state(int ii, int &mult_indx,Qso *qso)
 {
     if (exchElement.size() == 0) return(false);
 
-    finalExch[0] = "599";   // default received report
+    int rstSize=3;
+    if (qso->modeType==CWType || qso->modeType==DigiType) {
+        finalExch[0] = "599";
+    } else {
+        finalExch[0] = "59";
+        rstSize=2;
+    }
     finalExch[1] = "";
     bool ok[2] = { false, false };
 
     // look for RST
     int *nr_indx = new int[exchElement.size()];
     for (int i = 0; i < exchElement.size(); i++) {
-        if (exchElement[i].toInt()) {
+        if (exchElement[i].toInt() && exchElement[i].length()==rstSize) {
             nr_indx[i] = 1;
         } else {
             nr_indx[i] = 0;
@@ -1642,19 +1788,23 @@ void Contest::zeroScore()
 {
     qsoPts = 0;
     for (int ii = 0; ii < MMAX; ii++) {
-        for (int j = 0; j <= N_BANDS; j++) {
-            for (int k = 0; k < _nMults[ii]; k++) {
-                multWorked[ii][j][k] = false;
+        for (int kk=0;kk<NModeTypes;kk++) {
+            for (int j = 0; j <= N_BANDS; j++) {
+                for (int k = 0; k < _nMults[ii]; k++) {
+                    multWorked[ii][kk][j][k] = false;
+                }
+                multsWorked[ii][kk][j] = 0;
             }
-            multsWorked[ii][j] = 0;
         }
 
         // in these cases, the number of mults depends on the contents of the log
         if (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix) {
             mults[ii].clear();
             for (int ii = 0; ii < MMAX; ii++) {
-                for (int j = 0; j <= N_BANDS; j++) {
-                    multWorked[ii][j].clear();
+                for (int k=0;k<NModeTypes;k++) {
+                    for (int j = 0; j <= N_BANDS; j++) {
+                        multWorked[ii][k][j].clear();
+                    }
                 }
             }
         }
@@ -1662,6 +1812,7 @@ void Contest::zeroScore()
     for (int i = 0; i < score.size(); i++) {
         delete (score[i]);
     }
+    for (int i=0;i<6;i++) qsoCnt[i]=0;
     score.clear();
 }
 
@@ -1671,7 +1822,7 @@ void Contest::zeroScore()
  */
 ModeTypes Contest::nextModeType(ModeTypes m) const
 {
-    if (settings->value(c_multimode,c_multimode_def).toBool()) {
+    if (settings.value(c_multimode,c_multimode_def).toBool()) {
         int i=(int)m;
         i=(i+1) % NModeTypes;
         while (i!=m) {

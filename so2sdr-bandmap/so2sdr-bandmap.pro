@@ -14,8 +14,7 @@
 TEMPLATE = app
 TARGET = so2sdr-bandmap
 
-QT += network
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets 
+QT += network widgets
 
 HEADERS += \ 
     network.h \

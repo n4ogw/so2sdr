@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,7 +21,7 @@
 #include <math.h>
 
 /*! Stew Perry topband challenge */
-Stew::Stew()
+Stew::Stew(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(false);
     dupeCheckingEveryBand = true;
@@ -88,10 +88,9 @@ int Stew::numberField() const
     return(-1);
 }
 
-QByteArray Stew::prefillExchange(int cntry, int zone)
+QByteArray Stew::prefillExchange(Qso *qso)
 {
-    Q_UNUSED(cntry);
-    Q_UNUSED(zone);
+    Q_UNUSED(qso);
 
     // nothing prefilled
     return("");
@@ -129,16 +128,16 @@ bool Stew::validateExchange(Qso *qso)
     if (!separateExchange(qso)) return(false);
 
     bool ok = true;
-    int idx = exchElement.size()-1;
+    qso->bandColumn=qso->band;
 
-    // check to see if last entered is a valid grid square
-    if (exchElement.at(idx).size() != 4 || exchElement.at(idx).at(0) < 'A' || exchElement.at(idx).at(0) > 'R' ||
-        exchElement.at(idx).at(1) < 'A' || exchElement.at(idx).at(1) > 'R' ||
-        exchElement.at(idx).at(2) < '0' || exchElement.at(idx).at(2) > '9' ||
-        exchElement.at(idx).at(3) < '0' || exchElement.at(idx).at(3) > '9') {
+    // check to see if this is a valid grid square
+    if (exchElement.at(0).size() != 4 || exchElement.at(0).at(0) < 'A' || exchElement.at(0).at(0) > 'R' ||
+        exchElement.at(0).at(1) < 'A' || exchElement.at(0).at(1) > 'R' ||
+        exchElement.at(0).at(2) < '0' || exchElement.at(0).at(2) > '9' ||
+        exchElement.at(0).at(3) < '0' || exchElement.at(0).at(3) > '9') {
         ok = false;
     } else {
-        finalExch[0]     = exchElement[idx];
+        finalExch[0]     = exchElement[0];
         qso->rcv_exch[0] = finalExch[0];
     }
     return(ok);

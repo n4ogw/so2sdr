@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,17 +30,13 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.2.0";
-
-// syntax change for Qt version 5
-#if QT_VERSION < 0x050000
-#define toLatin1 toAscii
-#endif
+const QByteArray Version = "2.3.0";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
 const QColor CQ_COLOR(255, 255, 255);  // color in CQ mode; white
 const QColor SP_COLOR(255, 255, 127);  // color in SP mode; yellow
+const QColor DUPE_COLOR(255, 0, 0);  // color for dupe; red
 const QColor ALTD_COLOR(255, 0, 255);  // color during alt-D, Sprint SO2R
 
 // //////////// telnet //////////////////
@@ -363,6 +359,9 @@ typedef enum {
 } ModeTypes;
 const int NModeTypes=3;
 
+// mode names
+const QString modeNames[NModeTypes]={"CW","Phone","Digital"};
+
 const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
                                     "70cm","1.25M","33cm","23cm"};
 
@@ -426,23 +425,26 @@ const QString s_cab_name_def="";
 const QString c_cab_club="cabrillo/club";
 const QString c_cab_club_def="";
 
-const QString s_otrsp_enabled="otrsp/enable";
+const QString s_otrsp_enabled[NRIG]={"otrsp/enable1","otrsp/enable2"};
 const bool s_otrsp_enabled_def=false;
 
-const QString s_otrsp_device="otrsp/device";
+const QString s_otrsp_device[NRIG]={"otrsp/device1","otrsp/device2"};
 const QString s_otrsp_device_def="";
 
-const QString s_otrsp_baud="otrsp/baud";
+const QString s_otrsp_baud[NRIG]={"otrsp/baud1","otrsp/baud2"};
 const int s_otrsp_baud_def=9600;
 
-const QString s_otrsp_databits="otrsp/databits";
+const QString s_otrsp_databits[NRIG]={"otrsp/databits1","otrsp/databits2"};
 const int s_otrsp_databits_def=8;
 
-const QString s_otrsp_parity="otrsp/parity";
+const QString s_otrsp_parity[NRIG]={"otrsp/parity1","otrsp/parity2"};
 const bool s_otrsp_parity_def=false;
 
-const QString s_otrsp_stopbits="otrsp/stopbits";
+const QString s_otrsp_stopbits[NRIG]={"otrsp/stopbits1","otrsp/stopbits2"};
 const int s_otrsp_stopbits_def=1;
+
+const QString s_otrsp_focus[NRIG]={"otrsp/focus1","otrsp/focus2"};
+const bool s_otrsp_focus_def=true;
 
 const QString s_microham_enabled="microham/enable";
 const bool s_microham_enabled_def=false;
@@ -615,6 +617,9 @@ const int s_settings_autosend_def=3;
 const QString c_multsband="contest/multsband";
 const bool c_multsband_def=true;
 
+const QString c_multsmode="contest/multsmode";
+const bool c_multsmode_def=false;
+
 const QString c_mastermode="contest/usemaster";
 const bool c_mastermode_def=true;
 
@@ -653,6 +658,18 @@ const QString c_sentexch3_def="";
 
 const QString c_sentexch4="contest/sentexch4";
 const QString c_sentexch4_def="";
+
+const QString c_exchname1="contest/sentexchname1";
+const QString c_exchname1_def="";
+
+const QString c_exchname2="contest/sentexchname2";
+const QString c_exchname2_def="";
+
+const QString c_exchname3="contest/sentexchname3";
+const QString c_exchname3_def="";
+
+const QString c_exchname4="contest/sentexchname4";
+const QString c_exchname4_def="";
 
 const QString c_contestname="contest/contest";
 const QString c_contestname_def="";

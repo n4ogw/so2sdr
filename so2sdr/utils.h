@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,6 +20,7 @@
 #define UTILS_H
 #include <QString>
 #include <QValidator>
+#include "defines.h"
 
 /*!
   upper-case validator: converts all input to upper case
@@ -45,5 +46,6 @@ public:
 int getBand(int f);
 QString dataDirectory();
 QString userDirectory();
+ModeTypes getModeType(rmode_t mode);
 
 #endif // UTILS_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -39,13 +39,13 @@ public:
     void fillExchange(Qso *qso,QByteArray part);
     void startHistory();
     void stopHistory();
-    void addQso(const Qso *qso);
     bool isOpen();
 
 signals:
     void message(const QString &,int);
 
 public slots:
+    void addQso(const Qso *qso);
 
 private:
     QSqlDatabase         history;

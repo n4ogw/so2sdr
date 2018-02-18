@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>650</height>
+    <height>397</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,17 +19,17 @@
   <property name="minimumSize">
    <size>
     <width>350</width>
-    <height>595</height>
+    <height>397</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>350</width>
-    <height>650</height>
+    <height>397</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Radios/SO2R</string>
+   <string>Radios</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -67,50 +67,35 @@
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxRigctld1">
-           <property name="text">
-            <string>rigctld</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout">
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
-            <widget class="QLabel" name="label_22">
+            <widget class="QLabel" name="label_8">
              <property name="text">
               <string>IP</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEditIp1">
-             <property name="toolTip">
-              <string>IP address for rigctld. &quot;localhost&quot; for connection on same computer.</string>
-             </property>
-            </widget>
+            <widget class="QLineEdit" name="lineEditIp1"/>
            </item>
           </layout>
          </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item row="3" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QLabel" name="label_23">
+            <widget class="QLabel" name="label_7">
              <property name="text">
               <string>Port</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEditPort1">
-             <property name="toolTip">
-              <string>TCP port for rigctld. Default is 4532, advisable to use even numbered ports.</string>
-             </property>
-            </widget>
+            <widget class="QLineEdit" name="lineEditPort1"/>
            </item>
           </layout>
          </item>
-         <item row="2" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="label">
            <property name="font">
             <font>
@@ -122,7 +107,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="4" column="1">
           <widget class="QComboBox" name="Radio1MfgComboBox">
            <property name="font">
             <font>
@@ -131,7 +116,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="label_12">
            <property name="font">
             <font>
@@ -143,10 +128,10 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="5" column="1">
           <widget class="QComboBox" name="Radio1ModelComboBox"/>
          </item>
-         <item row="4" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="label_2">
            <property name="font">
             <font>
@@ -158,7 +143,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="6" column="1">
           <widget class="QLineEdit" name="Radio1DeviceLineEdit">
            <property name="font">
             <font>
@@ -167,7 +152,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
@@ -179,7 +164,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="7" column="1">
           <widget class="QComboBox" name="Radio1BaudComboBox">
            <property name="font">
             <font>
@@ -188,7 +173,7 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="8" column="0">
           <widget class="QLabel" name="label_10">
            <property name="font">
             <font>
@@ -200,14 +185,14 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="8" column="1">
           <widget class="QLineEdit" name="Rig1PollEdit">
            <property name="toolTip">
-            <string>350 works well for K3; longer (500) needed for rigctld</string>
+            <string>400 works well for K3 at 38400 baud</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
+         <item row="9" column="0">
           <widget class="QLabel" name="label_18">
            <property name="font">
             <font>
@@ -219,10 +204,20 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
+         <item row="9" column="1">
           <widget class="QComboBox" name="Radio1PttComboBox">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
+           </property>
+           <property name="toolTip">
+            <string>This is only used for the voice keyer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="checkBoxRigctld1">
+           <property name="text">
+            <string>Rigctld</string>
            </property>
           </widget>
          </item>
@@ -333,12 +328,16 @@
          <item row="6" column="1">
           <widget class="QLineEdit" name="Rig2PollEdit">
            <property name="toolTip">
-            <string>350 works well for K3; longer (500) needed for rigctld</string>
+            <string>400 works well for K3 at 38400 baud</string>
            </property>
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QComboBox" name="Radio2PttComboBox"/>
+          <widget class="QComboBox" name="Radio2PttComboBox">
+           <property name="toolTip">
+            <string>This is only used for the voice keyer</string>
+           </property>
+          </widget>
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_19">
@@ -352,297 +351,44 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxRigctld2">
-           <property name="text">
-            <string>rigctld</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item>
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>IP</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEditIp2">
-             <property name="toolTip">
-              <string>IP address for rigctld. &quot;localhost&quot; for connection on same computer.</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
          <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QLabel" name="label_25">
+            <widget class="QLabel" name="label_9">
              <property name="text">
               <string>Port</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEditPort2">
-             <property name="toolTip">
-              <string>TCP port for rigctld. Default is 4532, advisable to use even numbered ports.</string>
-             </property>
-            </widget>
+            <widget class="QLineEdit" name="lineEditPort2"/>
            </item>
           </layout>
          </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTabWidget" name="tabWidget_2">
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="tab_4">
-      <attribute name="title">
-       <string>OTRSP</string>
-      </attribute>
-      <widget class="QWidget" name="formLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>9</x>
-         <y>9</y>
-         <width>301</width>
-         <height>168</height>
-        </rect>
-       </property>
-       <layout class="QFormLayout" name="formLayout_4">
-        <property name="fieldGrowthPolicy">
-         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-        </property>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBoxOTRSP">
-          <property name="text">
-           <string>enable</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_14">
-          <property name="text">
-           <string>Serial Port</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEditOTRSPPort"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_15">
-          <property name="text">
-           <string>Baud Rate</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="comboBoxOTRSPBaud"/>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_16">
-          <property name="text">
-           <string>Stop Bits</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_17">
-          <property name="text">
-           <string>Parity</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QComboBox" name="comboBoxOTRSPParity"/>
-        </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="comboBoxOTRSPStop"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="tab_3">
-      <attribute name="title">
-       <string>Parallel Port</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <layout class="QFormLayout" name="formLayout_2">
-         <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-         </property>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>IP</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEditIp2"/>
+           </item>
+          </layout>
+         </item>
          <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxParallelPort">
+          <widget class="QCheckBox" name="checkBoxRigctld2">
            <property name="text">
-            <string>enable</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Parallel Port</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="ParallelPortComboBox">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_20">
-           <property name="text">
-            <string>Transmit Focus Pin</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QComboBox" name="TransmitPinComboBox">
-           <property name="toolTip">
-            <string>Used to switch transmit / PTT focus</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QCheckBox" name="TransmitInvertCheckBox">
-           <property name="text">
-            <string>Invert</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Audio Focus Pin</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QComboBox" name="RadioPinComboBox">
-           <property name="toolTip">
-            <string>Used to switch audio when changing radios</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QCheckBox" name="RadioInvertCheckBox">
-           <property name="toolTip">
-            <string>Invert focus pin logic</string>
-           </property>
-           <property name="text">
-            <string>Invert</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0" colspan="2">
-          <widget class="Line" name="line_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Stereo Switch Pin</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="1">
-          <widget class="QComboBox" name="StereoPinComboBox">
-           <property name="toolTip">
-            <string>Toggled to switch stereo headphone mode</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="Line" name="line_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <string>Rigctld</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="tab_5">
-      <attribute name="title">
-       <string>microHam</string>
-      </attribute>
-      <widget class="QWidget" name="formLayoutWidget_2">
-       <property name="geometry">
-        <rect>
-         <x>9</x>
-         <y>9</y>
-         <width>311</width>
-         <height>211</height>
-        </rect>
-       </property>
-       <layout class="QFormLayout" name="formLayout_5">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBoxMicroHam">
-          <property name="text">
-           <string>enable</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_21">
-          <property name="text">
-           <string>Serial Port</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEditMicroHamPort"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </widget>
    </item>

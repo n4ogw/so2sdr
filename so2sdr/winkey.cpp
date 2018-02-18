@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -162,13 +162,21 @@ void Winkey::receiveInit()
  */
 void Winkey::loadbuff(QByteArray msg)
 {
-    sendBuff.append(msg);
-    sent=QString::fromLatin1(sendBuff);
+    if (winkeyOpen) {
+        sendBuff.append(msg);
+        sent=QString::fromLatin1(sendBuff);
 
-    sent.remove('|'); // remove half spaces
-    sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel buffered speed change
-    nchar = sent.length();
-    txPtr=0;
+        sent.remove('|'); // remove half spaces
+        sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel buffered speed change
+        nchar = sent.length();
+        txPtr=0;
+    } else {
+        // if winkey not open, just echo back the sent text as if it had been sent
+        QString tmp=QString::number(rigNum+1)+":"+QString::fromLatin1(msg);
+        tmp.remove('|');
+        tmp.remove(QChar(0x1e));
+        emit(textSent(tmp,3600));
+    }
 }
 
 /*!
@@ -226,8 +234,8 @@ void Winkey::setSpeed(int speed)
  */
 void Winkey::switchTransmit(int nrig)
 {
-    if (!winkeyPort->isOpen()) return;
     rigNum = nrig;
+    if (!winkeyPort->isOpen()) return;
     unsigned char buff[2];
     buff[0] = 0x09;
     switch (nrig) {

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! IARU contest */
-IARU::IARU()
+IARU::IARU(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setZoneMax(90);
     setZoneType(1);
@@ -45,6 +45,24 @@ IARU::~IARU()
     delete[] finalExch;
     delete[] exchange_type;
 }
+
+/*!
+   returns total number of mults worked
+   this overrides the function in Contest
+*/
+int IARU::nMultsWorked() const
+{
+    int n = 0;
+    for (int ii = 0; ii < MMAX; ii++) {
+        for (int k=0;k<NModeTypes;k++) {
+            for (int i = 0; i < N_BANDS_SCORED; i++) {
+                n += multsWorked[ii][k][i];
+            }
+        }
+    }
+    return(n);
+}
+
 
 /*! IARU add qso
 
@@ -91,14 +109,6 @@ int IARU::numberField() const
     return(-1);
 }
 
-QByteArray IARU::prefillExchange(int cntry, int zone)
-
-// ITU zone for all
-{
-    Q_UNUSED(cntry);
-    return(QByteArray::number(zone));
-}
-
 unsigned int IARU::rcvFieldShown() const
 {
     return(1+2);  // show first and second fields
@@ -126,6 +136,7 @@ bool IARU::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
     bool ok = false;
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     determineMultType(qso);
@@ -139,7 +150,7 @@ bool IARU::validateExchange(Qso *qso)
     }
 
     // is it a HQ or official?
-    qso->isamult[1] = valExch_rst_state(1, qso->mult[1]);
+    qso->isamult[1] = valExch_rst_state(1, qso->mult[1], qso);
     if (qso->isamult[1]) {
         // HQ's don't count for zone mult
         qso->isamult[0] = false;

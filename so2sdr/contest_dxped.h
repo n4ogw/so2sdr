@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,18 +24,11 @@
 
 class Dxped : public Contest {
 public:
-    Dxped();
+    Dxped(QSettings &cs,QSettings &ss);
     ~Dxped();
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("DXPED");
-    }
-    ContestType contestType() const
-    {
-        return Dxped_t;
-    }
+    ContestType contestType() const { return Dxped_t;}
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;
@@ -43,6 +36,8 @@ public:
     unsigned int sntFieldShown() const;
     int Score() const;
     QByteArray prefillExchange(Qso *qso);
+    bool showQsoPtsField() const { return false;}
+    int rstField() const { return 0;}
 };
 
 #endif

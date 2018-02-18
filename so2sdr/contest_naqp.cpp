@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! North American QSO Party (NAQP) */
-Naqp::Naqp()
+Naqp::Naqp(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setZoneType(1); // this also chooses ARRL rather than CQ countries
     setVExch(false);
@@ -106,6 +106,7 @@ bool Naqp::validateExchange(Qso *qso)
     if (!separateExchange(qso)) return(false);
     bool ok = false;
 
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     // get the exchange

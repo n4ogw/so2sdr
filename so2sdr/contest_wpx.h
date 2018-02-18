@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,17 +23,10 @@
 
 class WPX : public Contest {
 public:
-    WPX();
+    WPX(QSettings &cs,QSettings &ss);
     ~WPX();
-    QString cabrilloName() const
-    {
-        return("CQ-WPX-CW");
-    }
     QVariant columnName(int c) const;
-    ContestType contestType() const
-    {
-        return Wpx_t;
-    }
+    ContestType contestType() const { return Wpx_t;}
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);
@@ -41,6 +34,8 @@ public:
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     int numberField() const;
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
     void workedMults(QByteArray Call, int mult, unsigned int &worked);
     void wpxPrefix(QByteArray call, QByteArray &pfx);
 };

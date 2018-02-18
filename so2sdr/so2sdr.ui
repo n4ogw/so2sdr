@@ -88,7 +88,16 @@
          <property name="spacing">
           <number>3</number>
          </property>
-         <property name="margin">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
           <number>2</number>
          </property>
          <item>
@@ -160,7 +169,16 @@
          <property name="spacing">
           <number>2</number>
          </property>
-         <property name="margin">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
           <number>2</number>
          </property>
          <item>
@@ -245,7 +263,16 @@
            <property name="spacing">
             <number>3</number>
            </property>
-           <property name="margin">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
             <number>3</number>
            </property>
            <item>
@@ -896,6 +923,24 @@
              </item>
              <item row="3" column="1">
               <widget class="QLabel" name="mult160Label2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Monospace</family>
@@ -912,6 +957,24 @@
              </item>
              <item row="3" column="2">
               <widget class="QLabel" name="mult80Label2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Monospace</family>
@@ -928,6 +991,24 @@
              </item>
              <item row="3" column="3">
               <widget class="QLabel" name="mult40Label2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Monospace</family>
@@ -944,6 +1025,24 @@
              </item>
              <item row="3" column="4">
               <widget class="QLabel" name="mult20Label2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Monospace</family>
@@ -960,6 +1059,24 @@
              </item>
              <item row="3" column="5">
               <widget class="QLabel" name="mult15Label2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Monospace</family>
@@ -976,6 +1093,24 @@
              </item>
              <item row="3" column="6">
               <widget class="QLabel" name="mult10Label2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>17</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <family>Monospace</family>
@@ -1144,7 +1279,16 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
          <number>1</number>
         </property>
         <property name="spacing">
@@ -2372,7 +2516,7 @@
      <x>0</x>
      <y>0</y>
      <width>720</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -2405,6 +2549,7 @@
     <addaction name="actionStation"/>
     <addaction name="actionSettings"/>
     <addaction name="actionRadios"/>
+    <addaction name="actionSo2r"/>
     <addaction name="actionWinkey"/>
     <addaction name="actionSDR"/>
     <addaction name="separator"/>
@@ -2479,7 +2624,7 @@
   </action>
   <action name="actionRadios">
    <property name="text">
-    <string>&amp;Radios/SO2R</string>
+    <string>&amp;Radios</string>
    </property>
   </action>
   <action name="actionContest">
@@ -2614,6 +2759,11 @@
    </property>
    <property name="text">
     <string>&amp;Grab Keyboard</string>
+   </property>
+  </action>
+  <action name="actionSo2r">
+   <property name="text">
+    <string>S&amp;O2R</string>
    </property>
   </action>
  </widget>

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -26,7 +26,7 @@ QList<QString> PAQP::EPA_counties = QList<QString>()
         << "NUM" << "PER" << "PHI" << "PIK" << "SCH" << "SNY" << "SUL"
         << "SUS" << "TIO" << "UNI" << "WAY" << "WYO" << "YOR";
 
-PAQP::PAQP()
+PAQP::PAQP(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
     dupeCheckingEveryBand = true;
@@ -128,6 +128,7 @@ bool PAQP::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
 
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     // check prefix

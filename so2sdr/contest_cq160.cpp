@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! CQ 160m contest */
-CQ160::CQ160()
+CQ160::CQ160(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setZoneMax(40);
     setZoneType(0);
@@ -46,6 +46,22 @@ CQ160::~CQ160()
     delete[] exchange_type;
 }
 
+/* default labels for bands in score summary */
+QString CQ160::bandLabel(int i) const
+{
+    switch (i) {
+    case 0: return "160CW";break;
+    default: return "";
+    }
+}
+
+bool CQ160::bandLabelEnable(int i) const
+{
+    switch (i) {
+    case 0: return true;
+    default: return false;
+    }
+}
 
 /*! add qso
    determine qso point value, increase nqso, update score
@@ -101,13 +117,12 @@ int CQ160::numberField() const
     return(-1);
 }
 
-QByteArray CQ160::prefillExchange(Qso *qso)
-
 // for non W/VE, return CQ zone
+QByteArray CQ160::prefillExchange(Qso *qso)
 {
     determineMultType(qso);
     if (qso->isMM) return "";
-    if (!qso->isamult[0]) {
+    if (!qso->isamult[0] && qso->zone!=0) {
         return(QByteArray::number(qso->zone));
     } else {
         return("");
@@ -124,7 +139,7 @@ unsigned int CQ160::rcvFieldShown() const
  */
 int CQ160::Score() const
 {
-    return(qsoPts * (multsWorked[0][BAND160] + multsWorked[1][BAND160]));
+    return(qsoPts * (multsWorked[0][CWType][BAND160] + multsWorked[1][CWType][BAND160]));
 }
 
 void CQ160::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
@@ -148,7 +163,7 @@ bool CQ160::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
     bool ok = false;
-
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     // get the exchange
@@ -171,7 +186,7 @@ bool CQ160::validateExchange(Qso *qso)
     } else if (qso->isamult[0]) {
         // Domestic call: RST STATE
         if (exchElement.size() < 1) return(false);
-        ok = valExch_rst_state(0, qso->mult[0]);
+        ok = valExch_rst_state(0, qso->mult[0], qso);
     } else if (qso->isamult[1]) {
         // DX: sends zone, but mult is country
         if (exchElement.size() == 2) {

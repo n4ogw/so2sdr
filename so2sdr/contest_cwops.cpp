@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,7 +19,7 @@
 #include "contest_cwops.h"
 
 /*! CW Ops mini-contest */
-Cwops::Cwops()
+Cwops::Cwops(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(false);
     dupeCheckingEveryBand = true;
@@ -98,6 +98,7 @@ unsigned int Cwops::sntFieldShown() const
 bool Cwops::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     determineMultType(qso);

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -26,24 +26,23 @@ class ARRL10 : public Contest {
 // Q_OBJECT
 
 public:
-    ARRL10();
+    ARRL10(QSettings &cs,QSettings &ss);
     ~ARRL10();
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("ARRL-10");
-    }
-    ContestType contestType() const
-    {
-        return Arrl10_t;
-    }
+    ContestType contestType() const { return Arrl10_t;}
     void addQso(Qso *qso);
+    QString bandLabel(int i) const;
+    bool bandLabelEnable(int i) const;
     int fieldWidth(int col) const;
+    int highlightBand(int b, ModeTypes modeType) const;
+    int nMultsColumn(int col,int ii) const;
     int numberField() const;
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     int Score() const;
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
 };
 
 #endif

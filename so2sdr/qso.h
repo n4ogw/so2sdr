@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,6 +30,7 @@ class Qso
 public:
     explicit Qso(int n = 1);
     ~Qso();
+    void clear();
     void         setExchangeType(int, FieldTypes);
 
     bool       dupe;
@@ -37,6 +38,7 @@ public:
     bool       isMobile;
     bool       valid;
     int        band;
+    int        bandColumn;
     int        freq;
     int        mult[MMAX];
     int        newmult[MMAX];
@@ -58,7 +60,6 @@ public:
     int          zone;
     QByteArray   country_name;
     QByteArray   exch;
-    QByteArray   logInfo;
     QByteArray   mult_name;
     QByteArray   PfxName;
     QByteArray   prefill;

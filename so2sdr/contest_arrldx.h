@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,25 +24,19 @@
 
 class ARRLDX : public Contest {
 public:
-    ARRLDX(bool usve = false);
+    ARRLDX(bool usve,QSettings &cs,QSettings &ss);
     ~ARRLDX();
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("ARRL-DX");
-    }
-    ContestType contestType() const
-    {
-        return Arrldx_t;
-    }
+    ContestType contestType() const { return Arrldx_t;}
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;
     QByteArray prefillExchange(Qso *qso);
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
-
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
 private:
     bool usVe;
 };

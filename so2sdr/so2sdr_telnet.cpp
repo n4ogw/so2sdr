@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,11 @@
 #include <QDir>
 #include <QFile>
 #include <QMutableListIterator>
+#include "bandmapinterface.h"
+#include "log.h"
 #include "so2sdr.h"
+#include "telnet.h"
+#include "winkey.h"
 
 // /// Telnet/spot database stuff
 
@@ -34,7 +38,7 @@ void So2sdr::loadSpots()
     }
 
     // file will be contest_name.dat in same directory as contest cfg file
-    directory->setCurrent(contestDirectory);
+    QDir::setCurrent(contestDirectory);
     QString fname = fileName;
     fname.chop(3);
     QFile   *spotFile = new QFile(fname + "dat");
@@ -76,7 +80,7 @@ void So2sdr::loadSpots()
 void So2sdr::saveSpots()
 {
     // file will be contest_name.dat in same directory as contest cfg file
-    directory->setCurrent(contestDirectory);
+    QDir::setCurrent(contestDirectory);
     QString fname = fileName;
 
     // check to make sure config file is properly defined
@@ -137,7 +141,7 @@ void So2sdr::addSpot(QByteArray call, int f)
         tmp.call = call;
         tmp.freq = f;
         tmp.band = getBand(f);
-        d        = mylog->isDupe(&tmp, contest->dupeCheckingByBand(), false);
+        d        = log->isDupe(&tmp, log->dupeCheckingByBand(), false);
     }
     addSpot(call, f, d);
 }
@@ -155,7 +159,6 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
     qint64 t = QDateTime::currentMSecsSinceEpoch();
     spot.createdTime = t;
     spot.dupe = d;
-
     int b = getBand(f);
     if (b >= 0 && b < N_BANDS) {
         bool dupe  = false;
@@ -250,12 +253,13 @@ void So2sdr::checkSpot(int nr)
     }
     // search list of spots for one matching current freq
     bool found = false;
-    for (int i = 0; i < spotList[band[nr]].size(); i++) {
-        if (abs(f - spotList[band[nr]].at(i).f) < SIG_MIN_FREQ_DIFF) {
-            if (spotList[band[nr]].at(i).call != "*") {
-                lineEditCall[nr]->setText(spotList[band[nr]].at(i).call);
+    for (int i = 0; i < spotList[cat[nr]->band()].size(); i++) {
+        if (abs(f - spotList[cat[nr]->band()].at(i).f) < SIG_MIN_FREQ_DIFF) {
+            if (spotList[cat[nr]->band()].at(i).call != "*") {
+                lineEditCall[nr]->setText(spotList[cat[nr]->band()].at(i).call);
             } else {
                 lineEditCall[nr]->setText("*DUPE*");
+                setDupeColor(nr,true);
 
                 // set highlight so any typing overwrites "*DUPE*"
                 lineEditCall[nr]->setCursorPosition(0);
@@ -268,7 +272,7 @@ void So2sdr::checkSpot(int nr)
     if (found) {
         prefixCheck(nr, lineEditCall[nr]->text());
         spotListPopUp[nr] = true;
-    } else if (abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && contest) {
+    } else if (abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && log) {
         if (winkey->isSending() && nr == activeTxRadio)
         {
             winkey->cancelcw();
@@ -332,6 +336,7 @@ void So2sdr::checkSpot(int nr)
         callSent[nr] = false;
         exchangeSent[nr] = false;
         validLabel[nr]->clear();
+        setDupeColor(nr,false);
         if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
             if ( lineEditCall[nr ^ 1]->text().simplified().isEmpty() && lineEditExchange[nr ^ 1]->text().simplified().isEmpty()
                  && nr != activeRadio && !activeR2CQ && !winkey->isSending()) {

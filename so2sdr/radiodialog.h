@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -41,9 +41,6 @@ public:
 
 signals:
     void startRadios();
-    void setParallelPort();
-    void setOTRSP();
-    void setMicroHam();
 
 public slots:
     void rejectChanges();

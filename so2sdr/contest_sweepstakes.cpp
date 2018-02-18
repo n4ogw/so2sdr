@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! ARRL Sweepstakes */
-Sweepstakes::Sweepstakes()
+Sweepstakes::Sweepstakes(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
     dupeCheckingEveryBand = false;
@@ -48,10 +48,9 @@ Sweepstakes::~Sweepstakes()
 QVariant Sweepstakes::columnName(int c) const
 {
     switch (c) {
-    case SQL_COL_RCV1:return(QVariant("#Rcv"));break;
+    case SQL_COL_RCV1:return(QVariant("#"));break;
     case SQL_COL_RCV2:return(QVariant("Pr"));break;
     case SQL_COL_RCV3:return(QVariant("Ck"));break;
-    case SQL_COL_SNT1:return(QVariant("#Snt"));break;
     }
     return Contest::columnName(c);
 }
@@ -125,6 +124,7 @@ bool Sweepstakes::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
 
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     // check prefix

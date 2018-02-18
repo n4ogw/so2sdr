@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,23 +23,17 @@
 
 class Stew : public Contest {
 public:
-    Stew();
+    Stew(QSettings &cs,QSettings &ss);
     ~Stew();
     void addQso(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("STEW-PERRY");
-    }
-    ContestType contestType() const
-    {
-        return Stew_t;
-    }
-    QByteArray prefillExchange(int cntry, int zone);
+    ContestType contestType() const { return Stew_t;}
+    QByteArray prefillExchange(Qso *qso);
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     int fieldWidth(int col) const;
     unsigned int rcvFieldShown() const;
     int Score() const;
+    bool showQsoPtsField() const { return true;}
     unsigned int sntFieldShown() const;
     int numberField() const;
 };

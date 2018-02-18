@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -46,12 +46,7 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
     connect(checkBoxRigctld2,SIGNAL(toggled(bool)),this,SLOT(rigctld2Checked(bool)));
 
     for (int i = 0; i < NRIG; i++) {
-#ifdef Q_OS_WIN
-        radioDevEdit[i]->setToolTip("serial port COM1, COM2, ...");
-#endif
-#ifdef Q_OS_LINUX
         radioDevEdit[i]->setToolTip("serial port /dev/ttyS0, /dev/ttyS1, etc. \nUsb-serial devices /dev/ttyUSB0, etc");
-#endif
     }
     for (int i = 0; i < catptr.hamlibNMfg(); i++) {
         radioMfgComboBox[0]->insertItem(i, catptr.hamlibMfgName(i));
@@ -70,64 +65,10 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent) : QDialo
         radioBaudComboBox[i]->insertItem(0, "9600");
         radioBaudComboBox[i]->insertItem(0, "19200");
         radioBaudComboBox[i]->insertItem(0, "38400");
-        radioPttComboBox[i]->insertItem(0,"RTS");
         radioPttComboBox[i]->insertItem(0,"DTR");
-        radioPttComboBox[i]->insertItem(0,"Hamlib");
+        radioPttComboBox[i]->insertItem(0,"RTS");
+        radioPttComboBox[i]->insertItem(0,"None");
     }
-    comboBoxOTRSPBaud->insertItem(0,"1200");
-    comboBoxOTRSPBaud->insertItem(0,"4800");
-    comboBoxOTRSPBaud->insertItem(0,"9600");
-    comboBoxOTRSPBaud->insertItem(0,"19200");
-    comboBoxOTRSPBaud->insertItem(0,"38400");
-    comboBoxOTRSPBaud->setCurrentIndex(2);
-    comboBoxOTRSPBaud->setEnabled(false);
-    comboBoxOTRSPParity->insertItem(0,"N");
-    comboBoxOTRSPParity->setCurrentIndex(0);
-    comboBoxOTRSPParity->setEnabled(false);
-    comboBoxOTRSPStop->insertItem(0,"1");
-    comboBoxOTRSPStop->setCurrentIndex(0);
-    comboBoxOTRSPStop->setEnabled(false);
-    lineEditOTRSPPort->clear();
-    RadioPinComboBox->insertItem(0, "9");
-    RadioPinComboBox->insertItem(0, "8");
-    RadioPinComboBox->insertItem(0, "7");
-    RadioPinComboBox->insertItem(0, "6");
-    RadioPinComboBox->insertItem(0, "5");
-    RadioPinComboBox->insertItem(0, "4");
-    RadioPinComboBox->insertItem(0, "3");
-    RadioPinComboBox->insertItem(0, "2");
-    TransmitPinComboBox->insertItem(0, "9");
-    TransmitPinComboBox->insertItem(0, "8");
-    TransmitPinComboBox->insertItem(0, "7");
-    TransmitPinComboBox->insertItem(0, "6");
-    TransmitPinComboBox->insertItem(0, "5");
-    TransmitPinComboBox->insertItem(0, "4");
-    TransmitPinComboBox->insertItem(0, "3");
-    TransmitPinComboBox->insertItem(0, "2");
-    StereoPinComboBox->insertItem(0, "9");
-    StereoPinComboBox->insertItem(0, "8");
-    StereoPinComboBox->insertItem(0, "7");
-    StereoPinComboBox->insertItem(0, "6");
-    StereoPinComboBox->insertItem(0, "5");
-    StereoPinComboBox->insertItem(0, "4");
-    StereoPinComboBox->insertItem(0, "3");
-    StereoPinComboBox->insertItem(0, "2");
-#ifdef Q_OS_LINUX
-    ParallelPortComboBox->insertItem(0, "/dev/parport1");
-    ParallelPortComboBox->insertItem(0, "/dev/parport0");
-#endif
-#ifdef Q_OS_WIN
-    ParallelPortComboBox->insertItem(0, "0x278");
-    ParallelPortComboBox->insertItem(0, "0x378");
-#endif
-    ParallelPortComboBox->setEditable(true); // allow other port numbers to be entered
-    ParallelPortComboBox->setCurrentIndex(0);
-#ifdef Q_OS_LINUX
-    ParallelPortComboBox->setToolTip("Parallel port access requires the PPDEV kernel module and being in the correct group (usually lp).");
-#endif
-#ifdef Q_OS_WIN
-    ParallelPortComboBox->setToolTip("Parallel port access uses INPOUT32.");
-#endif
     connect(radiodialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(radiodialog_buttons, SIGNAL(accepted()), this, SLOT(updateRadio()));
     updateFromSettings();
@@ -178,7 +119,8 @@ void RadioDialog::updateRadio()
         settings.setValue(s_radios_poll[i],radioPollTimeEdit[i]->text());
         settings.setValue(s_radios_port[i],radioDevEdit[i]->text());
         settings.setValue(s_radios_rig[i],catptr.hamlibModelIndex(radioMfgComboBox[i]->currentIndex(),
-                                                                       radioModelComboBox[i]->currentIndex()));
+                                                                   radioModelComboBox[i]->currentIndex()));
+        settings.setValue(s_radios_ptt_type[i],radioPttComboBox[i]->currentIndex());
     }
     settings.setValue(s_radios_rigctld_enable[0],checkBoxRigctld1->isChecked());
     settings.setValue(s_radios_rigctld_enable[1],checkBoxRigctld2->isChecked());
@@ -186,56 +128,7 @@ void RadioDialog::updateRadio()
     settings.setValue(s_radios_rigctld_ip[1],lineEditIp2->text());
     settings.setValue(s_radios_rigctld_port[0],lineEditPort1->text());
     settings.setValue(s_radios_rigctld_port[1],lineEditPort2->text());
-    settings.setValue(s_radios_focus,RadioPinComboBox->currentIndex() + 2);
-    settings.setValue(s_radios_txfocus,TransmitPinComboBox->currentIndex() + 2);
-    settings.setValue(s_radios_stereo,StereoPinComboBox->currentIndex() + 2);
-    settings.setValue(s_radios_focusinvert,RadioInvertCheckBox->isChecked());
-    settings.setValue(s_radios_txfocusinvert,TransmitInvertCheckBox->isChecked());
-    settings.setValue(s_radios_ptt_type[0],radioPttComboBox[0]->currentIndex());
-    settings.setValue(s_radios_ptt_type[1],radioPttComboBox[1]->currentIndex());
-    bool pportUpdate=false;
-    if (settings.value(s_radios_pport,defaultParallelPort).toString()!=ParallelPortComboBox->currentText()) {
-        settings.setValue(s_radios_pport,ParallelPortComboBox->currentText());
-        pportUpdate=true;
-    }
-    if (settings.value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool()!=checkBoxParallelPort->isChecked()) {
-        settings.setValue(s_radios_pport_enabled,checkBoxParallelPort->isChecked());
-        pportUpdate=true;
-    }
-    bool otrspUpdate=false;
-    if (settings.value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()!=checkBoxOTRSP->isChecked()) {
-        settings.setValue(s_otrsp_enabled,checkBoxOTRSP->isChecked());
-        if (settings.value(s_otrsp_enabled,s_otrsp_enabled_def).toBool()) {
-            otrspUpdate=true;
-        }
-    }
-    if (settings.value(s_otrsp_device,s_otrsp_device_def).toString()!=lineEditOTRSPPort->text()) {
-        settings.setValue(s_otrsp_device,lineEditOTRSPPort->text());
-        otrspUpdate=true;
-    }
-    bool microHamUpdate=false;
-    if (settings.value(s_microham_enabled,s_microham_enabled_def).toBool()!=checkBoxMicroHam->isChecked()) {
-        settings.setValue(s_microham_enabled,checkBoxMicroHam->isChecked());
-        if (settings.value(s_microham_enabled,s_microham_enabled_def).toBool()) {
-            microHamUpdate=true;
-        }
-    }
-    if (settings.value(s_microham_device,s_microham_device_def).toString()!=lineEditMicroHamPort->text()) {
-        settings.setValue(s_microham_device,lineEditMicroHamPort->text());
-        microHamUpdate=true;
-    }
-    settings.sync();
-    // in case parallel port is changed
-    if (pportUpdate) {
-        emit(setParallelPort());
-    }
-    // restart otrsp if needed
-    if (otrspUpdate) {
-        emit(setOTRSP());
-    }
-    if (microHamUpdate) {
-        emit(setMicroHam());
-    }
+
     // this restarts the radio comms
     emit(startRadios());
     accept();
@@ -251,8 +144,8 @@ void RadioDialog::updateFromSettings()
     lineEditIp2->setText(settings.value(s_radios_rigctld_ip[1],s_radios_rigctld_ip_def[1]).toString());
     lineEditPort1->setText(settings.value(s_radios_rigctld_port[0],s_radios_rigctld_port_def[0]).toString());
     lineEditPort2->setText(settings.value(s_radios_rigctld_port[1],s_radios_rigctld_port_def[1]).toString());
+
     for (int i=0;i<NRIG;i++) {
-        radioPttComboBox[i]->setCurrentIndex(settings.value(s_radios_ptt_type[i],s_radios_ptt_type_def).toInt());
         radioDevEdit[i]->setText(settings.value(s_radios_port[i],defaultSerialPort[i]).toString());
         radioPollTimeEdit[i]->setText(settings.value(s_radios_poll[i],s_radios_poll_def[i]).toString());
         int indx1;
@@ -261,6 +154,8 @@ void RadioDialog::updateFromSettings()
         radioMfgComboBox[i]->setCurrentIndex(indx1);
         radioModelComboBox[i]->setCurrentIndex(indx2);
 
+        radioDevEdit[i]->setText(settings.value(s_radios_port[i],s_radios_port_def[i]).toString());
+        radioPollTimeEdit[i]->setText(settings.value(s_radios_poll[i],s_radios_poll_def[i]).toString());
         switch (settings.value(s_radios_baud[i],4800).toInt()) {
         case 1200:
             radioBaudComboBox[i]->setCurrentIndex(4);
@@ -278,27 +173,8 @@ void RadioDialog::updateFromSettings()
             radioBaudComboBox[i]->setCurrentIndex(0);
             break;
         }
+        radioPttComboBox[i]->setCurrentIndex(settings.value(s_radios_ptt_type[i],s_radios_ptt_type_def).toInt());
     }
-    RadioPinComboBox->setCurrentIndex(settings.value(s_radios_focus,defaultParallelPortAudioPin).toInt() - 2);
-    TransmitPinComboBox->setCurrentIndex(settings.value(s_radios_txfocus,defaultParallelPortTxPin).toInt() - 2);
-    StereoPinComboBox->setCurrentIndex(settings.value(s_radios_stereo,defaultParallelPortStereoPin).toInt() - 2);
-    RadioInvertCheckBox->setChecked(settings.value(s_radios_focusinvert,false).toBool());
-    TransmitInvertCheckBox->setChecked(settings.value(s_radios_txfocusinvert,false).toBool());
-    bool found=false;
-    for (int i=0;i<ParallelPortComboBox->count();i++) {
-        if (ParallelPortComboBox->itemText(i)==settings.value(s_radios_pport,defaultParallelPort).toString()) {
-            ParallelPortComboBox->setCurrentIndex(i);
-            found=true;
-        }
-    }
-    if (!found) {
-        ParallelPortComboBox->setCurrentIndex(0);
-    }
-    checkBoxParallelPort->setChecked(settings.value(s_radios_pport_enabled,s_radios_pport_enabled_def).toBool());
-    checkBoxOTRSP->setChecked(settings.value(s_otrsp_enabled,s_otrsp_enabled_def).toBool());
-    lineEditOTRSPPort->setText(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
-    checkBoxMicroHam->setChecked(settings.value(s_microham_enabled,s_microham_enabled_def).toBool());
-    lineEditMicroHamPort->setText(settings.value(s_microham_device,s_microham_device_def).toString());
 }
 
 /*! called if dialog rejected */
@@ -329,3 +205,4 @@ void RadioDialog::rigctld2Checked(bool b)
     lineEditIp2->setEnabled(b);
     lineEditPort2->setEnabled(b);
 }
+

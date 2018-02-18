@@ -14,9 +14,7 @@
 TEMPLATE = app
 TARGET = so2sdr
 
-QT += network sql
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-greaterThan(QT_MAJOR_VERSION, 4): QT += serialport
+QT += network sql widgets serialport
 
 
 HEADERS += cwmessagedialog.h \
@@ -68,7 +66,10 @@ HEADERS += cwmessagedialog.h \
     microham.h \
     history.h \
     bandmapinterface.h \
-    contest_paqp.h
+    contest_paqp.h \
+    logdelegate.h \
+    so2r.h \
+    so2rdialog.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -84,7 +85,8 @@ FORMS += cwmessagedialog.ui \
     cabrillo.ui \
     detailededit.ui \
     ssbmessagedialog.ui \
-    settingsdialog.ui
+    settingsdialog.ui \
+    so2rdialog.ui
 SOURCES += cwmessagedialog.cpp \
     main.cpp \
     serial.cpp \
@@ -137,19 +139,14 @@ SOURCES += cwmessagedialog.cpp \
     microham.cpp \
     history.cpp \
     bandmapinterface.cpp \
-    contest_paqp.cpp
+    contest_paqp.cpp \
+    logdelegate.cpp \
+    so2r.cpp \
+    so2rdialog.cpp
 
  unix { 
     include (../common.pri)
-    if (lessThan(QT_MAJOR_VERSION, 5)) {
-         include (../qtserialport/src/serialport/qt4support/serialport.prf)
-     }
     include (../qttelnet/src/qttelnet.pri)
-    if (lessThan(QT_MAJOR_VERSION, 5)) {
-         INCLUDEPATH += ../qtserialport/include/QtSerialPort
-         INCLUDEPATH += ../qtserialport/include
-         QMAKE_LIBDIR += ../qtserialport/src/serialport
-    }
 
     CONFIG += link_pkgconfig
     PKGCONFIG += hamlib
@@ -158,25 +155,6 @@ SOURCES += cwmessagedialog.cpp \
     SOURCES += linux_pp.cpp 
 
     install.target = install
-    if (lessThan(QT_MAJOR_VERSION, 5)) {
-    install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
-        install -d $$SO2SDR_INSTALL_DIR/lib; \
-        install -o root -m 644 ../qtserialport/src/serialport/libQtSerialPort.so $$SO2SDR_INSTALL_DIR/lib; \
-        install -o root -m 644 ../qtserialport/src/serialport/libQtSerialPort.so.1 $$SO2SDR_INSTALL_DIR/lib; \
-        install -d $$SO2SDR_INSTALL_DIR/share/applications; \
-        install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps; \
-        install -d $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps; \
-        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr; \
-        install -d $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
-        install -o root -m 755 so2sdr $$SO2SDR_INSTALL_DIR/bin; \
-        install -o root -m 644 ../so2sdr.desktop $$SO2SDR_INSTALL_DIR/share/applications; \
-        install -o root -m 644 ../share/* $$SO2SDR_INSTALL_DIR/share/so2sdr; \
-        install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
-        install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
-        install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png;
-
-
-    } else {
     install.commands = install -d $$SO2SDR_INSTALL_DIR/bin; \
         install -d $$SO2SDR_INSTALL_DIR/lib; \
         install -d $$SO2SDR_INSTALL_DIR/share/applications; \
@@ -190,19 +168,6 @@ SOURCES += cwmessagedialog.cpp \
         install -o root -m 644 ../share/help/* $$SO2SDR_INSTALL_DIR/share/so2sdr/help; \
         install -o root -m 644 ../share/icon24x24.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/24x24/apps/so2sdr.png; \
         install -o root -m 644 ../share/icon48x48.png $$SO2SDR_INSTALL_DIR/share/icons/hicolor/48x48/apps/so2sdr.png;
-    }
+
     QMAKE_EXTRA_TARGETS += install
-}
-
-#Windows flags for i686-w64-ming32 cross-compile
-#RTC 12/14/2015 needs updating after QtSerialPort change
-win32 {
-    include (../qextserialport_1.2.0_win/src/qextserialport.pri)
-    include (../qttelnet/src/qttelnet.pri)
-
-    CONFIG += release
-    HEADERS += win_pp.h
-    SOURCES += win_pp.cpp
-    LIBS += -lhamlib
-    RC_FILE = so2sdr.rc
 }

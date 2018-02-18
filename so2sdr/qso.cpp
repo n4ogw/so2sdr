@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -42,6 +42,7 @@ Qso::Qso(int n)
     mode = RIG_MODE_CW;
     modeType = CWType;
     band = 0;
+    bandColumn=0;
     freq = 0;
     zone=0;
     nr=0;
@@ -54,7 +55,6 @@ Qso::Qso(int n)
     PfxName.clear();
     prefill.clear();
     sun.clear();
-    logInfo.clear();
     worked = 0;
     for (int ii = 0; ii < MMAX; ii++) {
         isamult[ii] = false;
@@ -66,6 +66,36 @@ Qso::~Qso()
     delete [] rcv_exch;
     delete [] snt_exch;
     delete[] exchange_type;
+}
+
+void Qso::clear()
+{
+    for (int i = 0; i < n_exchange; i++) {
+        rcv_exch[i].clear();
+        snt_exch[i].clear();
+    }
+    isMM = false;
+    isMobile = false;
+    dupe = false;
+    valid = false;
+    pts  = 0;
+    for (int ii = 0; ii < MMAX; ii++) {
+        mult[ii]    = -1;
+        newmult[ii] = -1;
+        isamult[ii] = false;
+    }
+    zone=0;
+    band=0;
+    bandColumn=0;
+    nr=0;
+    call.clear();
+    exch.clear();
+    country_name.clear();
+    mult_name.clear();
+    PfxName.clear();
+    prefill.clear();
+    sun.clear();
+    worked=0;
 }
 
 void Qso::setExchangeType(int i, FieldTypes f)

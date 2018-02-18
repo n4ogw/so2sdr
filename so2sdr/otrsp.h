@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,6 +19,7 @@
 #ifndef OTRSP_H
 #define OTRSP_H
 #include <QSettings>
+#include <QByteArray>
 #include "defines.h"
 #include <QSerialPort>
 
@@ -28,7 +29,7 @@
  * -limited support at present: only uses RX1, RX2, TX1, TX2, and RX1S commands
  * -does not receive any data from the device, only sends out commands
  * -connection settings fixed at 9600N81
- * -tested on SO2RDUINO device (N4OGW
+ * -tested on SO2RDUINO device (N4OGW)
  */
 
 class OTRSP : public QObject
@@ -36,8 +37,9 @@ class OTRSP : public QObject
 Q_OBJECT
 
 public:
-    OTRSP(QSettings& s, QObject *parent = 0);
+    OTRSP(QSettings& s, int n, QObject *parent = 0);
     ~OTRSP();
+    QByteArray name() const;
     bool OTRSPIsOpen() const;
     void switchAudio(int nr);
     void toggleStereo(int nr); 
@@ -46,15 +48,18 @@ public:
     void sendCommand(QByteArray command);
 signals:
     void otrspError(const QString &);
+    void otrspNameSet(QByteArray,int);
 
 public slots:
     void openOTRSP();
 
 private:
+    int        nr;
     bool       OTRSPOpen;
     bool       stereo;
     QSerialPort *OTRSPPort;
     QSettings&  settings;
+    QByteArray deviceName;
     void closeOTRSP();
 };
 

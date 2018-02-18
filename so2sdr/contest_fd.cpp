@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! ARRL Field Day */
-FD::FD()
+FD::FD(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(false);
     dupeCheckingEveryBand = true;
@@ -136,7 +136,7 @@ bool FD::validateExchange(Qso *qso)
     if (!separateExchange(qso)) return(false);
     if (exchElement.size() < 2) return(false);
     bool ok = false;
-
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     // get the exchange

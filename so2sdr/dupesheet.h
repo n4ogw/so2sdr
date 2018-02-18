@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,6 +18,7 @@
  */
 #ifndef DUPESHEET_H
 #define DUPESHEET_H
+#include "defines.h"
 #include "ui_dupesheet.h"
 
 /*!
@@ -30,11 +31,18 @@ Q_OBJECT
 public:
     explicit DupeSheet(QWidget *parent = 0);
     ~DupeSheet();
+    void clear();
+    void updateDupesheet(QByteArray call);
+
 signals:
     void closed(bool);
 
 protected:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
+
+private:
+    QList<char>          dupeCallsKey[dsColumns];
+    QList<QByteArray>    dupeCalls[dsColumns];
 };
 #endif

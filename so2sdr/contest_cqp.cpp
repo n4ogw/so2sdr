@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! California QSO Party */
-CQP::CQP()
+CQP::CQP(QSettings &cs,QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
     dupeCheckingEveryBand = true;
@@ -121,7 +121,7 @@ unsigned int CQP::sntFieldShown() const
 bool CQP::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
-
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     // check prefix

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -148,4 +148,34 @@ QString userDirectory()
 #ifdef Q_OS_LINUX
 	return QDir::homePath() + "/.so2sdr";
 #endif
+}
+
+/*! convert mode to ModeType
+*/
+ModeTypes getModeType(rmode_t mode)
+{
+    switch (mode) {
+    case RIG_MODE_NONE: return CWType;
+    case RIG_MODE_AM: return PhoneType;
+    case RIG_MODE_CW: return CWType;
+    case RIG_MODE_USB: return PhoneType;
+    case RIG_MODE_LSB: return PhoneType;
+    case RIG_MODE_RTTY: return DigiType;
+    case RIG_MODE_FM: return PhoneType;
+    case RIG_MODE_WFM: return PhoneType;
+    case RIG_MODE_CWR: return CWType;
+    case RIG_MODE_RTTYR: return DigiType;
+    case RIG_MODE_AMS: return PhoneType;
+    case RIG_MODE_PKTLSB: return DigiType;
+    case RIG_MODE_PKTUSB: return DigiType;
+    case RIG_MODE_PKTFM: return DigiType;
+    case RIG_MODE_ECSSUSB: return PhoneType;
+    case RIG_MODE_ECSSLSB: return PhoneType;
+    case RIG_MODE_FAX: return DigiType;
+    case RIG_MODE_SAM: return PhoneType;
+    case RIG_MODE_SAL: return PhoneType;
+    case RIG_MODE_SAH: return PhoneType;
+    case RIG_MODE_DSB: return PhoneType;
+    default:return CWType;
+    }
 }

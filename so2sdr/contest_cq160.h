@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,17 +23,12 @@
 
 class CQ160 : public Contest {
 public:
-    CQ160();
+    CQ160(QSettings &cs,QSettings &ss);
     ~CQ160();
+    QString bandLabel(int i) const;
+    bool bandLabelEnable(int i) const;
     void addQso(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("CQ-160-CW");
-    }
-    ContestType contestType() const
-    {
-        return Cq160_t;
-    }
+    ContestType contestType() const { return Cq160_t;}
     QByteArray prefillExchange(Qso *qso);
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
@@ -42,6 +37,8 @@ public:
     int Score() const;
     unsigned int sntFieldShown() const;
     int numberField() const;
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
 };
 
 #endif // CONTEST_CQ160_H

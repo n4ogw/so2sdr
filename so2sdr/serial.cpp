@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,6 +19,7 @@
 #include "defines.h"
 #include "serial.h"
 #include <stdio.h>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QHostAddress>
@@ -28,9 +29,6 @@
 #include <QThread>
 #include <QTimerEvent>
 #include <QByteArray>
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
 
 // need to define this internal hamlib function
 extern "C" HAMLIB_EXPORT(int) write_block(hamlib_port_t *p, const char *txbuffer, size_t count);
@@ -63,16 +61,19 @@ RigSerial::RigSerial(int nr,QString s)
     rig_set_debug_level(RIG_DEBUG_NONE);
 
     // load all backends and step through them. list_caps function defined below.
-    rig_load_all_backends();
-    rig_list_foreach(list_caps,NULL);
+    // only radio 1 will do this, since one static copy is kept for both radios
+    if (nr==0) {
+        rig_load_all_backends();
+        rig_list_foreach(list_caps,NULL);
 
-    // sort list by manufacturer name
-    qSort(mfg.begin(),mfg.end());
-    qSort(mfgName.begin(),mfgName.end());
+        // sort list by manufacturer name
+        qSort(mfg.begin(),mfg.end());
+        qSort(mfgName.begin(),mfgName.end());
 
-    // sort list of rigs for each manuacturer
-    for (int i=0;i<mfg.size();i++) {
-        qSort(mfg[i].models.begin(),mfg[i].models.end());
+        // sort list of rigs for each manuacturer
+        for (int i=0;i<mfg.size();i++) {
+            qSort(mfg[i].models.begin(),mfg[i].models.end());
+        }
     }
     settings=0;
     for (int i=0;i<nRigSerialTimers;i++) timerId[i]=0;
@@ -207,7 +208,7 @@ RigSerial::~RigSerial()
     closeRig();
     rig_cleanup(rig);
     if (socket) delete socket;
-    delete settings;
+    if (settings) delete settings;
 }
 
 
@@ -220,7 +221,7 @@ void RigSerial::run()
     openRig();
     openSocket();
     timerId[0] = startTimer(settings->value(s_radios_poll[nrig],500).toInt());
-    timerId[1] = startTimer(0);
+    timerId[1] = startTimer(RIG_SEND_TIMER);
 }
 
 /*! stop timers
@@ -532,36 +533,6 @@ QString RigSerial::modeStr()
     }
 }
 
-/*! convert mode to ModeType
-*/
-ModeTypes RigSerial::getModeType(rmode_t mode) const
-{
-    switch (mode) {
-    case RIG_MODE_NONE: return CWType;
-    case RIG_MODE_AM: return PhoneType;
-    case RIG_MODE_CW: return CWType;
-    case RIG_MODE_USB: return PhoneType;
-    case RIG_MODE_LSB: return PhoneType;
-    case RIG_MODE_RTTY: return DigiType;
-    case RIG_MODE_FM: return PhoneType;
-    case RIG_MODE_WFM: return PhoneType;
-    case RIG_MODE_CWR: return CWType;
-    case RIG_MODE_RTTYR: return DigiType;
-    case RIG_MODE_AMS: return PhoneType;
-    case RIG_MODE_PKTLSB: return DigiType;
-    case RIG_MODE_PKTUSB: return DigiType;
-    case RIG_MODE_PKTFM: return DigiType;
-    case RIG_MODE_ECSSUSB: return PhoneType;
-    case RIG_MODE_ECSSLSB: return PhoneType;
-    case RIG_MODE_FAX: return DigiType;
-    case RIG_MODE_SAM: return PhoneType;
-    case RIG_MODE_SAL: return PhoneType;
-    case RIG_MODE_SAH: return PhoneType;
-    case RIG_MODE_DSB: return PhoneType;
-    default:return CWType;
-    }
-}
-
 
 /*! return current type of mode: CW, PHONE, DIGI
  */
@@ -620,6 +591,7 @@ void RigSerial::openRig()
     token_t t = rig_token_lookup(rig, "rig_pathname");
     rig_set_conf(rig,t,settings->value(s_radios_port[nrig],defaultSerialPort[nrig]).toString().toLatin1().data());
     rig->state.rigport.parm.serial.rate=settings->value(s_radios_baud[nrig],s_radios_baud_def[nrig]).toInt();
+    /*
     t = rig_token_lookup(rig,"ptt_type");
     token_t t_rts = rig_token_lookup(rig,"rts_state");
     token_t t_dtr = rig_token_lookup(rig,"dtr_state");
@@ -642,7 +614,7 @@ void RigSerial::openRig()
     default:
         rig_set_conf(rig,t,"RIG");
     }
-
+*/
     // default starting freq/mode if communications to rigs
     // initially fails (or rig==RIG_MODEL_DUMMY)
     if (rigFreq==0 && nrig==0) rigFreq = 14000000;
@@ -657,7 +629,6 @@ void RigSerial::openRig()
     }
     if (r == RIG_OK) {
         radioOK = true;
-
         // get ext params struct for K3 in order to get IF center freq
         if (model == 229) {
             confParamsIF = rig_ext_lookup(rig, "ifctr");
@@ -827,3 +798,23 @@ void RigSerial::tcpError(QAbstractSocket::SocketError e)
 }
 
 
+int RigSerial::band() const
+{
+    // in case caught in the middle of a qsy
+    int f=qsyFreq;
+    if (f!=0) {
+        return getBand(f);
+    } else {
+        return getBand(rigFreq);
+    }
+}
+
+QString RigSerial::bandName()
+{
+    int f=qsyFreq;
+    if (f!=0) {
+        return bandNames[getBand(f)];
+    } else {
+        return bandNames[getBand(rigFreq)];
+    }
+}

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -37,7 +37,8 @@
 #include <hamlib/riglist.h>
 
 // how often to check for commands to be sent to radios
-const int RIG_SEND_TIMER=20;
+// Note: setting this to zero will cause 100% CPU when using hamlib dummy rig
+const int RIG_SEND_TIMER=2;
 
 class hamlibModel
 {
@@ -59,7 +60,8 @@ public:
 const int nModes=21;
 const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
                             "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB" };
-
+const QString bandNames[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
+                                    "70cm","1.25M","33cm","23cm"};
 class QSettings;
 class QTcpSocket;
 
@@ -75,8 +77,9 @@ Q_OBJECT
 public:
     RigSerial(int,QString);
     ~RigSerial();
+    int band() const;
+     QString bandName();
     void clearRIT();
-    ModeTypes getModeType(rmode_t mode) const;
     int getRigFreq();
     QString hamlibModelName(int i, int indx) const;
     int hamlibNMfg() const;

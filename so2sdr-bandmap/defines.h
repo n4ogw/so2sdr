@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = "2.1.5";
+const QByteArray Version = "2.3.0";
 
 // syntax change for Qt version 5
 #if QT_VERSION < 0x050000
@@ -145,6 +145,10 @@ const int BANDMAP_FONT_PIX_SIZE=10;
 /*!  pixel location from left edge of field for calls in bandmap
  */
 const int BANDMAP_CALL_X=15;
+
+/*! timeout to wait after freq change detected before peak detecting (ms)
+ */
+const int TUNING_TIMEOUT=1500;
 
 const int MAX_W=800; // max pixmap width
 

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -101,6 +101,7 @@ private slots:
     void start();
     void stop();
     void readData();
+    void resetTuningTimer();
     void startConnection();
     void udpRead();
     void updateLevel(int);
@@ -152,6 +153,7 @@ private:
     QCheckBox            checkBoxMark;
     QSlider              slider;
     QString              ipAddress;
+    QTimer               tuningTimer;
     int                  flow;
     int                  fhigh;
     QTcpSocket           *socket;

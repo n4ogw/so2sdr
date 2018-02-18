@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,8 +21,6 @@
 
 #include "defines.h"
 #include "ui_contestoptdialog.h"
-#include <QIntValidator>
-#include <QLineEdit>
 #include <QSettings>
 #include <QString>
 
@@ -52,6 +50,7 @@ private:
     QIntValidator *offValidator;
     QSettings *settings;
     QLineEdit *sent[MAX_EXCH_FIELDS];
+    QLabel *sentName[MAX_EXCH_FIELDS];
 };
 
 #endif

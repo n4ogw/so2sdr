@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QString>
 #include "cabrillodialog.h"
+#include "utils.h"
 #include "defines.h"
 
 
@@ -33,6 +34,7 @@ CabrilloDialog::CabrilloDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+    lineEditOperators->setValidator(new UpperValidator(lineEditOperators));
     lineEditOperators->clear();
     lineEditLocation->clear();
     textEditSoapbox->clear();
@@ -40,6 +42,7 @@ CabrilloDialog::CabrilloDialog(QWidget *parent) : QDialog(parent)
     sent[1]=lineEditExch2;
     sent[2]=lineEditExch3;
     sent[3]=lineEditExch4;
+    for (int i=0;i<4;i++) sent[i]->setValidator(new UpperValidator(sent[i]));
 
     // pointers to objects in form
     // must update if MAX_CAB_FIELDS changes

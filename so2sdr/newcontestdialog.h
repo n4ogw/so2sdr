@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,6 +20,8 @@
 #define NEWCONTESTDIALOG_H
 
 #include <QByteArray>
+#include <QList>
+#include <QString>
 #include "ui_newcontestdialog.h"
 
 /*!
@@ -31,11 +33,13 @@ Q_OBJECT
 
 public:
     NewDialog(QWidget *parent = 0);
-    void addContest(QByteArray name);
-    int newIndx();
+    bool readContestList(QString fileName);
+    QString selectedContest();
+signals:
+    void newContestError(const QString &);
 
 private:
-    int newContestIndx;
+    QList<QByteArray>    configFiles;
 };
 
 #endif

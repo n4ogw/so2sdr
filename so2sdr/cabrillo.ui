@@ -36,8 +36,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>463</width>
-        <height>731</height>
+        <width>480</width>
+        <height>714</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -48,13 +48,26 @@
          </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label_11">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>CONTEST:</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBoxContestName"/>
+          <widget class="QComboBox" name="comboBoxContestName">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_2">
@@ -380,6 +393,12 @@
          </item>
          <item row="14" column="0">
           <widget class="QLabel" name="labelCabrillo1">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -396,6 +415,12 @@
          </item>
          <item row="15" column="0">
           <widget class="QLabel" name="labelCabrillo2">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -412,6 +437,12 @@
          </item>
          <item row="16" column="0">
           <widget class="QLabel" name="labelCabrillo3">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -428,6 +459,12 @@
          </item>
          <item row="17" column="0">
           <widget class="QLabel" name="labelCabrillo4">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -444,6 +481,12 @@
          </item>
          <item row="18" column="0">
           <widget class="QLabel" name="labelCabrillo5">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -460,6 +503,12 @@
          </item>
          <item row="19" column="0">
           <widget class="QLabel" name="labelCabrillo6">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -476,6 +525,12 @@
          </item>
          <item row="20" column="0">
           <widget class="QLabel" name="labelCabrillo7">
+           <property name="font">
+            <font>
+             <family>Liberation Sans</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string/>
            </property>

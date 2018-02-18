@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -40,7 +40,7 @@ public:
     int findPfx(QByteArray prefix, int& zone, Cont &continent, bool &o) const;
     int idPfx(Qso *qso, bool &qsy) const;
     void initialize(double la, double lo, int ZoneType);
-    void mySunTimes(QString &sunTime);
+    QString mySunTimes() const;
     int nCountries() const;
     QByteArray pfxName(int indx) const;
     void readCtyFile(QByteArray cty_file);

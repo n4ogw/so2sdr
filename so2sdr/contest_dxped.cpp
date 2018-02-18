@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -25,7 +25,7 @@
    //
    // tracks DXCC and CQ zones
  */
-Dxped::Dxped()
+Dxped::Dxped(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
     dupeCheckingEveryBand = true;
@@ -115,7 +115,7 @@ unsigned int Dxped::sntFieldShown() const
 
 bool Dxped::validateExchange(Qso *qso)
 {
-    Q_UNUSED(qso);
+    qso->bandColumn=qso->band;
     separateExchange(qso);
     determineMultType(qso);
 

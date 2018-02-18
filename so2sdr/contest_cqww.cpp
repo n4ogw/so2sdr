@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! CQ WW contest */
-CQWW::CQWW()
+CQWW::CQWW(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setZoneMax(40);
     setZoneType(0);
@@ -125,6 +125,7 @@ bool CQWW::validateExchange(Qso *qso)
 // exchange same for all : RST zone
 {
     if (!separateExchange(qso)) return(false);
+    qso->bandColumn=qso->band;
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     bool ok = false;

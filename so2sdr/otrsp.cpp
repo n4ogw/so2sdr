@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,23 +16,29 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QSettings>
 #include "defines.h"
 #include "otrsp.h"
 #include <QSerialPortInfo>
 
-OTRSP::OTRSP(QSettings& s, QObject *parent) : QObject(parent),settings(s)
+OTRSP::OTRSP(QSettings& s, int n, QObject *parent) : QObject(parent),settings(s)
 {
-    QSerialPortInfo info(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
+    nr            = n;
+    QSerialPortInfo info(settings.value(s_otrsp_device[nr],s_otrsp_device_def).toString());
     OTRSPPort = new QSerialPort(info);
     OTRSPOpen     = false;
     stereo        = false;
+    deviceName.clear();
 }
 
 OTRSP::~OTRSP()
 {
     closeOTRSP();
     delete OTRSPPort;
+}
+
+QByteArray OTRSP::name() const
+{
+    return deviceName;
 }
 
 /*!
@@ -63,6 +69,7 @@ void OTRSP::switchAudio(int nr)
     if (!stereo) {
         OTRSPPort->write(rxcmd[nr],4);
     }
+
 }
 
 void OTRSP::switchTransmit(int nr)
@@ -107,7 +114,7 @@ void OTRSP::openOTRSP()
         closeOTRSP();
         OTRSPOpen = false;
     }
-    OTRSPPort->setPortName(settings.value(s_otrsp_device,s_otrsp_device_def).toString());
+    OTRSPPort->setPortName(settings.value(s_otrsp_device[nr],s_otrsp_device_def).toString());
 
     // currently only 9600N81
     OTRSPPort->setBaudRate(QSerialPort::Baud9600);
@@ -125,12 +132,23 @@ void OTRSP::openOTRSP()
     }
     OTRSPPort->setRequestToSend(false);
     OTRSPPort->setDataTerminalReady(false);
+
     OTRSPOpen = true;
+
+    // get device name
+    sendCommand("?NAME\r");
+    if (OTRSPPort->waitForReadyRead(1000)) {
+        deviceName=OTRSPPort->readAll();
+        deviceName=deviceName.simplified();
+    } else {
+        deviceName=QByteArray("Unknown");
+    }
+    emit(otrspNameSet(deviceName,nr));
 }
 
 void OTRSP::closeOTRSP()
 {
-    OTRSPPort->close();
+    if (OTRSPOpen) OTRSPPort->close();
 }
 
 

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -28,9 +28,6 @@
 #include "defines.h"
 #include "signal.h"
 #include "call.h"
-#ifdef Q_OS_WIN
-#include "fftw3.h"
-#endif
 #ifdef Q_OS_LINUX
 #include <fftw3.h>
 #endif
@@ -62,6 +59,7 @@ public:
     void setFFTSize(sampleSizes s);
     void setFreq(int, int, int, int);
     void setInvert(bool);
+    void setTuning(bool);
     void setCalcError();
 
 signals:
@@ -92,6 +90,7 @@ private:
     bool          iqCorrect;
     bool          iqData;
     bool          iqPlotOpen;
+    bool          isTuning;
     bool          peakDetect;
     bool          *sigOn;
     bool          swapIq;

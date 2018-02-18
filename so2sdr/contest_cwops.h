@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,23 +23,17 @@
 
 class Cwops : public Contest {
 public:
-    Cwops();
+    Cwops(QSettings &cs,QSettings &ss);
     ~Cwops();
     void addQso(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("CW-OPS");
-    }
-    ContestType contestType() const
-    {
-        return Cwops_t;
-    }
+    ContestType contestType() const { return Cwops_t;}
     int fieldWidth(int col) const;
     int numberField() const;
     void setupContest(QByteArray MultFile[2], const Cty * cty);
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     bool validateExchange(Qso *qso);
+    bool showQsoPtsField() const { return false;}
 };
 
 #endif

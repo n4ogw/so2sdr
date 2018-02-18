@@ -33,6 +33,7 @@ so2sdr-bandmap/qrc_so2sdr-bandmap.cpp
 
 # ASCII Doc generated files
 doc/*.html
+so2sdr-bandmap/doc
 doc/*.pdf
 doc/so2sdr.xml
 so2sdr/doc/*

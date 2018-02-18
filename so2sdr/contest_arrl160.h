@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,18 +24,13 @@
 
 class ARRL160 : public Contest {
 public:
-    ARRL160(bool);
+    ARRL160(bool,QSettings &cs,QSettings &ss);
     ~ARRL160();
+    QString bandLabel(int i) const;
+    bool bandLabelEnable(int i) const;
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("ARRL-160");
-    }
-    ContestType contestType() const
-    {
-        return Arrl160_t;
-    }
+    ContestType contestType() const { return Arrl160_t;}
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;
@@ -43,6 +38,8 @@ public:
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     int Score() const;
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
 private:
     bool usVe;
 };

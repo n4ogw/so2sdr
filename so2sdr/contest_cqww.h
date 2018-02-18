@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,17 +23,10 @@
 
 class CQWW : public Contest {
 public:
-    CQWW();
+    CQWW(QSettings &cs,QSettings &ss);
     ~CQWW();
     void addQso(Qso *qso);
-    QString cabrilloName() const
-    {
-        return("CQ-WW-CW");
-    }
-    ContestType contestType() const
-    {
-        return Cqww_t;
-    }
+    ContestType contestType() const { return Cqww_t;}
     QByteArray prefillExchange(int cntry, int zone);
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
@@ -41,6 +34,8 @@ public:
     unsigned int rcvFieldShown() const;
     unsigned int sntFieldShown() const;
     int numberField() const;
+    bool showQsoPtsField() const { return true;}
+    int rstField() const { return 0;}
 };
 
 #endif

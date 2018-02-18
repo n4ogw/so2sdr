@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,23 +23,17 @@
 
 class Sweepstakes : public Contest {
 public:
-    Sweepstakes();
+    Sweepstakes(QSettings &cs,QSettings &ss);
     ~Sweepstakes();
-    QString cabrilloName() const
-    {
-        return("ARRL-SS-CW");
-    }
     QVariant columnName(int c) const;
-    ContestType contestType() const
-    {
-        return Sweepstakes_t;
-    }
+    ContestType contestType() const { return Sweepstakes_t;}
     void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
     bool validateExchange(Qso *qso);
     void addQso(Qso *qso);
     int fieldWidth(int col) const;
     int numberField() const;
     unsigned int rcvFieldShown() const;
+    bool showQsoPtsField() const { return false;}
     unsigned int sntFieldShown() const;
 };
 

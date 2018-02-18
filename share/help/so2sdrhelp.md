@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.2.0
+## SO2SDR Help file version 2.3.0
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -53,7 +53,7 @@ copies of so2sdr-bandmap.ini (see below).
 
 #### Linux
 
-You will need the following development libraries installed: Qt, FFTW, Hamlib, and PortAudio. Qt version 5.x is recommended.
+You will need the following development libraries installed: Qt (version 5), FFTW, Hamlib, and PortAudio. 
 Other various development packages include g++, Git, and pkg-config. 
 
 
@@ -72,7 +72,7 @@ Other various development packages include g++, Git, and pkg-config.
     make
     ```
 
-    ``make -j 2``  will use 2 cores and go faster.
+    ``make -jx``  will use x cores and go faster.
     Subdirectory Makefiles are created from the top level Makefile.
 
 5. (as superuser) 
@@ -167,8 +167,7 @@ adds an extra delay before switching radios.
 
 #### Radio and SO2R switching setup
 
-![Radio/SO2R Dialog](./radio_dialog.png "Radio/SO2R Dialog")
-
+![Radio Dialog](./radio_dialog.png "Radio Dialog")
 
 * Radio control uses the Hamlib library. The current version
 being used is shown at the top.  There are two basic modes of operation,
@@ -202,10 +201,16 @@ clicking "OK" in the radio dialog the "R1" and "R2"
 indicators at the bottom of the main window
 should say "ON" and turn black. Red here indicates a problem.
 
+
+![SO2R Dialog](./so2r_dialog.png "SO2R Dialog")
+
 * Three different methods are supported for switch audio
 and keying between the two radios:
     1. OTRSP : Open Two Radio Switching Protocol. This supports
-     USB-connected two-radio switches like the SO2RDuino box.
+    USB-connected two-radio switches like the SO2RDuino box.
+	Two different OTRSP devices can be connected; if "enable
+	focus change events" is checked, this device will receive
+	radio/audio focus changes.
     2. Parallel port : This option toggles pins on the
      parallel port. To use this in Linux, you need the PPDEV
      kernel option, and your user name must be in the
@@ -644,7 +649,8 @@ the "Call Updated QSL" message from being sent when not needed.
 * {PTTON1} {PTTOFF1} : turn radio 1 PTT on/off
 * {PTTON2} {PTTOFF2} : turn radio 2 PTT on/off
 * {PTTONR2} {PTTOFFR2} : turn inactive radio PTT on/off
-
+* {RECORD} : record a voice message. Followed by a string which is the filename
+that will be recorded. {RECORD}call will record call.wav
 [Return to top](#top)
 
 ---
@@ -700,8 +706,11 @@ pushbutton in the "SSB Messages" dialog.
 
         {RECORD}1
 
-* As of version 2.2.0, basic CQ and S&P operation with voice messages works,
+* As of version 2.3.0, basic CQ and S&P operation with voice messages works,
 but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.
+
+![Voice Messages](./voice_messages.png "Voice Messages")
+
 
 [Return to top](#top)
 
@@ -899,7 +908,13 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
-## version 2.2.0 (11/xx/2017)
+## version 2.3.0 (02/18/2018)
+
+* many internal changes and reorganization of code
+* better support for multi-mode contests
+* improve bandmap peak detection: when radio is tuned, momentarily turn off peak detection
+
+## version 2.2.0 (11/19/2017)
 
 * rewrite and simplification of the audio play and record features. See the section
 in the help file on voice messages.

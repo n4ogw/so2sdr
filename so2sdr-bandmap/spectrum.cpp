@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,12 +21,6 @@
 #include <QDebug>
 #include <QDir>
 #include "spectrum.h"
-
-#ifdef Q_OS_WIN
-#include <windows.h>
-#define _USE_MATH_DEFINES
-#include <cmath>
-#endif
 
 /*! setFFTSize
  *
@@ -95,6 +89,7 @@ void Spectrum::setFFTSize(sampleSizes s)
         aGain[i]  = 0.;
         aPhase[i] = 0.;
     }
+    isTuning=false;
     // intialize to unit gain and zero phase
     aGain[0] = 1.0;
     makeGainPhase();
@@ -507,16 +502,14 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
 
     for (int i = 0; i < fftSize; i++) {
         spec_tmp[i] = log(spec_tmp[i]);
-#ifdef Q_OS_LINUX
         if (qIsInf(spec_tmp[i])) spec_tmp[i] = -1.0e-16;
-#endif
     }
 
     measureBackgroundLog(bga, sigma, spec_tmp);
     // put upper limit on background. Prevents display "blacking out"
     // from static crashes
     if (bga > 0.0) bga = 0.0;
-    if (peakDetect) {
+    if (!isTuning && peakDetect) {
         detectPeaks(bga, sigma, spec_tmp);
     }
     if (scale == 2) {
@@ -1245,4 +1238,9 @@ int Spectrum::closestFreq(int fin) const
         }
     }
     return f;
+}
+
+void Spectrum::setTuning(bool b)
+{
+    isTuning=b;
 }

@@ -6,10 +6,11 @@ radio (SDR) spectral displays. Runs under Linux and Windows. Version
 and 2) so2sdr-bandmap, the SDR spectral display. So2sdr-bandmap
 can be used separately from so2sdr.
 
-Copyright 2010-2017 R. Torsten Clay N4OGW
+Copyright 2010-2018 R. Torsten Clay N4OGW
 
 # News
 
+* 02/18/2018 lots of code updates; Qt4 support dropped- you must now use Qt5
 * 12/02/2016 support for voice keyer using sound card
 
 
@@ -18,7 +19,7 @@ Copyright 2010-2017 R. Torsten Clay N4OGW
 
 ## Install instructions (Linux)
 
-You will need the following development libraries installed: Qt4 or Qt5, FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
+You will need the following development libraries installed: Qt (version 5), FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
 
 1. Clone the git repository to your local machine:
 ```
@@ -26,7 +27,7 @@ You will need the following development libraries installed: Qt4 or Qt5, FFTW, H
 ```
 or download one of the source code distributions and extract it:
 ````
-    tar xzvof so2sdr-2.1.5.tgz
+    tar xzvof so2sdr-2.3.0.tgz
 ````
 
 2. By default, so2sdr will be installed in /usr/local/bin, and associated
@@ -37,7 +38,7 @@ change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri
 
 4. make
 
-(make -j 2  will use 2 cores and go faster)
+(make -jx  will use x cores and go faster)
 
 
 N.B. Subdirectory Makefiles will be created from the top level Makefile.
@@ -48,14 +49,6 @@ N.B. Subdirectory Makefiles will be created from the top level Makefile.
 
 
 -----------------------
-
-
-## Building for Windows
-
-See the file windows/so2sdr-windows-compile.md for information on how
-to cross-compile so2sdr for Windows using the [MXE](http://mxe.cc) environment.
-
-------------------------
 
 
 Additional help is available in the file share/so2sdrhelp.html or via the

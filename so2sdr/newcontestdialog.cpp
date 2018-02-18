@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,30 +16,35 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QFile>
 #include <QFileDialog>
 #include "newcontestdialog.h"
 
 NewDialog::NewDialog(QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
-    newContestIndx = 0;
+    configFiles.clear();
 }
 
-/*!
-   Return index number of selected contest
- */
-int NewDialog::newIndx()
+QString NewDialog::selectedContest()
 {
-    newContestIndx = NewContestComboBox->currentIndex();
-    return(newContestIndx);
+    return(configFiles.at(NewContestComboBox->currentIndex()));
 }
 
-/*!
-   Add a contest to list
-
-   These are read from config file contest_list.dat by the main program
- */
-void NewDialog::addContest(QByteArray name)
+bool NewDialog::readContestList(QString fileName)
 {
-    NewContestComboBox->insertItem(newContestIndx++, name);
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        emit(newContestError("Can't open contest list file at "+fileName));
+        return(false);
+    }
+    while (!file.atEnd()) {
+        QByteArray buffer = file.readLine();
+        int        i      = buffer.indexOf(",");
+        QByteArray name   = buffer.mid(0, i).trimmed();
+        NewContestComboBox->addItem(name);
+        configFiles.append(buffer.right(buffer.size() - i - 1).trimmed());
+    }
+    file.close();
+    return(true);
 }

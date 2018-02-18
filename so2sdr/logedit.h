@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,34 +30,7 @@
 #include <QTableView>
 #include "contest.h"
 #include "defines.h"
-#include "log.h"
 #include "utils.h"
-
-/*!
-  subclass of delegate for displaying log in main window
-  */
-class logDelegate : public QStyledItemDelegate
-{
-Q_OBJECT
-
-public:
-    logDelegate(QObject *parent, const Contest *c, bool *e, QList<int> *l);
-signals:
-    void startLogEdit();
-    void editLogRow(QModelIndex);
-protected:
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual QWidget *	createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-    bool editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index );
-    bool eventFilter(QObject *obj, QEvent *event);
-public slots:
-    void startDetailedEdit();
-private:
-    const Contest *contest;
-    bool *logSearchFlag;
-    QList<int> *searchList;
-    QModelIndex currentlyEditingIndex;
-};
 
 /*!
   subclass of QSqlTableModel needed to specify flags separately for

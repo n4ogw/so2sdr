@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,7 +23,7 @@
    b=true : qth is US/VE
    b=false: qth is DX
  */
-ARRLDX::ARRLDX(bool b)
+ARRLDX::ARRLDX(bool b, QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setZoneType(1); // this also chooses ARRL rather than CQ countries
     usVe = b;       // true: station is US/VE false: DX
@@ -124,7 +124,7 @@ unsigned int ARRLDX::sntFieldShown() const
 bool ARRLDX::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
-
+    qso->bandColumn=qso->band;
     fillDefaultRST(qso);
     finalExch[1].clear();
     qso->rcv_exch[0].clear();
@@ -154,7 +154,7 @@ bool ARRLDX::validateExchange(Qso *qso)
     } else {
         // DX stations
         if (qso->isamult[0]) {
-            ok = valExch_rst_state(0, qso->mult[0]);
+            ok = valExch_rst_state(0, qso->mult[0], qso);
             if (ok) {
                 qso->pts = 3;
             }

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,7 +20,7 @@
 #include "log.h"
 
 /*! CQ WPX contest */
-WPX::WPX()
+WPX::WPX(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
     setZoneMax(40);
@@ -156,6 +156,7 @@ bool WPX::validateExchange(Qso *qso)
     if (!separateExchange(qso)) return(false);
     qso->isamult[0] = true;
     qso->isamult[1] = false;
+    qso->bandColumn=qso->band;
 
     // RST NR
     bool ok = valExch_rst_nr(qso);
@@ -166,7 +167,6 @@ bool WPX::validateExchange(Qso *qso)
 
     // determine prefix for mult
     wpxPrefix(qso->call, qso->mult_name);
-
     return(ok);
 }
 
@@ -174,7 +174,7 @@ bool WPX::validateExchange(Qso *qso)
 void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
 
 // determines prefix from call
-// rewritten 05/30/2017
+// rewritten 05/30/2018
 //  -may not correctly handle callsigns with two /'s: will assume pfx before FIRST / is correct
 {
     const char digits[10] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
@@ -256,3 +256,7 @@ void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
         pfx=portPfx;
     }
 }
+
+
+
+

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -43,13 +43,14 @@ Q_OBJECT
 public:
     SSBMessageDialog(QWidget *parent = 0);
     ~SSBMessageDialog();
-    void initialize(QSettings *s);
+    void initialize(QSettings *cs, QSettings *s);
+    bool isPlaying() const {return playing; }
     friend class So2sdr;
 
 signals:
+    void recordingStatus(bool);
     void sendMsg(QByteArray,bool);
-    void setPtt1(int);
-    void setPtt2(int);
+    void setPtt(int nr,int state);
 
 public slots:
     void recMessage(QString);
@@ -74,6 +75,7 @@ private:
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     const static int  m=1;
 
+    bool           playing;
     bool           recording;
     QButtonGroup   excPlayGroup;
     QButtonGroup   playGroup;
@@ -94,8 +96,9 @@ private:
     QPushButton    *funcRecPtr[N_FUNC];
     QPushButton    *funcPlayPtr[N_FUNC];
     UpperValidator *upperValidate;
-    QSettings      *settings;
+    QSettings      *csettings,*settings;
     QString         message;
+    QString         cmd;
     int             playMessageRig;
     QProcess        *scriptProcess;
 };

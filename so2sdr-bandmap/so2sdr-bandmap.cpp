@@ -1,4 +1,4 @@
-/*! Copyright 2010-2017 R. Torsten Clay N4OGW
+/*! Copyright 2010-2018 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -223,6 +223,8 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
            SLOT(plotGainFunc(double, double, double, double)));
     connect(spectrumProcessor, SIGNAL(plotPhaseFunc(double, double, double, double)), iqDialog,
            SLOT(plotPhaseFunc(double, double, double, double)));
+    tuningTimer.setSingleShot(true);
+    connect(&tuningTimer,SIGNAL(timeout()),this,SLOT(resetTuningTimer()));
 
     // vfoPos is the position of the red line indicating center
     vfoPos          = (height()-toolBarHeight)/ 2;
@@ -1028,8 +1030,10 @@ void So2sdrBandmap::readData()
         switch (cmd) {
         case BANDMAP_CMD_SET_FREQ: // set frequency
             f=data.toInt(&ok);
-            if  (ok) {
+            if  (ok && centerFreq!=f) {
                 centerFreq=f;
+                spectrumProcessor->setTuning(true);
+                tuningTimer.start(TUNING_TIMEOUT);
                 int b=getBand(f);
                 setBandName(b);
 
@@ -1448,4 +1452,10 @@ void So2sdrBandmap::showHelp()
     }
     help->show();
     help->setFocus();
+}
+
+void So2sdrBandmap::resetTuningTimer()
+{
+    qDebug("reset!");
+    spectrumProcessor->setTuning(false);
 }
