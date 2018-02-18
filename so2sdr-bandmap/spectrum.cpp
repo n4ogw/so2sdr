@@ -239,7 +239,7 @@ void Spectrum::findCQ(int flow,int fhigh,QList<Call> &callList)
 {
     // peak detect must be turned on
     if (!peakDetect) {
-        return;
+       return;
     }
     sigCQ = 0;
     Signal *sigListCQtmp;
@@ -1243,4 +1243,9 @@ int Spectrum::closestFreq(int fin) const
 void Spectrum::setTuning(bool b)
 {
     isTuning=b;
+}
+
+void Spectrum::setPeakDetect(bool b)
+{
+    peakDetect=b;
 }

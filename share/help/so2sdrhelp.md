@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.3.0
+## SO2SDR Help file version 2.3.1
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.3.1 (02/18/2018)
+
+* fix bug: peak detection not turned of during transmit
 
 ## version 2.3.0 (02/18/2018)
 

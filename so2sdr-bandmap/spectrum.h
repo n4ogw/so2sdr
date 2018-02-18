@@ -59,6 +59,7 @@ public:
     void setFFTSize(sampleSizes s);
     void setFreq(int, int, int, int);
     void setInvert(bool);
+    void setPeakDetect(bool);
     void setTuning(bool);
     void setCalcError();
 

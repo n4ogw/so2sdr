@@ -1076,11 +1076,13 @@ void So2sdrBandmap::readData()
         case BANDMAP_CMD_TX: // set transmit state
             tx=true;
             txLabel.setText("<font color=#FF0000>TX");
+            spectrumProcessor->setPeakDetect(false);
             settings->setValue(s_sdr_peakdetect,false);
             break;
         case BANDMAP_CMD_RX: // cancel transmit state
             tx=false;
             txLabel.setText("<font color=#000000>TX");
+            spectrumProcessor->setPeakDetect(true);
             settings->setValue(s_sdr_peakdetect,true);
             break;
         case BANDMAP_CMD_FIND_FREQ: // find open frequency
