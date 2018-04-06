@@ -23,6 +23,7 @@ so2sdr/debug
 so2sdr-bandmap/release
 so2sdr-bandmap/debug
 so2sdr-bandmap/qrc_so2sdr-bandmap.cpp
+moc_predefs.h
 # Binary files
 *.o
 

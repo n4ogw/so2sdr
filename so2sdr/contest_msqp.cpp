@@ -16,11 +16,11 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "contest_kqp.h"
+#include "contest_msqp.h"
 #include "log.h"
 
-/*! Kansas QSO Party */
-KQP::KQP(QSettings &cs, QSettings &ss) : Contest(cs,ss)
+/*! Mississippi QSO Party */
+MSQP::MSQP(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
     dupeCheckingEveryBand = true;
@@ -30,30 +30,28 @@ KQP::KQP(QSettings &cs, QSettings &ss) : Contest(cs,ss)
     prefill               = false;
     finalExch             = new QByteArray[nExch];
     exchange_type         = new FieldTypes[nExch];
-    exchange_type[0]      = RST;
-    exchange_type[1]      = DMult;
+    exchange_type[0]=RST;
+    exchange_type[1]=DMult;
     multFieldHighlight[0] = -1;
-    multFieldHighlight[1] = SQL_COL_RCV2; // kqp_ks.txt
-    withinState = true;
+    setWithinState(true);
 }
 
-KQP::~KQP()
+MSQP::~MSQP()
 {
     delete[] logFieldPrefill;
     delete[] finalExch;
     delete[] exchange_type;
 }
 
-void KQP::addQso(Qso *qso)
-
+void MSQP::addQso(Qso *qso)
 // determine qso point value, increase nqso, update score
 // update mult count
 {
     if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
-        if (qso->modeType==CWType) {
-            qso->pts = 3;
-        } else if (qso->modeType==PhoneType) {
+        if (qso->modeType==CWType || qso->modeType==DigiType) {
             qso->pts = 2;
+        } else if (qso->modeType==PhoneType) {
+            qso->pts = 1;
         }
     } else {
         qso->pts = 0;
@@ -62,7 +60,7 @@ void KQP::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
-int KQP::fieldWidth(int col) const
+int MSQP::fieldWidth(int col) const
 
 // width in pixels of data fields shown
 {
@@ -76,32 +74,32 @@ int KQP::fieldWidth(int col) const
 /*!
    no qso number
  */
-int KQP::numberField() const
+int MSQP::numberField() const
 {
     return(-1);
 }
 
-unsigned int KQP::rcvFieldShown() const
+unsigned int MSQP::rcvFieldShown() const
 // 1 2=mult --> show
 {
     return(2);
 }
 
-void KQP::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
+void MSQP::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
 {
     readMultFile(MultFile, cty);
     zeroScore();
 }
 
-unsigned int KQP::sntFieldShown() const
+unsigned int MSQP::sntFieldShown() const
 {
     return(0); // show nothing
 }
 
 /*!
-   KQP exchange validator
+   MSQP exchange validator
  */
-bool KQP::validateExchange(Qso *qso)
+bool MSQP::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);
 
@@ -137,9 +135,9 @@ bool KQP::validateExchange(Qso *qso)
         ok_part[0]=true;
     }
 
-    // look for state or KS county
+    // look for state or MS county
 
-    // both KS and non-KS can work stations with county mults
+    // both MS and non-MS can work stations with county mults
     int m=-1;
     int multField=-1;
     if (qso->isamult[0]) {
@@ -152,42 +150,27 @@ bool KQP::validateExchange(Qso *qso)
                 break;
             }
         }
-        // special case: KS stations get the "KS" mult for any KS county worked
-        if (withinState) {
-            if (ok_part[1]) {
-                qso->isamult[1]=true;
-               // qso->isamult[0]=false;
-                qso->mult[1]=0;
-               // qso->mult[0]=-1; // don't count as a county mult
-                qso->newmult[0]=false;
-            }
-        }
-    }
-    // non-KS only works KS
-    if (withinState) {
-        // KS station mults
-        // check first for DX:
+    } else if (withinState && qso->isamult[1]) {
+        // MS stations: DXCC also mults; no need to check exchange here, copy last
+        // logged string which is not a number
         for (int i=exchElement.size()-1;i>=0;i--) {
-            // ignore any 'KS' entered here
-            if (exchElement.at(i)=="KS") continue;
-
-            m=isAMult(exchElement.at(i),1);
-            if (m!=-1) {
-                ok_part[1]=true;
-                qso->mult[1]=m;
+            bool ok=false;
+            exchElement.at(i).toInt(&ok);
+            if (!ok) {
                 multField=i;
+                ok_part[1]=true;
                 break;
             }
         }
-        if (ok_part[1]) {
-            finalExch[1]=exchElement.at(multField);
-        }
+    }
+    if (ok_part[1]) {
+        finalExch[1]=exchElement.at(multField);
+    }
 
-        // only copy into log if exchange is validated
-        if (ok_part[0] && ok_part[1]) {
-            for (int i = 0; i < nExch; i++) {
-                qso->rcv_exch[i] = finalExch[i];
-            }
+    // only copy into log if exchange is validated
+    if (ok_part[0] && ok_part[1]) {
+        for (int i = 0; i < nExch; i++) {
+            qso->rcv_exch[i] = finalExch[i];
         }
     }
     // if exchange is ok and a mobile, we need a mobile dupe check
@@ -205,7 +188,15 @@ bool KQP::validateExchange(Qso *qso)
 
   b=true for station in state; false for stations outside
   */
-void KQP::setWithinState(bool b)
+void MSQP::setWithinState(bool b)
 {
     withinState=b;
+    if (b) {
+        // MS stations
+        multFieldHighlight[0] = SQL_COL_RCV2; // county, state, province
+        multFieldHighlight[1] = SQL_COL_CALL; // for DXCC mults, highlight call
+    } else {
+        // outside MS
+        multFieldHighlight[0] = SQL_COL_RCV2; // county
+    }
 }

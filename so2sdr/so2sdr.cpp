@@ -1702,6 +1702,8 @@ void So2sdr::exchCheck(int nr,const QString &exch)
     } else {
         validLabel[nr]->clear();
     }
+    // update colors in case dupe status changed
+    setDupeColor(nr,qso[nr]->dupe);
 }
 
 /*!
@@ -3526,30 +3528,6 @@ void So2sdr::showRecordingStatus(bool b)
 
 void So2sdr::setDupeColor(int nr,bool dupe)
 {
-    /*
-    if (dupe) {
-        if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
-
-        } else {
-            lineEditCall[nr]->setPalette(QPalette(DUPE_COLOR));
-        }
-        if (lineEditExchange[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
-
-        } else {
-            lineEditExchange[nr]->setPalette(QPalette(DUPE_COLOR));
-        }
-    } else {
-        if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
-            if (!altDActive || nr!=altDActiveRadio) {
-                if (cqMode[nr]) {
-                    lineEditCall[nr]->setPalette(QPalette(CQ_COLOR));
-                } else {
-                    lineEditCall[nr]->setPalette(QPalette(SP_COLOR));
-                }
-            }
-        }
-    }
-    */
     if (dupe) {
         if (lineEditCall[nr]->palette().color(QPalette::Base)==DUPE_COLOR) {
 

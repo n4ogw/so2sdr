@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.3.1
+## SO2SDR Help file version 2.3.2
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.3.2 (04/05/2018)
+
+* support Mississippi qso party
 
 ## version 2.3.1 (02/18/2018)
 

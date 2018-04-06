@@ -430,17 +430,17 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     // call can only be worked once on any band
     if (!DupeCheckingEveryBand) {
         if (!settings.value(c_multimode,c_multimode_def).toBool()) {
-            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL='" + qso->call + "'", db);
+            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'", db);
         } else {
             // multimode: if voice mode, check for dupe with LSB, USB, or FM
             // @todo this would be much simpler if modeType was stored in log, but this requires changing the so2sdr log
             // format
             if (qso->modeType==PhoneType) {
-                m.setQuery("SELECT * FROM log WHERE valid=1 and CALL='" + qso->call + "' and  \
+                m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "' and  \
                        (MODE="+QByteArray::number(RIG_MODE_AM)+" OR MODE="+QByteArray::number(RIG_MODE_LSB)+" OR MODE="+ \
                         QByteArray::number(RIG_MODE_USB)+")'",db);
            } else if (qso->modeType==CWType) {
-                m.setQuery("SELECT * FROM log WHERE valid=1 and CALL='" + qso->call + "' and  \
+                m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "' and  \
                        (MODE="+QByteArray::number(RIG_MODE_CW)+" OR MODE="+QByteArray::number(RIG_MODE_CWR)+")'",db);
             }
 
@@ -459,7 +459,7 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     } else {
         // if mobile station, check for mobile dupe option. In this
         // case, count dupe only if exchange is identical
-        QString query="SELECT * FROM log WHERE valid=1 and call='" + qso->call + "' AND band=" + QString::number(qso->band);
+        QString query="SELECT * FROM log WHERE valid=1 and call like '" + qso->call + "' AND band=" + QString::number(qso->band);
 
         if (qso->isMobile && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
             QString exch=qso->rcv_exch[csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
@@ -476,16 +476,16 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             query=query+ " AND ";
             switch (csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
             case 1:
-                query=query+"rcv1='"+exch+"'";
+                query=query+"rcv1 like '"+exch+"'";
                 break;
             case 2:
-                query=query+"rcv2='"+exch+"'";
+                query=query+"rcv2 like '"+exch+"'";
                 break;
             case 3:
-                query=query+"rcv3='"+exch+"'";
+                query=query+"rcv3 like '"+exch+"'";
                 break;
             case 4:
-                query=query+"rcv4='"+exch+"'";
+                query=query+"rcv4 like '"+exch+"'";
                 break;
             default:
                 return(false);
@@ -500,7 +500,7 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             dupe=true;
         }
         if (FillWorked) {
-            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL='" + qso->call + "'", db);
+            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'", db);
             for (int i = 0; i < m.rowCount(); i++) {
                 qso->worked += bits[m.record(i).value(SQL_COL_BAND).toInt()];
             }
@@ -1305,6 +1305,17 @@ int Log::idPfx(Qso *qso, bool &qsy) const
      if (name == "KQP") {
          contest = new KQP(csettings,settings);
          static_cast<KQP*>(contest)->setWithinState(false);
+         snt_exch[0]="RST";
+         snt_exch[1]=settings.value(s_state,s_state_def).toString();
+     }
+     if (name == "MSQP-MS") {
+         contest = new MSQP(csettings,settings);
+         static_cast<MSQP*>(contest)->setWithinState(true);
+         snt_exch[0]="RST";
+     }
+     if (name == "MSQP") {
+         contest = new MSQP(csettings,settings);
+         static_cast<MSQP*>(contest)->setWithinState(false);
          snt_exch[0]="RST";
          snt_exch[1]=settings.value(s_state,s_state_def).toString();
      }

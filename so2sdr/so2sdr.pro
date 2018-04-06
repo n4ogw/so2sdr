@@ -69,7 +69,8 @@ HEADERS += cwmessagedialog.h \
     contest_paqp.h \
     logdelegate.h \
     so2r.h \
-    so2rdialog.h
+    so2rdialog.h \
+    contest_msqp.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -142,7 +143,8 @@ SOURCES += cwmessagedialog.cpp \
     contest_paqp.cpp \
     logdelegate.cpp \
     so2r.cpp \
-    so2rdialog.cpp
+    so2rdialog.cpp \
+    contest_msqp.cpp
 
  unix { 
     include (../common.pri)

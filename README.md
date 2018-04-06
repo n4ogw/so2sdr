@@ -10,6 +10,7 @@ Copyright 2010-2018 R. Torsten Clay N4OGW
 
 # News
 
+* 04/05/2018 support Mississippi qso party
 * 02/18/2018 lots of code updates; Qt4 support dropped- you must now use Qt5
 * 12/02/2016 support for voice keyer using sound card
 
