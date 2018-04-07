@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.3.2
+## SO2SDR Help file version 2.3.3
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.3.3 (04/07/2018)
+
+* bug fix MS qso party cfg file
+* remove check on changed freq when qsying bandmap; fails in some cases
 
 ## version 2.3.2 (04/05/2018)
 

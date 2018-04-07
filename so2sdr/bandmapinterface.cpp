@@ -399,15 +399,7 @@ void BandmapInterface::setAddOffset(int f,int nr)
  */
 void BandmapInterface::bandmapSetFreq(int f,int nr)
 {
-    static int oldFreq[2]={0,0};
-
-    // check to see if frequency actually changed
     if (f<0 || nr<0 || nr>=NRIG) return;
-    if (oldFreq[nr]>0) {
-        if (oldFreq[nr]==f) return;
-    } else {
-        oldFreq[nr]=f;
-    }
     if (bandmapOn[nr] && socket[nr].state()==QAbstractSocket::ConnectedState)
     {
         band[nr]=getBand(f);
