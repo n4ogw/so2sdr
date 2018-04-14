@@ -46,6 +46,7 @@ signals:
     void editLogRow(QModelIndex);
     void editLogRowDetail(QModelIndex);
     void setOrigRecord(QModelIndex);
+    void update();
 
 protected:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -54,8 +55,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 public slots:
     void startDetailedEdit();
-private slots:
-    void editingFinished();
+
 private:
     Contest& contest;
     bool *logSearchFlag;

@@ -140,6 +140,7 @@ signals:
     void setExch4(const QString &);
     void startLogEdit();
     void ungrab();
+    void update();
 
 public slots:
     void mobileDupeCheck(Qso *qso);

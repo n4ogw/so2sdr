@@ -765,6 +765,8 @@ bool So2sdr::setupContest()
     connect(log,SIGNAL(progressCnt(int)),&progress,SLOT(setValue(int)));
     connect(log,SIGNAL(progressMax(int)),&progress,SLOT(setMaximum(int)));
     connect(log,SIGNAL(multByBandEnabled(bool)),options->MultsByBandCheckBox,SLOT(setEnabled(bool)));
+    connect(log,SIGNAL(update()),this,SLOT(rescore()));
+    connect(log,SIGNAL(update()),So2sdrStatusBar,SLOT(clearMessage()));
     log->initializeContest();
     // make extra exchange fields inactive/hidden. Focus sent exchange entry
     for (int i=log->nExch();i<4;i++) {

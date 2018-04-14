@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.3.3
+## SO2SDR Help file version 2.3.4
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.3.4 (04/14/2018)
+
+* bug fix: update score after onscreen log edit
+* update to phone macros in all cfg files
 
 ## version 2.3.3 (04/07/2018)
 

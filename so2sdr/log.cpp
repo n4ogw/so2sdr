@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QSqlError>
 #include <QSqlField>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
@@ -1069,6 +1070,7 @@ void Log::updateRecord(QSqlRecord r)
     while (model->canFetchMore()) {
         model->fetchMore();
     }
+    emit(update());
 }
 
 void Log::updateHistory()
@@ -1376,6 +1378,7 @@ int Log::idPfx(Qso *qso, bool &qsy) const
          connect(logdel,SIGNAL(startLogEdit()),this,SIGNAL(startLogEdit()));
          connect(logdel,SIGNAL(editLogRow(QModelIndex)),this,SLOT(startQsoEditRow(QModelIndex)));
          connect(logdel,SIGNAL(editLogRowDetail(QModelIndex)),this,SLOT(startDetailedQsoEditRow(QModelIndex)));
+         connect(logdel,SIGNAL(closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)),this,SIGNAL(update()));
          connect(contest,SIGNAL(mobileDupeCheck(Qso*)),this,SLOT(mobileDupeCheck(Qso*)));
          connect(contest,SIGNAL(clearDupe()),this,SIGNAL(clearDupe()));
          cty->initialize(lat,lon,contest->zoneType());

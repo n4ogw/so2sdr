@@ -93,18 +93,58 @@ void DetailedEdit::loadRecord(const QSqlRecord &r,int nexchange)
  */
 void DetailedEdit::updateRecord()
 {
-    rec.setValue(SQL_COL_SNT1,QVariant(sentExch1LineEdit->text()));
-    rec.setValue(SQL_COL_SNT2,QVariant(sentExch2LineEdit->text()));
-    rec.setValue(SQL_COL_SNT3,QVariant(sentExch3LineEdit->text()));
-    rec.setValue(SQL_COL_SNT4,QVariant(sentExch4LineEdit->text()));
-    rec.setValue(SQL_COL_RCV1,QVariant(rcvExch1LineEdit->text()));
-    rec.setValue(SQL_COL_RCV2,QVariant(rcvExch2LineEdit->text()));
-    rec.setValue(SQL_COL_RCV3,QVariant(rcvExch3LineEdit->text()));
-    rec.setValue(SQL_COL_RCV4,QVariant(rcvExch4LineEdit->text()));
-    rec.setValue(SQL_COL_FREQ,QVariant(freqLineEdit->text().toInt()));
-    rec.setValue(SQL_COL_MODE,QVariant(modeComboBox->currentIndex()));
-    rec.setValue(SQL_COL_DATE,QVariant(dateTimeEdit->date().toString("MMddyyyy")));
-    rec.setValue(SQL_COL_TIME,QVariant(dateTimeEdit->time().toString("hhmm")));
-    rec.setValue(SQL_COL_CALL,QVariant(callLineEdit->text()));
+    for (int i=0;i<SQL_N_COL;i++) rec.setGenerated(i,false);
+    if (sentExch1LineEdit->text()!=rec.value(SQL_COL_SNT1).toString()) {
+        rec.setValue(SQL_COL_SNT1,QVariant(sentExch1LineEdit->text()));
+        rec.setGenerated(SQL_COL_SNT1,true);
+    }
+    if (sentExch1LineEdit->text()!=rec.value(SQL_COL_SNT2).toString()) {
+        rec.setValue(SQL_COL_SNT2,QVariant(sentExch2LineEdit->text()));
+        rec.setGenerated(SQL_COL_SNT2,true);
+    }
+    if (sentExch1LineEdit->text()!=rec.value(SQL_COL_SNT3).toString()) {
+        rec.setValue(SQL_COL_SNT3,QVariant(sentExch3LineEdit->text()));
+        rec.setGenerated(SQL_COL_SNT3,true);
+    }
+    if (sentExch1LineEdit->text()!=rec.value(SQL_COL_SNT4).toString()) {
+        rec.setValue(SQL_COL_SNT4,QVariant(sentExch4LineEdit->text()));
+        rec.setGenerated(SQL_COL_SNT4,true);
+    }
+    if (rcvExch1LineEdit->text()!=rec.value(SQL_COL_RCV1).toString()) {
+        rec.setValue(SQL_COL_RCV1,QVariant(rcvExch1LineEdit->text()));
+        rec.setGenerated(SQL_COL_RCV1,true);
+    }
+    if (rcvExch2LineEdit->text()!=rec.value(SQL_COL_RCV2).toString()) {
+        rec.setValue(SQL_COL_RCV2,QVariant(rcvExch2LineEdit->text()));
+        rec.setGenerated(SQL_COL_RCV2,true);
+    }
+    if (rcvExch3LineEdit->text()!=rec.value(SQL_COL_RCV3).toString()) {
+        rec.setValue(SQL_COL_RCV3,QVariant(rcvExch3LineEdit->text()));
+        rec.setGenerated(SQL_COL_RCV3,true);
+    }
+    if (rcvExch4LineEdit->text()!=rec.value(SQL_COL_RCV4).toString()) {
+        rec.setValue(SQL_COL_RCV4,QVariant(rcvExch4LineEdit->text()));
+        rec.setGenerated(SQL_COL_RCV4,true);
+    }
+    if (freqLineEdit->text().toInt()!=rec.value(SQL_COL_FREQ).toInt()) {
+        rec.setValue(SQL_COL_FREQ,QVariant(freqLineEdit->text().toInt()));
+        rec.setGenerated(SQL_COL_FREQ,true);
+    }
+    if (modeComboBox->currentIndex()!=rec.value(SQL_COL_MODE).toInt()) {
+        rec.setValue(SQL_COL_MODE,QVariant(modeComboBox->currentIndex()));
+        rec.setGenerated(SQL_COL_MODE,true);
+    }
+    if (dateTimeEdit->date().toString("MMddyyyy")!=rec.value(SQL_COL_DATE).toString()) {
+        rec.setValue(SQL_COL_DATE,QVariant(dateTimeEdit->date().toString("MMddyyyy")));
+        rec.setGenerated(SQL_COL_DATE,true);
+    }
+    if (dateTimeEdit->time().toString("hhmm")!=rec.value(SQL_COL_TIME).toString()) {
+        rec.setValue(SQL_COL_TIME,QVariant(dateTimeEdit->time().toString("hhmm")));
+        rec.setGenerated(SQL_COL_TIME,true);
+    }
+    if (callLineEdit->text()!=rec.value(SQL_COL_CALL).toString()) {
+        rec.setValue(SQL_COL_CALL,QVariant(callLineEdit->text()));
+        rec.setGenerated(SQL_COL_CALL,true);
+    }
     emit(editedRecord(rec));
 }

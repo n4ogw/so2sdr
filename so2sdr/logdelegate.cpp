@@ -97,8 +97,6 @@ QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewIte
     if (index.column()==SQL_COL_VALID) return 0;
 
     QLineEdit *le=new LogQLineEdit(parent);
-    connect(le,SIGNAL(returnPressed()),this,SLOT(editingFinished()));
-    //connect(le,SIGNAL(editingFinished()),this,SLOT(editingFinished()));
     le->installEventFilter(le);
     if (index.column()==SQL_COL_TIME) {
         // validator for time column
@@ -108,11 +106,6 @@ QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewIte
         le->setValidator(new UpperValidator(le));
     }
     return(le);
-}
-
-void logDelegate::editingFinished()
-{
-    emit(logUpdate(currentlyEditingIndex));
 }
 
 /*!
