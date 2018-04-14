@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.3.4
+## SO2SDR Help file version 2.3.5
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.3.5 (04/14/2018)
+
+* bug fix: store auto-CQ time as integer to prevent roundoff issues
+* new feature: automatically download CTY files. 
+* wl_cty.dat is now read from ~/.so2sdr
 
 ## version 2.3.4 (04/14/2018)
 

@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.3.4";
+const QByteArray Version = "2.3.5";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -486,6 +486,9 @@ const bool s_winkey_sidetonepaddle_def=true;
 const QString s_wpm[NRIG]={"winkey/wpm1","winkey/wpm2"};
 const int s_wpm_def[NRIG]={35,35};
 
+const QString s_cty_url="main/ctyurl";
+const QString s_cty_url_def="http://www.country-files.com/cty/wl_cty.dat";
+
 //each of these is an array of variable length
 const QString c_cab[7]={"cabrillo/cab1","cabrillo/cab2","cabrillo/cab3","cabrillo/cab4",
                         "cabrillo/cab5","cabrillo/cab6","cabrillo/cab7"};
@@ -604,7 +607,7 @@ const QString s_settings_exchangelogs="main/exchangelogs";
 const bool s_settings_exchangelogs_def=false;
 
 const QString s_settings_cqrepeat="main/cqrepeat";
-const double s_settings_cqrepeat_def=3.0;
+const double s_settings_cqrepeat_def=3000;
 
 const QString s_settings_duelingcqdelay="main/duelingcqdelay";
 const double s_settings_duelingcqdelay_def=0.0;

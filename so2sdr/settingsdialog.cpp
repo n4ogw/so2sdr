@@ -27,22 +27,28 @@ SettingsDialog::SettingsDialog(QSettings &s, QWidget *parent)  : QDialog(parent)
 {
     setupUi(this);
 
-    // load settings
-    QSYFocusCheckBox->setChecked(settings.value(s_settings_qsyfocus,false).toBool());
-    FocusIndicatorsCheckBox->setChecked(settings.value(s_settings_focusindicators,false).toBool());
-    ExchangeLogCheckBox->setChecked(settings.value(s_settings_exchangelogs,false).toBool());
-    CQRepeatLineEdit->setText(settings.value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
-    AutoSendLineEdit->setText(settings.value(s_settings_autosend,s_settings_autosend_def).toString());
-    DuelingCQLineEdit->setText(settings.value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toString());
     AutoSendComboBox->insertItem(0, "Semi");
     AutoSendComboBox->insertItem(1, "Auto");
-    AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
     connect(settings_dialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(settings_dialog_buttons, SIGNAL(accepted()), this, SLOT(updateSettings()));
+    loadSettings();
 }
 
 SettingsDialog::~SettingsDialog()
 {
+}
+
+void SettingsDialog::loadSettings()
+{
+    QSYFocusCheckBox->setChecked(settings.value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool());
+    FocusIndicatorsCheckBox->setChecked(settings.value(s_settings_focusindicators,s_settings_focusindicators_def).toBool());
+    ExchangeLogCheckBox->setChecked(settings.value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool());
+    AutoSendLineEdit->setText(settings.value(s_settings_autosend,s_settings_autosend_def).toString());
+    CQRepeatLineEdit->setText(QString::number(settings.value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1));
+    DuelingCQLineEdit->setText(settings.value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toString());
+    AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
+    ctyLineEdit->setText(settings.value(s_cty_url,s_cty_url_def).toString());
+    ctyLineEdit->setCursorPosition(0);
 }
 
 void SettingsDialog::updateSettings()
@@ -51,9 +57,10 @@ void SettingsDialog::updateSettings()
     settings.setValue(s_settings_focusindicators,FocusIndicatorsCheckBox->isChecked());
     settings.setValue(s_settings_exchangelogs,ExchangeLogCheckBox->isChecked());
     settings.setValue(s_settings_autosend,AutoSendLineEdit->text().toInt());
-    settings.setValue(s_settings_cqrepeat,CQRepeatLineEdit->text().toDouble());
+    settings.setValue(s_settings_cqrepeat,(int)(CQRepeatLineEdit->text().toDouble()*1000));
     settings.setValue(s_settings_duelingcqdelay,DuelingCQLineEdit->text().toDouble());
     settings.setValue(s_settings_autosend_mode,AutoSendComboBox->currentIndex());
+    settings.setValue(s_cty_url,ctyLineEdit->text().trimmed());
     settings.sync();
     emit(settingsUpdate());
     accept();
@@ -61,12 +68,6 @@ void SettingsDialog::updateSettings()
 
 void SettingsDialog::rejectChanges()
 {
-    QSYFocusCheckBox->setChecked(settings.value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool());
-    FocusIndicatorsCheckBox->setChecked(settings.value(s_settings_focusindicators,s_settings_focusindicators_def).toBool());
-    ExchangeLogCheckBox->setChecked(settings.value(s_settings_exchangelogs,s_settings_exchangelogs_def).toBool());
-    AutoSendLineEdit->setText(settings.value(s_settings_autosend,s_settings_autosend_def).toString());
-    CQRepeatLineEdit->setText(settings.value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
-    DuelingCQLineEdit->setText(settings.value(s_settings_duelingcqdelay,s_settings_duelingcqdelay_def).toString());
-    AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
+    loadSettings();
     reject();
 }

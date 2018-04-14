@@ -40,6 +40,7 @@
 #include <QStyle>
 #include <QThread>
 #include <QTimer>
+#include <QUrl>
 
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
@@ -47,6 +48,7 @@
 #include "cwmessagedialog.h"
 #include "defines.h"
 #include "dupesheet.h"
+#include "filedownloader.h"
 #include "helpdialog.h"
 #include "history.h"
 #include "log.h"
@@ -130,6 +132,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     MasterTextEdit->setDisabled(true);
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     updateNrDisplay();
+
+    updateCty();
 
     // start radio 1; radio 2 will be started after radiodialog mfg and model info is filled out
     cat[0] = new RigSerial(0,settingsFile);
@@ -366,6 +370,7 @@ So2sdr::~So2sdr()
     delete rLabelPtr[1];
     delete winkeyLabel;
     delete grabLabel;
+    if (downloader) delete downloader;
     if (master) delete master;
     delete dupesheet[0];
     delete dupesheet[1];
@@ -440,7 +445,7 @@ void So2sdr::settingsUpdate()
     }
     if (autoCQMode) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     }
 }
 
@@ -1268,7 +1273,7 @@ void So2sdr::autoCQActivate (bool state) {
         clearR2CQ(activeRadio ^ 1);
         autoCQRadio = activeRadio;
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
         autoCQModePause = false;
         autoCQModeWait = true;
         sendLongCQ = true;
@@ -1463,7 +1468,7 @@ void So2sdr::autoSendExch_exch() {
  */
 void So2sdr::autoCQ () {
 
-    int delay = (int) (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() * 1000.0);
+    int delay = settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt();
     if (autoCQModeWait) {
         if (winkey->isSending()) { // prevent switching hysteresis
             autoCQModeWait = false;
@@ -1475,7 +1480,7 @@ void So2sdr::autoCQ () {
     } else if (winkey->isSending()) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     } else if (cqTimer.elapsed() > delay) {
         autoCQModeWait = true;
         switchTransmit(autoCQRadio);
@@ -1486,32 +1491,31 @@ void So2sdr::autoCQ () {
         }
     } else {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - ((double) cqTimer.elapsed() / 1000.0),'f',1) + "s)</font>");
+                              + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0 -
+                                                ((double) cqTimer.elapsed() / 1000.0),'f',1) + "s)</font>");
     }
 }
 
 /*!
   Increment AutoCQ +/- 0.1 sec: alt-PgUP / alt-PgDN
-
-  @todo: this does not work properly if a Winkey is not connected
  */
 void So2sdr::autoCQdelay (bool incr) {
     if (incr) {
-        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() + 0.1);
+        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt() + 100);
     } else {
-        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() - 0.1);
-        if (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble() < 0.0) {
-            settings->setValue(s_settings_cqrepeat, 0.0);
+        settings->setValue(s_settings_cqrepeat,settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt() - 100);
+        if (settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt() < 0) {
+            settings->setValue(s_settings_cqrepeat, 0);
         }
     }
-    progsettings->CQRepeatLineEdit->setText(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toString());
+    progsettings->CQRepeatLineEdit->setText(QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1));
     settings->sync();
     if (autoCQMode && winkey->isSending()) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
-           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1) + "s)</font>");
+           + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     } else {
         So2sdrStatusBar->showMessage("CQ DELAY: " +
-             QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toDouble(),'f',1), 2000);
+             QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1), 2000);
     }
 }
 
@@ -3003,8 +3007,11 @@ bool So2sdr::checkUserDirectory()
     dir.setCurrent(userDirectory());
     if (dir.exists(userDirectory())) {
         dir.mkdir("wav");
-        if (!QFile::exists(userDirectory()+"/wav/wav_settings")) {
-            QFile::copy(dataDirectory()+"/wav_settings",userDirectory()+"/wav/wav_settings");
+        if (!QFile::exists(userDirectory()+"/wl_cty.dat")) {
+            QFile::copy(dataDirectory()+"wl_cty.dat",userDirectory()+"/wl_cty.dat");
+        }
+        if (!QFile::exists(userDirectory()+"/wl_cty-ns.dat")) {
+            QFile::copy(dataDirectory()+"wl_cty-ns.dat",userDirectory()+"/wl_cty-ns.dat");
         }
         return(true);
     }
@@ -3021,8 +3028,11 @@ bool So2sdr::checkUserDirectory()
         if (dir.mkdir(userDirectory())) {
             dir.setCurrent(userDirectory());
             dir.mkdir("wav");
-            if (!QFile::exists(userDirectory()+"/wav/wav_settings")) {
-                QFile::copy(dataDirectory()+"/wav_settings",userDirectory()+"/wav/wav_settings");
+            if (!QFile::exists(userDirectory()+"/wl_cty.dat")) {
+                QFile::copy(dataDirectory()+"wl_cty.dat",userDirectory()+"/wl_cty.dat");
+            }
+            if (!QFile::exists(userDirectory()+"/wl_cty-ns.dat")) {
+                QFile::copy(dataDirectory()+"wl_cty-ns.dat",userDirectory()+"/wl_cty-ns.dat");
             }
             msg->deleteLater();
             return(true);
@@ -3264,6 +3274,7 @@ void So2sdr::initPointers()
     cat[0]        = 0;
     cat[1]        = 0;
     cabrillo      = 0;
+    downloader    = 0;
     log         = 0;
     cwMessage     = 0;
     ssbMessage    = 0;
@@ -3560,5 +3571,105 @@ void So2sdr::setDupeColor(int nr,bool dupe)
                 lineEditExchange[nr]->setPalette(palette2);
             }
         }
+    }
+}
+
+/*! start download of CTY file */
+void So2sdr::updateCty()
+{
+    if (settings->value(s_cty_url,s_cty_url_def).toString().isEmpty()) return;
+    QUrl url(settings->value(s_cty_url,s_cty_url_def).toString());
+    if (!downloader) {
+        downloader = new FileDownloader(url,this);
+    }
+    connect(downloader,SIGNAL(downloaded()),this,SLOT(checkCtyVersion()));
+}
+
+/*! Slot called when CTY file has been downloaded. Checks version to see if
+ * newer than current version, prompts user for update */
+void So2sdr::checkCtyVersion()
+{
+    QByteArray newCty=downloader->downloadedData();
+    if (newCty.contains("=VER")) {
+        // extract version string
+        int indx=newCty.indexOf("=VER");
+        if (newCty.mid(indx+1,7)=="VERSION") {
+            indx=newCty.indexOf("=VER",indx+1);
+        }
+        QString newVer=newCty.mid(indx+4,8);
+        QDate newDate=QDate(newVer.left(4).toInt(),newVer.mid(4,2).toInt(),newVer.right(2).toInt());
+
+        // get current CTY file version
+        QDir dir;
+        dir.setCurrent(userDirectory());
+        QFileInfo oldInfo("wl_cty.dat");
+        bool oldExists=false;
+        QDate oldDate;
+        if (oldInfo.exists()) {
+            QFile oldCty("wl_cty.dat");
+            if (!oldCty.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                downloader->deleteLater();
+                return;
+            }
+            while (!oldCty.atEnd()) {
+                QByteArray line=oldCty.readLine();
+                int indx=line.indexOf("=VER");
+                if (indx==-1 || line.mid(indx+1,7)=="VERSION") continue;
+                QString oldVer=line.mid(indx+4,8);
+                oldDate=QDate(oldVer.left(4).toInt(),oldVer.mid(4,2).toInt(),oldVer.right(2).toInt());
+                oldExists=true;
+            }
+            oldCty.close();
+        }
+
+        // compare dates
+        if (!oldExists || newDate>oldDate) {
+            QMessageBox *msg= new QMessageBox(this);
+            msg->setText("New CTY file version "+newVer+" is available.");
+            msg->setInformativeText("Install it?");
+            msg->setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+            msg->setDefaultButton(QMessageBox::Yes);
+            msg->setModal(true);
+            int ret = msg->exec();
+            switch (ret) {
+            case QMessageBox::Yes:
+            {
+                // save new CTY file
+                QFile save("wl_cty.dat");
+                if (!save.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    downloader->deleteLater();
+                    return;
+                }
+                save.write(newCty);
+                save.close();
+                // save new NCCC Sprint CTY file with some countries changed from SA to NA
+                newCty.replace("Trinidad & Tobago:        09:  11:  SA","Trinidad & Tobago:        09:  11:  NA");
+                newCty.replace("Aruba:                    09:  11:  SA","Aruba:                    09:  11:  NA");
+                newCty.replace("Curacao:                  09:  11:  SA","Curacao:                  09:  11:  NA");
+                newCty.replace("Bonaire:                  09:  11:  SA","Bonaire:                  09:  11:  NA");
+                save.setFileName("wl_cty-ns.dat");
+                if (!save.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    downloader->deleteLater();
+                    return;
+                }
+                save.write(newCty);
+                save.close();
+                break;
+            }
+            case QMessageBox::Cancel:
+                msg->deleteLater();
+                downloader->deleteLater();
+                return;
+                break;
+            default:  // never reached
+                break;
+            }
+            msg->deleteLater();
+        }
+    } else {
+        // CTY download failed (incomplete), missing version string
+        downloader->deleteLater();
+        return;
     }
 }

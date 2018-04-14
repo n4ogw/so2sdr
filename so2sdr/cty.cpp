@@ -395,7 +395,7 @@ void Cty::initialize(double la, double lo, int ZoneType)
     double mylat=la;
     double mylon=lo;
 
-    QFile file(dataDirectory()+"/"+settings.value(c_cty,c_cty_def).toString());
+    QFile file(userDirectory()+"/"+settings.value(c_cty,c_cty_def).toString());
     int   indx;
 
     // sunrise/sunset times for station
@@ -443,7 +443,7 @@ void Cty::initialize(double la, double lo, int ZoneType)
         }
     }
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString tmp = "ERROR: can't open file " + settings.value(c_cty,c_cty_def).toString();
+        QString tmp = "ERROR: can't open file " + userDirectory() + "/"+settings.value(c_cty,c_cty_def).toString();
         emit(ctyError(tmp));
         return;
     }

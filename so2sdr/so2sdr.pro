@@ -70,7 +70,8 @@ HEADERS += cwmessagedialog.h \
     logdelegate.h \
     so2r.h \
     so2rdialog.h \
-    contest_msqp.h
+    contest_msqp.h \
+    filedownloader.h
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -144,7 +145,8 @@ SOURCES += cwmessagedialog.cpp \
     logdelegate.cpp \
     so2r.cpp \
     so2rdialog.cpp \
-    contest_msqp.cpp
+    contest_msqp.cpp \
+    filedownloader.cpp
 
  unix { 
     include (../common.pri)

@@ -36,6 +36,7 @@ class CabrilloDialog;
 class ContestOptionsDialog;
 class CWMessageDialog;
 class DupeSheet;
+class FileDownloader;
 class HelpDialog;
 class History;
 class Log;
@@ -96,6 +97,7 @@ signals:
 
 private slots:
     void about();
+    void checkCtyVersion();
     void cleanup();
     void clearEditSelection(QWidget *);
     void enterCWSpeed(int nrig, const QString & text);
@@ -137,6 +139,7 @@ private slots:
     void switchTransmit(int r, int CWspeed = 0);
     void toggleStereo();
     void ungrab();
+    void updateCty();
     void updateHistory();
     void updateOptions();
     void updateRadioFreq();
@@ -195,6 +198,7 @@ private:
     int                  ratePtr;
     int                  timerId[N_TIMERS];
     int                  wpm[NRIG];
+    FileDownloader       *downloader;
     Log                  *log;
     Master               *master;
     ModeTypes             modeTypeShown;

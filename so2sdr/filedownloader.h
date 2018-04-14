@@ -15,36 +15,34 @@
     You should have received a copy of the GNU General Public License
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
+    This class derived from code at https://wiki.qt.io/Download_Data_from_URL
  */
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#ifndef FILEDOWNLOADER_H
+#define FILEDOWNLOADER_H
 
-#include <QString>
-#include <QDialog>
-#include <QCloseEvent>
-#include <QSettings>
-#include "ui_settingsdialog.h"
-#include "utils.h"
+#include <QObject>
+#include <QByteArray>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
-class SettingsDialog : public QDialog, public Ui::SettingsDialog
+class FileDownloader : public QObject
 {
-Q_OBJECT
+ Q_OBJECT
+ public:
+  explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
+  virtual ~FileDownloader();
+  QByteArray downloadedData() const;
 
-public:
-    SettingsDialog(QSettings &s, QWidget *parent = 0);
-    ~SettingsDialog();
-    friend class So2sdr;
+ signals:
+  void downloaded();
 
-public slots:
-    void updateSettings();
-    void rejectChanges();
+ private slots:
+  void fileDownloaded(QNetworkReply* pReply);
 
-signals:
-    void settingsUpdate();
-
-private:
-    QSettings&      settings;
-    void loadSettings();
+ private:
+  QNetworkAccessManager m_WebCtrl;
+  QByteArray m_DownloadedData;
 };
 
-#endif // SETTINGSDIALOG_H
+#endif // FILEDOWNLOADER_H
