@@ -1790,7 +1790,7 @@ void Contest::zeroScore()
     for (int ii = 0; ii < MMAX; ii++) {
         for (int kk=0;kk<NModeTypes;kk++) {
             for (int j = 0; j <= N_BANDS; j++) {
-                for (int k = 0; k < _nMults[ii]; k++) {
+                for (int k = 0; k < multWorked[ii][kk][j].size(); k++) {
                     multWorked[ii][kk][j][k] = false;
                 }
                 multsWorked[ii][kk][j] = 0;

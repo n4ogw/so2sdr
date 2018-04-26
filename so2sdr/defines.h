@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.3.5";
+const QByteArray Version = "2.3.6";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
