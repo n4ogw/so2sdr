@@ -1382,12 +1382,12 @@ int Log::idPfx(Qso *qso, bool &qsy) const
          connect(contest,SIGNAL(mobileDupeCheck(Qso*)),this,SLOT(mobileDupeCheck(Qso*)));
          connect(contest,SIGNAL(clearDupe()),this,SIGNAL(clearDupe()));
          cty->initialize(lat,lon,contest->zoneType());
+         contest->initialize(cty);
          Qso  tmp(2);
          tmp.call = settings.value(s_call,s_call_def).toString().toLatin1();
          bool b;
          contest->setCountry(idPfx(&tmp, b));
          contest->setContinent(tmp.continent);
-         contest->initialize(cty);
      }
  }
 

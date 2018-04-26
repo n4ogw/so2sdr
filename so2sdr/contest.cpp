@@ -211,7 +211,7 @@ Contest::~Contest()
   */
 void Contest::multIndx(Qso *qso) const
 {
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists
         if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix)) {
@@ -267,7 +267,7 @@ void Contest::addQsoMult(Qso *qso)
 
     // mults worked counted per-band
     // last index N_BANDS is for total number of mults regardless of band
-    for (int j = 0; j < MMAX; j++) {
+    for (int j = 0; j < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); j++) {
         for (int k = 0; k < NModeTypes; k++) {
             for (int i = 0; i <= N_BANDS; i++) {
                 multsWorked[j][k][i] = 0;
@@ -276,7 +276,7 @@ void Contest::addQsoMult(Qso *qso)
     }
     bool new_m[MMAX]  = { false, false };
     bool new_bm[MMAX] = { false, false };
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists
         if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix)) {
@@ -363,7 +363,7 @@ void Contest::addQsoMult(Qso *qso)
         }
     }
     // add new mult
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         if (_nMults[ii] == 0 || !qso->isamult[ii]) continue;
 
         if (qso->mult[ii] != -1) {
@@ -387,13 +387,13 @@ void Contest::addQsoMult(Qso *qso)
     qso->newmult[1] = -1;
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
         // mults count per-band
-        for (int ii = 0; ii < MMAX; ii++) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             if (new_bm[ii]) {
                 qso->newmult[ii] = multFieldHighlight[ii];
             }
         }
     } else {
-        for (int ii = 0; ii < MMAX; ii++) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             if (new_m[ii]) {
                 qso->newmult[ii] = multFieldHighlight[ii];
             }
@@ -490,7 +490,7 @@ QList<QByteArray> &Contest::qsoType(int ii)
   */
 void Contest::count_mults()
 {
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int k=0;k<NModeTypes;k++) {
             if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
             for (int i = 0; i <= N_BANDS; i++) {
@@ -498,7 +498,7 @@ void Contest::count_mults()
             }
         }
     }
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int k=0;k<NModeTypes;k++) {
             if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
             for (int j = 0; j < N_BANDS_SCORED; j++) {
@@ -524,7 +524,7 @@ void Contest::count_mults()
  */
 void Contest::guessMult(Qso *qso) const
 {
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         // mult info already known
         if (qso->mult[ii] != -1) continue;
 
@@ -555,9 +555,9 @@ void Contest::guessMult(Qso *qso) const
  */
 void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
 {
-    for (int ii = 0; ii < MMAX; ii++) worked[ii] = 0;
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) worked[ii] = 0;
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
-        for (int ii = 0; ii < MMAX; ii++) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             for (int i = 0; i < N_BANDS_SCORED; i++) {
                 if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
                     worked[ii] += multWorked[ii][qso->modeType][i][qso->mult[ii]] * bits[i];
@@ -566,7 +566,7 @@ void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
         }
     } else {
         // all-band mults
-        for (int ii = 0; ii < MMAX; ii++) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
                 if (multWorked[ii][qso->modeType][N_BANDS][qso->mult[ii]]) worked[ii] = 1 + 2 + 4 + 8 + 16 + 32;
             }
@@ -740,10 +740,10 @@ void Contest::readMultFile(QByteArray filename[MMAX], const Cty *cty)
  */
 void Contest::determineMultType(Qso *qso)
 {
-    for (int ii = 0; ii < MMAX; ii++) qso->isamult[ii] = false;
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) qso->isamult[ii] = false;
     int  i, sz;
     bool ok;
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         switch (multType[ii]) {
         case File:
             // if no country list given, apply list to all
@@ -1042,7 +1042,7 @@ int Contest::nMultsWorked() const
 {
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
         int n = 0;
-        for (int ii = 0; ii < MMAX; ii++) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             for (int k=0;k<NModeTypes;k++) {
                 if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
                 for (int i = 0; i < N_BANDS_SCORED; i++) {
@@ -1224,7 +1224,7 @@ int Contest::Score() const
 {
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
         int n = 0;
-        for (int ii = 0; ii < MMAX; ii++) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             switch (ii) {
             case 0:
                 if (settings.value(c_mult1_displayonly,c_mult1_displayonly_def).toBool())
@@ -1787,7 +1787,7 @@ bool Contest::valid(int row) const
 void Contest::zeroScore()
 {
     qsoPts = 0;
-    for (int ii = 0; ii < MMAX; ii++) {
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int kk=0;kk<NModeTypes;kk++) {
             for (int j = 0; j <= N_BANDS; j++) {
                 for (int k = 0; k < multWorked[ii][kk][j].size(); k++) {
@@ -1800,7 +1800,7 @@ void Contest::zeroScore()
         // in these cases, the number of mults depends on the contents of the log
         if (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix) {
             mults[ii].clear();
-            for (int ii = 0; ii < MMAX; ii++) {
+            for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
                 for (int k=0;k<NModeTypes;k++) {
                     for (int j = 0; j <= N_BANDS; j++) {
                         multWorked[ii][k][j].clear();
