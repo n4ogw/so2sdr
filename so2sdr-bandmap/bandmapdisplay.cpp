@@ -138,59 +138,69 @@ bool BandmapDisplay::invert() const
  */
 void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
 {
-    bool reverse=settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool();
     int fft=settings->value(s_sdr_fft,s_sdr_fft_def).toInt();
     int hgt=height();
     unsigned char cut;
-    if (bg < 225) cut = bg + 30;
-    else cut = bg;
-    if (reverse) {
+    if (bg < 225) {
+        cut = bg + 30;
+    } else {
+        cut = bg;
+    }
+    int x;
+    if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
+        x=MAX_W-width();
         pixmap.scroll(1, 0, QRect(cornerx, cornery, width(), hgt));
     } else {
+        x=MAX_W -1;
         pixmap.scroll(-1, 0, QRect(cornerx, cornery, width(), hgt));
     }
-    int      dy = hgt / 2 - vfoPos;
+    int dy = hgt / 2 - vfoPos;
     QPainter painter(&pixmap);
     if (!_invert) {
-        for (int i = (fft - hgt) / 2 - dy, j = (fft + hgt) / 2 - 1 + dy; j >= (fft - hgt) / 2 + dy; i++, j--) {
-            if (cmap[j] && data[i] > cut && mark) {
-                unsigned char r=data[i];
-                unsigned char g=data[i];
-                unsigned char b=data[i];
-                if (!markRgb0[j]) r=0;
-                if (!markRgb1[j]) g=0;
-                if (!markRgb2[j]) b=0;
-                painter.setPen(qRgb(r,g,b));
-            } else {
-                painter.setPen(qRgb(data[i], data[i], data[i]));
+        if (mark) {
+            for (int i = (fft - hgt) / 2 - dy, j = (fft + hgt) / 2 - 1 + dy; j >= (fft - hgt) / 2 + dy; i++, j--) {
+                if (cmap[j] && data[i] > cut) {
+                    unsigned char r=data[i];
+                    unsigned char g=data[i];
+                    unsigned char b=data[i];
+                    if (!markRgb0[j]) r=0;
+                    if (!markRgb1[j]) g=0;
+                    if (!markRgb2[j]) b=0;
+                    painter.setPen(qRgb(r,g,b));
+                } else {
+                    painter.setPen(qRgb(data[i], data[i], data[i]));
+                }
+                painter.drawPoint(x, j);
             }
-            if (reverse) {
-                painter.drawPoint(MAX_W - width(), j);
-            } else {
-                painter.drawPoint(MAX_W - 1, j);
+        } else {
+            for (int i = (fft - hgt) / 2 - dy, j = (fft + hgt) / 2 - 1 + dy; j >= (fft - hgt) / 2 + dy; i++, j--) {
+                painter.setPen(qRgb(data[i], data[i], data[i]));
+                painter.drawPoint(x, j);
             }
         }
     } else {
-        for (int i = (fft - hgt) / 2 - dy, j = (fft - hgt) / 2 + dy; j < fft; i++, j++) {
-            if (mark && cmap[j] && data[i] > cut) {
-                unsigned char r=data[i];
-                unsigned char g=data[i];
-                unsigned char b=data[i];
-                if (!markRgb0[j]) r=0;
-                if (!markRgb1[j]) g=0;
-                if (!markRgb2[j]) b=0;
-                painter.setPen(qRgb(r,g,b));
-            } else {
-                painter.setPen(qRgb(data[i], data[i], data[i]));
+        if (mark) {
+            for (int i = (fft - hgt) / 2 - dy, j = (fft - hgt) / 2 + dy; j < fft; i++, j++) {
+                if (cmap[j] && data[i] > cut) {
+                    unsigned char r=data[i];
+                    unsigned char g=data[i];
+                    unsigned char b=data[i];
+                    if (!markRgb0[j]) r=0;
+                    if (!markRgb1[j]) g=0;
+                    if (!markRgb2[j]) b=0;
+                    painter.setPen(qRgb(r,g,b));
+                } else {
+                    painter.setPen(qRgb(data[i], data[i], data[i]));
+                }
+                painter.drawPoint(x, j);
             }
-            if (reverse) {
-                painter.drawPoint(MAX_W - width(), j);
-            } else {
-                painter.drawPoint(MAX_W - 1, j);
+        } else {
+            for (int i = (fft - hgt) / 2 - dy, j = (fft - hgt) / 2 + dy; j < fft; i++, j++) {
+                painter.setPen(qRgb(data[i], data[i], data[i]));
+                painter.drawPoint(x, j);
             }
         }
     }
-    painter.end();
     update();
 }
 

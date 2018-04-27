@@ -468,8 +468,6 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             ptr = &data[0];
         }
     }
-    // done reading raw data, emit signal so audioReader can procede
-    emit(done());
     fftw_execute(plan);
     if (iqCorrect) {
         for (int i = 0; i < fftSize; i++) {

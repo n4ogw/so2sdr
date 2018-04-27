@@ -64,11 +64,8 @@ public:
     void setCalcError();
 
 signals:
-    void done();
     void spectrumReady(unsigned char *, unsigned char);
-    void dataProcessed();
     void findCQMessage(QString);
-    void finished();
     void clearPlot();
     void qsy(int);
     void gainPoint(int, double);
