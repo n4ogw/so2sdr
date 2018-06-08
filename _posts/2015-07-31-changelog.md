@@ -5,6 +5,48 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.4.0 (06/08/2018)
+
+* support for the ARRL June VHF contest
+* support for reading ADIF qso information via UDP from WSJT-X
+* allow per-band setting of IF offset and inversion (same as swap IQ) in so2sdr-bandmap
+* To support higher frequency bands, the  internal format for frequency stored in log was changed.
+
+## version 2.3.5 (04/14/2018)
+
+* bug fix: store auto-CQ time as integer to prevent roundoff issues
+* new feature: automatically download CTY files. 
+* wl_cty.dat is now read from ~/.so2sdr
+
+## version 2.3.4 (04/14/2018)
+
+* bug fix: update score after onscreen log edit
+* update to phone macros in all cfg files
+
+## version 2.3.3 (04/07/2018)
+
+* bug fix MS qso party cfg file
+* remove check on changed freq when qsying bandmap; fails in some cases
+
+## version 2.3.2 (04/05/2018)
+
+* support Mississippi qso party
+
+## version 2.3.1 (02/18/2018)
+
+* fix bug: peak detection not turned of during transmit
+
+## version 2.3.0 (02/18/2018)
+
+* many internal changes and reorganization of code
+* better support for multi-mode contests
+* improve bandmap peak detection: when radio is tuned, momentarily turn off peak detection
+
+## version 2.2.0 (11/19/2017)
+
+* rewrite and simplification of the audio play and record features. See the section
+in the help file on voice messages.
+
 ## version 2.1.5 (10/21/2017)
 
 * update SCP and CTY files

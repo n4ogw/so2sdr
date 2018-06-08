@@ -6,7 +6,7 @@ date: 2016-01-07 08:55:00
 order: 1
 ---
 
-You will need the following development libraries installed: Qt4,
+You will need the following development libraries installed: Qt5,
 FFTW, Hamlib, and PortAudio. Other various development packages
 include g++  and pkg-config.
 
