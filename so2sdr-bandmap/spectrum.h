@@ -52,12 +52,12 @@ public:
     void calcError(bool force);
     void clearCQ();
     void clearSigs();
-    int closestFreq(int) const;
+    int closestFreq(double) const;
     void resetAvg();
     void setAddOffset(int i);
     void stopSpectrum();
     void setFFTSize(sampleSizes s);
-    void setFreq(int, int, int, int);
+    void setFreq(double, int, double, double);
     void setInvert(bool);
     void setPeakDetect(bool);
     void setTuning(bool);
@@ -67,7 +67,7 @@ signals:
     void spectrumReady(unsigned char *, unsigned char);
     void findCQMessage(QString);
     void clearPlot();
-    void qsy(int);
+    void qsy(double);
     void gainPoint(int, double);
     void phasePoint(int, double);
     void gainScale(double, double);
@@ -79,7 +79,7 @@ public slots:
     void processData(unsigned char *, unsigned char);
     void clearIQ();
     void setPlotPoints(bool);
-    void startFindCQ(int low, int high, QList<Call> &callList);
+    void startFindCQ(double low, double high, QList<Call> &callList);
     void updateParams();
 
 private:
@@ -109,8 +109,8 @@ private:
     int           band;
     int           bits;
     int           calibCnt;
-    int           centerFreq;
-    int           endFreqs[2];
+    double        centerFreq;
+    double        endFreqs[2];
     int           findCQCnt;
     int           fftSize;
     int           invert;
@@ -118,9 +118,9 @@ private:
     int           peakAvgCnt;
     int           sampleFreq;
     int           scale;
-    int           sigCQ;
+    double        sigCQ;
     int           *sigOnCnt;
-    int           sigSpace;
+    double        sigSpace;
     int           sizeIQ;
     QString       userDirectory;
     sampleSizes   sizes;
@@ -134,7 +134,7 @@ private:
     void complexMult(double a[], double b[], double c[]) const;
     void detectPeaks(double bg, double sigma, double spec[]);
     void fitErrors();
-    void findCQ(int flow, int fhigh, QList<Call> &callList);
+    void findCQ(double flow, double fhigh, QList<Call> &callList);
     void gaussElim(double a[FIT_ORDER][FIT_ORDER], double y[FIT_ORDER], int n);
     void interp2(double in[], double out[], double);
     void makeGainPhase();

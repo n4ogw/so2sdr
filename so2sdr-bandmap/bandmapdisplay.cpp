@@ -118,7 +118,7 @@ void BandmapDisplay::mousePressEvent(QMouseEvent *event)
 
 
 /*!
-   option to invert BandmapDisplay. Needed for K2 on high bands or CW reverse.
+   option to invert BandmapDisplay
  */
 void BandmapDisplay::setInvert(bool t)
 {

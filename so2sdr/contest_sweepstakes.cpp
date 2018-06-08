@@ -60,7 +60,7 @@ void Sweepstakes::addQso(Qso *qso)
 // determine qso point value, increase nqso, update score
 // update mult count
 {
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    if (!qso->dupe && qso->valid && qso->band<N_BANDS_HF) {
         qso->pts = 2;
     } else {
         qso->pts = 0;

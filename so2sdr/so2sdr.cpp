@@ -17,6 +17,7 @@
 
  */
 #include <QByteArray>
+#include <QChar>
 #include <QCheckBox>
 #include <QColor>
 #include <QDateTime>
@@ -65,6 +66,7 @@
 #include "ssbmessagedialog.h"
 #include "stationdialog.h"
 #include "telnet.h"
+#include "udpreader.h"
 #include "winkey.h"
 #include "winkeydialog.h"
 
@@ -75,9 +77,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     initPointers();
     initVariables();
 
-    // Register rmode_t, pbwidth_t for connect()
     qRegisterMetaType<rmode_t>("rmode_t");
     qRegisterMetaType<pbwidth_t>("pbwidth_t");
+    qRegisterMetaType<Qso>("Qso");
 
     // check to see if user directory exists
     initialized = checkUserDirectory();
@@ -132,7 +134,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     MasterTextEdit->setDisabled(true);
     TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
     updateNrDisplay();
-
     updateCty();
 
     // start radio 1; radio 2 will be started after radiodialog mfg and model info is filled out
@@ -176,7 +177,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     cat[0]->moveToThread(&catThread[0]);
     connect(&catThread[0], SIGNAL(started()), cat[0], SLOT(run()));
     connect(cat[0], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(this, SIGNAL(qsyExact1(int)), cat[0], SLOT(qsyExact(int)));
+    connect(this, SIGNAL(qsyExact1(double)), cat[0], SLOT(qsyExact(double)));
     connect(this, SIGNAL(setRigMode1(rmode_t, pbwidth_t)), cat[0], SLOT(setRigMode(rmode_t, pbwidth_t)));
 
     // start radio 2
@@ -184,8 +185,12 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     cat[1]->moveToThread(&catThread[1]);
     connect(&catThread[1], SIGNAL(started()), cat[1], SLOT(run()));
     connect(cat[1], SIGNAL(radioError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(this, SIGNAL(qsyExact2(int)), cat[1], SLOT(qsyExact(int)));
+    connect(this, SIGNAL(qsyExact2(double)), cat[1], SLOT(qsyExact(double)));
     connect(this, SIGNAL(setRigMode2(rmode_t, pbwidth_t)), cat[1], SLOT(setRigMode(rmode_t, pbwidth_t)));
+
+    wsjtxUDP=new UDPReader(*settings,this);
+    connect(wsjtxUDP,SIGNAL(wsjtxQso(Qso *)),this,SLOT(logWsjtx(Qso *)));
+    wsjtxUDP->enable(settings->value(s_wsjtx_enable,s_wsjtx_enable_def).toBool());
 
     winkeyDialog = new WinkeyDialog(*settings,this);
     winkeyDialog->setWinkeyVersionLabel(0);
@@ -199,8 +204,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     sdr->hide();
     bandmap=new BandmapInterface(*settings,this);
     connect(bandmap,SIGNAL(removeCall(QByteArray,int)),this,SLOT(removeSpot(QByteArray,int)));
-    connect(bandmap,SIGNAL(qsy1(int)),cat[0],SLOT(qsyExact(int)));
-    connect(bandmap,SIGNAL(qsy2(int)),cat[1],SLOT(qsyExact(int)));
+    connect(bandmap,SIGNAL(qsy1(double)),cat[0],SLOT(qsyExact(double)));
+    connect(bandmap,SIGNAL(qsy2(double)),cat[1],SLOT(qsyExact(double)));
     connect(bandmap,SIGNAL(sendMsg(QString)),So2sdrStatusBar,SLOT(showMessage(QString)));
     notes = new NoteDialog(this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
@@ -447,6 +452,7 @@ void So2sdr::settingsUpdate()
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     }
+    wsjtxUDP->enable(settings->value(s_wsjtx_enable,s_wsjtx_enable_def).toBool());
 }
 
 /*! this will have clean-up code
@@ -829,7 +835,6 @@ bool So2sdr::setupContest()
     }
     QDir::setCurrent(contestDirectory);
     log->openLogFile(fileName,false);
-
     QString name=csettings->value(c_contestname,c_contestname_def).toString().toUpper();
     int     indx = fileName.lastIndexOf("/");
     QString tmp  = fileName.mid(indx + 1, fileName.size() - indx);
@@ -858,6 +863,8 @@ bool So2sdr::setupContest()
     nrSent = log->rowCount()+1;
     updateNrDisplay();
     updateBreakdown();
+    MultTextEdit->setGridMode(log->gridMults());
+    MultTextEdit->setCenterGrid(settings->value(s_grid,s_grid_def).toByteArray());
     updateMults(activeRadio);
     clearWorked(0);
     clearWorked(1);
@@ -1055,7 +1062,7 @@ void So2sdr::updateSpotlistEdit(QSqlRecord origRecord, QSqlRecord r)
      for (int b=0;b<N_BANDS;b++) {
         for (int i=0;i<spotList[b].size();i++) {
             if (call==spotList[b][i].call) {
-                int f=spotList[b].at(i).f;
+                double f=spotList[b].at(i).f;
                 removeSpot(call,b);
                 addSpot(newCall,f);
             }
@@ -1177,9 +1184,6 @@ void So2sdr::about()
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>QtSolutions_Telnet 2.1"
-#ifdef Q_OS_WIN
-                       + "<li>Parallel port access:  InpOut32.dll http://www.highrez.co.uk/"
-#endif
                        + "<li>MASTER.DTA algorithm, IQ balancing: Alex Shovkoplyas VE3NEA, http://www.dxatlas.com</ul>"
                        + "<hr><p>SO2SDR is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License "
                        + "as published by the Free Software Foundation, either version 3 of the License, or any later version, http://www.gnu.org/licenses/</p>");
@@ -1559,7 +1563,7 @@ void So2sdr::swapRadios()
     duelingCQActivate(false);
     autoCQActivate(false);
 
-    int old_f[NRIG]={cat[0]->getRigFreq(),cat[1]->getRigFreq()};
+    double old_f[NRIG]={cat[0]->getRigFreq(),cat[1]->getRigFreq()};
     updateMults(0);
     updateMults(1);
     if (!cat[0] || !cat[1]) return;
@@ -1710,6 +1714,14 @@ void So2sdr::exchCheck(int nr,const QString &exch)
     }
     // update colors in case dupe status changed
     setDupeColor(nr,qso[nr]->dupe);
+    // update bearing- some contests compute this from grid square
+    labelBearing[nr]->setText(QString::number(qso[nr]->bearing)+QChar(176));
+    if (qso[nr]->distance>=0) {
+        labelCountry[nr]->setText("<font color=#0000FF>"+QString::number(qso[nr]->distance)+" km");
+        labelLPBearing[nr]->clear();
+    } else {
+        labelLPBearing[nr]->setText("<font color=#0000FF>"+QString::number(((qso[nr]->bearing+180)%360))+QChar(176));
+    }
 }
 
 /*!
@@ -1822,8 +1834,13 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
                 clearDisplays(nr);
                 sunLabelPtr[nr]->setText(log->mySunTimes());
             } else {
-                labelBearing[nr]->setNum(qso[nrig]->bearing);
-                labelLPBearing[nr]->setText("<font color=#0000FF>"+QString::number(((qso[nrig]->bearing+180)%360)));
+                labelBearing[nr]->setText(QString::number(qso[nr]->bearing)+QChar(176));
+                if (qso[nrig]->distance>=0) {
+                    labelCountry[nr]->setText("<font color=#0000FF>"+QString::number(qso[nrig]->distance)+" km");
+                    labelLPBearing[nr]->clear();
+                } else {
+                    labelLPBearing[nr]->setText("<font color=#0000FF>"+QString::number(((qso[nrig]->bearing+180)%360))+QChar(176));
+                }
                 sunLabelPtr[nr]->setText(qso[nrig]->sun);
             }
             log->guessMult(qso[nrig]);
@@ -1882,12 +1899,13 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
 void So2sdr::updateWorkedDisplay(int nr,unsigned int worked)
 {
     QString tmp = "Q :";
-    for (int i = 0; i < N_BANDS; i++) {
-        if (i==N_BANDS_SCORED) break;
-        if (worked & bits[i]) {
-            tmp = tmp + "<font color=#000000>" + bandName[i] + "</font> ";
+    for (int j = 0; j < N_BANDS; j++) {
+        int i=log->highlightBand(j);
+        if (i==-1) continue;
+        if (worked & bits[j]) {
+            tmp = tmp + "<font color=#000000>" + log->bandLabel(i) + "</font> ";
         } else {
-            tmp = tmp + "<font color=#AAAAAA>" + bandName[i] + "</font> ";
+            tmp = tmp + "<font color=#AAAAAA>" + log->bandLabel(i) + "</font> ";
         }
     }
     if (nr == 0) {
@@ -1920,6 +1938,7 @@ void So2sdr::updateWorkedMult(int nr)
         if (tmp.isEmpty()) continue;
 
         if (!csettings->value(c_multsband,c_multsband_def).toBool()) {
+            // @todo following line only works for HF contests
             if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
                 // mult already worked
                 if (qso[nr]->isamult[ii])
@@ -1935,12 +1954,12 @@ void So2sdr::updateWorkedMult(int nr)
             }
         } else {
             for (int i = 0; i < N_BANDS; i++) {
-                if (i==N_BANDS_SCORED) break;
-
+                int j=log->highlightBand(i);
+                if (j==-1) continue;
                 if (worked[ii] & bits[i]) {
-                    tmp = tmp + "<font color=#000000>" + bandName[i] + "</font> ";
+                    tmp = tmp + "<font color=#000000>" + log->bandLabel(j) + "</font> ";
                 } else {
-                    tmp = tmp + "<font color=#AAAAAA>" + bandName[i] + "</font> ";
+                    tmp = tmp + "<font color=#AAAAAA>" + log->bandLabel(j) + "</font> ";
                 }
             }
         }
@@ -1971,10 +1990,10 @@ bool So2sdr::enterFreqOrMode()
     // Allow the UI to receive values in kHz down to the Hz
     // i.e. "14250.340" will become 14250340 Hz
     bool ok = false;
-    int  f  = (int)(double)(1000 * qso[activeRadio]->call.toDouble(&ok));
+    double  f  = (double)(1000.0 * qso[activeRadio]->call.toDouble(&ok));
 
-    // validate we have a positive integer
-    if (f > 0 && ok) {
+    // validate we have a positive frequency
+    if (f > 0.0 && ok) {
         // qsy returns "corrected" rigFreq in event there is no radio CAT connection
         if (cat[nr]) {
             qsy(nr, f, true);
@@ -2082,19 +2101,17 @@ bool So2sdr::enterFreqOrMode()
 void So2sdr::updateBreakdown()
 {
     int n = 0;
-    for (int i = 0; i < N_BANDS; i++) {
-        n+=log->nQso(i);
-        if (i==N_BANDS_SCORED) break;
+    for (int i = 0; i < N_BANDS_HF; i++) {
+        n+=log->columnCount(i);
         qsoLabel[i]->setNum(log->columnCount(i));
     }
     int nm[2]={0,0};
     int nb[2]={0,0};
     for (int ii = 0; ii < csettings->value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int i = 0; i < N_BANDS; i++) {
-           // int m = log->nMultsBWorked(ii, i);
             int m=log->nMultsColumn(i,ii);
             nm[ii] += m;
-            if (i==N_BANDS_SCORED) break;
+            if (i==N_BANDS_HF) break;
 
             multLabel[ii][i]->setNum(m);
         }
@@ -2126,10 +2143,12 @@ void So2sdr::updateMults(int ir,int bandOverride)
     MultTextEdit->clear();
     if (!csettings->value(c_showmults,c_showmults_def).toBool()) return;
 
-    QByteArray tmp;
-    tmp.clear();
+    QList<QByteArray> neededMults;
+    QList<QByteArray> mults;
+    mults.clear();
+    neededMults.clear();
     for (int i = 0; i < log->nMults(multMode); i++) {
-        bool       needed_band, needed;
+        bool needed_band, needed;
         QByteArray mult;
         if (csettings->value(c_multsmode,c_multsmode_def).toBool()) {
             // per-mode mults
@@ -2138,21 +2157,27 @@ void So2sdr::updateMults(int ir,int bandOverride)
             mult = log->neededMultName(multMode, band, i, needed_band, needed);
         }
         if (excludeMults[multMode].contains(mult)) continue;
+        mults.append(mult);
         if (csettings->value(c_multsband,c_multsband_def).toBool()) {
             if (needed_band) {
-                tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
+              //  tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
+                neededMults.append(mult);
             } else {
-                tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; // grey=worked
+                //tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; // grey=worked
+
             }
         } else {
             if (needed) {
-                tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
+                //tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
+                neededMults.append(mult);
             } else {
-                tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; // grey=worked
+                //tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; // grey=worked
             }
         }
     }
-    MultTextEdit->setHtml(tmp);
+    MultTextEdit->setMults(mults);
+    MultTextEdit->setNeededMults(neededMults);
+    MultTextEdit->updateMults();
     if (csettings->value(c_multsmode,c_multsmode_def).toBool()) {
         // per-mode mults
         MultGroupBox->setTitle("Mults: Radio " + QString::number(ir + 1) + ": " + bandName[band]+
@@ -2185,7 +2210,7 @@ void So2sdr::updateRadioFreq()
     for (int i=0;i<6;i++) {
         bandLabel[i]->setStyleSheet("QLabel { background-color : palette(Background); color : black; }");
     }
-    int rigFreq[NRIG];
+    double rigFreq[NRIG];
     for (int i = 0; i < NRIG; i++) {
         rigFreq[i] = cat[i]->getRigFreq();
         if (bandmap->bandmapon(i)) {
@@ -3073,7 +3098,7 @@ void So2sdr::stopTimers()
 /*! validates freq entered in Khz, returns freq in Hz
    if exact=true, no validation (freq should be in Hz in this case)
  */
-void So2sdr::qsy(int nrig, int &freq, bool exact)
+void So2sdr::qsy(int nrig, double &freq, bool exact)
 {
     if (exact) {
         if (nrig==0)
@@ -3347,19 +3372,6 @@ void So2sdr::initPointers()
     bandMult2Label[3]=mult20Label2;
     bandMult2Label[4]=mult15Label2;
     bandMult2Label[5]=mult10Label2;
-
-
-
-    // the following is needed to get a monospace font under Windows
-#ifdef Q_OS_WIN
-    for (int i=0;i<NRIG;i++) {
-        QFont font("Monospace");
-        font.setStyleHint(QFont::TypeWriter);
-        qsoWorkedLabel[i]->setFont(font);
-        multWorkedLabel[i][0]->setFont(font);
-        multWorkedLabel[i][1]->setFont(font);
-    }
-#endif
     multNameLabel[0] = multName;
     multNameLabel[1] = multName2;
     multLabel[0][0] = mult160Label;
@@ -3411,7 +3423,7 @@ void So2sdr::initVariables()
     multNameLabel[0]->clear();
     multNameLabel[1]->clear();
     for (int i = 0; i < N_BANDS; i++) {
-        if (i==N_BANDS_SCORED) break;
+        if (i==N_BANDS_HF) break;
         multLabel[0][i]->clear();
         multLabel[1][i]->clear();
     }
@@ -3672,4 +3684,20 @@ void So2sdr::checkCtyVersion()
         downloader->deleteLater();
         return;
     }
+}
+
+/*! add a wsjtx qso to log.
+ *
+ */
+void So2sdr::logWsjtx(Qso *qso)
+{
+    fillSentExch(qso,nrReserved[activeRadio]);
+    qso->valid=log->validateExchange(qso);
+    qso->dupe = logPartial(activeRadio, qso->call) && (csettings->value(c_dupemode,c_dupemode_def).toInt() < NO_DUPE_CHECKING);
+    addQso(qso);
+    rateCount[ratePtr]++;
+    nrSent = log->rowCount()+1;
+    updateNrDisplay();
+    updateMults(activeRadio,qso->band);
+    updateBreakdown();
 }

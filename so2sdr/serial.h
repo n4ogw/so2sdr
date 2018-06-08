@@ -80,7 +80,7 @@ public:
     int band() const;
      QString bandName();
     void clearRIT();
-    int getRigFreq();
+    double getRigFreq();
     QString hamlibModelName(int i, int indx) const;
     int hamlibNMfg() const;
     int hamlibNModels(int i) const;
@@ -101,7 +101,7 @@ signals:
 
 public slots:
     void setPtt(int state);
-    void qsyExact(int f);
+    void qsyExact(double f);
     void setRigMode(rmode_t m, pbwidth_t pb);
     void run();
     void stopSerial();
@@ -128,11 +128,11 @@ private:
     bool                    pttOffFlag;
     const struct confparams *confParamsIF;
     const struct confparams *confParamsRIT;
-    int                     qsyFreq;
+    double                     qsyFreq;
     rmode_t                 chgMode;
     pbwidth_t               passBW;
     bool                    radioOK;
-    int                     rigFreq;
+    double                     rigFreq;
     int                     model;
     int                     ifFreq_;
     int                     nrig;

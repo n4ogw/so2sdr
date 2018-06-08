@@ -68,7 +68,7 @@ QVariant WPX::columnName(int c) const
 void WPX::addQso(Qso *qso)
 {
     // determine point value
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    if (!qso->dupe && qso->valid && qso->band<N_BANDS_HF) {
         if (qso->country == myCountry) {
             qso->pts = 1;
         } else if (qso->continent == myContinent && qso->continent == NA) {

@@ -283,7 +283,7 @@ void BandmapInterface::xmlParse()
         if (token==QXmlStreamReader::StartElement) {
             if (xmlReader.name()=="bandmap") {
                 int nr=-1;
-                int f=0;
+                double f=0;
                 QByteArray call="";
                 QXmlStreamAttributes attr=xmlReader.attributes();
 
@@ -296,7 +296,7 @@ void BandmapInterface::xmlParse()
                 }
 
                 if (attr.hasAttribute("freq")) {
-                    f=attr.value("freq").toString().toInt();
+                    f=attr.value("freq").toString().toDouble();
                     if (nr==0)
                         emit(qsy1(f));
                     else
@@ -369,7 +369,7 @@ void BandmapInterface::connectTcp()
  * \param nr radio number (0,1)
  * \param f frequency (Hz)
  */
-void BandmapInterface::setAddOffset(int f,int nr)
+void BandmapInterface::setAddOffset(double f,int nr)
 {
     if (nr<0 || nr>=NRIG) return;
 
@@ -397,7 +397,7 @@ void BandmapInterface::setAddOffset(int f,int nr)
  * \param f frequency (Hz)
  * \param nr radio number (0,1)
  */
-void BandmapInterface::bandmapSetFreq(int f,int nr)
+void BandmapInterface::bandmapSetFreq(double f,int nr)
 {
     if (f<0 || nr<0 || nr>=NRIG) return;
     if (bandmapOn[nr] && socket[nr].state()==QAbstractSocket::ConnectedState)
@@ -422,7 +422,7 @@ void BandmapInterface::bandmapSetFreq(int f,int nr)
 
 /*! set limits for open frequency finder
  */
-void BandmapInterface::setFreqLimits(int nr,int flow,int fhigh)
+void BandmapInterface::setFreqLimits(int nr,double flow,double fhigh)
 {
     if (fhigh<flow || nr<0 || nr>=NRIG) return;
     if (bandmapOn[nr] && socket[nr].state()==QAbstractSocket::ConnectedState)

@@ -49,7 +49,7 @@ Sprint::~Sprint()
 
 void Sprint::addQso(Qso *qso)
 {
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    if (!qso->dupe && qso->valid && qso->band<N_BANDS_HF) {
         qso->pts = 1;
     } else {
         qso->pts = 0;

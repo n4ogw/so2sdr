@@ -30,7 +30,7 @@ public:
     BandmapEntry();
 
     bool       dupe;
-    int        f;
+    double     f;
     qint64     createdTime;
     QByteArray call;
 };

@@ -29,8 +29,8 @@ public:
     void clear();
     bool active;
     int  cnt;
-    int  f;
-    int  fcq;
+    double f;
+    double fcq;
     int  n;
     int  space;
     long fsum;

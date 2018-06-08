@@ -26,7 +26,7 @@ public:
     Call();
 
     QByteArray call;
-    int freq;
+    double freq;
     unsigned char rgbCall[3];
     bool markRgb[3];
     bool mark;

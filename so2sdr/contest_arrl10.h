@@ -35,7 +35,7 @@ public:
     QString bandLabel(int i) const;
     bool bandLabelEnable(int i) const;
     int fieldWidth(int col) const;
-    int highlightBand(int b, ModeTypes modeType) const;
+    int highlightBand(int b, ModeTypes modeType=CWType) const;
     int nMultsColumn(int col,int ii) const;
     int numberField() const;
     unsigned int rcvFieldShown() const;

@@ -58,6 +58,7 @@ private:
     QList<QByteArray> portId;
     QList<QByteArray> portIdMM;
     QList<QByteArray> portIdMobile;
+    QList<QByteArray> portIdRover;
     QSettings&        settings;
     QString           mySun;
     QList<int>        zoneBearing;

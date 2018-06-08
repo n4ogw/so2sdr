@@ -26,6 +26,7 @@
 #include <QList>
 #include <QString>
 #include <QSettings>
+#include "bandoffsetsetup.h"
 #include "ui_soundcard.h"
 
 class SoundCardSetup : public QDialog,  public Ui::SoundCardSetup
@@ -34,6 +35,8 @@ class SoundCardSetup : public QDialog,  public Ui::SoundCardSetup
 public:
     explicit SoundCardSetup(QSettings &s,QWidget  *parent=0);
     ~SoundCardSetup();
+    int offset(int band);
+    bool invert(int band);
 
 signals:
     void PortAudioError(const QString &);
@@ -52,7 +55,7 @@ private:
     QList<bool>        *deviceOK;
     QList<QString>     audioDevices;
     QList<QString>     *nApiDeviceNames;
-  //  PaStreamParameters Format;
+    BandOffsetSetup    *offsetSetup;
     void updateFromSettings();
 };
 

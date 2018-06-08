@@ -49,6 +49,7 @@
 
 #include "ui_bandmap.h"
 #include "bandmapentry.h"
+#include "bandoffsetsetup.h"
 #include "defines.h"
 #include "sdrdatasource.h"
 #include "iqbalance.h"
@@ -68,7 +69,7 @@ public:
     bool so2sdrBandmapOk() const;
     void calc();
     void closeIQ();
-    int closestFreq(int) const;
+    double closestFreq(double) const;
     void initPointers();
     void initVariables();
     bool invert() const;
@@ -106,7 +107,7 @@ private slots:
     void udpRead();
     void updateLevel(int);
     void mouseQSYDelta(int);
-    void findQsy(int);
+    void findQsy(double);
     void disconnectSignals();
 
 private:
@@ -122,11 +123,11 @@ private:
     double               pix_per_khz;
     int                  addOffset;
     int                  band;
-    int                  centerFreq;
+    double               centerFreq;
     int                  dragPos;
     int                  endFreqs[2];
-    int                  freqMax;
-    int                  freqMin;
+    double               freqMax;
+    double               freqMin;
     int                  mouse_y;
     int                  vfoPos;
     int                  toolBarHeight;
@@ -168,13 +169,13 @@ private:
     void makeCall();
     void makeFreqScaleAbsolute();
     void qsyToNearest();
-    int  getBand(unsigned int f);
+    int  getBand(double f);
     void qsyNext(bool up);
     void setBandName(int b);
     void startTimers();
     void stopTimers();
     void xmlParseN1MM();
-    void writeUdpXML(int freq,QByteArray call,bool del);
+    void writeUdpXML(double freq,QByteArray call,bool del);
 };
 
 

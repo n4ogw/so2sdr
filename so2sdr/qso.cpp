@@ -31,6 +31,7 @@ Qso::Qso(int n)
     }
     isMM = false;
     isMobile = false;
+    isRover = false;
     dupe = false;
     valid = false;
     pts  = 0;
@@ -43,8 +44,9 @@ Qso::Qso(int n)
     modeType = CWType;
     band = 0;
     bandColumn=0;
-    freq = 0;
+    freq = 0.0;
     zone=0;
+    distance=-1;
     nr=0;
     n_exchange    = n;
     exchange_type = new FieldTypes[n_exchange];
@@ -76,6 +78,7 @@ void Qso::clear()
     }
     isMM = false;
     isMobile = false;
+    isRover = false;
     dupe = false;
     valid = false;
     pts  = 0;

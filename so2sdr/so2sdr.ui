@@ -101,7 +101,7 @@
           <number>2</number>
          </property>
          <item>
-          <widget class="QTextEdit" name="MultTextEdit">
+          <widget class="MultDisplay" name="MultTextEdit">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -1167,7 +1167,7 @@
                 </font>
                </property>
                <property name="text">
-                <string> Q:</string>
+                <string>Q:</string>
                </property>
               </widget>
              </item>
@@ -2772,6 +2772,11 @@
    <class>MyTableView</class>
    <extends>QTableView</extends>
    <header location="global">mytableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MultDisplay</class>
+   <extends>QTextEdit</extends>
+   <header location="global">multdisplay.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

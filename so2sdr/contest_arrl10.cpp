@@ -150,13 +150,17 @@ int ARRL10::fieldWidth(int col) const
  */
 int ARRL10::highlightBand(int b,ModeTypes modeType) const
 {
-    if (b!=BAND10) {
+    Q_UNUSED(modeType)
+    switch (b) {
+    case BAND15:
+        return BAND15;
+        break;
+    case BAND10:
+        return BAND10;
+        break;
+    default:
         return -1;
-    } else {
-        if (modeType==CWType) return BAND15;
-        if (modeType==PhoneType) return BAND10;
     }
-    return -1;
 }
 
 /*!

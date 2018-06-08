@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.3.6";
+const QByteArray Version = "2.4.0";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -107,7 +107,8 @@ typedef enum ContestType {
     Wpx_t     = 15,
     Arrldx_t  = 16,
     Paqp_t    = 17,
-    Msqp_t    = 18
+    Msqp_t    = 18,
+    JuneVHF_t = 19
 } ContestType;
 
 // ////////////// Contest/Log/country database
@@ -129,7 +130,8 @@ typedef enum MultTypeDef {
     CQZone      = 11,
     ITUZone     = 12,
     Special     = 13,
-    Uniques     = 14
+    Uniques     = 14,
+    Grids       = 15
 } MultTypeDef;
 
 /*!
@@ -148,8 +150,6 @@ typedef enum {
 
 /*!
    Country structure
-
-   @todo Make this a class to make memory management easier
 
  */
 typedef struct Country {
@@ -204,7 +204,7 @@ Q_DECLARE_TYPEINFO(DomMult, Q_PRIMITIVE_TYPE);
 // column numbers in SQL log
 const int SQL_COL_NR    =  0;    // ID number (SQL primary key)
 const int SQL_COL_TIME  =  1;    // time HHMM  (string)
-const int SQL_COL_FREQ  =  2;    // freq in Hz (int)
+const int SQL_COL_FREQ  =  2;    // freq in Hz (double)
 const int SQL_COL_CALL  =  3;    // call (string)
 const int SQL_COL_BAND  =  4;    // band (int)
 const int SQL_COL_DATE  =  5;    // date MMddyyyy (string)
@@ -253,7 +253,7 @@ const QString FieldTypesNames[10]={"","RST","Mult","Z","#","Name","St","Sec","Gr
 // //////////////// Bandscope defines //////////////////
 
 typedef struct BandmapShared {
-    int        freq;
+    double     freq;
     bool       tx;
 } BandmapShared;
 Q_DECLARE_TYPEINFO(BandmapShared, Q_PRIMITIVE_TYPE);
@@ -315,7 +315,8 @@ const int timerSettings[]={
 const int RATE_AVG_MINUTES=3;
 
 // powers of 2
-const unsigned int bits[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768 };
+const unsigned int bits[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
+                            131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432};
 
 // maximum number of exchange fields
 // NOTE: the SQL fields are currently hard-coded at 4, do not change this!
@@ -330,27 +331,35 @@ const int WORK_DUPES=1;       // work dupes during CQ but not during S&P
 const int NO_DUPE_CHECKING=2; // no dupe checking
 
 // number of bands
-const int N_BANDS=16;
+const int N_BANDS=26;
 
+const int N_BANDS_HF=6;
 const int BAND160 =0;
 const int BAND80 = 1;
 const int BAND40 = 2;
 const int BAND20 = 3;
 const int BAND15 = 4;
 const int BAND10 = 5;
-
-// only traditional contest bands used for score calculations
-const int N_BANDS_SCORED=6;
 const int BAND60 = 6;
 const int BAND30 = 7;
 const int BAND17 = 8;
 const int BAND12 = 9;
 const int BAND6 = 10;
 const int BAND2 = 11;
-const int BAND420 = 12; // 420 MHz
-const int BAND222= 13; // 222 MHz
-const int BAND902 = 14; // 902 MHz
-const int BAND1240 = 15; // 1240 MHz
+const int BAND222= 12;
+const int BAND420 = 13;
+const int BAND902 = 14;
+const int BAND1240 = 15;
+const int BAND2300 = 16;
+const int BAND3300 = 17;
+const int BAND5650 = 18;
+const int BAND10000 = 19;
+const int BAND24000 = 20;
+const int BAND47000 = 21;
+const int BAND76000 = 22;
+const int BAND122000 = 23;
+const int BAND134000 = 24;
+const int BAND241000 = 25;
 
 // mode types
 typedef enum {
@@ -364,14 +373,8 @@ const int NModeTypes=3;
 const QString modeNames[NModeTypes]={"CW","Phone","Digital"};
 
 const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
-                                    "70cm","1.25M","33cm","23cm"};
-
-// band limits: used for automatic qsy between signals
-// right now just CW sub-bands for 160-10m
-const int band_limits[N_BANDS][2] = {{   1800000,  1900000 }, {  3500000,  3600000 }, { 7000000, 7125000 }, { 14000000, 14150000 },
-                                      { 21000000, 21200000 }, { 28000000, 28300000 }, { 5330500, 5403500 }, { 10100000, 10150000 },
-                                      { 18068000, 18110000 }, { 24890000, 24930000 }, {50000000,54000000 }, {144000000, 148000000 },
-                                      {420000000, 450000000}, {222000000,225000000},{902000000,928000000},{1240000000,1300000000}};
+                                    "1.25M","70cm","33cm","23cm","13cm","9cm","6cm","3cm","1.25cm","6mm",
+                                    "4mm","2.5mm","2mm","1mm"};
 
 // maximum number of Cabrillo fields
 const int MAX_CAB_FIELDS=7;
@@ -507,6 +510,13 @@ const QString c_col_width_item="width";
 const int c_col_width_def[SQL_N_COL]={37,39,46,85,0,0,40,40,40,40,40,40,40,40,40,30,57};
 
 const QString s_sdr_path[NRIG]={"sdr/path1","sdr/path2"};
+
+const QString s_wsjtx_enable="wsjtx/enable";
+const bool s_wsjtx_enable_def=false;
+
+const QString s_wsjtx_udp="wsjtx/udp";
+const int s_wsjtx_udp_def=2333;
+
 //
 // RTC this can't be set here, because QCoreApplication::applicationDirPath doesn't get set until
 // qcoreapplication is created.

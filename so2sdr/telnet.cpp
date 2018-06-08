@@ -148,7 +148,7 @@ void Telnet::showText(QString txt)
             bool ok;
             QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
             double  x = freq.toDouble(&ok);
-            int f = (int) (x * 1000);
+            double f = (int) (x * 1000);
             emit(dxSpot(call.toLatin1(), f));
         }
     }

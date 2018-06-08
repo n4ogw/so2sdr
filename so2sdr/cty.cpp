@@ -33,7 +33,7 @@ Cty::Cty(QSettings& s) : settings(s)
     // portable identifiers not giving a new country
     portId.clear();
     portId << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8" << "9" << "0";
-    portId << "P" << "M" << "QRP" << "AE" << "AG" << "KT";
+    portId << "P" << "M" << "QRP" << "AE" << "AG" << "KT" << "R";
 
     // portable ids for aero/maritime stations, ie qth is R1, R2, or R3
     portIdMM.clear();
@@ -42,6 +42,10 @@ Cty::Cty(QSettings& s) : settings(s)
     // portable ids for mobiles
     portIdMobile.clear();
     portIdMobile << "M";
+
+    // portable ids for roverse
+    portIdRover.clear();
+    portIdRover << "R";
 }
 
 Cty::~Cty()
@@ -181,6 +185,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
     // check for portable prefix; there could be more than one / in a call!
     qso->isMM = false;
     qso->isMobile = false;
+    qso->isRover = false;
     if (qso->call.contains('/')) {
         // nothing to do, need at least three chars
         if (sz < 3) return(-1);
@@ -216,6 +221,10 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
             // flag mobile stations
             if (portIdMobile.contains(tmp[i].call)) {
                 qso->isMobile = true;
+            }
+            // flag rover stations
+            if (portIdRover.contains(tmp[i].call)) {
+                qso->isRover = true;
             }
         }
 

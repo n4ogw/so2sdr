@@ -22,6 +22,7 @@
 #include "defines.h"
 #include <QDialog>
 #include <QSettings>
+#include "bandoffsetsetup.h"
 #include "ui_afedrisetup.h"
 
 
@@ -30,6 +31,8 @@ class AfedriSetup : public QDialog, public Ui::afedriSetup
     Q_OBJECT
 public:
     explicit AfedriSetup(QSettings &s,QWidget *parent = 0);
+    int offset(int band);
+    bool invert(int band);
 
 signals:
     void afedriError(const QString &);
@@ -42,6 +45,7 @@ private slots:
 private:
     QSettings &settings;
     void updateFromSettings();
+    BandOffsetSetup *offsetSetup;
 };
 
 #endif // AFEDRISETUP_H

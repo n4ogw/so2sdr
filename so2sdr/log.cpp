@@ -82,6 +82,7 @@ logDelegate* Log::delegate() const { return logdel;}
 Cty* Log::ctyPtr() const { return cty;}
 QString Log::exchangeName(int i) const { return contest->exchangeName(i);}
 int Log::fieldWidth(int col) const { return contest->fieldWidth(col);}
+bool Log::gridMults() const { return contest->gridMults();}
 int Log::highlightBand(int b, ModeTypes modeType) const { return contest->highlightBand(b,modeType);}
 int Log::nExch() const { return contest->nExchange();}
 bool Log::newCall(QByteArray &s) const { return contest->newCall(s);}
@@ -462,7 +463,7 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
         // case, count dupe only if exchange is identical
         QString query="SELECT * FROM log WHERE valid=1 and call like '" + qso->call + "' AND band=" + QString::number(qso->band);
 
-        if (qso->isMobile && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
+        if ((qso->isMobile || qso->isRover) && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
             QString exch=qso->rcv_exch[csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
             // if exchange not entered, can't determine dupe status yet
             if (exch.isEmpty()) {
@@ -473,7 +474,6 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             if (qso->nr) {
                 query=query+" AND (nr < "+QString::number(qso->nr)+") ";
             }
-
             query=query+ " AND ";
             switch (csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
             case 1:
@@ -567,7 +567,7 @@ bool Log::openLogFile(QString fname,bool clear)
     }
     QSqlQuery query(db);
 
-    if (!query.exec("create table if not exists log (nr int primary key,time text,freq int,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid boolean)")) {
+    if (!query.exec("create table if not exists log (nr int primary key,time text,freq double,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid boolean)")) {
         return(false);
     }
     if (model) delete model;
@@ -772,7 +772,7 @@ void Log::importCabrillo(QString cabFile)
     QSqlRecord  newqso;
     newqso.append(QSqlField("nr", QVariant::Int));
     newqso.append(QSqlField("time", QVariant::String));
-    newqso.append(QSqlField("freq", QVariant::Int));
+    newqso.append(QSqlField("freq", QVariant::Double));
     newqso.append(QSqlField("call", QVariant::String));
     newqso.append(QSqlField("band", QVariant::Int));
     newqso.append(QSqlField("date", QVariant::String));
@@ -799,7 +799,7 @@ void Log::importCabrillo(QString cabFile)
         int         nf    = field.size();
 
         // Field1 = frequency in KHz
-        int f = field.at(1).toInt() * 1000;
+        double f = field.at(1).toDouble() * 1000;
         newqso.setValue(SQL_COL_FREQ, QVariant(f));
 
         int b = getBand(f);
@@ -1110,18 +1110,27 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
     }
     for (int i = 0; i < m.rowCount(); i++) {
         // if multi-mode contest, check for matching mode
-        if (csettings.value(c_multimode,c_multimode_def).toBool()) {
-            if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
-                continue;
-            }
-        }
+      //  if (csettings.value(c_multimode,c_multimode_def).toBool()) {
+       //     if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
+       //         continue;
+       //     }
+      //  }
         QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
 
+        // special case: ARRL 10M contest: use band slots 4 and 5 for CW/SSB
+        // @todo a better way to handle this?
+        int ib=m.record(i).value(SQL_COL_BAND).toInt();
+        if (contest->contestType()==Arrl10_t) {
+            if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())==CWType) ib=4;
+            else ib=5;
+        }
         // see if this call is already in list
         int j=calls.indexOf(tmp);
         if (j != -1) {
             // add this band
-            worked[j] = worked[j] | bits[m.record(i).value(SQL_COL_BAND).toInt()];
+
+            //worked[j] = worked[j] | bits[m.record(i).value(SQL_COL_BAND).toInt()];
+            worked[j] = worked[j] | bits[ib];
         } else {
             // new call fragment, or same call and different mode
             // insert call so list is sorted
@@ -1131,7 +1140,7 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
                 isrt++;
             }
             calls.insert(isrt, tmp);
-            unsigned int w = bits[m.record(i).value(SQL_COL_BAND).toInt()];
+            unsigned int w = bits[ib];
             worked.insert(isrt, w);
             int row = m.record(i).value(SQL_COL_NR).toInt() - 1;
             mult1.insert(isrt, contest->mult(row, 0));
@@ -1212,6 +1221,10 @@ int Log::idPfx(Qso *qso, bool &qsy) const
          qso->isamult[0]=true;
          contest->multIndx(qso);
      }
+      if (csettings.value(c_contestname,c_contestname_def).toString().toUpper()=="ARRLJUNE") {
+          qso->isamult[0]=true;
+          contest->multIndx(qso);
+      }
      return pp;
  }
 
@@ -1260,6 +1273,10 @@ int Log::idPfx(Qso *qso, bool &qsy) const
      if (name == "ARRL160-DX") {
          contest = new ARRL160(false,csettings,settings);
          snt_exch[0] = "RST";
+     }
+     if (name == "ARRLJUNE") {
+         contest = new JuneVHF(csettings,settings);
+         snt_exch[0] = settings.value(s_grid,s_grid_def).toString();
      }
      if (name == "CQP-CA") {
          contest = new CQP(csettings,settings);
@@ -1399,10 +1416,7 @@ int Log::idPfx(Qso *qso, bool &qsy) const
  void Log::initializeContest()
  {
      QByteArray name=csettings.value(c_contestname,c_contestname_def).toString().toUpper().toLatin1();
-     if (name == "CWOPS") {
-         emit(multByBandEnabled(false));
-     }
-     if (name == "WPX") {
+     if (name == "CWOPS" || name == "WPX") {
          emit(multByBandEnabled(false));
      }
  }

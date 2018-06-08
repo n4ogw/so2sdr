@@ -25,12 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = "2.3.6";
-
-// syntax change for Qt version 5
-#if QT_VERSION < 0x050000
-#define toLatin1 toAscii
-#endif
+const QByteArray Version = "2.4.0";
 
 typedef enum SdrType {
     soundcard_t=0,
@@ -39,28 +34,35 @@ typedef enum SdrType {
 } SdrType;
 
 // number of bands
-const int N_BANDS=16;
-
+const int N_BANDS=26;
 const int BAND_NONE=-1;
+const int N_BANDS_HF=6;
 const int BAND160 =0;
 const int BAND80 = 1;
 const int BAND40 = 2;
 const int BAND20 = 3;
 const int BAND15 = 4;
 const int BAND10 = 5;
-
-// only traditional contest bands used for score calculations
-const int N_BANDS_SCORED=6;
 const int BAND60 = 6;
 const int BAND30 = 7;
 const int BAND17 = 8;
 const int BAND12 = 9;
 const int BAND6 = 10;
 const int BAND2 = 11;
-const int BAND420 = 12; // 420 MHz
-const int BAND222= 13; // 222 MHz
-const int BAND902 = 14; // 902 MHz
-const int BAND1240 = 15; // 1240 MHz
+const int BAND222= 12;
+const int BAND420 = 13;
+const int BAND902 = 14;
+const int BAND1240 = 15;
+const int BAND2300 = 16;
+const int BAND3300 = 17;
+const int BAND5650 = 18;
+const int BAND10000 = 19;
+const int BAND24000 = 20;
+const int BAND47000 = 21;
+const int BAND76000 = 22;
+const int BAND122000 = 23;
+const int BAND134000 = 24;
+const int BAND241000 = 25;
 
 const int N_BANDMAP_TIMERS=3;
 
@@ -159,10 +161,15 @@ typedef struct sampleSizes {
 Q_DECLARE_TYPEINFO(sampleSizes, Q_PRIMITIVE_TYPE);
 
 // band limits: used for automatic qsy between signals
-const int band_limits[N_BANDS][2] = {{   1800000,  1900000 }, {  3500000,  3600000 }, { 7000000, 7125000 }, { 14000000, 14150000 },
+// right now just CW sub-bands for 160-10m
+const double band_limits[N_BANDS][2] = {{   1800000,  1900000 }, {  3500000,  3600000 }, { 7000000, 7125000 }, { 14000000, 14150000 },
                                       { 21000000, 21200000 }, { 28000000, 28300000 }, { 5330500, 5403500 }, { 10100000, 10150000 },
                                       { 18068000, 18110000 }, { 24890000, 24930000 }, {50000000,54000000 }, {144000000, 148000000 },
-                                      {420000000, 450000000}, {222000000,225000000},{902000000,928000000},{1240000000,1300000000}};
+                                      {420000000, 450000000}, {222000000,225000000},{902000000,928000000},{1240000000,1300000000},
+                                     {2300000000,2450000000},{3300000000,3500000000},{5650000000,5925000000},
+                                     {10000000000,10500000000},{24000000000,24250000000},{47000000000,47200000000},
+                                     {76000000000,81000000000},{122250000000,123000000000},{134000000000,141000000000},
+                                     {241000000000,250000000000}};
 
 //////// QSettings key names and default values used in so2sdr-bandmap.ini  ///////
 
@@ -323,10 +330,20 @@ const int s_sdr_n1mm_port_def=12060;
 const QString s_sdr_reverse_scroll="reverse_scroll";
 const bool s_sdr_reverse_scroll_def=false;
 
-const int cqlimit_default_low[N_BANDS]={1805000,3505000,7005000,14005000,21005000,28005000, 5330500, 10100000,
-                                       18068000, 24890000, 50000000, 144000000, 420000000,222000000,902000000,1240000000};
+const double cqlimit_default_low[N_BANDS]={1805000,3505000,7005000,14005000,21005000,28005000, 5330500, 10100000,
+                                       18068000, 24890000, 50000000, 144000000, 420000000,222000000,902000000,1240000000,
+                                        2300000000,3300000000,5650000000,10000000000,24000000000,47000000000,
+                                        76000000000,122250000000,134000000000,241000000000};
 
-const int cqlimit_default_high[N_BANDS]={1845000,3555000,7550000,14055000,21055000,28055000, 5403500,10150000,
-                                        18110000, 24930000,50100000,144100000,450000000,225000000,928000000,1300000000};
+
+const double cqlimit_default_high[N_BANDS]={1845000,3555000,7550000,14055000,21055000,28055000, 5403500,10150000,
+                                        18110000, 24930000,50100000,144100000,450000000,225000000,928000000,1300000000,
+                                           2450000000,3500000000,5925000000,10500000000,24250000000,47200000000,
+                                           81000000000,123000000000,141000000000,250000000000};
+
+const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
+                                    "1.25M","70cm","33cm","23cm","13cm","9cm","6cm","3cm","1.25cm","6mm",
+                                    "4mm","2.5mm","2mm","1mm"};
+
 
 #endif // DEFINES_H

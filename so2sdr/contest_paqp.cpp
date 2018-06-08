@@ -64,7 +64,8 @@ void PAQP::addQso(Qso *qso)
 // determine qso point value, increase nqso, update score
 // update mult count
 {
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    // bands up to 2M
+    if (!qso->dupe && qso->valid && qso->band<=BAND2) {
         if (qso->modeType==CWType || qso->modeType==DigiType) {
             qso->pts = 2;
         } else if (qso->modeType==PhoneType) {

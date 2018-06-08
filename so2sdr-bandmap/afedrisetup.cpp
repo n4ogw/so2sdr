@@ -29,6 +29,8 @@ AfedriSetup::AfedriSetup(QSettings &s,QWidget *parent) : QDialog(parent),setting
 {
     setupUi(this);
     updateFromSettings();
+    offsetSetup=new BandOffsetSetup(s,afedri_t,this);
+    connect(bandOffsetPushButton,SIGNAL(clicked(bool)),offsetSetup,SLOT(exec()));
     connect(buttonBox,SIGNAL(accepted()),this,SLOT(updateAfedri()));
     connect(buttonBox,SIGNAL(rejected()),this,SLOT(rejectChanges()));
     connect(broadcastOffButton,SIGNAL(clicked()),this,SLOT(enableControls()));
@@ -107,6 +109,25 @@ void AfedriSetup::updateFromSettings()
     lineEditFreq4->setText(settings.value(s_sdr_afedri_freq4,s_sdr_afedri_freq4_def).toString());
     lineEditOffset->setText(settings.value(s_sdr_offset_afedri,s_sdr_offset_afedri_def).toString());
     checkBoxSwap->setChecked(settings.value(s_sdr_swap_afedri,s_sdr_swap_afedri_def).toBool());
+}
+
+
+int AfedriSetup::offset(int band)
+{
+    if (offsetSetup->hasOffset(band)) {
+        return offsetSetup->offset(band);
+    } else {
+        return settings.value(s_sdr_offset_afedri,s_sdr_offset_afedri_def).toInt();
+    }
+}
+
+bool AfedriSetup::invert(int band)
+{
+    if (offsetSetup->hasOffset(band)) {
+        return offsetSetup->invert(band);
+    } else {
+        return settings.value(s_sdr_swap_afedri,s_sdr_swap_afedri_def).toBool();
+    }
 }
 
 /*!

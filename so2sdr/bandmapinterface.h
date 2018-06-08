@@ -45,20 +45,20 @@ public:
     void findFreq(int nr);
     void nextFreq(int nr,bool higher);
     void setInvert(int nr,bool b);
-    void setFreqLimits(int nr,int flow,int fhigh);
-    void setAddOffset(int f, int nr);
+    void setFreqLimits(int nr, double flow, double fhigh);
+    void setAddOffset(double f, int nr);
     void syncCalls(int nr,QList<BandmapEntry> &spotList);
 
 signals:
     void bandmap1state(bool);
     void bandmap2state(bool);
-    void qsy1(int);
-    void qsy2(int);
+    void qsy1(double);
+    void qsy2(double);
     void removeCall(QByteArray,int);
     void sendMsg(const QString &msg);
 
 public slots:
-    void bandmapSetFreq(int f,int nr);
+    void bandmapSetFreq(double f, int nr);
     void closeBandmap(int nr);
     void showBandmap(int nr, bool state);
     void setBandmapTxStatus(bool b, int nr);

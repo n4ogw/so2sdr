@@ -28,6 +28,8 @@
 SoundCardSetup::SoundCardSetup(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    offsetSetup=new BandOffsetSetup(s,soundcard_t,this);
+    connect(bandOffsetPushButton,SIGNAL(clicked(bool)),offsetSetup,SLOT(exec()));
     iconOK               = QIcon("check.png");
     iconNOK              = QIcon("x.png");
     BitsComboBox->insertItem(0,"32",Qt::DisplayRole);
@@ -104,7 +106,28 @@ SoundCardSetup::~SoundCardSetup()
     delete[] nApiDevices;
     delete[] nApiDeviceNames;
     delete[] deviceOK;
+    delete offsetSetup;
 }
+
+
+int SoundCardSetup::offset(int band)
+{
+    if (offsetSetup->hasOffset(band)) {
+        return offsetSetup->offset(band);
+    } else {
+        return settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt();
+    }
+}
+
+bool SoundCardSetup::invert(int band)
+{
+    if (offsetSetup->hasOffset(band)) {
+        return offsetSetup->invert(band);
+    } else {
+        return settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool();
+    }
+}
+
 
 /*!
  * \brief SoundCardSetup::rejectChanges

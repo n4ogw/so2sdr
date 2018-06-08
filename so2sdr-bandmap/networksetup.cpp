@@ -28,10 +28,36 @@
 NetworkSetup::NetworkSetup(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    offsetSetup=new BandOffsetSetup(s,network_t,this);
+    connect(bandOffsetPushButton,SIGNAL(clicked(bool)),offsetSetup,SLOT(exec()));
     updateFromSettings();
     connect(buttonBox,SIGNAL(accepted()),this,SLOT(updateNetwork()));
     connect(buttonBox,SIGNAL(rejected()),this,SLOT(rejectChanges()));
 }
+
+NetworkSetup::~NetworkSetup()
+{
+    delete offsetSetup;
+}
+
+int NetworkSetup::offset(int band)
+{
+    if (offsetSetup->hasOffset(band)) {
+        return offsetSetup->offset(band);
+    } else {
+        return settings.value(s_sdr_offset_network,s_sdr_offset_network_def).toInt();
+    }
+}
+
+bool NetworkSetup::invert(int band)
+{
+    if (offsetSetup->hasOffset(band)) {
+        return offsetSetup->invert(band);
+    } else {
+        return settings.value(s_sdr_swap_network,s_sdr_swap_network_def).toBool();
+    }
+}
+
 
 /*!
  * \brief NetworkSetup::updateFromSettings

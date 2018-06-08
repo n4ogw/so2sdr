@@ -18,6 +18,7 @@
  */
 #ifndef UTILS_H
 #define UTILS_H
+
 #include <QString>
 #include <QValidator>
 #include "defines.h"
@@ -43,7 +44,7 @@ public:
     QValidator::State validate(QString &input, int &pos) const;
 };
 
-int getBand(int f);
+int getBand(double f);
 QString dataDirectory();
 QString userDirectory();
 ModeTypes getModeType(rmode_t mode);

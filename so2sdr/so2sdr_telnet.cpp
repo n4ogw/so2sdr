@@ -122,7 +122,7 @@ void So2sdr::showTelnet(bool checkboxState)
         if (!telnet) {
             telnet = new Telnet(*settings);
             connect(telnet, SIGNAL(done(bool)), telnetAction, SLOT(setChecked(bool)));
-            connect(telnet, SIGNAL(dxSpot(QByteArray, int)), this, SLOT(addSpot(QByteArray, int)));
+            connect(telnet, SIGNAL(dxSpot(QByteArray, double)), this, SLOT(addSpot(QByteArray, double)));
         }
         telnet->show();
         telnetOn = true;
@@ -132,7 +132,7 @@ void So2sdr::showTelnet(bool checkboxState)
 
 /*! add a spot. Checks to see if it is a dupe first
  */
-void So2sdr::addSpot(QByteArray call, int f)
+void So2sdr::addSpot(QByteArray call, double f)
 {
     // * is a special case, used to mark freq without callsign
     bool d = true;
@@ -150,7 +150,7 @@ void So2sdr::addSpot(QByteArray call, int f)
 /*!
    add a callsign spot
  */
-void So2sdr::addSpot(QByteArray call, int f, bool d)
+void So2sdr::addSpot(QByteArray call, double f, bool d)
 {
     if (call.isEmpty()) return;
     BandmapEntry spot;
@@ -235,16 +235,17 @@ void So2sdr::addSpot(QByteArray call, int f, bool d)
  */
 void So2sdr::checkSpot(int nr)
 {
-    static int lastFreq[2] = { 0, 0 };
+    static double lastFreq[2] = { 0, 0 };
     // initialize last freq
     if (lastFreq[nr] == 0) {
         lastFreq[nr] = cat[nr]->getRigFreq();
         return;
     }
-    int f = cat[nr]->getRigFreq();
+    double f = cat[nr]->getRigFreq();
 
     // freq changed, so recheck spot list
-    if (f != lastFreq[nr]) spotListPopUp[nr] = false;
+    // @todo move to double freqs; should this have some tolerance?
+    if (f != lastFreq[nr] ) spotListPopUp[nr] = false;
 
     // currently have a call from list shown. Don't do anything
     if (spotListPopUp[nr]) {
@@ -386,7 +387,7 @@ void So2sdr::removeSpot(QByteArray call, int band)
 
 /*! remove a spot at freq f
  */
-void So2sdr::removeSpotFreq(int f, int band)
+void So2sdr::removeSpotFreq(double f, int band)
 {
     int indx = -1;
     for (int i = 0; i < spotList[band].size(); i++) {
@@ -407,7 +408,7 @@ void So2sdr::removeSpotFreq(int f, int band)
 
 /*! returns true if there is a call spotted at this freq
  */
-bool So2sdr::isaSpot(int f, int band)
+bool So2sdr::isaSpot(double f, int band)
 {
     for (int i = 0; i < spotList[band].size(); i++) {
         if (abs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {

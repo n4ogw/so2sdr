@@ -55,7 +55,7 @@ int IARU::nMultsWorked() const
     int n = 0;
     for (int ii = 0; ii < MMAX; ii++) {
         for (int k=0;k<NModeTypes;k++) {
-            for (int i = 0; i < N_BANDS_SCORED; i++) {
+            for (int i = 0; i < N_BANDS_HF; i++) {
                 n += multsWorked[ii][k][i];
             }
         }
@@ -72,7 +72,7 @@ int IARU::nMultsWorked() const
  */
 void IARU::addQso(Qso *qso)
 {
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    if (!qso->dupe && qso->valid && qso->band<N_BANDS_HF) {
         if (qso->zone == _myZone || qso->isamult[1]) {
             // same zone, HQ, IARU official : 1 pt
             qso->pts = 1;

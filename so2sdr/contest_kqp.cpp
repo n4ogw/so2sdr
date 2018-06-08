@@ -49,7 +49,8 @@ void KQP::addQso(Qso *qso)
 // determine qso point value, increase nqso, update score
 // update mult count
 {
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    // bands up to 6M are allowed
+    if (!qso->dupe && qso->valid && qso->band<=BAND6) {
         if (qso->modeType==CWType) {
             qso->pts = 3;
         } else if (qso->modeType==PhoneType) {

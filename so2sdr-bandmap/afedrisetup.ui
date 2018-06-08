@@ -221,38 +221,28 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="label_13">
        <property name="text">
         <string>Sample Rate (Hz)</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="13" column="1">
       <widget class="QLineEdit" name="sampleFreqLineEdit">
        <property name="toolTip">
         <string>Sample rate of SDR. Not all values can be set with Afedri, see Afedri docs.</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
-      <widget class="QCheckBox" name="checkBoxSwap">
-       <property name="toolTip">
-        <string>Invert I/Q channels. Use if spectrum is inverted.</string>
-       </property>
-       <property name="text">
-        <string>swap IQ</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Broadcast</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="15" column="1">
       <widget class="QRadioButton" name="broadcastMasterButton">
        <property name="toolTip">
         <string>Turn on UDP broadcast option. Master controls the SDR.</string>
@@ -265,7 +255,7 @@
        </attribute>
       </widget>
      </item>
-     <item row="14" column="1">
+     <item row="16" column="1">
       <widget class="QRadioButton" name="broadcastSlaveButton">
        <property name="toolTip">
         <string>Connect to UDP broadcast as Slave. Cannot change any SDR parameters. Use for multichannel SDR's.</string>
@@ -278,7 +268,7 @@
        </attribute>
       </widget>
      </item>
-     <item row="15" column="1">
+     <item row="17" column="1">
       <widget class="QRadioButton" name="broadcastOffButton">
        <property name="toolTip">
         <string>Do not use UDP broadcast protocol.</string>
@@ -294,14 +284,14 @@
        </attribute>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_12">
        <property name="text">
         <string>Speed</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="12" column="1">
       <widget class="QComboBox" name="fftComboBox">
        <item>
         <property name="text">
@@ -318,6 +308,41 @@
          <string>1/4</string>
         </property>
        </item>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QCheckBox" name="checkBoxSwap">
+       <property name="toolTip">
+        <string>Invert I/Q channels. Use if spectrum is inverted.</string>
+       </property>
+       <property name="text">
+        <string>swap IQ</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QPushButton" name="bandOffsetPushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>125</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>125</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>per-band settings</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -347,7 +372,6 @@
   <tabstop>lineEditOffset</tabstop>
   <tabstop>fftComboBox</tabstop>
   <tabstop>sampleFreqLineEdit</tabstop>
-  <tabstop>checkBoxSwap</tabstop>
   <tabstop>broadcastMasterButton</tabstop>
   <tabstop>broadcastSlaveButton</tabstop>
   <tabstop>broadcastOffButton</tabstop>

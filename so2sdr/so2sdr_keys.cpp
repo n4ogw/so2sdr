@@ -565,7 +565,7 @@ void So2sdr::controlE()
  */
 void So2sdr::markDupe(int nrig)
 {
-    int f = cat[nrig]->getRigFreq();
+    double f = cat[nrig]->getRigFreq();
     if (isaSpot(f, cat[nrig]->band())) {
         // remove spot and reset status
         removeSpotFreq(f, cat[nrig]->band());

@@ -57,6 +57,7 @@ class So2r;
 class SSBMessageDialog;
 class StationDialog;
 class Telnet;
+class UDPReader;
 class Winkey;
 class WinkeyDialog;
 
@@ -73,12 +74,12 @@ public:
     bool so2sdrOk() const;
 
 public slots:
-    void addSpot(QByteArray call, int f);
-    void addSpot(QByteArray call, int f, bool d);
+    void addSpot(QByteArray call, double f);
+    void addSpot(QByteArray call, double f, bool d);
     void bandChange(int nr,int band);
     void expandMacro(QByteArray msg, bool stopcw = true);
     void removeSpot(QByteArray call, int band);
-    void removeSpotFreq(int f, int band);
+    void removeSpotFreq(double f, int band);
     void rescore();
     void setEntryFocus();
     void settingsUpdate();
@@ -90,8 +91,8 @@ public slots:
 
 signals:
     void contestReady();
-    void qsyExact1(int);
-    void qsyExact2(int);
+    void qsyExact1(double);
+    void qsyExact2(double);
     void setRigMode1(rmode_t, pbwidth_t);
     void setRigMode2(rmode_t, pbwidth_t);
 
@@ -108,6 +109,7 @@ private slots:
     void importCabrillo();
     void launch_WPMDialog();
     void launch_enterCWSpeed(const QString &text);
+    void logWsjtx(Qso *qso);
     void openFile();
     void openRadios();
     void prefixCheck1(const QString &call);
@@ -260,10 +262,11 @@ private:
     SettingsDialog       *progsettings;
     StationDialog        *station;
     Telnet               *telnet;
+    UDPReader            *wsjtxUDP;
     WinkeyDialog         *winkeyDialog;
     Winkey               *winkey;
 
-    void bandmapSetFreq(int f,int nr);
+    void bandmapSetFreq(double f,int nr);
     void addQso(Qso *qso);
     void altd();
     void altDEnter(int level, Qt::KeyboardModifiers mod);
@@ -291,7 +294,7 @@ private:
     void initLogView();
     void initPointers();
     void initVariables();
-    bool isaSpot(int f, int band);
+    bool isaSpot(double f, int band);
     void launch_speedUp(Qt::KeyboardModifiers);
     void launch_speedDn(Qt::KeyboardModifiers);
     void loadSpots();
@@ -302,7 +305,7 @@ private:
     void populateDupesheet();
     void prefixCheck(int nrig, const QString &call);
     void prefillExch(int nr);
-    void qsy(int nrig, int &freq, bool exact);
+    void qsy(int nrig, double &freq, bool exact);
     void readStationSettings();
     void readExcludeMults();
     void runScript(QByteArray cmd);

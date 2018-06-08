@@ -159,9 +159,9 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
     // display frequency in KHz
     // (this is the reason editing the frequency column is a problem)
     if (index.column()==SQL_COL_FREQ) {
-        int f_khz=index.model()->data(index).toInt();
+        double f_khz=index.model()->data(index).toDouble();
         f_khz = qRound(f_khz / 1000.0);
-        s = QString::number(f_khz, 10);
+        s = QString::number(f_khz);
     }
 
     if (index.column() == SQL_COL_MODE) {
@@ -185,6 +185,10 @@ void logDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
             break;
         case RIG_MODE_AM:
             s = "AM";
+            break;
+        case RIG_MODE_RTTY:
+        case RIG_MODE_RTTYR:
+            s = "RY";
             break;
         default:
             break;

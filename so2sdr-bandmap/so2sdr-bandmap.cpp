@@ -213,7 +213,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
             SLOT(processData(unsigned char *, unsigned char)),Qt::QueuedConnection);
     connect(iqDialog, SIGNAL(closed(bool)), spectrumProcessor, SLOT(setPlotPoints(bool)));
     connect(iqDialog, SIGNAL(restart()), spectrumProcessor, SLOT(clearIQ()));
-    connect(spectrumProcessor, SIGNAL(qsy(int)), this, SLOT(findQsy(int)));
+    connect(spectrumProcessor, SIGNAL(qsy(double)), this, SLOT(findQsy(double)));
     connect(spectrumProcessor, SIGNAL(clearPlot()), iqDialog, SLOT(clearPlots()));
     connect(spectrumProcessor, SIGNAL(gainPoint(int, double)), iqDialog, SLOT(plotGainPoint(int, double)));
     connect(spectrumProcessor, SIGNAL(phasePoint(int, double)), iqDialog, SLOT(plotPhasePoint(int, double)));
@@ -270,10 +270,10 @@ void So2sdrBandmap::setShowToolbar(bool b)
     }
     int dy = (height() - toolBarHeight) / 2 - vfoPos;
     int scale= settings->value(s_sdr_scale,s_sdr_scale_def).toInt();
-    freqMin = centerFreq - (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / 2 + dy) *
-            settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/(scale * settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
-    freqMax = freqMin + (settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/
-                         (double) (scale * settings->value(s_sdr_fft,s_sdr_fft_def).toInt()));
+    freqMin = centerFreq - (settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() / 2 + dy) *
+            settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/(scale * settings->value(s_sdr_fft,s_sdr_fft_def).toDouble());
+    freqMax = freqMin + (settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/
+                         (double) (scale * settings->value(s_sdr_fft,s_sdr_fft_def).toDouble()));
     display->setVfoPos(vfoPos);
     makeFreqScaleAbsolute();
     FreqLabel->setPixmap(freqPixmap);
@@ -338,31 +338,33 @@ void So2sdrBandmap::setSdrType()
     case soundcard_t:
         iqShowData->setEnabled(true);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt());
-        settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());
-        settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool());
+        //settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());
+        //settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool());
         speed=settings->value(s_sdr_sound_speed,s_sdr_sound_speed_def).toInt();
         break;
     case afedri_t:
         iqShowData->setEnabled(false);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_afedri_sample_freq,s_sdr_afedri_sample_freq_def).toInt());
-        settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_afedri,s_sdr_offset_afedri_def).toInt());
+       // settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_afedri,s_sdr_offset_afedri_def).toInt());
         settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_afedri_tcp_ip,s_sdr_afedri_tcp_ip_def).toString());
         settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_afedri_tcp_port,s_sdr_afedri_tcp_port_def).toInt());
         settings->setValue(s_sdr_udp_port,settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt());
-        settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_afedri,s_sdr_swap_afedri_def).toBool());
+        //settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_afedri,s_sdr_swap_afedri_def).toBool());
         speed=settings->value(s_sdr_afedri_speed,s_sdr_afedri_speed_def).toInt();
         break;
     case network_t:
         iqShowData->setEnabled(false);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_net_sample_freq,s_sdr_net_sample_freq_def).toInt());
-        settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_network,s_sdr_offset_network_def).toInt());
+        //settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_network,s_sdr_offset_network_def).toInt());
         settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_net_tcp_ip,s_sdr_net_tcp_ip_def).toString());
         settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_net_tcp_port,s_sdr_net_tcp_port_def).toInt());
         settings->setValue(s_sdr_udp_port,settings->value(s_sdr_net_udp_port,s_sdr_net_udp_port_def).toInt());
-        settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_network,s_sdr_swap_network_def).toBool());
+        //settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_network,s_sdr_swap_network_def).toBool());
         speed=settings->value(s_sdr_net_speed,s_sdr_net_speed_def).toInt();
         break;
     }
+    settings->setValue(s_sdr_offset,sdrSetup->offset(getBand(centerFreq)));
+    settings->setValue(s_sdr_swapiq,sdrSetup->invert(getBand(centerFreq)));
     settings->setValue(s_sdr_speed,speed);
     int fft,period;
     switch (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()) {
@@ -481,8 +483,8 @@ void So2sdrBandmap::closeIQ()
 void So2sdrBandmap::deleteCallMouse()
 {
 
-    int f = centerFreq + (int) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()
-                                   / (double) settings->value(s_sdr_fft,s_sdr_fft_def).toInt() /  settings->value(s_sdr_scale,s_sdr_scale_def).toInt()
+    double f = centerFreq + (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()
+                                   / (double) settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() /  settings->value(s_sdr_scale,s_sdr_scale_def).toDouble()
                                    * (vfoPos - mouse_y+toolBarHeight));
     QByteArray call="";
     for (int i=0;i<callList.size();i++) {
@@ -883,9 +885,9 @@ void So2sdrBandmap::stop()
 
   if freq difference is larger than SIG_MIN_SPOT_DIFF, returns fin
   */
-int So2sdrBandmap::closestFreq(int fin) const
+double So2sdrBandmap::closestFreq(double fin) const
 {
-    int f=fin;
+    double f=fin;
     if (spectrumProcessor) {
         f=spectrumProcessor->closestFreq(fin);
     }
@@ -1025,11 +1027,11 @@ void So2sdrBandmap::readData()
             data=socket->read(cmdLen);
         }
         bool ok=false;
-        int f;
-        unsigned int ff;
+        double f;
+        double ff;
         switch (cmd) {
         case BANDMAP_CMD_SET_FREQ: // set frequency
-            f=data.toInt(&ok);
+            f=data.toDouble(&ok);
             if  (ok && centerFreq!=f) {
                 centerFreq=f;
                 spectrumProcessor->setTuning(true);
@@ -1049,6 +1051,9 @@ void So2sdrBandmap::readData()
                     // if band changed, clear all signals
                     spectrumProcessor->clearSigs();
                     spectrumProcessor->clearCQ();
+                    settings->setValue(s_sdr_offset,sdrSetup->offset(getBand(centerFreq)));
+                    settings->setValue(s_sdr_swapiq,sdrSetup->invert(getBand(centerFreq)));
+                    spectrumProcessor->updateParams();
                     band=b;
                 }
                 spectrumProcessor->setFreq(centerFreq, band, endFreqs[0], endFreqs[1]);
@@ -1059,13 +1064,13 @@ void So2sdrBandmap::readData()
             }
             break;
         case BANDMAP_CMD_SET_LOWER_FREQ: // set freq finder lower limit
-            ff=data.toUInt(&ok);
+            ff=data.toDouble(&ok);
             if (ok) {
                 flow=ff;
             }
             break;
         case BANDMAP_CMD_SET_UPPER_FREQ: // set freq finder upper limit
-            ff=data.toUInt(&ok);
+            ff=data.toDouble(&ok);
             if (ok) {
                 fhigh=ff;
             }
@@ -1192,7 +1197,7 @@ void So2sdrBandmap::addCall(QByteArray data)
     newcall.call=data.mid(0,i1);
     int i2=data.indexOf(',',i1+1);
     bool ok;
-    newcall.freq=data.mid(i1+1,i2-i1-1).toInt(&ok);
+    newcall.freq=data.mid(i1+1,i2-i1-1).toDouble(&ok);
     if (!ok) return;
     if (len!=(i2+8)) return;
     newcall.rgbCall[0]=data[i2+1];
@@ -1230,9 +1235,10 @@ void So2sdrBandmap::startConnection()
     connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
 }
 
-int So2sdrBandmap::getBand(unsigned int f)
+int So2sdrBandmap::getBand(double f)
 {
-    switch (f / 1000000) {
+    int ff=f/1000000;
+    switch (ff) {
     case 1:
     case 2:
         return BAND160;
@@ -1311,9 +1317,9 @@ int So2sdrBandmap::getBand(unsigned int f)
 
 void So2sdrBandmap::setBandName(int b)
 {
-    const QString bands[N_BANDS] = { "160m", "80m", "40m", "20m", "15m", "10m", "60m", "30m", "17m", "12m", "6m", "2m",
-                                     "70cm","1.25m","33cm","23cm"};
-
+    const QString bands[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
+                                        "70cm","1.25M","33cm","23cm","13cm","9cm","6cm","3cm","1.25cm","6mm",
+                                        "4mm","2.5mm","2mm","1mm"};
     if (b<0 || b>N_BANDS) {
         bandName.clear();
     } else {
@@ -1324,7 +1330,7 @@ void So2sdrBandmap::setBandName(int b)
 /* slot called from spectrumProcessor with qsy frequency.
  * this frequency is returned to the connected program through tcp
 */
-void So2sdrBandmap::findQsy(int f)
+void So2sdrBandmap::findQsy(double f)
 {
     if (f<=0 || socket->state()!=QAbstractSocket::ConnectedState) return;
 
@@ -1352,7 +1358,7 @@ void So2sdrBandmap::findQsy(int f)
  * \param call if not empty, sends callsign
  * \param del if true, send "delete" message to delete callsign
  */
-void So2sdrBandmap::writeUdpXML(int freq,QByteArray call,bool del)
+void So2sdrBandmap::writeUdpXML(double freq,QByteArray call,bool del)
 {
     QByteArray msg;
     QXmlStreamWriter stream(&msg);
@@ -1458,6 +1464,5 @@ void So2sdrBandmap::showHelp()
 
 void So2sdrBandmap::resetTuningTimer()
 {
-    qDebug("reset!");
     spectrumProcessor->setTuning(false);
 }

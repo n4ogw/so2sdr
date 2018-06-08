@@ -34,6 +34,7 @@
 #include "contest_fd.h"
 #include "contest_dxped.h"
 #include "contest_iaru.h"
+#include "contest_junevhf.h"
 #include "contest_kqp.h"
 #include "contest_msqp.h"
 #include "contest_naqp.h"
@@ -78,9 +79,10 @@ public:
     bool exportADIF(QFile *) const;
     void exportCabrillo(QFile *,QString call,QString,QString,QString,QString) const;
     int fieldWidth(int col) const;
+    bool gridMults() const;
     void guessMult(Qso *qso) const;
     bool hasPrefill() const;
-    int highlightBand(int b,ModeTypes modeType) const;
+    int highlightBand(int b,ModeTypes modeType=CWType) const;
     int idPfx(Qso *qso, bool &qsy) const;
     void importCabrillo(QString cabFile);
     void initializeContest();

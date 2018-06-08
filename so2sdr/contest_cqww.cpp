@@ -70,7 +70,7 @@ void CQWW::addQso(Qso *qso)
     } else {
         qso->pts = 3;
     }
-    if (qso->dupe || !qso->valid || qso->band>=N_BANDS_SCORED) qso->pts = 0;
+    if (qso->dupe || !qso->valid || qso->band>=N_BANDS_HF) qso->pts = 0;
     qsoPts += qso->pts;
     addQsoMult(qso);
 }

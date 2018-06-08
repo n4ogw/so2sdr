@@ -222,7 +222,7 @@ void Spectrum::clearCQ()
 /*! start CQ finding process
 
  */
-void Spectrum::startFindCQ(int low, int high, QList<Call> &callList)
+void Spectrum::startFindCQ(double low, double high, QList<Call> &callList)
 {
     findCQ(low,high,callList);
     if (sigCQ) {
@@ -235,7 +235,7 @@ void Spectrum::startFindCQ(int low, int high, QList<Call> &callList)
 /*! find best CQ freqs among detected signals. Once freq is found,
    qsy is emitted
  */
-void Spectrum::findCQ(int flow,int fhigh,QList<Call> &callList)
+void Spectrum::findCQ(double flow, double fhigh, QList<Call> &callList)
 {
     // peak detect must be turned on
     if (!peakDetect) {
@@ -264,7 +264,7 @@ void Spectrum::findCQ(int flow,int fhigh,QList<Call> &callList)
     }
 
     // add limits to list of freqs
-    int findCQLimit[2];
+    double findCQLimit[2];
     findCQLimit[0]=flow;
     findCQLimit[1]=fhigh;
 
@@ -632,7 +632,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                 i = j;
 
                 // frequency
-                int freq;
+                double freq;
                 if (ipk > fftSize / 2) {
                     // neg freqs
                     freq = centerFreq - invert * totOffset - invert*qRound((fftSize - ipk) *
@@ -777,7 +777,7 @@ void Spectrum::resetAvg()
     b=band index
     low, high=lowest, highest frequencies
  */
-void Spectrum::setFreq(int f, int b, int low, int high) {
+void Spectrum::setFreq(double f, int b, double low, double high) {
     centerFreq = f;
     band       = b;
     sigSpace   = 0;
@@ -1223,9 +1223,9 @@ void Spectrum::gaussElim(double a[FIT_ORDER][FIT_ORDER], double y[FIT_ORDER], in
 
   if freq difference is larger than SIG_MIN_SPOT_DIFF, returns fin
   */
-int Spectrum::closestFreq(int fin) const
+int Spectrum::closestFreq(double fin) const
 {
-    int f=fin;
+    double f=fin;
     int delta=SIG_MIN_SPOT_DIFF;
     for (int i=0;i<SIG_MAX;i++) {
         if (sigList[i].active) {

@@ -71,7 +71,13 @@ HEADERS += cwmessagedialog.h \
     so2r.h \
     so2rdialog.h \
     contest_msqp.h \
-    filedownloader.h
+    filedownloader.h \
+    contest_junevhf.h \
+    udpreader.h \
+    multdisplay.h \
+    centergriddialog.h \
+    adifparse.h
+
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
     winkeydialog.ui \
@@ -88,7 +94,8 @@ FORMS += cwmessagedialog.ui \
     detailededit.ui \
     ssbmessagedialog.ui \
     settingsdialog.ui \
-    so2rdialog.ui
+    so2rdialog.ui \
+    centergrid.ui
 SOURCES += cwmessagedialog.cpp \
     main.cpp \
     serial.cpp \
@@ -146,7 +153,12 @@ SOURCES += cwmessagedialog.cpp \
     so2r.cpp \
     so2rdialog.cpp \
     contest_msqp.cpp \
-    filedownloader.cpp
+    filedownloader.cpp \
+    contest_junevhf.cpp \
+    udpreader.cpp \
+    multdisplay.cpp \
+    centergriddialog.cpp \
+    adifparse.cpp
 
  unix { 
     include (../common.pri)
@@ -154,7 +166,7 @@ SOURCES += cwmessagedialog.cpp \
 
     CONFIG += link_pkgconfig
     PKGCONFIG += hamlib
-    QMAKE_CXXFLAGS += -O2 -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
+    QMAKE_CXXFLAGS += -O2 -Wall -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"
     HEADERS += linux_pp.h
     SOURCES += linux_pp.cpp 
 

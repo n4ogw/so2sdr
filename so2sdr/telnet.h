@@ -37,7 +37,7 @@ public:
 
 signals:
     void done(bool);
-    void dxSpot(QByteArray, int);
+    void dxSpot(QByteArray, double);
 
 protected:
     void closeEvent(QCloseEvent *event);

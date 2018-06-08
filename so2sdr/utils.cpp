@@ -80,9 +80,10 @@ void TimeValidator::fixup ( QString & input ) const
 /*!
    get band index from frequency
  */
-int getBand(int f)
+int getBand(double f)
 {
-    switch (f / 1000000) {
+    int g=f / 1000000.0;
+    switch (g) {
     case 1: case 2: return(BAND160);
         break; // 160
     case 3: return(BAND80);
@@ -111,7 +112,7 @@ int getBand(int f)
         break; // 220 MHz
     }
     // handle UHF
-    int fmhz=f/1000000;
+    double fmhz=f/1000000;
     if (fmhz>419 && fmhz<451) {
         return(BAND420);
     } else if (fmhz>901 && fmhz<929) {
@@ -119,6 +120,7 @@ int getBand(int f)
     } else if (fmhz>1239 && fmhz<1301) {
         return(BAND1240);
     }
+    // @todo microwave bands!
     return(-1);
 }
 

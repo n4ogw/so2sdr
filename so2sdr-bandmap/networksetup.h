@@ -22,6 +22,7 @@
 #include "defines.h"
 #include <QDialog>
 #include <QSettings>
+#include "bandoffsetsetup.h"
 #include "ui_networksetup.h"
 
 
@@ -30,6 +31,9 @@ class NetworkSetup : public QDialog, public Ui::networkSetup
     Q_OBJECT
 public:
     explicit NetworkSetup(QSettings &s,QWidget *parent = 0);
+    ~NetworkSetup();
+    int offset(int band);
+    bool invert(int band);
 
 signals:
     void networkError(const QString &);
@@ -41,6 +45,7 @@ private slots:
 private:
     QSettings &settings;
     void updateFromSettings();
+    BandOffsetSetup *offsetSetup;
 };
 
 #endif // NETWORKSETUP_H

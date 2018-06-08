@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.3.5
+## So2sdr-bandmap Help Version 2.4.0
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,13 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.0 (06/08/2018)
+
+* support for the ARRL June VHF contest
+* support for reading ADIF qso information via UDP from WSJT-X
+* allow per-band setting of IF offset and inversion (same as swap IQ) in so2sdr-bandmap
+* To support higher frequency bands, the  internal format for frequency stored in log was changed.
 
 ## version 2.3.5 (04/14/2018)
 

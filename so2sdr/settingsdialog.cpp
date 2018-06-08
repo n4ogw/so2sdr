@@ -49,6 +49,8 @@ void SettingsDialog::loadSettings()
     AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
     ctyLineEdit->setText(settings.value(s_cty_url,s_cty_url_def).toString());
     ctyLineEdit->setCursorPosition(0);
+    UDPCheckBox->setChecked(settings.value(s_wsjtx_enable,s_wsjtx_enable_def).toBool());
+    UDPPortLineEdit->setText(settings.value(s_wsjtx_udp,s_wsjtx_udp_def).toString());
 }
 
 void SettingsDialog::updateSettings()
@@ -61,6 +63,8 @@ void SettingsDialog::updateSettings()
     settings.setValue(s_settings_duelingcqdelay,DuelingCQLineEdit->text().toDouble());
     settings.setValue(s_settings_autosend_mode,AutoSendComboBox->currentIndex());
     settings.setValue(s_cty_url,ctyLineEdit->text().trimmed());
+    settings.setValue(s_wsjtx_enable,UDPCheckBox->isChecked());
+    settings.setValue(s_wsjtx_udp,UDPPortLineEdit->text().toInt());
     settings.sync();
     emit(settingsUpdate());
     accept();

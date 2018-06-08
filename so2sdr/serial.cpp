@@ -395,7 +395,7 @@ void RigSerial::timerEvent(QTimerEvent *event)
             // qsy radio
             lock.lockForWrite();
             if (qsyFreq) {
-                int f=qsyFreq;
+                double f=qsyFreq;
                 qsyFreq=0;
                 lock.unlock();
                 int status = rig_set_freq(rig, RIG_VFO_CURR, f);
@@ -423,8 +423,8 @@ void RigSerial::timerEvent(QTimerEvent *event)
 
             int    status = rig_get_freq(rig, RIG_VFO_CURR, &freq);
             if (status == RIG_OK) {
-                int ff = Hz(freq);
-                if (ff != 0) rigFreq = ff;
+                double ff = Hz(freq);
+                if (ff != 0.0) rigFreq = ff;
             }
 
             rmode_t   m;
@@ -469,10 +469,10 @@ bool RigSerial::radioOpen()
 
 /*! returns current radio frequency in Hz
  */
-int RigSerial::getRigFreq()
+double RigSerial::getRigFreq()
 {
     lock.lockForRead();
-    int f = rigFreq;
+    double f = rigFreq;
     lock.unlock();
     return(f);
 }
@@ -646,7 +646,7 @@ void RigSerial::openRig()
 /*! qsy radio
    f=freq in Hz (no checking done)
  */
-void RigSerial::qsyExact(int f)
+void RigSerial::qsyExact(double f)
 {
     lock.lockForWrite();
     qsyFreq = f;
@@ -755,14 +755,14 @@ void RigSerial::rxSocket()
         QByteArray data=socket->readAll();
         QList<QByteArray> cmdList=data.split(';');
         bool ok;
-        int f;
+        double f;
         double iff;
         for (int i = 0; i < nCmdNames; i++) {
             if (cmdList.at(0)==cmdNames[i]) {
                 switch (i) {
                 case 0: // get_freq. Response looks like "get_freq:;Frequency: 28009360;RPRT 0"
                     cmdList[1].remove(0,10);
-                    f=cmdList[1].toInt(&ok);
+                    f=cmdList[1].toDouble(&ok);
                     if (ok) rigFreq=f;
                     break;
                 case 1: // get_mode. Response looks like "get_mode:;Mode: CW;Passband: 600;RPRT 0"
@@ -801,7 +801,7 @@ void RigSerial::tcpError(QAbstractSocket::SocketError e)
 int RigSerial::band() const
 {
     // in case caught in the middle of a qsy
-    int f=qsyFreq;
+    double f=qsyFreq;
     if (f!=0) {
         return getBand(f);
     } else {
@@ -811,7 +811,7 @@ int RigSerial::band() const
 
 QString RigSerial::bandName()
 {
-    int f=qsyFreq;
+    double f=qsyFreq;
     if (f!=0) {
         return bandNames[getBand(f)];
     } else {

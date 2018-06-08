@@ -48,7 +48,7 @@ Naqp::~Naqp()
 void Naqp::addQso(Qso *qso)
 {
     // all qsos are 1 point
-    if (!qso->dupe && qso->valid && qso->band<N_BANDS_SCORED) {
+    if (!qso->dupe && qso->valid && qso->band<N_BANDS_HF) {
         qso->pts = 1;
         qsoPts++;
     } else {

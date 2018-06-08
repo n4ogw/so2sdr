@@ -36,10 +36,11 @@ public:
     bool       dupe;
     bool       isMM;
     bool       isMobile;
+    bool       isRover;
     bool       valid;
     int        band;
     int        bandColumn;
-    int        freq;
+    double        freq;
     int        mult[MMAX];
     int        newmult[MMAX];
     int        nr;
@@ -56,6 +57,7 @@ public:
     FieldTypes   *exchange_type;
     int          bearing;
     int          country;
+    int          distance;
     int          n_exchange;
     int          zone;
     QByteArray   country_name;

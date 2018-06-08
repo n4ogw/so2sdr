@@ -52,6 +52,41 @@ SDRDialog::SDRDialog(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
     updateFromSettings();
 }
 
+int SDRDialog::offset(int band)
+{
+    switch (settings.value(s_sdr_type,s_sdr_type).toInt()) {
+    case 0:
+        return soundcard->offset(band);
+        break;
+    case 1:
+        return network->offset(band);
+        break;
+    case 2:
+        return afedri->offset(band);
+        break;
+    default:
+        return 0;
+    }
+}
+
+bool SDRDialog::invert(int band)
+{
+    switch (settings.value(s_sdr_type,s_sdr_type).toInt()) {
+    case 0:
+        return soundcard->invert(band);
+        break;
+    case 1:
+        return network->invert(band);
+        break;
+    case 2:
+        return afedri->invert(band);
+        break;
+    default:
+        return false;
+    }
+}
+
+
 /*!
  * \brief SDRDialog::launchConfigure
  *   Launch the appropriate configure dialog when the "configure" button is clicked

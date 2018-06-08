@@ -70,6 +70,12 @@ bool Contest::bandLabelEnable(int i) const
     return true;
 }
 
+bool Contest::gridMults() const
+{
+    if (multType[0]==Grids) return true;
+    else return false;
+}
+
 /* mapping for band to displayed band slot on main Ui. In most
  * cases this is 1:1, but for some contests (ARRL10 for example),
  * bands are displayed in non-standard positions. Those contests should
@@ -78,7 +84,7 @@ bool Contest::bandLabelEnable(int i) const
 int Contest::highlightBand(int b,ModeTypes modeType) const
 {
     Q_UNUSED(modeType)
-  return b;
+    return b;
 }
 
 int Contest::columnCount(int col) const
@@ -207,14 +213,15 @@ Contest::~Contest()
 }
 
 /*!
-  Determine mult index. Currently only implemented for Uniques, Special, and Prefix mults
+  Determine mult index. Currently only implemented for Uniques, Special, Grids, and Prefix mults
   */
 void Contest::multIndx(Qso *qso) const
 {
     for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists
-        if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix)) {
+        if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix ||
+                                 multType[ii] == Grids)) {
             QByteArray tmp;
             if (multType[ii] == Uniques) {
                 tmp = qso->call;
@@ -262,6 +269,10 @@ void Contest::addQsoMult(Qso *qso)
         score.append(newrec);
         return;
     }
+    // if mults do not count per-mode, store them all in the CW slot
+    mode_t mode=CWType;
+    if (settings.value(c_multsmode,c_multsmode_def).toBool()) mode=qso->modeType;
+
     // counter for screen display of qsos
     if (!qso->dupe && qso->bandColumn>=0 && qso->bandColumn<6) qsoCnt[qso->bandColumn]++;
 
@@ -279,7 +290,8 @@ void Contest::addQsoMult(Qso *qso)
     for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists
-        if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix)) {
+        if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix ||
+                                 multType[ii] == Grids)) {
             QByteArray tmp;
             if (multType[ii] == Uniques) {
                 tmp = qso->call;
@@ -313,7 +325,6 @@ void Contest::addQsoMult(Qso *qso)
                 }
                 qso->mult[ii]    = indx;
                 qso->isamult[ii] = true;
-
                 if (indx != mults[ii].size()) {
                     for (int k = 0; k < score.size(); k++) {
                         if (score.at(k)->mult[ii] >= indx) {
@@ -326,7 +337,7 @@ void Contest::addQsoMult(Qso *qso)
 
                 // must insert extra element in other arrays
                 for (int j = 0; j <= N_BANDS; j++) {
-                    multWorked[ii][qso->modeType][j].insert(indx, false);
+                    multWorked[ii][mode][j].insert(indx, false);
                 }
                 _nMults[ii] = mults[ii].size();
             }
@@ -352,7 +363,7 @@ void Contest::addQsoMult(Qso *qso)
         // band-by-band mults
         for (int k = 0; k < NModeTypes; k++) {
             if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
-            for (int b = 0; b < N_BANDS_SCORED; b++) {
+            for (int b = 0; b < N_BANDS; b++) {
                 for (int j = 0; j < sz[k][b]; j++) {
                     if (!mults[ii].at(j)->isamult) continue;
                     if (multWorked[ii][k][b].at(j)) {
@@ -365,11 +376,7 @@ void Contest::addQsoMult(Qso *qso)
     // add new mult
     for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         if (_nMults[ii] == 0 || !qso->isamult[ii]) continue;
-
         if (qso->mult[ii] != -1) {
-            mode_t mode=CWType;
-            if (settings.value(c_multsmode,c_multsmode_def).toBool()) mode=qso->modeType;
-
             if (!multWorked[ii][mode][qso->band][qso->mult[ii]] && mults[ii][qso->mult[ii]]->isamult) {
                 new_bm[ii] = true;
                 multsWorked[ii][mode][qso->band]++;
@@ -501,7 +508,7 @@ void Contest::count_mults()
     for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
         for (int k=0;k<NModeTypes;k++) {
             if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
-            for (int j = 0; j < N_BANDS_SCORED; j++) {
+            for (int j = 0; j < N_BANDS; j++) {
                 for (int i = 0; i < _nMults[ii]; i++) {
                     if (multWorked[ii][k][j].at(i)) multsWorked[ii][k][j]++;
                 }
@@ -556,16 +563,31 @@ void Contest::guessMult(Qso *qso) const
 void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
 {
     for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) worked[ii] = 0;
+
+    // option 1: per-mode mults
+    // this currently only applies to the ARRL 10M contest; the code below is only for this
+    // special case. @todo fix for general case
+    if (settings.value(c_multsmode,c_multsmode_def).toBool()) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
+            if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
+                worked[ii] += multWorked[ii][CWType][5][qso->mult[ii]] * bits[4];
+                worked[ii] += multWorked[ii][PhoneType][5][qso->mult[ii]] * bits[5];
+            }
+        }
+        return;
+    }
+    // option 2: mults count per-band but not per-mode. Here the mult status is stored internally in the CW modetype slot
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
-            for (int i = 0; i < N_BANDS_SCORED; i++) {
+            for (int i = 0; i < N_BANDS; i++) {
                 if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
-                    worked[ii] += multWorked[ii][qso->modeType][i][qso->mult[ii]] * bits[i];
+                    worked[ii] += multWorked[ii][CWType][i][qso->mult[ii]] * bits[i];
                 }
             }
         }
     } else {
-        // all-band mults
+        // option 3: mults count once on all bands (Sweepstakes, qso parties, etc). Here the mult status is
+        // stored in the N_BANDS slot. Note that this is only set up for HF contests.
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
                 if (multWorked[ii][qso->modeType][N_BANDS][qso->mult[ii]]) worked[ii] = 1 + 2 + 4 + 8 + 16 + 32;
@@ -648,6 +670,9 @@ void Contest::readMultFile(QByteArray filename[MMAX], const Cty *cty)
             // unique callsigns
             _nMults[ii]  = 0;
             multType[ii] = Uniques;
+        } else if (multFile[ii].toLower() == "grid") {
+            _nMults[ii] = 0;
+            multType[ii] = Grids;
         } else if (multFile[ii].toLower() == "cq_zone") {
             multType[ii] = CQZone;
             _nMults[ii]  = _zoneMax;
@@ -770,9 +795,8 @@ void Contest::determineMultType(Qso *qso)
                 }
             }
             break;
-        case Uniques:
-
-            // unique callsigns. Anything is ok
+        case Uniques: case Grids:
+            // unique callsigns, grids. Anything is ok
             qso->isamult[ii] = true;
             break;
         case ARRLCountry: case CQCountry:
@@ -1045,7 +1069,7 @@ int Contest::nMultsWorked() const
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             for (int k=0;k<NModeTypes;k++) {
                 if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
-                for (int i = 0; i < N_BANDS_SCORED; i++) {
+                for (int i = 0; i < N_BANDS; i++) {
                     n += multsWorked[ii][k][i];
                 }
             }
@@ -1223,6 +1247,7 @@ bool Contest::newCall(QByteArray &b) const
 int Contest::Score() const
 {
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
+        // per-band mults
         int n = 0;
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             switch (ii) {
@@ -1237,7 +1262,7 @@ int Contest::Score() const
             }
             for (int k=0;k<NModeTypes;k++) {
                 if (k>0 && !settings.value(c_multsmode,c_multsmode_def).toBool()) break;
-                for (int i = 0; i < N_BANDS_SCORED; i++) {
+                for (int i = 0; i < N_BANDS; i++) {
                     n += multsWorked[ii][k][i];
                 }
             }
@@ -1681,6 +1706,28 @@ bool Contest::valExch_rst_nr(Qso *qso)
         finalExch[1] = exchElement.last();
     }
     return(true);
+}
+
+/*!
+   Exchange: 4 character grid square
+ */
+bool Contest::valExch_grid(Qso *qso)
+{
+    Q_UNUSED(qso)
+
+    if (exchElement.size() == 0) return(false);
+
+    bool ok;
+    // check to see if this is a valid grid square
+    if (exchElement.at(0).size() != 4 || exchElement.at(0).at(0) < 'A' || exchElement.at(0).at(0) > 'R' ||
+        exchElement.at(0).at(1) < 'A' || exchElement.at(0).at(1) > 'R' ||
+        exchElement.at(0).at(2) < '0' || exchElement.at(0).at(2) > '9' ||
+        exchElement.at(0).at(3) < '0' || exchElement.at(0).at(3) > '9') {
+        ok = false;
+    } else {
+        finalExch[0]     = exchElement[0];
+    }
+    return(ok);
 }
 
 /*!

@@ -71,8 +71,9 @@ public:
     FieldTypes exchType(int) const;
     virtual int fieldWidth(int col) const = 0;
     void guessMult(Qso *qso) const;
+    bool gridMults() const;
     bool hasPrefill() const;
-    virtual int highlightBand(int b, ModeTypes modeType) const;
+    virtual int highlightBand(int b, ModeTypes modeType=CWType) const;
     void initialize(const Cty *cty);
     int isAMult(QByteArray exch, int ii) const;
     bool logPrefill(int n) const;
@@ -162,6 +163,7 @@ protected:
     void setGrid();
     void selectCountries(int ii, const Cty *cty, Cont cont);
     bool separateExchange(Qso *qso);
+    bool valExch_grid(Qso *qso);
     bool valExch_mm(Qso *qso);
     bool valExch_rst_state(int ii, int &mult_indx, Qso *qso);
     bool valExch_rst_zone(int ii, int &mult_indx);
