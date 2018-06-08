@@ -10,6 +10,7 @@ Copyright 2010-2018 R. Torsten Clay N4OGW
 
 # News
 
+* 06/08/2018 support ARRL June VHF contest
 * 04/05/2018 support Mississippi qso party
 * 02/18/2018 lots of code updates; Qt4 support dropped- you must now use Qt5
 * 12/02/2016 support for voice keyer using sound card
@@ -28,7 +29,7 @@ You will need the following development libraries installed: Qt (version 5), FFT
 ```
 or download one of the source code distributions and extract it:
 ````
-    tar xzvof so2sdr-2.3.0.tgz
+    tar xzvof so2sdr-2.4.0.tgz
 ````
 
 2. By default, so2sdr will be installed in /usr/local/bin, and associated
