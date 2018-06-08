@@ -13,6 +13,12 @@ The program is primarily developed for Linux.
 
 ### News
 
+* 06/08/2018 support ARRL June VHF contest
+
+* 04/05/2018 support Mississippi qso party
+
+* 02/18/2018 lots of code updates; Qt4 support dropped- you must now use Qt5
+
 * 10/21/2017 update SCP and CTY files; winkey bug fix
 
 * 05/31/2017 2.1.4 fix bugs for WPX contest
@@ -40,8 +46,8 @@ AFE822x SDR-Net.
 * So2sdr is primarily designed for unassisted operating (it
 can connect to telnet dxclusters however).
 
-* SSB support is quite limited at the moment and there is
-currently no support for digital modes.
+* There is currently no support for digital modes. The program can
+however read qso information from WSJT-X.
 
 * The number of different contests supported is small so far.
 
