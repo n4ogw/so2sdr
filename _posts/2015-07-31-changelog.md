@@ -5,6 +5,10 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+## version 2.4.2 (06/09/2018)
+
+* frequency not sent correctly to bandmap; caused bandmap freq to only update every KHz
+
 ## version 2.4.1 (06/09/2018)
 
 * bug fixes: program was crashing when tuned out of band
