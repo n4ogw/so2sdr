@@ -42,6 +42,8 @@ NetworkSetup::~NetworkSetup()
 
 int NetworkSetup::offset(int band)
 {
+    if (band==BAND_NONE) return 0;
+
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
     } else {
@@ -51,6 +53,8 @@ int NetworkSetup::offset(int band)
 
 bool NetworkSetup::invert(int band)
 {
+    if (band==BAND_NONE) return false;
+
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->invert(band);
     } else {

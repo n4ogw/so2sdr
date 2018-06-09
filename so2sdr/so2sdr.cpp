@@ -571,10 +571,10 @@ void So2sdr::openRadios()
     catThread[1].start();
     startTimers();
     if (settings->value(s_radios_ptt_type[0],s_radios_ptt_type_def).toInt()>0) {
-        ssbMessage->setPtt(0,0);
+        so2r->setPtt(0,0);
     }
     if (settings->value(s_radios_ptt_type[1],s_radios_ptt_type_def).toInt()>0) {
-        ssbMessage->setPtt(1,0);
+        so2r->setPtt(1,0);
     }
 }
 
@@ -2084,7 +2084,9 @@ bool So2sdr::enterFreqOrMode()
     grabWidget = lineEditCall[activeRadio];
     lineEditCall[activeRadio]->setModified(false);
     updateBreakdown();
-    updateMults(activeRadio,getBand(f));
+    if (getBand(f)!=-1) {
+        updateMults(activeRadio,getBand(f));
+    }
 
     if (nDupesheet()) {
         populateDupesheet();
@@ -2139,6 +2141,9 @@ void So2sdr::updateMults(int ir,int bandOverride)
     int band;
     if (bandOverride!=-1) band=bandOverride;
     else band=cat[ir]->band();
+
+    // in case tuned out of a ham band
+    if (band==-1) return;
 
     MultTextEdit->clear();
     if (!csettings->value(c_showmults,c_showmults_def).toBool()) return;
@@ -2228,7 +2233,7 @@ void So2sdr::updateRadioFreq()
         int t;
         if (!log) {
             t=cat[i]->band();
-        } else if (log->bandLabelEnable(cat[i]->band())) {
+        } else if (log->bandLabelEnable(cat[i]->band()) && cat[i]->band()!=-1) {
             t=log->highlightBand(cat[i]->band(),cat[i]->modeType());
         } else {
             t=-1;
@@ -2728,6 +2733,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         out.append(QByteArray::number(qRound(cat[activeRadio ^ 1]->getRigFreq()/ 1000.0)));
                         break;
                     case 22: // best cq
+                        if (cat[activeRadio]->band()==-1) break;
                         bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[cat[activeRadio]->band()],
                                                cqlimit_default_low[cat[activeRadio]->band()]).toInt(),
                                 settings->value(s_sdr_cqlimit_high[cat[activeRadio]->band()],
@@ -2735,6 +2741,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         bandmap->findFreq(activeRadio);
                         break;
                     case 23: // best cq radio2
+                        if (cat[activeRadio^1]->band()==-1) break;
                         bandmap->setFreqLimits(activeRadio^1,settings->value(s_sdr_cqlimit_low[cat[activeRadio^1]->band()],
                                 cqlimit_default_low[cat[activeRadio]->band()]).toInt(),
                                 settings->value(s_sdr_cqlimit_high[cat[activeRadio^1]->band()],

@@ -86,27 +86,27 @@ int getBand(double f)
     switch (g) {
     case 1: case 2: return(BAND160);
         break; // 160
-    case 3: return(BAND80);
+    case 3: case 4: return(BAND80);
         break; // 80
     case 5: return(BAND60);
         break; // 60
     case 6: case 7: return(BAND40);
         break; // 40
-    case 10: return(BAND30);
+    case 9: case 10: return(BAND30);
         break; // 30
     case 13: case 14: return(BAND20);
         break; // 20
     case 18: return(BAND17);
         break; // 17
-    case 21: return(BAND15);
+    case 20: case 21: return(BAND15);
         break; // 15
-    case 24: return(BAND12);
+    case 24: case 25: return(BAND12);
         break; // 12
-    case 27: case 28: case 29: case 30: return(BAND10);
+    case 27: case 28: case 29: case 30: case 31: return(BAND10);
         break; // 10
-    case 50:case 51:case 52:case 53:case 54:return(BAND6);
+    case 49: case 50:case 51:case 52:case 53:case 54: case 55: case 56: return(BAND6);
         break; // 6
-    case 144:case 145:case 146:case 147:case 148: return(BAND2);
+    case 143: case 144:case 145:case 146:case 147:case 148: case 149: return(BAND2);
         break; // 2
     case 219:case 220:case 221:case 222:case 223:case 224:case 225: return(BAND222);
         break; // 220 MHz

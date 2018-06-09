@@ -565,6 +565,7 @@ void So2sdr::controlE()
  */
 void So2sdr::markDupe(int nrig)
 {
+    if (cat[nrig]->band()==-1) return;
     double f = cat[nrig]->getRigFreq();
     if (isaSpot(f, cat[nrig]->band())) {
         // remove spot and reset status
@@ -783,7 +784,8 @@ void So2sdr::backSlash()
         } else {
             // remove any spot that is on freq, update other spots if in CQ mode
             qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
-            removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
+            if (cat[activeRadio]->band()!=-1)
+                removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
             updateBandmapDupes(qso[activeRadio]);
         }
         qso[activeRadio]->mode = cat[activeRadio]->mode();
@@ -1241,7 +1243,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             switchRadios();
 
             // remove any band spot that is present
-            removeSpotFreq(cat[activeRadio]->getRigFreq(), cat[activeRadio]->band());
+            if (cat[activeRadio]->band()!=-1)
+                removeSpotFreq(cat[activeRadio]->getRigFreq(), cat[activeRadio]->band());
 
             // copy call to other radio
             qso[activeRadio]->call = qso[activeRadio ^ 1]->call;
@@ -1387,7 +1390,8 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
         } else {
             // remove any spot on this freq, update other spots if in CQ mode
             qso[activeRadio]->freq = cat[activeRadio]->getRigFreq();
-            removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
+            if (cat[activeRadio]->band()!=-1)
+                removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
             updateBandmapDupes(qso[activeRadio]);
         }
         dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);

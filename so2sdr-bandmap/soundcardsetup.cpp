@@ -112,6 +112,8 @@ SoundCardSetup::~SoundCardSetup()
 
 int SoundCardSetup::offset(int band)
 {
+    if (band==BAND_NONE) return 0;
+
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
     } else {
@@ -121,6 +123,8 @@ int SoundCardSetup::offset(int band)
 
 bool SoundCardSetup::invert(int band)
 {
+    if (band==BAND_NONE) return false;
+
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->invert(band);
     } else {

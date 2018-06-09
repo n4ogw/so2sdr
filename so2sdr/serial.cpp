@@ -591,30 +591,23 @@ void RigSerial::openRig()
     token_t t = rig_token_lookup(rig, "rig_pathname");
     rig_set_conf(rig,t,settings->value(s_radios_port[nrig],defaultSerialPort[nrig]).toString().toLatin1().data());
     rig->state.rigport.parm.serial.rate=settings->value(s_radios_baud[nrig],s_radios_baud_def[nrig]).toInt();
-    /*
+
     t = rig_token_lookup(rig,"ptt_type");
     token_t t_rts = rig_token_lookup(rig,"rts_state");
     token_t t_dtr = rig_token_lookup(rig,"dtr_state");
+
+    // hamlib messes with the RTS/DTR lines when initializing a rig. If we are going
+    // to use these for PTT (which is NOT done through hamlib but is in so2r.cpp), first turn
+    // them off here so they don't get stuck on.
     switch (settings->value(s_radios_ptt_type[nrig],s_radios_ptt_type_def).toInt()) {
-    case 0:
-        rig_set_conf(rig,t,"RIG");
-        rig_set_conf(rig,t_rts,"OFF");
-        rig_set_conf(rig,t_dtr,"OFF");
-        break;
     case 1:
         rig_set_conf(rig,t_rts,"OFF");
-        //  rig_set_conf(rig,t_dtr,"OFF");
-        rig_set_conf(rig,t,"DTR");
         break;
     case 2:
-        //  rig_set_conf(rig,t_rts,"OFF");
         rig_set_conf(rig,t_dtr,"OFF");
-        rig_set_conf(rig,t,"RTS");
         break;
-    default:
-        rig_set_conf(rig,t,"RIG");
     }
-*/
+
     // default starting freq/mode if communications to rigs
     // initially fails (or rig==RIG_MODEL_DUMMY)
     if (rigFreq==0 && nrig==0) rigFreq = 14000000;

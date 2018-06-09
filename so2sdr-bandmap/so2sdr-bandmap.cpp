@@ -28,6 +28,7 @@
 #include <QPixmap>
 #include <QSettings>
 #include <QTimer>
+#include <QtMath>
 #include <QHostAddress>
 #include <QUdpSocket>
 #include <QXmlStreamWriter>
@@ -338,28 +339,22 @@ void So2sdrBandmap::setSdrType()
     case soundcard_t:
         iqShowData->setEnabled(true);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt());
-        //settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());
-        //settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool());
         speed=settings->value(s_sdr_sound_speed,s_sdr_sound_speed_def).toInt();
         break;
     case afedri_t:
         iqShowData->setEnabled(false);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_afedri_sample_freq,s_sdr_afedri_sample_freq_def).toInt());
-       // settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_afedri,s_sdr_offset_afedri_def).toInt());
         settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_afedri_tcp_ip,s_sdr_afedri_tcp_ip_def).toString());
         settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_afedri_tcp_port,s_sdr_afedri_tcp_port_def).toInt());
         settings->setValue(s_sdr_udp_port,settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt());
-        //settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_afedri,s_sdr_swap_afedri_def).toBool());
         speed=settings->value(s_sdr_afedri_speed,s_sdr_afedri_speed_def).toInt();
         break;
     case network_t:
         iqShowData->setEnabled(false);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_net_sample_freq,s_sdr_net_sample_freq_def).toInt());
-        //settings->setValue(s_sdr_offset,settings->value(s_sdr_offset_network,s_sdr_offset_network_def).toInt());
         settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_net_tcp_ip,s_sdr_net_tcp_ip_def).toString());
         settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_net_tcp_port,s_sdr_net_tcp_port_def).toInt());
         settings->setValue(s_sdr_udp_port,settings->value(s_sdr_net_udp_port,s_sdr_net_udp_port_def).toInt());
-        //settings->setValue(s_sdr_swapiq,settings->value(s_sdr_swap_network,s_sdr_swap_network_def).toBool());
         speed=settings->value(s_sdr_net_speed,s_sdr_net_speed_def).toInt();
         break;
     }
@@ -604,8 +599,8 @@ void So2sdrBandmap::makeFreqScaleAbsolute()
     int dy = (height() - toolBarHeight) / 2 - vfoPos;
     int scale= settings->value(s_sdr_scale,s_sdr_scale_def).toInt();
     freqMin = centerFreq - (fft / 2 + dy) * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/(scale * fft);
-    int      bottom_start      = (freqMin / 1000 + 1) * 1000;
-    int      bottom_pix_offset = (bottom_start - freqMin) * fft * scale /
+    int      bottom_start      = (qFloor(freqMin / 1000) + 1) * 1000;
+    int      bottom_pix_offset = qFloor((bottom_start - freqMin) * fft * scale) /
             settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt();
     int      j                 = (bottom_start / 1000) % 1000;
     int      i, i0 = fft - bottom_pix_offset;
@@ -1037,8 +1032,8 @@ void So2sdrBandmap::readData()
                 spectrumProcessor->setTuning(true);
                 tuningTimer.start(TUNING_TIMEOUT);
                 int b=getBand(f);
+                if (b==BAND_NONE) return;
                 setBandName(b);
-
                 endFreqs[0] = centerFreq-
                         settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/2
                         -settings->value(s_sdr_offset,s_sdr_offset_def).toInt();
@@ -1243,7 +1238,7 @@ int So2sdrBandmap::getBand(double f)
     case 2:
         return BAND160;
         break; // 160
-    case 3:
+    case 3: case 4:
         return BAND80;
         break; // 80
     case 5:
@@ -1253,7 +1248,7 @@ int So2sdrBandmap::getBand(double f)
     case 7:
         return BAND40;
         break; // 40
-    case 10:
+    case 9: case 10:
         return BAND30;
         break; // 30
     case 13:
@@ -1263,30 +1258,35 @@ int So2sdrBandmap::getBand(double f)
     case 18:
         return BAND17;
         break; // 17
-    case 21:
+    case 20: case 21:
         return BAND15;
         break; // 15
-    case 24:
+    case 24: case 25:
         return BAND12;
         break; // 12
     case 27:
     case 28:
     case 29:
     case 30:
+    case 31:
         return BAND10;
         break; // 10
+    case 49:
     case 50:
     case 51:
     case 52:
     case 53:
     case 54:
+    case 55:
         return BAND6;
         break; // 6
+    case 143:
     case 144:
     case 145:
     case 146:
     case 147:
     case 148:
+    case 149:
         return BAND2;
         break; // 2
     case 219:

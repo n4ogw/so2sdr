@@ -90,8 +90,6 @@ So2r::So2r(QSettings &s, QObject *parent) : QObject(parent),settings(s)
         emit(setTX1(redLED));
         emit(setTX2(clearLED));
     }
-    setPtt(0,0);
-    setPtt(1,0);
 }
 
 So2r::~So2r()

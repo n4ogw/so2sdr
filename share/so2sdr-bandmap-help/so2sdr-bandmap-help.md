@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.4.0
+## So2sdr-bandmap Help Version 2.4.1
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.1 (06/09/2018)
+
+* bug fixes: program was crashing when tuned out of band
+* fix freq labels in bandmap
+* start up with serial port RTS/DTR PTT signal off
 
 ## version 2.4.0 (06/08/2018)
 

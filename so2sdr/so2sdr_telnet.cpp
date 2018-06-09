@@ -242,6 +242,7 @@ void So2sdr::checkSpot(int nr)
         return;
     }
     double f = cat[nr]->getRigFreq();
+    if (cat[nr]->band()==-1) return;
 
     // freq changed, so recheck spot list
     // @todo move to double freqs; should this have some tolerance?

@@ -114,6 +114,8 @@ void AfedriSetup::updateFromSettings()
 
 int AfedriSetup::offset(int band)
 {
+    if (band==BAND_NONE) return 0;
+
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
     } else {
@@ -123,6 +125,8 @@ int AfedriSetup::offset(int band)
 
 bool AfedriSetup::invert(int band)
 {
+    if (band==BAND_NONE) return false;
+
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->invert(band);
     } else {
