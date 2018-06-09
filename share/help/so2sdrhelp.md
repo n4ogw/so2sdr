@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.4.1
+## SO2SDR Help file version 2.4.2
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.2 (06/09/2018)
+
+* frequency not sent correctly to bandmap; caused bandmap freq to only update every KHz
 
 ## version 2.4.1 (06/09/2018)
 

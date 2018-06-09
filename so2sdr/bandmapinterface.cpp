@@ -405,7 +405,7 @@ void BandmapInterface::bandmapSetFreq(double f,int nr)
         band[nr]=getBand(f);
 
         const char cmd=BANDMAP_CMD_SET_FREQ;
-        QByteArray str=QByteArray::number(f);
+        QByteArray str=QByteArray::number(f,'f');
         char len=str.length();
 
         if (socket[nr].write(&cmd,1)!=1) {

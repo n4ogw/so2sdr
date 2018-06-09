@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.4.1
+## So2sdr-bandmap Help Version 2.4.2
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.2 (06/09/2018)
+
+* frequency not sent correctly to bandmap; caused bandmap freq to only update every KHz
 
 ## version 2.4.1 (06/09/2018)
 
