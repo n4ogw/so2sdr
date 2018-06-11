@@ -469,11 +469,6 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
             if (exch.isEmpty()) {
                 return(false);
             }
-            // if qso already has an assigned number in log (which is SQL primary key), only check
-            // qso's BEFORE this one
-            if (qso->nr) {
-                query=query+" AND (nr < "+QString::number(qso->nr)+") ";
-            }
             query=query+ " AND ";
             switch (csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
             case 1:
@@ -497,11 +492,15 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
         while (m.canFetchMore()) {
             m.fetchMore();
         }
-        if (m.rowCount()) {
+        if (m.rowCount() > 1) {  // it's a dupe if more than one matching qso found
             dupe=true;
         }
         if (FillWorked) {
             m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'", db);
+            m.query().exec();
+            while (m.canFetchMore()) {
+                m.fetchMore();
+            }
             for (int i = 0; i < m.rowCount(); i++) {
                 qso->worked += bits[m.record(i).value(SQL_COL_BAND).toInt()];
             }

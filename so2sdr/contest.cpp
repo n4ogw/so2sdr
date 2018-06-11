@@ -418,7 +418,11 @@ void Contest::addQsoMult(Qso *qso)
  */
 bool Contest::dupe(int row) const
 {
-    return(score.at(row)->dupe);
+    if (row < score.size()) {
+        return(score.at(row)->dupe);
+    } else {
+        return false;
+    }
 }
 
 /*! return multiplier index number for qso on row "row" of the log;
@@ -449,7 +453,11 @@ int Contest::newMult(int row, int ii) const
  */
 int Contest::points(int row) const
 {
-    return(score.at(row)->pts);
+    if (row < score.size()) {
+        return(score.at(row)->pts);
+    } else {
+        return 0;
+    }
 }
 
 /*! set grid square
@@ -1825,7 +1833,11 @@ void Contest::copyFinalExch(bool validated, Qso *qso)
      */
 bool Contest::valid(int row) const
 {
-    return score.at(row)->valid;
+    if (row < score.size()) {
+        return score.at(row)->valid;
+    } else {
+        return true;
+    }
 }
 
 /*!
