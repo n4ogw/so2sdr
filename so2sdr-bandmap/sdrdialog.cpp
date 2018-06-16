@@ -52,7 +52,7 @@ SDRDialog::SDRDialog(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
     updateFromSettings();
 }
 
-int SDRDialog::offset(int band)
+double SDRDialog::offset(int band) const
 {
     switch (settings.value(s_sdr_type,s_sdr_type).toInt()) {
     case 0:
@@ -69,7 +69,7 @@ int SDRDialog::offset(int band)
     }
 }
 
-bool SDRDialog::invert(int band)
+bool SDRDialog::invert(int band) const
 {
     switch (settings.value(s_sdr_type,s_sdr_type).toInt()) {
     case 0:
@@ -86,6 +86,11 @@ bool SDRDialog::invert(int band)
     }
 }
 
+int SDRDialog::invertSign(int band) const
+{
+    if (invert(band)) return 1;
+    else return -1;
+}
 
 /*!
  * \brief SDRDialog::launchConfigure

@@ -33,7 +33,7 @@ BandOffsetSetup::BandOffsetSetup(QSettings &s, SdrType stype, QWidget *parent) :
     model = new QStandardItemModel(0,3,this);
     model->setHorizontalHeaderItem(0, new QStandardItem(QString("Band")));
     model->setHorizontalHeaderItem(1, new QStandardItem(QString("offset (Hz)")));
-    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Invert")));
+    model->setHorizontalHeaderItem(2, new QStandardItem(QString("Swap IQ")));
     delegate=new ComboBoxItemDelegate(tableView);
     tableView->setItemDelegate(delegate);
     tableView->setModel(model);
@@ -75,7 +75,7 @@ void BandOffsetSetup::addRow()
     model->appendRow(itemList);
 }
 
-bool BandOffsetSetup::hasOffset(int band)
+bool BandOffsetSetup::hasOffset(int band) const
 {
     for (int i=0;i<model->rowCount();i++) {
         if (delegate->bandNameToIndex(model->item(i,0)->data(Qt::DisplayRole).toString())==band)
@@ -84,7 +84,7 @@ bool BandOffsetSetup::hasOffset(int band)
     return false;
 }
 
-int BandOffsetSetup::offset(int band)
+int BandOffsetSetup::offset(int band) const
 {
     for (int i=0;i<model->rowCount();i++) {
         if (delegate->bandNameToIndex(model->item(i,0)->data(Qt::DisplayRole).toString())==band)
@@ -93,7 +93,7 @@ int BandOffsetSetup::offset(int band)
     return 0;
 }
 
-bool BandOffsetSetup::invert(int band)
+bool BandOffsetSetup::invert(int band) const
 {
     for (int i=0;i<model->rowCount();i++) {
         if (delegate->bandNameToIndex(model->item(i,0)->data(Qt::DisplayRole).toString())==band) {

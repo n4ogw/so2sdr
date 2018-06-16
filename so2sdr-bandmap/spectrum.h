@@ -54,7 +54,7 @@ public:
     void clearSigs();
     int closestFreq(double) const;
     void resetAvg();
-    void setAddOffset(int i);
+    void setAddOffset(double f);
     void stopSpectrum();
     void setFFTSize(sampleSizes s);
     void setFreq(double, int, double, double);
@@ -105,7 +105,7 @@ private:
     fftw_complex  *in;
     fftw_complex  *out;
     fftw_plan     plan;
-    int           addOffset;
+    double        addOffset;
     int           band;
     int           bits;
     int           calibCnt;
@@ -114,7 +114,8 @@ private:
     int           findCQCnt;
     int           fftSize;
     int           invert;
-    int           offset;
+    double        offset;
+    int           offsetSign;
     int           peakAvgCnt;
     int           sampleFreq;
     int           scale;

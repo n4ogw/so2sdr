@@ -205,6 +205,8 @@ void Afedri::initialize()
  */
 void Afedri::set_freq(unsigned long frequency, int channel)
 {
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
+
     // version 1
     unsigned short control_code = CI_FREQUENCY;
     const int size = 10;
@@ -249,6 +251,8 @@ void Afedri::set_freq(unsigned long frequency, int channel)
  */
 void Afedri::set_multichannel_mode(int channel)
 {
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
+
     const int size=9;
     char block[size];
 
@@ -293,7 +297,8 @@ void Afedri::set_sample_rate(unsigned long sample_rate)
     const int size = 9;
     char block[size];
 
-    if (tsocket.state()!=QAbstractSocket::ConnectedState) return;
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
+
     block[0] = size;
     block[1] = (SET_CONTROL_ITEM << 5);
     block[2] = control_code & 0xFF;
@@ -318,6 +323,8 @@ void Afedri::set_sample_rate(unsigned long sample_rate)
  */
 void Afedri::set_broadcast_flag(bool b)
 {
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
+
     const int size=9;
     char block[size];
 
@@ -347,7 +354,8 @@ Afedri::~Afedri()
 
 void Afedri::readTcp()
 {
-    QByteArray dat=tsocket.readAll();
+    // this was just for testing
+    //QByteArray dat=tsocket.readAll();
     //qDebug("Afedri: tcp rx <%s>",dat.data());
 }
 
@@ -469,7 +477,9 @@ void Afedri::stop()
     if (settings->value(s_sdr_afedri_bcast,s_sdr_afedri_bcast_def).toInt()!=2)
     {
         send_rx_command(RCV_STOP);
-        tsocket.flush();
+        if (tsocket.state()==QAbstractSocket::ConnectedState && tsocket.state()!=QAbstractSocket::ClosingState) {
+            tsocket.flush();
+        }
         tsocket.close();
         if (tsocket.state() != QAbstractSocket::UnconnectedState) {
             tsocket.waitForDisconnected(1000);

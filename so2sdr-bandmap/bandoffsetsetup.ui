@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>bandOffsetSetup</class>
  <widget class="QDialog" name="bandOffsetSetup">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>292</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
     <horstretch>0</horstretch>
@@ -33,7 +41,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Per-band offsets and inversion.</string>
+      <string>Per-band offsets and inversion (IQ swap)</string>
      </property>
     </widget>
    </item>

@@ -40,18 +40,18 @@ NetworkSetup::~NetworkSetup()
     delete offsetSetup;
 }
 
-int NetworkSetup::offset(int band)
+double NetworkSetup::offset(int band) const
 {
     if (band==BAND_NONE) return 0;
 
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
     } else {
-        return settings.value(s_sdr_offset_network,s_sdr_offset_network_def).toInt();
+        return settings.value(s_sdr_offset_network,s_sdr_offset_network_def).toDouble();
     }
 }
 
-bool NetworkSetup::invert(int band)
+bool NetworkSetup::invert(int band) const
 {
     if (band==BAND_NONE) return false;
 
@@ -61,7 +61,6 @@ bool NetworkSetup::invert(int band)
         return settings.value(s_sdr_swap_network,s_sdr_swap_network_def).toBool();
     }
 }
-
 
 /*!
  * \brief NetworkSetup::updateFromSettings

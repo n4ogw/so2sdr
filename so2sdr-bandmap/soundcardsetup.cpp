@@ -110,18 +110,18 @@ SoundCardSetup::~SoundCardSetup()
 }
 
 
-int SoundCardSetup::offset(int band)
+double SoundCardSetup::offset(int band) const
 {
     if (band==BAND_NONE) return 0;
 
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
     } else {
-        return settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt();
+        return settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toDouble();
     }
 }
 
-bool SoundCardSetup::invert(int band)
+bool SoundCardSetup::invert(int band) const
 {
     if (band==BAND_NONE) return false;
 
@@ -131,7 +131,6 @@ bool SoundCardSetup::invert(int band)
         return settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool();
     }
 }
-
 
 /*!
  * \brief SoundCardSetup::rejectChanges

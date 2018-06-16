@@ -32,8 +32,8 @@ class NetworkSetup : public QDialog, public Ui::networkSetup
 public:
     explicit NetworkSetup(QSettings &s,QWidget *parent = 0);
     ~NetworkSetup();
-    int offset(int band);
-    bool invert(int band);
+    double offset(int band) const;
+    bool invert(int band) const;
 
 signals:
     void networkError(const QString &);

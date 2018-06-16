@@ -53,9 +53,9 @@ class BandOffsetSetup : public QDialog, public Ui::bandOffsetSetup
 public:
     BandOffsetSetup(QSettings &s,SdrType stype,QWidget *parent=0);
     ~BandOffsetSetup();
-    bool hasOffset(int band);
-    bool invert(int band);
-    int offset(int band);
+    bool hasOffset(int band) const;
+    bool invert(int band) const;
+    int offset(int band) const;
 
 private slots:
     void addRow();

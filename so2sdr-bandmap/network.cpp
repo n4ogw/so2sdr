@@ -85,7 +85,7 @@ void NetworkSDR::send_rx_command(int cmd)
     const int size = 8;
     char block[size];
 
-    if (tsocket.state()!=QAbstractSocket::ConnectedState) return;
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
     block[0] = size;
     block[1] = (SET_CONTROL_ITEM << 5);
     block[2] = control_code & 0xFF;
@@ -102,6 +102,7 @@ void NetworkSDR::send_rx_command(int cmd)
 /*! get name of SDR device */
 void NetworkSDR::get_name()
 {
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
     char block[4];
     block[0]=0x04;
     block[1]=0x20;
@@ -149,9 +150,11 @@ void NetworkSDR::close_udp()
 {
     short msg = 0x7373;
 
-    usocket.write((char *)&msg,2);
-    usocket.write((char *)&msg,2);
-    usocket.flush();
+    if (usocket.state()==QAbstractSocket::ConnectedState) {
+        usocket.write((char *)&msg,2);
+        usocket.write((char *)&msg,2);
+        usocket.flush();
+    }
 }
 
 void NetworkSDR::stop()

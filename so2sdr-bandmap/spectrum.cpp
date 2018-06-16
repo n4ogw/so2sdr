@@ -103,6 +103,7 @@ Spectrum::Spectrum(QObject *parent, QSettings &s,QString dir) : QObject(parent),
     userDirectory   = dir;
     addOffset       = 0;
     offset          = 0;
+    offsetSign      = 1;
     sampleFreq      = 96000;
     scale           = 1;
     peakDetect      = true;
@@ -183,13 +184,18 @@ void Spectrum::updateParams()
 {
     // make local copies of settings objects; accessing settings object in processdata
     // slows bandmap considerably
-    offset        = settings.value(s_sdr_offset,s_sdr_offset_def).toInt();
+    offset        = settings.value(s_sdr_offset,s_sdr_offset_def).toDouble();
     sampleFreq    = settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt();
     scale         = settings.value(s_sdr_scale,s_sdr_scale_def).toInt();
     peakDetect    = settings.value(s_sdr_peakdetect,s_sdr_peakdetect_def).toBool();
     iqCorrect     = settings.value(s_sdr_iqcorrect,s_sdr_iqcorrect_def).toBool();
     iqData        = settings.value(s_sdr_iqdata,s_sdr_iqdata_def).toBool();
     swapIq        = settings.value(s_sdr_swapiq,s_sdr_swapiq_def).toBool();
+    if (swapIq) {
+        offsetSign=-1;
+    } else {
+        offsetSign=1;
+    }
     bits          = settings.value(s_sdr_bits,s_sdr_bits_def).toInt();
     peakAvgCnt    = 0;
 }
@@ -514,7 +520,8 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
         interp2(spec_tmp, tmp4, bga); // expand by 2 using linear interpolation
     } else {
         // IF offset included here
-        double tmp = ((offset-addOffset) *
+//###        double tmp = ((offset-addOffset) *
+        double tmp = (offsetSign*(offset+addOffset) *
                       fftSize * scale) / sampleFreq;
         int offsetPix = -(int) tmp;
         for (int i = 0; i < fftSize; i++) {
@@ -541,8 +548,8 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     }
 }
 
-void Spectrum::setAddOffset(int i) {
-    addOffset=i;
+void Spectrum::setAddOffset(double f) {
+    addOffset=f;
 }
 
 /*! Background in terms of pixel brightness (0:255)
@@ -579,7 +586,8 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
         return;
     }
     peakAvgCnt = 0;
-    int totOffset=offset-addOffset;
+    //###double totOffset=offset-addOffset;
+    double totOffset=offsetSign*(offset+addOffset);
 
     // average collected scans
     for (int i = 0; i < fftSize; i++) {
@@ -972,7 +980,8 @@ void Spectrum::complexMult(double a[], double b[], double c[]) const
  */
 void Spectrum::interp2(double in[], double out[], double bga)
 {
-    int totOffset=offset-addOffset;
+   double totOffset=offset-addOffset;
+   // double totOffset=offset+offsetSign*addOffset;
     double tmp = (totOffset * fftSize * settings.value(s_sdr_scale,s_sdr_scale_def).toInt()) /
             settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt();
     int offsetPix = -(int) tmp;

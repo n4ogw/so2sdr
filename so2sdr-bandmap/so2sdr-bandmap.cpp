@@ -1098,7 +1098,7 @@ void So2sdrBandmap::readData()
             }
             break;
         case BANDMAP_CMD_SET_ADD_OFFSET: // set additional IF offset
-            f=data.toInt(&ok);
+            f=data.toDouble(&ok);
             if (ok) {
                 spectrumProcessor->setAddOffset(f);
             }
@@ -1332,7 +1332,7 @@ void So2sdrBandmap::setBandName(int b)
 */
 void So2sdrBandmap::findQsy(double f)
 {
-    if (f<=0 || socket->state()!=QAbstractSocket::ConnectedState) return;
+    if (f<=0 || socket->state()!=QAbstractSocket::ConnectedState || socket->state()==QAbstractSocket::ClosingState) return;
 
     writeUdpXML(f,"",false);
 
@@ -1368,7 +1368,7 @@ void So2sdrBandmap::writeUdpXML(double freq,QByteArray call,bool del)
     stream.writeStartElement("bandmap");
     stream.writeAttribute("RadioNr",QString::number(settings->value(s_sdr_nrig,s_sdr_nrig).toInt()+1));
     if (freq>0) {
-        stream.writeAttribute("freq",QString::number(freq));
+        stream.writeAttribute("freq",QString::number(freq,'f'));
     }
     if (!call.isEmpty()) {
         stream.writeAttribute("call",call);

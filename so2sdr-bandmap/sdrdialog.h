@@ -36,8 +36,9 @@ Q_OBJECT
 public:
     SDRDialog(QSettings &s,QWidget *parent = 0);
     ~SDRDialog();
-    int offset(int band);
-    bool invert(int band);
+    double offset(int band) const;
+    bool invert(int band) const;
+    int invertSign(int band) const;
     SoundCardSetup     *soundcard;
 
 signals:

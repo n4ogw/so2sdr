@@ -35,8 +35,8 @@ class SoundCardSetup : public QDialog,  public Ui::SoundCardSetup
 public:
     explicit SoundCardSetup(QSettings &s,QWidget  *parent=0);
     ~SoundCardSetup();
-    int offset(int band);
-    bool invert(int band);
+    double offset(int band) const;
+    bool invert(int band) const;
 
 signals:
     void PortAudioError(const QString &);
