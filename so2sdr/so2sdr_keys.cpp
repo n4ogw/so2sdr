@@ -71,7 +71,8 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
         for (int i=0;i<NRIG;i++) {
             if (lineEditCall[i]->underMouse()) {
                 if (activeRadio!=i) {
-                    switchRadios(false);
+                   // switchRadios(false);
+                    switchRadios(true);
                 }
                 callFocus[activeRadio]=true;
                 setEntryFocus();

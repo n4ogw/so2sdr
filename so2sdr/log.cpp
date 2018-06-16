@@ -335,7 +335,14 @@ void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
 
         QString tmp;
         tmp = "QSO: ";
-        QString tmp2 = QString::number(qRound(m.record(i).value(SQL_COL_FREQ).toDouble() / 1000.0));
+        // for VHF+ only band is given in freq column
+        int khz = qRound(m.record(i).value(SQL_COL_FREQ).toDouble() / 1000.0);
+        QString tmp2;
+        if (khz>30000) {
+            tmp2 = QString::number(khz/1000);
+        } else {
+            tmp2 = QString::number(khz);
+        }
         for (int j = 0; j < (5 - tmp2.size()); j++) {
             tmp = tmp + " ";
         }
