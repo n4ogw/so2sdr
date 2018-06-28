@@ -520,9 +520,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
         interp2(spec_tmp, tmp4, bga); // expand by 2 using linear interpolation
     } else {
         // IF offset included here
-//###        double tmp = ((offset-addOffset) *
-        double tmp = (offsetSign*(offset+addOffset) *
-                      fftSize * scale) / sampleFreq;
+        double tmp = (offsetSign*(offset+addOffset) * fftSize * scale) / sampleFreq;
         int offsetPix = -(int) tmp;
         for (int i = 0; i < fftSize; i++) {
             unsigned int j = (fftSize - offsetPix - fftSize / 2 + i) % fftSize;
@@ -586,7 +584,6 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
         return;
     }
     peakAvgCnt = 0;
-    //###double totOffset=offset-addOffset;
     double totOffset=offsetSign*(offset+addOffset);
 
     // average collected scans
@@ -643,12 +640,10 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                 double freq;
                 if (ipk > fftSize / 2) {
                     // neg freqs
-                    freq = centerFreq - invert * totOffset - invert*qRound((fftSize - ipk) *
-                        settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/ (double)fftSize);
+                    freq = centerFreq - invert * totOffset - invert*qRound((fftSize - ipk) * sampleFreq/ (double)fftSize);
                 } else {
                     // positive freqs
-                    freq = centerFreq - invert * totOffset + invert*qRound(ipk *
-                        settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/ (double)fftSize);
+                    freq = centerFreq - invert * totOffset + invert*qRound(ipk * sampleFreq/(double)fftSize);
                 }
 
                 // is this a known signal already?
@@ -980,10 +975,7 @@ void Spectrum::complexMult(double a[], double b[], double c[]) const
  */
 void Spectrum::interp2(double in[], double out[], double bga)
 {
-   double totOffset=offset-addOffset;
-   // double totOffset=offset+offsetSign*addOffset;
-    double tmp = (totOffset * fftSize * settings.value(s_sdr_scale,s_sdr_scale_def).toInt()) /
-            settings.value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt();
+    double tmp = (offsetSign*(offset+addOffset) * fftSize * scale) / sampleFreq;
     int offsetPix = -(int) tmp;
 
     unsigned int j0 = (fftSize - offsetPix / 2 - fftSize / 4) % fftSize;
