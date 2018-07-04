@@ -19,20 +19,16 @@
 #ifndef SPECTRUM_H
 #define SPECTRUM_H
 
-#include <QTimer>
 #include <QObject>
 #include <portaudio.h>
 #include <QFile>
 #include <QSettings>
-#include <QTimer>
 #include "defines.h"
 #include "signal.h"
 #include "call.h"
 #ifdef Q_OS_LINUX
 #include <fftw3.h>
 #endif
-
-class QTimer;
 
 /*!
    Spectrum calculation: FFT of audio data, etc
@@ -48,7 +44,6 @@ public:
     friend class So2sdrBandmap;
 
     ~Spectrum();
-    unsigned char bg();
     void calcError(bool force);
     void clearCQ();
     void clearSigs();
@@ -57,7 +52,7 @@ public:
     void setAddOffset(double f);
     void stopSpectrum();
     void setFFTSize(sampleSizes s);
-    void setFreq(double, int, double, double);
+    void setFreq(double, double, double);
     void setInvert(bool);
     void setPeakDetect(bool);
     void setTuning(bool);
@@ -90,7 +85,6 @@ private:
     bool          iqPlotOpen;
     bool          isTuning;
     bool          peakDetect;
-    bool          *sigOn;
     bool          swapIq;
     CalibSignal   *calibSigList;
     double        aGain[FIT_ORDER];
@@ -106,7 +100,6 @@ private:
     fftw_complex  *out;
     fftw_plan     plan;
     double        addOffset;
-    int           band;
     int           bits;
     int           calibCnt;
     double        centerFreq;
@@ -120,8 +113,6 @@ private:
     int           sampleFreq;
     int           scale;
     double        sigCQ;
-    int           *sigOnCnt;
-    double        sigSpace;
     int           sizeIQ;
     QString       userDirectory;
     sampleSizes   sizes;

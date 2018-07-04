@@ -27,7 +27,7 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
     m_WebCtrl.get(request);
 }
 
-FileDownloader::~FileDownloader() { }
+FileDownloader::~FileDownloader() {}
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply)
 {

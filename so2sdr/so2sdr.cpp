@@ -18,7 +18,6 @@
  */
 #include <QByteArray>
 #include <QChar>
-#include <QCheckBox>
 #include <QColor>
 #include <QDateTime>
 #include <QDebug>
@@ -32,14 +31,10 @@
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QPixmap>
 #include <QPalette>
-#include <QProgressDialog>
 #include <QSettings>
-#include <QString>
 #include <QStringList>
 #include <QStyle>
-#include <QThread>
 #include <QTimer>
 #include <QUrl>
 
@@ -3629,6 +3624,7 @@ void So2sdr::checkCtyVersion()
             if (!oldCty.open(QIODevice::ReadOnly | QIODevice::Text))
             {
                 downloader->deleteLater();
+                downloader = 0;
                 return;
             }
             while (!oldCty.atEnd()) {
@@ -3658,6 +3654,7 @@ void So2sdr::checkCtyVersion()
                 QFile save("wl_cty.dat");
                 if (!save.open(QIODevice::WriteOnly | QIODevice::Text)) {
                     downloader->deleteLater();
+                    downloader = 0;
                     return;
                 }
                 save.write(newCty);
@@ -3670,6 +3667,7 @@ void So2sdr::checkCtyVersion()
                 save.setFileName("wl_cty-ns.dat");
                 if (!save.open(QIODevice::WriteOnly | QIODevice::Text)) {
                     downloader->deleteLater();
+                    downloader = 0;
                     return;
                 }
                 save.write(newCty);
@@ -3679,6 +3677,7 @@ void So2sdr::checkCtyVersion()
             case QMessageBox::Cancel:
                 msg->deleteLater();
                 downloader->deleteLater();
+                downloader = 0;
                 return;
                 break;
             default:  // never reached
@@ -3689,6 +3688,7 @@ void So2sdr::checkCtyVersion()
     } else {
         // CTY download failed (incomplete), missing version string
         downloader->deleteLater();
+        downloader = 0;
         return;
     }
 }

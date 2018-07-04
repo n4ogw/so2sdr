@@ -73,16 +73,6 @@ void Spectrum::setFFTSize(sampleSizes s)
     for (int i = 0; i < fftSize; i++) {
         tmp4[i] = 0.;
     }
-    if (sigOnCnt) delete [] sigOnCnt;
-    sigOnCnt = new int[fftSize];
-
-    if (sigOn) delete [] sigOn;
-    sigOn = new bool[fftSize];
-
-    for (int i = 0; i < fftSize; i++) {
-        sigOnCnt[i] = 2;
-        sigOn[i]    = false;
-    }
     if (calibSigList) delete [] calibSigList;
     calibSigList = new CalibSignal[sizeIQ];
     for (int i = 0; i < FIT_ORDER; i++) {
@@ -124,13 +114,10 @@ Spectrum::Spectrum(QObject *parent, QSettings &s,QString dir) : QObject(parent),
     spec_tmp     = 0;
     spec_tmp2    = 0;
     tmp4         = 0;
-    sigOnCnt     = 0;
-    sigOn        = 0;
     calibSigList = 0;
     background   = 0;
 
     // initialize on 160m
-    band           = 0;
     calibCnt       = 0;
     centerFreq     = 0;
     endFreqs[0]    = 0;
@@ -145,7 +132,6 @@ Spectrum::Spectrum(QObject *parent, QSettings &s,QString dir) : QObject(parent),
         sigListCQ[i].clear();
     }
     sigCQ      = 0;
-    sigSpace   = 0;
     peakAvgCnt = 0;
 
     updateParams();
@@ -164,8 +150,6 @@ Spectrum::~Spectrum()
         delete[] peakAvg[i];
     }
     delete[] calibSigList;
-    delete[] sigOnCnt;
-    delete[] sigOn;
     delete[] spec_smooth;
     delete[] spec_tmp;
     delete[] spec_tmp2;
@@ -343,7 +327,7 @@ void Spectrum::findCQ(double flow, double fhigh, QList<Call> &callList)
         }
     }
 
-    sigSpace = 0;
+    int sigSpace = 0;
     sigCQ    = 0;
     for (int i = 1; i < totSize; i++) {
         if (!sigListCQtmp[i].active) break;
@@ -416,7 +400,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             j   += 4;
         }
         break;
-        case 1: // 16 bit
+        case 1: // 24 bit
         {
             // convert 24 bit signed integer sample to floating point by placing data into
             // 32-bit signed int
@@ -467,7 +451,6 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             in[i][0] = tmpi * window[i];
             in[i][1] = tmpr * window[i];
         }
-
         if (j == sizes.chunk_size) {
             // make buffer circular
             j   = 0;
@@ -488,10 +471,8 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             spec_tmp[i] = (out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         }
     }
-    // following reduces zero-frequency peak; need better way to handle it
-    spec_tmp[1]=1.0e-8;
+    // remove zero frequency bin
     spec_tmp[0]=1.0e-8;
-    spec_tmp[fftSize-1]=1.0e-8;
 
     double bga, sigma;
     measureBackground(bga, sigma, spec_tmp);
@@ -546,16 +527,9 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     }
 }
 
-void Spectrum::setAddOffset(double f) {
-    addOffset=f;
-}
-
-/*! Background in terms of pixel brightness (0:255)
- */
-unsigned char Spectrum::bg()
+void Spectrum::setAddOffset(double f)
 {
-    int b = background;
-    return(b);
+    addOffset=f;
 }
 
 /*! peak detection/signal ID in spectrum
@@ -607,6 +581,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
 
     // note that values are negative here
     double cut = bg + settings.value(s_sdr_level,s_sdr_level_def).toInt() * sigma;
+    int findCQTime=settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toInt();
     int    ipk;
     int    i = 1;
     while (i < fftSize) {
@@ -649,7 +624,6 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                 // is this a known signal already?
                 bool match = false;
                 int  indx  = -1;
-                int findCQTime=settings.value(s_sdr_cqtime,s_sdr_cqtime_def).toInt();
                 for (int j = 0; j < SIG_MAX; j++) {
                     if (abs(sigList[j].f - freq) < SIG_MIN_FREQ_DIFF) {
                         match = true;
@@ -780,10 +754,9 @@ void Spectrum::resetAvg()
     b=band index
     low, high=lowest, highest frequencies
  */
-void Spectrum::setFreq(double f, int b, double low, double high) {
+void Spectrum::setFreq(double f, double low, double high)
+{
     centerFreq = f;
-    band       = b;
-    sigSpace   = 0;
     endFreqs[0]=low;
     endFreqs[1]=high;
 }

@@ -17,7 +17,6 @@
 
  */
 #include "call.h"
-#include <QByteArray>
 Call::Call()
 {
     call.clear();

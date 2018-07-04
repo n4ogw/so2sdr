@@ -909,7 +909,6 @@ void So2sdrBandmap::initVariables()
     flow=0;
     fhigh=0;
     initialized = false;
-    tx = false;
     centerFreq  = 0;
     band=getBand(centerFreq);
     bandName.clear();
@@ -1051,7 +1050,7 @@ void So2sdrBandmap::readData()
                     spectrumProcessor->updateParams();
                     band=b;
                 }
-                spectrumProcessor->setFreq(centerFreq, band, endFreqs[0], endFreqs[1]);
+                spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
                 spectrumProcessor->resetAvg();
                 makeFreqScaleAbsolute();
                 FreqLabel->setPixmap(freqPixmap);
@@ -1074,13 +1073,11 @@ void So2sdrBandmap::readData()
             quit();
             break;
         case BANDMAP_CMD_TX: // set transmit state
-            tx=true;
             txLabel.setText("<font color=#FF0000>TX");
             spectrumProcessor->setPeakDetect(false);
             settings->setValue(s_sdr_peakdetect,false);
             break;
         case BANDMAP_CMD_RX: // cancel transmit state
-            tx=false;
             txLabel.setText("<font color=#000000>TX");
             spectrumProcessor->setPeakDetect(true);
             settings->setValue(s_sdr_peakdetect,true);
@@ -1344,7 +1341,7 @@ void So2sdrBandmap::findQsy(double f)
     endFreqs[1] = centerFreq+
             settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/2
             -settings->value(s_sdr_offset,s_sdr_offset_def).toInt();
-    spectrumProcessor->setFreq(centerFreq, band, endFreqs[0], endFreqs[1]);
+    spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
     spectrumProcessor->resetAvg();
     makeFreqScaleAbsolute();
     FreqLabel->setPixmap(freqPixmap);
@@ -1439,7 +1436,7 @@ void So2sdrBandmap::xmlParseN1MM()
                         spectrumProcessor->clearCQ();
                         band=b;
                     }
-                    spectrumProcessor->setFreq(centerFreq, band, endFreqs[0], endFreqs[1]);
+                    spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
                     spectrumProcessor->resetAvg();
                     makeFreqScaleAbsolute();
                     FreqLabel->setPixmap(freqPixmap);

@@ -1,6 +1,6 @@
 <p><a name="top"></a></p>
 
-<h2>So2sdr-bandmap Help Version 2.4.2</h2>
+<h2>So2sdr-bandmap Help Version 2.4.3</h2>
 
 <ul>
 <li><a href="#controls">Controls</a></li>
@@ -362,6 +362,22 @@ from so2sdr, do this</p>
 <hr />
 
 <p><a name="changes"></a></p>
+
+<h2>version 2.4.3 (07/03/2018)</h2>
+
+<p>bug fixes:</p>
+
+<ul>
+<li>fix core dump if no network connection for CTY download</li>
+<li>fix x2 zoom in bandmap</li>
+<li>make bandmap offset/swap IQ consistent between main setting and per-band</li>
+<li>prevent some writes to network SDR when port closed</li>
+<li>fix qsy by clicking on bandmap on 144 MHz (was only qsying to nearest KHz)</li>
+<li>correct freq format in cabrillo output for VHF contests; only give band</li>
+<li>clicking on entry window changes RX and TX. This fixes bug where entering a frequency immediately after program start also changed the radio</li>
+<li>Fix error in contest.cpp where uninitialized score object might be accessed.</li>
+<li>Fix error in mobile dupe checking.</li>
+</ul>
 
 <h2>version 2.4.2 (06/09/2018)</h2>
 

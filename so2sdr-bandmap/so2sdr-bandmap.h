@@ -118,7 +118,6 @@ private:
     bool                 firstTime;
     bool                 initialized;
     bool                 _invert;
-    bool                 tx;
     double               pix_per_hz;
     double               pix_per_khz;
     int                  addOffset;
