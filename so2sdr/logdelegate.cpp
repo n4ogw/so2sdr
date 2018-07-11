@@ -93,8 +93,9 @@ QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewIte
     Q_UNUSED(option)
     Q_UNUSED(index)
 
-    // no editor for checkbox
-    if (index.column()==SQL_COL_VALID) return 0;
+    // no editor for checkbox or frequency; frequency can still be edited in
+    // detailed edit dialog (control-e)
+    if (index.column()==SQL_COL_VALID || index.column()==SQL_COL_FREQ) return 0;
 
     QLineEdit *le=new LogQLineEdit(parent);
     le->installEventFilter(le);

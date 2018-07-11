@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.4.3
+## So2sdr-bandmap Help Version 2.4.4
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.4 (07/11/2018)
+
+* update IARU HQ mults
+* fix display of frequency when editing qso with ctrl-e
 
 ## version 2.4.3 (07/03/2018)
 

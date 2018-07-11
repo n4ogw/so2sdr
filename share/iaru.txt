@@ -19,6 +19,7 @@ arad
 arai
 aranc
 aras
+arat
 arbf
 arcot
 ari
@@ -42,6 +43,7 @@ bfrr
 bvirl
 cars
 cora
+crac
 crag
 cram
 cras
@@ -145,6 +147,7 @@ srr
 srs
 ssa
 sstars
+svgrs
 szr
 tacars
 tarc
@@ -161,6 +164,7 @@ vars
 vras
 veron
 verona
+vrona
 wia
 zars
 zrs

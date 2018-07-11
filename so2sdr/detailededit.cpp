@@ -73,7 +73,8 @@ void DetailedEdit::loadRecord(const QSqlRecord &r,int nexchange)
     rcvExch2LineEdit->setText(rec.value(SQL_COL_RCV2).toString());
     rcvExch3LineEdit->setText(rec.value(SQL_COL_RCV3).toString());
     rcvExch4LineEdit->setText(rec.value(SQL_COL_RCV4).toString());
-    freqLineEdit->setText(rec.value(SQL_COL_FREQ).toString());
+    //freqLineEdit->setText(rec.value(SQL_COL_FREQ).toString());
+    freqLineEdit->setText(QString::number(rec.value(SQL_COL_FREQ).toDouble(),'f',0));
     if (nexchange<4) {
         sentExch4LineEdit->hide();
         rcvExch4LineEdit->hide();

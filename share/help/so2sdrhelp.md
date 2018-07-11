@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.4.3
+## SO2SDR Help file version 2.4.4
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.4 (07/11/2018)
+
+* update IARU HQ mults
+* fix display of frequency when editing qso with ctrl-e
 
 ## version 2.4.3 (07/03/2018)
 
