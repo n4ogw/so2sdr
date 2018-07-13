@@ -50,44 +50,48 @@ void History::addQso(const Qso *qso)
     if (!history.isOpen()) return;
 
     QString query;
-    query.append("INSERT OR REPLACE INTO history (Call,General,DMult,Name,State,ARRLSection,Grid,Number) ");
-    query.append("SELECT new.Call, old.General, old.DMult, old.Name, old.State, old.ARRLSection, old.Grid, old.Number ");
+    query.append("INSERT OR REPLACE INTO history (Call,General,DMult,Name,State,ARRLSection,Grid,Number,Zone) ");
+    query.append("SELECT new.Call, old.General, old.DMult, old.Name, old.State, old.ARRLSection, old.Grid, old.Number, old.Zone ");
     query.append("FROM ( SELECT '" + QVariant(qso->call).toString() + "' AS Call");
     for (int i = 0; i < qso->n_exchange; i++) {
         switch (qso->exchange_type[i]) {
-            case General:
-                query.replace(QString("old.General"), QString("new.General"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS General");
-                break;
-            case DMult:
-                query.replace(QString("old.DMult"), QString("new.DMult"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS DMult");
-                break;
-            case Name:
-                query.replace(QString("old.Name"), QString("new.Name"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Name");
-                break;
-            case State:
-                query.replace(QString("old.State"), QString("new.State"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS State");
-                break;
-            case ARRLSection:
-                query.replace(QString("old.ARRLSection"), QString("new.ARRLSection"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS ARRLSection");
-                break;
-            case Grid:
-                query.replace(QString("old.Grid"), QString("new.Grid"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Grid");
-                break;
-            case Number:
-                query.replace(QString("old.Number"), QString("new.Number"));
-                query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Number");
-                break;
-            default:
-                break;
+        case General:
+            query.replace(QString("old.General"), QString("new.General"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS General");
+            break;
+        case DMult:
+            query.replace(QString("old.DMult"), QString("new.DMult"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS DMult");
+            break;
+        case Name:
+            query.replace(QString("old.Name"), QString("new.Name"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Name");
+            break;
+        case State:
+            query.replace(QString("old.State"), QString("new.State"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS State");
+            break;
+        case ARRLSection:
+            query.replace(QString("old.ARRLSection"), QString("new.ARRLSection"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS ARRLSection");
+            break;
+        case Grid:
+            query.replace(QString("old.Grid"), QString("new.Grid"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Grid");
+            break;
+        case Number:
+            query.replace(QString("old.Number"), QString("new.Number"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Number");
+            break;
+        case Zone:
+            query.replace(QString("old.Zone"), QString("new.Zone"));
+            query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Zone");
+            break;
+        default:
+            break;
         }
     }
-    query.append(") AS new LEFT JOIN ( SELECT Call,General,DMult,Name,State,ARRLSection,Grid,Number FROM history ) AS old ON new.Call = old.Call");
+    query.append(") AS new LEFT JOIN ( SELECT Call,General,DMult,Name,State,ARRLSection,Grid,Number,Zone FROM history ) AS old ON new.Call = old.Call");
     QSqlQuery h(history);
     h.exec(query);
     query.clear();
@@ -127,6 +131,9 @@ void History::fillExchange(Qso *qso,QByteArray part)
             break;
         case Number:
             query.append(",Number");
+            break;
+        case Zone:
+            query.append(",Zone");
             break;
         default:
             break;
@@ -179,7 +186,7 @@ void History::startHistory()
 
         QSqlQuery h(history);
         QString query;
-        query.append("CREATE TABLE IF NOT EXISTS history (`Call` TEXT PRIMARY KEY, `General` TEXT, `DMult` TEXT, `Name` TEXT, `State` TEXT, `ARRLSection` TEXT, `Grid` TEXT, `Number` TEXT)");
+        query.append("CREATE TABLE IF NOT EXISTS history (`Call` TEXT PRIMARY KEY, `General` TEXT, `DMult` TEXT, `Name` TEXT, `State` TEXT, `ARRLSection` TEXT, `Grid` TEXT, `Number` TEXT, `Zone` TEXT)");
         h.exec(query);
         query.clear();
         query.append("CREATE UNIQUE INDEX `call_idx` ON history (`Call`)");
