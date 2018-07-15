@@ -155,7 +155,7 @@ void BandmapInterface::addSpot(int nr,const BandmapEntry &spot)
     {
         const char cmd=BANDMAP_CMD_ADD_CALL;
         QByteArray str=spot.call;
-        str=str+","+QByteArray::number(spot.f,'f')+",";
+        str=str+","+QByteArray::number(spot.f,'f',0)+",";
         if (spot.dupe) {
             str=str+char(0xff)+char(0x00)+char(0xff)+char(0xff)+char(0x00)+char(0xff);
             str=str+char(0x01);
@@ -376,7 +376,7 @@ void BandmapInterface::setAddOffset(double f,int nr)
     if (bandmapOn[nr] && socket[nr].state()==QAbstractSocket::ConnectedState)
     {
         const char cmd=BANDMAP_CMD_SET_ADD_OFFSET;
-        QByteArray str=QByteArray::number(f,'f');
+        QByteArray str=QByteArray::number(f,'f',0);
         char len=str.length();
 
         if (socket[nr].write(&cmd,1)!=1) {
@@ -405,7 +405,7 @@ void BandmapInterface::bandmapSetFreq(double f,int nr)
         band[nr]=getBand(f);
 
         const char cmd=BANDMAP_CMD_SET_FREQ;
-        QByteArray str=QByteArray::number(f,'f');
+        QByteArray str=QByteArray::number(f,'f',0);
         char len=str.length();
 
         if (socket[nr].write(&cmd,1)!=1) {
