@@ -1425,6 +1425,11 @@ int Log::idPfx(Qso *qso, bool &qsy) const
      if (name == "CWOPS" || name == "WPX") {
          emit(multByBandEnabled(false));
      }
+     if (zoneType() == 0) {
+         setMyZone(settings.value(s_cqzone,s_cqzone_def).toInt());
+     } else {
+         setMyZone(settings.value(s_ituzone,s_ituzone_def).toInt());
+     }
  }
 
  void Log::setMyZone(int zone)
