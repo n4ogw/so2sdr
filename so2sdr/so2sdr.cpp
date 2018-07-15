@@ -2730,17 +2730,17 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                     case 22: // best cq
                         if (cat[activeRadio]->band()==-1) break;
                         bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[cat[activeRadio]->band()],
-                                               cqlimit_default_low[cat[activeRadio]->band()]).toInt(),
+                                               cqlimit_default_low[cat[activeRadio]->band()]).toDouble(),
                                 settings->value(s_sdr_cqlimit_high[cat[activeRadio]->band()],
-                                cqlimit_default_high[cat[activeRadio]->band()]).toInt());
+                                cqlimit_default_high[cat[activeRadio]->band()]).toDouble());
                         bandmap->findFreq(activeRadio);
                         break;
                     case 23: // best cq radio2
                         if (cat[activeRadio^1]->band()==-1) break;
                         bandmap->setFreqLimits(activeRadio^1,settings->value(s_sdr_cqlimit_low[cat[activeRadio^1]->band()],
-                                cqlimit_default_low[cat[activeRadio]->band()]).toInt(),
+                                cqlimit_default_low[cat[activeRadio]->band()]).toDouble(),
                                 settings->value(s_sdr_cqlimit_high[cat[activeRadio^1]->band()],
-                                cqlimit_default_high[cat[activeRadio^1]->band()]).toInt());
+                                cqlimit_default_high[cat[activeRadio^1]->band()]).toDouble());
                         bandmap->findFreq(activeRadio ^ 1);
                         // return immediately to avoid stopping cw on current radio
                         return;

@@ -429,9 +429,7 @@ void BandmapInterface::setFreqLimits(int nr,double flow,double fhigh)
     {
         QByteArray str;
         char cmd=BANDMAP_CMD_SET_LOWER_FREQ;
-        str=QByteArray::number(flow,'f');
-        if (str.length()>11) return;
-
+        str=QByteArray::number(flow,'f',0);
         char len=str.length();
         if (socket[nr].write(&cmd,1)==-1) {
             qDebug("bandmapinterface %d freq write error 1!",nr);
@@ -445,8 +443,7 @@ void BandmapInterface::setFreqLimits(int nr,double flow,double fhigh)
 
         cmd=BANDMAP_CMD_SET_UPPER_FREQ;
 
-        str=QByteArray::number(fhigh,'f');
-        if (str.length()>11) return;
+        str=QByteArray::number(fhigh,'f',0);
         len=str.length();
         if (socket[nr].write(&cmd,1)==-1) {
             qDebug("bandmapinterface %d freq write error 1!",nr);

@@ -1330,7 +1330,6 @@ void So2sdrBandmap::setBandName(int b)
 void So2sdrBandmap::findQsy(double f)
 {
     if (f<=0 || socket->state()!=QAbstractSocket::ConnectedState || socket->state()==QAbstractSocket::ClosingState) return;
-
     writeUdpXML(f,"",false);
 
     // update bandmap with new frequency

@@ -154,8 +154,8 @@ private:
     QSlider              slider;
     QString              ipAddress;
     QTimer               tuningTimer;
-    int                  flow;
-    int                  fhigh;
+    double               flow;
+    double               fhigh;
     QTcpSocket           *socket;
     QTcpServer           server;
     QUdpSocket           socketUdp,socketUdpN1MM;
