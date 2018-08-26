@@ -24,6 +24,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include "ui_stationdialog.h"
+#include "defines.h"
 #include "utils.h"
 /*!
    Station parameters dialog
@@ -33,7 +34,7 @@ class StationDialog : public QDialog, public Ui::StationDialog
 Q_OBJECT
 
 public:
-    StationDialog(QSettings& s,QWidget *parent = 0);
+    StationDialog(QSettings& s,uiSize sizes,QWidget *parent = 0);
     ~StationDialog();
     friend class So2sdr;
 

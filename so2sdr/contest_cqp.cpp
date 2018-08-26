@@ -71,15 +71,22 @@ void CQP::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int CQP::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(37); break; // sent #
-    case 1: return(37); break; // rcv #
-    case 2: return(45); break; // mult
-    default: return(35);
+    case 0: // sent #
+        return(4);
+        break;
+    case 1: // rcv #
+        return(4);
+        break;
+    case 2: // multiplier
+        return(5);
+        break;
+    default:
+        return(4);
     }
 }
 

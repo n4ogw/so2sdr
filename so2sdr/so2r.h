@@ -32,7 +32,7 @@ class So2r : public QObject
 {
     Q_OBJECT
 public:
-    explicit So2r(QSettings &s,QObject *parent = 0);
+    explicit So2r(QSettings &s,uiSize sz,QObject *parent = 0);
     ~So2r();
     void sendMicrohamCommand(QByteArray c);
     void sendOtrspCommand(QByteArray c,int nr);
@@ -67,6 +67,7 @@ private:
     const QString greenLED  = "QLabel { background-color : green; border-radius: 4px; }";
     const QString clearLED  = "QLabel { background-color : none; border-radius: 4px; }";
     So2rDialog   *so2rDialog;
+    uiSize sizes;
 };
 
 #endif // SO2R_H

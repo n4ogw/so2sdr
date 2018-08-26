@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>290</width>
-    <height>570</height>
+    <width>363</width>
+    <height>676</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,9 +24,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>290</width>
-    <height>570</height>
+    <width>580</width>
+    <height>800</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Station Data</string>
@@ -163,7 +169,7 @@ beam heading and sunrise/sunset times. This must be entered before starting a co
        </property>
        <property name="maximumSize">
         <size>
-         <width>45</width>
+         <width>60</width>
          <height>30</height>
         </size>
        </property>
@@ -514,6 +520,18 @@ the exchange</string>
    </item>
    <item>
     <widget class="QTextEdit" name="CabrilloAddressEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>80</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>270</width>
@@ -526,6 +544,22 @@ the exchange</string>
       </font>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>5</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -628,19 +662,6 @@ the exchange</string>
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>30</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <widget class="QLabel" name="SunLabel">
      <property name="font">
       <font>
@@ -663,6 +684,7 @@ the exchange</string>
     <widget class="QDialogButtonBox" name="station_dialog_buttons">
      <property name="font">
       <font>
+       <family>Sans</family>
        <pointsize>10</pointsize>
       </font>
      </property>

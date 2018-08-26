@@ -59,7 +59,7 @@ class Log : public QObject
 Q_OBJECT
 
 public:
-    Log(QSettings& cs, QSettings& s, QObject *parent);
+    Log(QSettings& cs, QSettings& s, uiSize sizes, QObject *parent);
     ~Log();
 
     void addQso(Qso *qso);

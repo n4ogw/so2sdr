@@ -7,12 +7,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>442</width>
-    <height>460</height>
+    <width>460</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -25,9 +25,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>442</width>
-    <height>460</height>
+    <width>600</width>
+    <height>550</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>CW Messages</string>
@@ -36,7 +42,7 @@
    <item>
     <widget class="QTabWidget" name="cw_msg_tab">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -49,8 +55,8 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>430</width>
-       <height>500</height>
+       <width>600</width>
+       <height>550</height>
       </size>
      </property>
      <property name="font">
@@ -89,9 +95,15 @@
          </item>
          <item row="0" column="1">
           <widget class="QLineEdit" name="cq_f1_edit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -108,7 +120,7 @@
           <widget class="QLineEdit" name="cq_f2_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -125,7 +137,7 @@
           <widget class="QLineEdit" name="cq_f3_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -142,7 +154,7 @@
           <widget class="QLineEdit" name="cq_f4_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -159,7 +171,7 @@
           <widget class="QLineEdit" name="cq_f5_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -176,7 +188,7 @@
           <widget class="QLineEdit" name="cq_f6_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -193,7 +205,7 @@
           <widget class="QLineEdit" name="cq_f7_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -210,7 +222,7 @@
           <widget class="QLineEdit" name="cq_f8_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -227,7 +239,7 @@
           <widget class="QLineEdit" name="cq_f9_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -244,7 +256,7 @@
           <widget class="QLineEdit" name="cq_f10_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -261,7 +273,7 @@
           <widget class="QLineEdit" name="cq_f11_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -278,7 +290,7 @@
           <widget class="QLineEdit" name="cq_f12_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -423,6 +435,12 @@
          </item>
          <item row="5" column="1">
           <widget class="QLineEdit" name="qsl_updated_edit">
+           <property name="maximumSize">
+            <size>
+             <width>340</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>Sent when the logged call has been corrected</string>
            </property>
@@ -456,7 +474,7 @@
           <widget class="QLineEdit" name="exc_f1_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -476,7 +494,7 @@
           <widget class="QLineEdit" name="exc_f2_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -496,7 +514,7 @@
           <widget class="QLineEdit" name="exc_f3_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -513,7 +531,7 @@
           <widget class="QLineEdit" name="exc_f4_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -530,7 +548,7 @@
           <widget class="QLineEdit" name="exc_f5_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -547,7 +565,7 @@
           <widget class="QLineEdit" name="exc_f6_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -564,7 +582,7 @@
           <widget class="QLineEdit" name="exc_f7_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -581,7 +599,7 @@
           <widget class="QLineEdit" name="exc_f8_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -598,7 +616,7 @@
           <widget class="QLineEdit" name="exc_f9_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -615,7 +633,7 @@
           <widget class="QLineEdit" name="exc_f10_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -632,7 +650,7 @@
           <widget class="QLineEdit" name="exc_f11_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -649,7 +667,7 @@
           <widget class="QLineEdit" name="exc_f12_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -683,7 +701,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f1_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -700,7 +718,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f2_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -717,7 +735,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f3_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -727,7 +745,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f4_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -737,7 +755,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f5_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -747,7 +765,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f6_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -757,7 +775,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f7_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -767,7 +785,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f8_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -777,7 +795,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f9_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -787,7 +805,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f10_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -804,7 +822,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f12_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -814,7 +832,7 @@
           <widget class="QLineEdit" name="cq_ctrl_f11_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -897,7 +915,7 @@
           <widget class="QLineEdit" name="cq_shift_f1_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -907,7 +925,7 @@
           <widget class="QLineEdit" name="cq_shift_f2_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -917,7 +935,7 @@
           <widget class="QLineEdit" name="cq_shift_f3_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -927,7 +945,7 @@
           <widget class="QLineEdit" name="cq_shift_f4_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -937,7 +955,7 @@
           <widget class="QLineEdit" name="cq_shift_f5_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -947,7 +965,7 @@
           <widget class="QLineEdit" name="cq_shift_f6_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -957,7 +975,7 @@
           <widget class="QLineEdit" name="cq_shift_f7_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -967,7 +985,7 @@
           <widget class="QLineEdit" name="cq_shift_f8_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -977,7 +995,7 @@
           <widget class="QLineEdit" name="cq_shift_f9_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -987,7 +1005,7 @@
           <widget class="QLineEdit" name="cq_shift_f10_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -1004,7 +1022,7 @@
           <widget class="QLineEdit" name="cq_shift_f12_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>
@@ -1014,7 +1032,7 @@
           <widget class="QLineEdit" name="cq_shift_f11_edit">
            <property name="maximumSize">
             <size>
-             <width>370</width>
+             <width>500</width>
              <height>30</height>
             </size>
            </property>

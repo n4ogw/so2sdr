@@ -20,12 +20,21 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QSettings>
-#include "defines.h"
 #include "settingsdialog.h"
 
-SettingsDialog::SettingsDialog(QSettings &s, QWidget *parent)  : QDialog(parent),settings(s)
+SettingsDialog::SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent)  : QDialog(parent),settings(s)
 {
     setupUi(this);
+
+    AutoSendComboBox->setFixedWidth(sizes.width*8);
+    AutoSendLineEdit->setFixedWidth(sizes.width*5);
+    UDPPortLineEdit->setFixedWidth(sizes.width*5);
+    CQRepeatLineEdit->setFixedWidth(sizes.width*5);
+    DuelingCQLineEdit->setFixedWidth(sizes.width*5);
+    label_5->setFixedWidth(sizes.width*8);
+    ctyLineEdit->setFixedWidth(sizes.width*20);
+    adjustSize();
+    setFixedSize(size());
 
     AutoSendComboBox->insertItem(0, "Semi");
     AutoSendComboBox->insertItem(1, "Auto");

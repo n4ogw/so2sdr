@@ -88,19 +88,19 @@ void IARU::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int IARU::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0:
-        return 35; // RST
+    case 0: // RST
+        return(4);
         break;
-    case 1:
-        return 60; //  zone/HQ
+    case 1: //  zone/HQ
+        return(5);
         break;
     default:
-        return 35;
+        return 4;
     }
 }
 

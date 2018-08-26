@@ -9,12 +9,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>470</height>
+    <width>434</width>
+    <height>476</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -27,9 +27,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
-    <height>470</height>
+    <width>565</width>
+    <height>683</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Contest Options</string>
@@ -49,7 +55,7 @@
         <widget class="QLabel" name="sentExch1Label">
          <property name="font">
           <font>
-           <family>Cantarell</family>
+           <family>Sans</family>
            <pointsize>10</pointsize>
           </font>
          </property>
@@ -416,7 +422,7 @@
       <widget class="QCheckBox" name="MultsByModeCheckBox">
        <property name="font">
         <font>
-         <family>Cantarell [unknown]</family>
+         <family>Sans</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -471,6 +477,12 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="contest_dialog_buttons">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <pointsize>10</pointsize>

@@ -19,10 +19,12 @@
 #include "mytableview.h"
 #include <QKeyEvent>
 #include <QDebug>
+#include <QHeaderView>
 
 MyTableView::MyTableView(QWidget *w) : QTableView(w)
 {
-   installEventFilter(this);
+ //  verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    installEventFilter(this);
 }
 
 /*! event filter for log display delegate

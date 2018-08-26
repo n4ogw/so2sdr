@@ -205,10 +205,15 @@ void JuneVHF::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int JuneVHF::fieldWidth(int col) const
 {
     switch (col) {
-    case 0: return(45); break; // rcv grid
-    default: return(35);
+    case 0: // grid
+        return(5);
+        break;
+    default:
+        return 4;
     }
 }

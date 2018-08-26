@@ -30,7 +30,7 @@ class AfedriSetup : public QDialog, public Ui::afedriSetup
 {
     Q_OBJECT
 public:
-    explicit AfedriSetup(QSettings &s,QWidget *parent = 0);
+    explicit AfedriSetup(QSettings &s,uiSize sizes,QWidget *parent = 0);
     double offset(int band) const;
     bool invert(int band) const;
 

@@ -27,7 +27,7 @@
 /*!
 Detailed qso editing dialog
 */
-DetailedEdit::DetailedEdit(QWidget *parent) : QDialog(parent)
+DetailedEdit::DetailedEdit(uiSize sizes,QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     connect(this,SIGNAL(accepted()),this,SLOT(updateRecord()));
@@ -46,6 +46,9 @@ DetailedEdit::DetailedEdit(QWidget *parent) : QDialog(parent)
     rcvExch4LineEdit->setValidator(new UpperValidator(rcvExch4LineEdit));
     freqLineEdit->setValidator(new QIntValidator(freqLineEdit));
     callLineEdit->setFocus();
+    callLineEdit->setFixedWidth(sizes.width*12);
+    adjustSize();
+    setFixedSize(size());
 }
 
 /*!

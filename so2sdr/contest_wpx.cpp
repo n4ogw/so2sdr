@@ -100,24 +100,25 @@ void WPX::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int WPX::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0:
-        return 54; // sent #
+    case 0: // sent #
+        return(5);
         break;
-    case 1:
-        return 35; // RST
+    case 1: //  RST
+        return(4);
         break;
-    case 2:
-        return 38;  // rcv #
+    case 2: // rcv #
+        return(5);
         break;
     default:
-        return 35;
+        return 4;
     }
 }
+
 
 int WPX::numberField() const
 {

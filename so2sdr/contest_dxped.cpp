@@ -66,19 +66,19 @@ void Dxped::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int Dxped::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0:
-        return 35;  // RST
+    case 0: // RST
+        return(4);
         break;
-    case 1:
-        return 120; // comment
+    case 1: // comment
+        return(8);
         break;
     default:
-        return 35;
+        return(4);
     }
 }
 

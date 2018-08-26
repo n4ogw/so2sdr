@@ -69,17 +69,28 @@ void Sweepstakes::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int Sweepstakes::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(37); break; // sent #
-    case 1: return(37); break; // rcv #
-    case 2: return(15); break; // prec
-    case 3: return(25); break; // check
-    case 4: return(34); break; // section
-    default: return(35);
+    case 0: // sent #
+        return(4);
+        break;
+    case 1: // rcv #
+        return(4);
+        break;
+    case 2: // prec
+        return(3);
+        break;
+    case 3: // check
+        return(3);
+        break;
+    case 4: // section
+        return(4);
+        break;
+    default:
+        return(4);
     }
 }
 

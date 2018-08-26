@@ -83,19 +83,20 @@ void ARRL160::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
-int ARRL160::fieldWidth(int col) const
 
-// width in pixels of data fields shown
+/*! width in characters of data fields shown
+ * */
+int ARRL160::fieldWidth(int col) const
 {
     switch (col) {
-    case 0:
-        return 35; // RST
+    case 0: // RST
+        return(4);
         break;
-    case 1:
-        return 45;
-        break; // qth/zone
+    case 1: // QTH/zone
+        return(5);
+        break;
     default:
-        return 35;
+        return(4);
     }
 }
 

@@ -31,6 +31,7 @@
 #include <QtMath>
 #include <QHostAddress>
 #include <QUdpSocket>
+#include <QX11Info>
 #include <QXmlStreamWriter>
 #include "so2sdr-bandmap.h"
 #include "bandmap-tcp.h"
@@ -50,6 +51,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     setupUi(this);
     initPointers();
     initVariables();
+    setUiSize();
 
     // check to see if user directory exists
     initialized = checkUserDirectory();
@@ -103,7 +105,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     settings->endGroup();
 
     directory.setCurrent(dataDirectory());
-    setWindowIcon(QIcon("icon24x24.png"));
 
     if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
         horizontalLayout->removeWidget(CallLabel);
@@ -178,7 +179,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     connect(scaleX2, SIGNAL(triggered()), this, SLOT(setScaleX2()));
     connect(actionRun,SIGNAL(triggered()),this,SLOT(start()));
 
-    sdrSetup = new SDRDialog(*settings,this);
+    sdrSetup = new SDRDialog(*settings,uiSizes,this);
     connect(actionSetup,SIGNAL(triggered()),sdrSetup,SLOT(show()));
     connect(actionSetup,SIGNAL(triggered()),this,SLOT(disconnectSignals()));
     connect(sdrSetup,SIGNAL(setupErrors(QString)),&errorBox,SLOT(showMessage(QString)));
@@ -518,7 +519,7 @@ void So2sdrBandmap::makeCall()
 
     p.setPen(Qt::black);
     QFont font;
-    font.setPixelSize(BANDMAP_FONT_PIX_SIZE);
+    font.setPointSize(BANDMAP_FONT_POINT_SIZE);
     p.setFont(font);
     for (int i = 0; i < settings->value(s_sdr_fft,s_sdr_fft_def).toInt(); i++) {
         display->cmap[i] = false;
@@ -534,9 +535,9 @@ void So2sdrBandmap::makeCall()
         int pix_offset = (callList.at(i).freq - fm) * pix_per_hz;
         int y          = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - pix_offset;
 
-        int l1 = y - BANDMAP_FONT_PIX_SIZE / 2;
+        int l1 = y - uiSizes.width / 2;
         if (l1 < 0) l1 = 0;
-        int l2 = y + BANDMAP_FONT_PIX_SIZE / 2;
+        int l2 = y + uiSizes.width / 2;
         if (l2 >= settings->value(s_sdr_fft,s_sdr_fft_def).toInt()) l2 = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - 1;
 
         if (callList.at(i).mark) {
@@ -557,13 +558,13 @@ void So2sdrBandmap::makeCall()
         }
         pix_offset = (callList.at(i).freq - freqMin) * pix_per_hz;
         y          = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - pix_offset;
-        // BANDMAP_FONT_PIX_SIZE/3 is fudge factor to center callsign
+        // uiSizes.height/3 is fudge factor to center callsign
         if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
             QFontMetrics fm(font);
-            p.drawText(callPixmap.width() - SIG_SYMBOL_RAD - BANDMAP_CALL_X - fm.width(callList.at(i).call),
-                       y+ BANDMAP_FONT_PIX_SIZE / 3, callList.at(i).call);
+            p.drawText(callPixmap.width() - uiSizes.height/3 - uiSizes.width*1.5 - fm.width(callList.at(i).call),
+                       y+ uiSizes.width / 3, callList.at(i).call);
         } else {
-            p.drawText(BANDMAP_CALL_X, y+ BANDMAP_FONT_PIX_SIZE / 3, callList.at(i).call);
+            p.drawText(uiSizes.width*1.5, y+ uiSizes.height/3, callList.at(i).call);
         }
     }
     p.setPen(Qt::black);
@@ -575,15 +576,15 @@ void So2sdrBandmap::makeCall()
         for (int i = 0; i < SIG_MAX; i++) {
             if (sigs[i].active) {
                 if (sigs[i].f<freqMin || sigs[i].f>freqMax) continue;
-                int pix_offset = (sigs[i].f - freqMin) * pix_per_hz + SIG_SYMBOL_RAD / 2;
+                int pix_offset = (sigs[i].f - freqMin) * pix_per_hz + uiSizes.rad / 2;
                 int y          = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - pix_offset;
                 if (y < 0 || y >= settings->value(s_sdr_fft,s_sdr_fft_def).toInt()) {
                     continue;
                 }
                 if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
-                    p.drawEllipse(callPixmap.width() - SIG_SYMBOL_RAD - SIG_SYMBOL_X, y, SIG_SYMBOL_RAD, SIG_SYMBOL_RAD);
+                    p.drawEllipse(callPixmap.width() - uiSizes.rad - uiSizes.width/2, y, uiSizes.rad, uiSizes.rad);
                 } else {
-                    p.drawEllipse(SIG_SYMBOL_X, y, SIG_SYMBOL_RAD, SIG_SYMBOL_RAD);
+                    p.drawEllipse(uiSizes.width/2, y, uiSizes.rad, uiSizes.rad);
                 }
             }
         }
@@ -610,15 +611,15 @@ void So2sdrBandmap::makeFreqScaleAbsolute()
     p.fillRect(freqPixmap.rect(), Qt::lightGray);
     p.setPen(Qt::black);
     QFont   font;
-    font.setPixelSize(BANDMAP_FONT_PIX_SIZE);
+    font.setPointSize(BANDMAP_FONT_POINT_SIZE);
     QString tmp;
     i = i0;
     int     k = 1;
     while (i > 0) {
         if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
-            p.drawLine(freqPixmap.width() -6, i, freqPixmap.width()-1, i);
+            p.drawLine(freqPixmap.width() -uiSizes.width*0.5, i, freqPixmap.width()-1, i);
         } else {
-            p.drawLine(0, i, 5, i);
+            p.drawLine(0, i, uiSizes.width*0.5, i);
         }
         // if center freq never set, don't make negative freq labels
         int jj;
@@ -631,7 +632,7 @@ void So2sdrBandmap::makeFreqScaleAbsolute()
         } else {
             tmp = QString::number(jj);
         }
-        p.drawText(6, i + BANDMAP_FONT_PIX_SIZE / 2, tmp);
+        p.drawText(uiSizes.width, i + uiSizes.height*0.4, tmp);
         j++;
         j = j % 1000;
         i = i0 - (int) (k * pix_per_khz) - 2;
@@ -828,8 +829,11 @@ void So2sdrBandmap::setScaleX1()
     scaleX1->setChecked(true);
     scaleX2->setChecked(false);
     spectrumProcessor->updateParams();
-    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/1000);
-    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt());
+//    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/1000);
+//    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt());
+    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/1000);
+    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble());
+
     makeFreqScaleAbsolute();
     FreqLabel->setPixmap(freqPixmap);
     FreqLabel->update();
@@ -844,8 +848,11 @@ void So2sdrBandmap::setScaleX2()
     scaleX1->setChecked(false);
     scaleX2->setChecked(true);
     spectrumProcessor->updateParams();
-    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * 2 / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/1000);
-    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * 2 / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt());
+//    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * 2 / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/1000);
+//    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * 2 / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt());
+    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() * 2 / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/1000);
+    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() * 2 / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble());
+
     makeFreqScaleAbsolute();
     FreqLabel->setPixmap(freqPixmap);
     FreqLabel->update();
@@ -1461,4 +1468,30 @@ void So2sdrBandmap::showHelp()
 void So2sdrBandmap::resetTuningTimer()
 {
     spectrumProcessor->setTuning(false);
+}
+
+/*! resize UI elements based on actual font size
+ */
+void So2sdrBandmap::setUiSize()
+{
+    if (QX11Info::appDpiX()>100) {
+        setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
+    } else {
+        setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+    }
+    QFont font10("sans", BANDMAP_FONT_POINT_SIZE);
+    QFontMetricsF fm10(font10);
+    uiSizes.height=fm10.height();
+    uiSizes.width=fm10.width("0");
+    uiSizes.rad=uiSizes.width/1.5;
+    QFont font9("sans", 9);
+    QFontMetricsF fm9(font9);
+    uiSizes.smallHeight=fm9.height();
+    uiSizes.smallWidth=fm9.width("0");
+    toolBar->setFixedHeight(uiSizes.height*1.5);
+    actionRun->setIcon(QIcon(":/icons/player_play.svg"));
+    actionStop->setIcon(QIcon(":/icons/player_stop.svg"));
+    actionSetup->setIcon(QIcon(":/icons/stock_properties.svg"));
+    actionQuit->setIcon(QIcon(":/icons/exit.svg"));
+    FreqLabel->setFixedWidth(uiSizes.width*6);
 }

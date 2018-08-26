@@ -33,7 +33,7 @@ Q_OBJECT
 
 public:
     friend class So2sdr;
-    ContestOptionsDialog(QWidget *parent = 0);
+    ContestOptionsDialog(uiSize sizes,QWidget *parent = 0);
     ~ContestOptionsDialog();
     void initialize(QSettings *s);
 

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,9 +24,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>320</width>
-    <height>320</height>
+    <width>640</width>
+    <height>640</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Liberation Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Sound Card Setup</string>
@@ -49,6 +55,12 @@
      </item>
      <item row="0" column="1">
       <widget class="QComboBox" name="APIComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Sound interface type. Significant only on Windows.</string>
        </property>
@@ -63,6 +75,12 @@
      </item>
      <item row="1" column="1">
       <widget class="QComboBox" name="SoundCardComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Soundcard device. Devices that pass basic checks are marked with check.</string>
        </property>
@@ -77,6 +95,12 @@
      </item>
      <item row="2" column="1">
       <widget class="QComboBox" name="fftComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <item>
         <property name="text">
          <string>1</string>
@@ -103,6 +127,12 @@
      </item>
      <item row="3" column="1">
       <widget class="QComboBox" name="SampleRateComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Sound card sample rate in Hz.</string>
        </property>
@@ -132,6 +162,12 @@
      </item>
      <item row="4" column="1">
       <widget class="QComboBox" name="BitsComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Bits in each sound card sample.</string>
        </property>
@@ -146,6 +182,12 @@
      </item>
      <item row="5" column="1">
       <widget class="QLineEdit" name="OffsetLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>IF offset: difference in Hz from SDR center frequency and center of display.</string>
        </property>
@@ -153,6 +195,12 @@
      </item>
      <item row="6" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Invert I/Q channels. Use if spectrum is inverted.</string>
        </property>
@@ -164,7 +212,7 @@
      <item row="7" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -177,8 +225,8 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>125</width>
-         <height>80</height>
+         <width>500</width>
+         <height>500</height>
         </size>
        </property>
        <property name="text">
@@ -188,6 +236,12 @@
      </item>
      <item row="8" column="1">
       <widget class="QCheckBox" name="checkBoxIq">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Correct I/Q imbalance</string>
        </property>
@@ -198,11 +252,17 @@
      </item>
      <item row="9" column="1">
       <widget class="QCheckBox" name="checkBoxIQData">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Measure strong signals to correct IQ balance.</string>
        </property>
        <property name="text">
-        <string>Collect IQ correction data</string>
+        <string>Collect IQ data</string>
        </property>
       </widget>
      </item>
@@ -210,6 +270,12 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

@@ -28,15 +28,19 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
+#include <QFontMetricsF>
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPalette>
 #include <QSettings>
+#include <QSize>
 #include <QStringList>
 #include <QStyle>
 #include <QTimer>
 #include <QUrl>
+#include <QHeaderView>
+#include <QX11Info>
 
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
@@ -71,6 +75,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
     initPointers();
     initVariables();
+    setUiSize();
 
     qRegisterMetaType<rmode_t>("rmode_t");
     qRegisterMetaType<pbwidth_t>("pbwidth_t");
@@ -88,7 +93,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     setFocusPolicy(Qt::StrongFocus);
     errorBox           = new QErrorMessage(this);
     errorBox->setModal(true);
-    setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+    errorBox->setFont(QFont("Sans",10));
+
     if (!iconValid.load(dataDirectory() + "/check.png")) {
         qDebug("file check.png missing");
     }
@@ -134,7 +140,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     // start radio 1; radio 2 will be started after radiodialog mfg and model info is filled out
     cat[0] = new RigSerial(0,settingsFile);
 
-    options = new ContestOptionsDialog(this);
+    options = new ContestOptionsDialog(sizes,this);
     connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(options,SIGNAL(rescore()),this,SLOT(rescore()));
@@ -143,27 +149,27 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     options->hide();
     cabrillo = new CabrilloDialog(this);
     cabrillo->hide();
-    station = new StationDialog(*settings,this);
+    station = new StationDialog(*settings,sizes,this);
     connect(station, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(station, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(station, SIGNAL(stationUpdate()), this, SLOT(stationUpdate()));
     station->hide();
-    progsettings = new SettingsDialog(*settings, this);
+    progsettings = new SettingsDialog(*settings, sizes, this);
     connect(progsettings, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(progsettings, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(progsettings, SIGNAL(settingsUpdate()), this, SLOT(settingsUpdate()));
     progsettings->hide();
-    cwMessage = new CWMessageDialog(CWType,this);
+    cwMessage = new CWMessageDialog(CWType, sizes, this);
     connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     cwMessage->hide();
-    ssbMessage = new SSBMessageDialog(this);
+    ssbMessage = new SSBMessageDialog(sizes, this);
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
     connect(ssbMessage,SIGNAL(sendMsg(QByteArray,bool)),this,SLOT(expandMacro(QByteArray,bool)));
     connect(ssbMessage,SIGNAL(recordingStatus(bool)),this,SLOT(showRecordingStatus(bool)));
     ssbMessage->hide();
-    radios = new RadioDialog(*settings,*cat[0], this);
+    radios = new RadioDialog(*settings,*cat[0], sizes, this);
     connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
     radios->hide();
@@ -193,7 +199,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
     winkeyDialog->hide();
     QDir::setCurrent(dataDirectory());
-    sdr = new SDRDialog(*settings,this);
+    sdr = new SDRDialog(*settings,sizes,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
@@ -285,7 +291,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         clist.at(i)->installEventFilter(this);
     }
     contestDirectory = QDir::homePath();
-    so2r=new So2r(*settings,this);
+    so2r=new So2r(*settings,sizes,this);
     connect(so2r,SIGNAL(error(QString)),errorBox,SLOT(showMessage(const QString &)));
     connect(actionSo2r,SIGNAL(triggered()),so2r,SLOT(showDialog()));
     connect(so2r,SIGNAL(So2rDialogAccepted()),this,SLOT(regrab()));
@@ -760,7 +766,7 @@ bool So2sdr::setupContest()
     if (cname.isEmpty()) return(false);
     cwMessage->initialize(csettings);
     ssbMessage->initialize(csettings,settings);
-    log = new Log(*csettings,*settings,this);
+    log = new Log(*csettings,*settings,sizes,this);
     log->setLatLon(station->lat(),station->lon());
     log->selectContest();
     connect(log,SIGNAL(logEditDone(QSqlRecord,QSqlRecord)),this,SLOT(updateSpotlistEdit(QSqlRecord,QSqlRecord)));
@@ -866,6 +872,8 @@ bool So2sdr::setupContest()
     So2sdrStatusBar->showMessage("Read " + fileName, 3000);
     setSummaryGroupBoxTitle();
     if (csettings->value(c_off_time_enable,c_off_time_enable_def).toBool()) updateOffTime();
+    // now allow log columns to be resized
+    LogTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     enableUI();
     emit(contestReady());
     return(true);
@@ -1082,12 +1090,6 @@ void So2sdr::initLogView()
     LogTableView->verticalHeader()->setSectionsClickable(false);
     LogTableView->verticalHeader()->setDefaultSectionSize(16);
     LogTableView->setModel(log->mod());
-    int ncol=csettings->beginReadArray(c_col_width_group);
-    for (int i=0;i<SQL_N_COL;i++) {
-        if (ncol) csettings->setArrayIndex(i);
-        LogTableView->setColumnWidth(i,settings->value(c_col_width_item,c_col_width_def[i]).toInt());
-    }
-    csettings->endArray();
 
     for (int i=0;i < SQL_N_COL;i++) {
         LogTableView->setItemDelegateForColumn(i,log->delegate());
@@ -1111,53 +1113,56 @@ void So2sdr::initLogView()
     }
     LogTableView->setColumnHidden(SQL_COL_VALID, false);
 
-    // columns 6+ are contest-specific
+    // set default column widths
+    for (int i=0;i<SQL_N_COL;i++) {
+        LogTableView->setColumnWidth(i,csettings->value(c_col_width_item,c_col_width_def[i]).toInt()*sizes.width);
+    }
+    // set contest-specific column widths
     // first are sent data fields
     unsigned f   = log->sntFieldShown();
     int      cnt = 0;
     if (f & 1) {
         LogTableView->setColumnHidden(SQL_COL_SNT1, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT1, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT1, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     if (f & 2) {
         LogTableView->setColumnHidden(SQL_COL_SNT2, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT2, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT2, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     if (f & 4) {
         LogTableView->setColumnHidden(SQL_COL_SNT3, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT3, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT3, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     if (f & 8) {
         LogTableView->setColumnHidden(SQL_COL_SNT4, false);
-        LogTableView->setColumnWidth(SQL_COL_SNT4, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_SNT4, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     f = log->rcvFieldShown();
     if (f & 1) {
         LogTableView->setColumnHidden(SQL_COL_RCV1, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV1, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV1, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     if (f & 2) {
         LogTableView->setColumnHidden(SQL_COL_RCV2, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV2, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV2, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     if (f & 4) {
         LogTableView->setColumnHidden(SQL_COL_RCV3, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV3, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV3, log->fieldWidth(cnt)*sizes.width);
         cnt++;
     }
     if (f & 8) {
         LogTableView->setColumnHidden(SQL_COL_RCV4, false);
-        LogTableView->setColumnWidth(SQL_COL_RCV4, log->fieldWidth(cnt));
+        LogTableView->setColumnWidth(SQL_COL_RCV4, log->fieldWidth(cnt)*sizes.width);
     }
     if (log->showQsoPtsField()) {
         LogTableView->setColumnHidden(SQL_COL_PTS, false);
-        LogTableView->setColumnWidth(SQL_COL_PTS, 30);
     }
     for (int i=0;i<SQL_N_COL;i++) {
         LogTableView->model()->setHeaderData(i,Qt::Horizontal,log->columnName(i),Qt::DisplayRole);
@@ -1166,6 +1171,19 @@ void So2sdr::initLogView()
     LogTableView->horizontalHeader()->setStretchLastSection(true);
     LogTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     LogTableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    // restore saved column widths
+    int ncol=csettings->beginReadArray(c_col_width_group);
+    for (int i=0;i<ncol;i++) {
+        csettings->setArrayIndex(i);
+        LogTableView->setColumnWidth(i,csettings->value(c_col_width_item,c_col_width_def[i]).toInt());
+    }
+    csettings->endArray();
+
+    QHeaderView *header = LogTableView->verticalHeader();
+    header->setSectionResizeMode(QHeaderView::Fixed);
+    header->setDefaultSectionSize(sizes.height);
+
     LogTableView->scrollToBottom();
     LogTableView->show();
 }
@@ -3707,4 +3725,67 @@ void So2sdr::logWsjtx(Qso *qso)
     updateNrDisplay();
     updateMults(activeRadio,qso->band);
     updateBreakdown();
+}
+
+/*! resize UI elements based on actual font size
+ */
+void So2sdr::setUiSize()
+{
+    if (QX11Info::appDpiX()>100) {
+        setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
+    } else {
+        setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+    }
+    QFont font10("sans", 10);
+    QFontMetricsF fm10(font10);
+    sizes.height=fm10.height();
+    sizes.width=fm10.width("0");
+    QFont font9("sans", 9);
+    QFontMetricsF fm9(font9);
+    sizes.smallHeight=fm9.height();
+    sizes.smallWidth=fm9.width("0");
+
+    LogTableView->setFixedHeight(sizes.height*6);
+    groupBox->setFixedHeight(sizes.height*6);
+
+    label_160->setFixedHeight(sizes.height);
+    label_80->setFixedHeight(sizes.height);
+    label_40->setFixedHeight(sizes.height);
+    label_20->setFixedHeight(sizes.height);
+    label_15->setFixedHeight(sizes.height);
+    label_10->setFixedHeight(sizes.height);
+    label_13->setFixedHeight(sizes.height);
+
+    for (int i=0;i<NRIG;i++) {
+        lineEditCall[i]->setFixedHeight(sizes.height*1.5);
+        lineEditExchange[i]->setFixedHeight(sizes.height*1.5);
+    }
+    for (int i=0;i<6;i++) {
+        gridLayout->setRowStretch(i,0);
+    }
+    ModeDisplay->setFixedHeight(sizes.height*1.5);
+    ModeDisplay2->setFixedHeight(sizes.height*1.5);
+    FreqDisplay->setFixedHeight(sizes.height*1.5);
+    FreqDisplay2->setFixedHeight(sizes.height*1.5);
+    SpeedDisplay->setFixedHeight(sizes.height*1.5);
+    SpeedDisplay2->setFixedHeight(sizes.height*1.5);
+    WPMLineEdit->setFixedHeight(sizes.height*1.5);
+    WPMLineEdit2->setFixedHeight(sizes.height*1.5);
+    NumLabel->setFixedHeight(sizes.height*1.5);
+    NumLabel2->setFixedHeight(sizes.height*1.5);
+    for (int i=0;i<6;i++) {
+        qsoLabel[i]->setFixedSize(QSize(sizes.smallWidth*4,sizes.smallHeight));
+    }
+    for (int i=0;i<2;i++) {
+        for (int j=0;j<6;j++) {
+            multLabel[i][j]->setFixedSize(QSize(sizes.smallWidth*4,sizes.smallHeight));
+        }
+        for (int j=0;j<2;j++) {
+            multWorkedLabel[i][j]->setFixedSize(QSize(sizes.smallWidth*25,sizes.smallHeight));
+        }
+        qsoWorkedLabel[i]->setFixedSize(QSize(sizes.smallWidth*25,sizes.smallHeight));
+    }
+    TotalQsoLabel->setFixedSize(QSize(sizes.smallWidth*5,sizes.smallHeight));
+    TotalMultLabel->setFixedSize(QSize(sizes.smallWidth*5,sizes.smallHeight));
+    TotalMultLabel2->setFixedSize(QSize(sizes.smallWidth*5,sizes.smallHeight));
 }

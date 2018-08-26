@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,9 +24,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>262</width>
-    <height>257</height>
+    <width>512</width>
+    <height>500</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Liberation Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Network SDR</string>
@@ -49,6 +55,12 @@
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="tcpipaddressLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>IP address of SDR</string>
        </property>
@@ -63,6 +75,12 @@
      </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="tcpportLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>TCP port number</string>
        </property>
@@ -77,6 +95,12 @@
      </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="udpportLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>UDP port number</string>
        </property>
@@ -91,6 +115,12 @@
      </item>
      <item row="4" column="1">
       <widget class="QLineEdit" name="lineEditOffset">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>IF offset: difference in Hz from SDR center frequency and center of display.</string>
        </property>
@@ -98,6 +128,12 @@
      </item>
      <item row="5" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Invert I/Q channels. Use if spectrum is inverted.</string>
        </property>
@@ -115,6 +151,12 @@
      </item>
      <item row="3" column="1">
       <widget class="QComboBox" name="fftComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <item>
         <property name="text">
          <string>1</string>
@@ -134,6 +176,12 @@
      </item>
      <item row="6" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>125</width>
@@ -142,7 +190,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>125</width>
+         <width>250</width>
          <height>16777215</height>
         </size>
        </property>
@@ -155,6 +203,12 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

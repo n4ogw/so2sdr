@@ -57,15 +57,20 @@ void Naqp::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int Naqp::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(80); break; // rcv name
-    case 1: return(33); break; // rcv qth
+    case 0: // name
+        return(6);
+        break;
+    case 1: //  qth
+        return(4);
+        break;
+    default:
+        return 4;
     }
-    return(0);
 }
 
 /*!

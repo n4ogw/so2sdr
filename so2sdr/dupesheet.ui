@@ -28,6 +28,12 @@
     <height>800</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <family>Sans</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Dupesheet</string>
   </property>
@@ -35,7 +41,16 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
     <number>3</number>
    </property>
    <item>
@@ -61,7 +76,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -95,7 +110,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="textInteractionFlags">
@@ -126,7 +141,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -160,7 +175,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -194,7 +209,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -228,7 +243,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -262,7 +277,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -296,7 +311,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -330,7 +345,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">
@@ -364,7 +379,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>12</pointsize>
+       <pointsize>10</pointsize>
       </font>
      </property>
      <property name="readOnly">

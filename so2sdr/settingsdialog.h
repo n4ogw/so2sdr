@@ -24,6 +24,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include "ui_settingsdialog.h"
+#include "defines.h"
 #include "utils.h"
 
 class SettingsDialog : public QDialog, public Ui::SettingsDialog
@@ -31,7 +32,7 @@ class SettingsDialog : public QDialog, public Ui::SettingsDialog
 Q_OBJECT
 
 public:
-    SettingsDialog(QSettings &s, QWidget *parent = 0);
+    SettingsDialog(QSettings &s, uiSize sizes,QWidget *parent = 0);
     ~SettingsDialog();
     friend class So2sdr;
 

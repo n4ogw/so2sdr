@@ -34,7 +34,7 @@ class SDRDialog : public QDialog, public Ui::SDRDialog
 Q_OBJECT
 
 public:
-    SDRDialog(QSettings &s,QWidget *parent = 0);
+    SDRDialog(QSettings &s,uiSize sizes,QWidget *parent = 0);
     ~SDRDialog();
     double offset(int band) const;
     bool invert(int band) const;

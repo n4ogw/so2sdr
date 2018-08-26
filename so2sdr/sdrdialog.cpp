@@ -26,9 +26,16 @@
 #include "sdrdialog.h"
 #include "utils.h"
 
-SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
+SDRDialog::SDRDialog(QSettings& s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    lineEditIP1->setFixedWidth(sizes.width*15);
+    lineEditPort1->setFixedWidth(sizes.width*15);
+    lineEditIP2->setFixedWidth(sizes.width*15);
+    lineEditPort2->setFixedWidth(sizes.width*15);
+    adjustSize();
+    setFixedSize(size());
+
     pathLabel[0] = labelExe1;
     pathLabel[1] = labelExe2;
     ipPtr[0]           = lineEditIP1;
@@ -48,7 +55,6 @@ SDRDialog::SDRDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
 
 void SDRDialog::fileGetter(QString msg,QString path,QString files,QString key,QLabel *label)
 {
-//    QString fileName = QFileDialog::getOpenFileName(this,msg, path,files);
     QString fileName = QFileDialog::getSaveFileName(this,msg, path,files,0,QFileDialog::DontConfirmOverwrite);
     if (fileName.isNull()) {
         return;

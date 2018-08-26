@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.4.4";
+const QByteArray Version = "2.4.5";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -200,6 +200,14 @@ typedef struct DomMult {
     QList<QByteArray> alt_names;
 } DomMult;
 Q_DECLARE_TYPEINFO(DomMult, Q_PRIMITIVE_TYPE);
+
+typedef struct uiSize {
+    qreal height;
+    qreal width;
+    qreal smallHeight;
+    qreal smallWidth;
+} uiSize;
+Q_DECLARE_TYPEINFO(uiSize, Q_PRIMITIVE_TYPE);
 
 // column numbers in SQL log
 const int SQL_COL_NR    =  0;    // ID number (SQL primary key)
@@ -507,7 +515,7 @@ const QString c_cab_version_def="3.0";
 
 const QString c_col_width_group="column";
 const QString c_col_width_item="width";
-const int c_col_width_def[SQL_N_COL]={37,39,46,85,0,0,40,40,40,40,40,40,40,40,40,30,57};
+const int c_col_width_def[SQL_N_COL]={5,5,7,9,0,0,0,5,5,5,5,5,5,5,5,2,2};
 
 const QString s_sdr_path[NRIG]={"sdr/path1","sdr/path2"};
 
@@ -517,12 +525,6 @@ const bool s_wsjtx_enable_def=false;
 const QString s_wsjtx_udp="wsjtx/udp";
 const int s_wsjtx_udp_def=2333;
 
-//
-// RTC this can't be set here, because QCoreApplication::applicationDirPath doesn't get set until
-// qcoreapplication is created.
-//
-//const QString s_sdr_path_def[NRIG]={QCoreApplication::applicationDirPath(),QCoreApplication::applicationDirPath()};
-
 const QString s_sdr_config[NRIG]={"sdr/config1","sdr/config2"};
 #ifdef Q_OS_LINUX
 const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/.so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/.so2sdr/so2sdr-bandmap2.ini"};
@@ -530,7 +532,6 @@ const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/.so2sdr/so2sdr-bandmap1
 #ifdef Q_OS_WIN
 const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/so2sdr/so2sdr-bandmap2.ini"};
 #endif
-
 
 const QString s_sdr_ip[NRIG]={"sdr/ip1","sdr/ip2"};
 const QString s_sdr_ip_def[NRIG]={"localhost","localhost"};

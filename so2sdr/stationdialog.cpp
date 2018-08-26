@@ -28,9 +28,16 @@
 
   s is station config file (so2sdr.ini) in QSettings .ini format
  */
-StationDialog::StationDialog(QSettings &s, QWidget *parent) : QDialog(parent),settings(s)
+StationDialog::StationDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+
+    label_2->setFixedWidth(sizes.width*4);
+    label_5->setFixedWidth(sizes.width*5);
+    label_6->setFixedWidth(sizes.width*6);
+    CabrilloAddressEdit->setFixedHeight(sizes.height*5);
+    adjustSize();
+    setFixedSize(size());
 
     // load from settings file
     CallLineEdit->setValidator(new UpperValidator(CallLineEdit));

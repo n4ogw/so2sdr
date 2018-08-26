@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>397</height>
+    <width>499</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,9 +24,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>350</width>
-    <height>397</height>
+    <width>500</width>
+    <height>520</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Radios</string>
@@ -394,6 +400,12 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="radiodialog_buttons">
+     <property name="font">
+      <font>
+       <family>Sans</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

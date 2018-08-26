@@ -73,13 +73,16 @@ void Stew::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int Stew::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(45); break; // rcv grid
-    default: return(35);
+    case 0: // grid
+        return(5);
+        break;
+    default:
+        return(5);
     }
 }
 

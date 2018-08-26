@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.4.4
+## So2sdr-bandmap Help Version 2.4.5
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.5 (08/10/2018)
+
+* improve appeareance on high-DPI displays
+* fix bug with dupesheet in Sprint
 
 ## version 2.4.4 (07/11/2018)
 

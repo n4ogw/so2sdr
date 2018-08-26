@@ -25,7 +25,7 @@
 #include "ssbmessagedialog.h"
 #include "defines.h"
 
-SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
+SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     upperValidate = new UpperValidator(this);
@@ -51,6 +51,9 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     funcEditPtr[9]  = cq_f10_edit;
     funcEditPtr[10] = cq_f11_edit;
     funcEditPtr[11] = cq_f12_edit;
+    for (int i=0;i<12;i++) {
+        funcEditPtr[i]->setFixedWidth(sizes.width*16);
+    }
 
     funcRecEditPtr[0]  = cq_f1_rec_edit;
     funcRecEditPtr[1]  = cq_f2_rec_edit;
@@ -64,7 +67,9 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     funcRecEditPtr[9]  = cq_f10_rec_edit;
     funcRecEditPtr[10] = cq_f11_rec_edit;
     funcRecEditPtr[11] = cq_f12_rec_edit;
-
+    for (int i=0;i<12;i++) {
+        funcRecEditPtr[i]->setFixedWidth(sizes.width*16);
+    }
     funcRecPtr[0]   = recF1;
     funcRecPtr[1]   = recF2;
     funcRecPtr[2]   = recF3;
@@ -110,7 +115,9 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     excFuncEditPtr[9]  = exc_f10_edit;
     excFuncEditPtr[10] = exc_f11_edit;
     excFuncEditPtr[11] = exc_f12_edit;
-
+    for (int i=0;i<12;i++) {
+        excFuncEditPtr[i]->setFixedWidth(sizes.width*16);
+    }
     excFuncRecEditPtr[0]  = exc_f1_rec_edit;
     excFuncRecEditPtr[1]  = exc_f2_rec_edit;
     excFuncRecEditPtr[2]  = exc_f3_rec_edit;
@@ -123,7 +130,9 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     excFuncRecEditPtr[9]  = exc_f10_rec_edit;
     excFuncRecEditPtr[10] = exc_f11_rec_edit;
     excFuncRecEditPtr[11] = exc_f12_rec_edit;
-
+    for (int i=0;i<12;i++) {
+        excFuncRecEditPtr[i]->setFixedWidth(sizes.width*16);
+    }
     excFuncRecPtr[0]   = recExcF1;
     excFuncRecPtr[1]   = recExcF2;
     excFuncRecPtr[2]   = recExcF3;
@@ -224,6 +233,8 @@ SSBMessageDialog::SSBMessageDialog(QWidget *parent) : QDialog(parent)
     playing=false;
     if (!scriptProcess) scriptProcess=new QProcess();
     scriptProcess->setWorkingDirectory(userDirectory()+"/wav");
+    adjustSize();
+    setFixedSize(size());
 }
 
 void SSBMessageDialog::playButtons(int id)

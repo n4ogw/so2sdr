@@ -33,7 +33,7 @@ class SoundCardSetup : public QDialog,  public Ui::SoundCardSetup
 {
     Q_OBJECT
 public:
-    explicit SoundCardSetup(QSettings &s,QWidget  *parent=0);
+    explicit SoundCardSetup(QSettings &s, uiSize sizes, QWidget  *parent=0);
     ~SoundCardSetup();
     double offset(int band) const;
     bool invert(int band) const;

@@ -28,9 +28,12 @@
 
   s is station config file (so2sdr.ini) in QSettings .ini format
  */
-WinkeyDialog::WinkeyDialog(QSettings& s,QWidget *parent) : QDialog(parent),settings(s)
+WinkeyDialog::WinkeyDialog(QSettings& s, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    adjustSize();
+    setFixedSize(size());
+
     // load from settings file
     DeviceLineEdit->setText(settings.value(s_winkey_device,s_winkey_device_def).toString());
 #ifdef Q_OS_WIN

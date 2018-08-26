@@ -25,13 +25,22 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = "2.4.4";
+const QByteArray Version = "2.4.5";
 
 typedef enum SdrType {
     soundcard_t=0,
     network_t=1,
     afedri_t=2
 } SdrType;
+
+typedef struct uiSize {
+    qreal height;
+    qreal width;
+    qreal smallHeight;
+    qreal smallWidth;
+    qreal rad;
+} uiSize;
+Q_DECLARE_TYPEINFO(uiSize, Q_PRIMITIVE_TYPE);
 
 // number of bands
 const int N_BANDS=26;
@@ -142,7 +151,7 @@ const int DEFAULT_SPOT_TIMEOUT=10;
 
 /*! pixel size of font used
  */
-const int BANDMAP_FONT_PIX_SIZE=10;
+const int BANDMAP_FONT_POINT_SIZE=10;
 
 /*!  pixel location from left edge of field for calls in bandmap
  */

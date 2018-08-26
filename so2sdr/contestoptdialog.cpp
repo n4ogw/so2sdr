@@ -24,7 +24,7 @@
 #include <QString>
 #include "contestoptdialog.h"
 
-ContestOptionsDialog::ContestOptionsDialog(QWidget *parent) : QDialog(parent)
+ContestOptionsDialog::ContestOptionsDialog(uiSize sizes, QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
 
@@ -41,6 +41,13 @@ ContestOptionsDialog::ContestOptionsDialog(QWidget *parent) : QDialog(parent)
     offValidator=new QIntValidator(this);
     offValidator->setBottom(1);
     offMinimumLineEdit->setValidator(offValidator);
+
+    for (int i=0;i<4;i++) {
+        sent[i]->setFixedWidth(sizes.width*6);
+        sentName[i]->setFixedWidth(sizes.width*6);
+    }
+    adjustSize();
+    setFixedSize(size());
 }
 
 ContestOptionsDialog::~ContestOptionsDialog()

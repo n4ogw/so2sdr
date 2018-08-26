@@ -25,9 +25,14 @@
 #include <QString>
 
 
-So2rDialog::So2rDialog(QSettings &s, QWidget *parent) : QDialog(parent),settings(s)
+So2rDialog::So2rDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    lineEditOTRSPPort1->setFixedWidth(sizes.width*15);
+    lineEditOTRSPPort2->setFixedWidth(sizes.width*15);
+    lineEditMicroHamPort->setFixedWidth(sizes.width*15);
+    adjustSize();
+    setFixedSize(size());
 
     comboBoxOTRSPBaud1->insertItem(0,"1200");
     comboBoxOTRSPBaud1->insertItem(0,"4800");

@@ -14,7 +14,7 @@
 TEMPLATE = app
 TARGET = so2sdr-bandmap
 
-QT += network widgets
+QT += network widgets x11extras
 
 HEADERS += \ 
     network.h \

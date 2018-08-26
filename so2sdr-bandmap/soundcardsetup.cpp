@@ -25,10 +25,14 @@
  *    Global QSettings object
  * \param parent
  */
-SoundCardSetup::SoundCardSetup(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
+SoundCardSetup::SoundCardSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    offsetSetup=new BandOffsetSetup(s,soundcard_t,this);
+    OffsetLineEdit->setFixedWidth(sizes.width*15);
+    adjustSize();
+    setFixedSize(size());
+
+    offsetSetup=new BandOffsetSetup(s,soundcard_t,sizes,this);
     connect(bandOffsetPushButton,SIGNAL(clicked(bool)),offsetSetup,SLOT(exec()));
     iconOK               = QIcon("check.png");
     iconNOK              = QIcon("x.png");

@@ -793,7 +793,11 @@ void So2sdr::backSlash()
         fillSentExch(qso[activeRadio],nrReserved[activeRadio]);
         qso[activeRadio]->time = QDateTime::currentDateTimeUtc(); // update time just before logging qso
         addQso(qso[activeRadio]);
-        dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);
+        if (nDupesheet()==1) {
+            populateDupesheet();
+        } else {
+            dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);
+        }
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;
@@ -1241,6 +1245,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             lineEditCall[activeRadio]->clear();
             qso[activeRadio]->prefill.clear();
             origCallEntered[activeRadio].clear();
+            setDupeColor(activeRadio,false);
             switchRadios();
 
             // remove any band spot that is present
@@ -1395,7 +1400,11 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
                 removeSpotFreq(qso[activeRadio]->freq, cat[activeRadio]->band());
             updateBandmapDupes(qso[activeRadio]);
         }
-        dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);
+        if (nDupesheet()==1) {
+            populateDupesheet();
+        } else {
+            dupesheet[activeRadio]->updateDupesheet(qso[activeRadio]->call);
+        }
         updateMults(activeRadio);
         rateCount[ratePtr]++;
         exchangeSent[activeRadio] = false;

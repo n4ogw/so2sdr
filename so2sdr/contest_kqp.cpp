@@ -63,14 +63,19 @@ void KQP::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int KQP::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(37); break; // rcv RST
-    case 1: return(45); break; // mult
-    default: return(37);
+    case 0: // RST
+        return(4);
+        break;
+    case 1: //  mult
+        return(5);
+        break;
+    default:
+        return 4;
     }
 }
 

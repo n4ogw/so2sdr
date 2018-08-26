@@ -25,11 +25,23 @@
  *     global settings object
  * \param parent
  */
-AfedriSetup::AfedriSetup(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
+AfedriSetup::AfedriSetup(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    tcpipaddressLineEdit->setFixedWidth(sizes.width*15);
+    tcpportLineEdit->setFixedWidth(sizes.width*15);
+    udpportLineEdit->setFixedWidth(sizes.width*15);
+    lineEditFreq1->setFixedWidth(sizes.width*15);
+    lineEditFreq2->setFixedWidth(sizes.width*15);
+    lineEditFreq3->setFixedWidth(sizes.width*15);
+    lineEditFreq4->setFixedWidth(sizes.width*15);
+    sampleFreqLineEdit->setFixedWidth(sizes.width*15);
+    lineEditOffset->setFixedWidth(sizes.width*15);
+    adjustSize();
+    setFixedSize(size());
+
     updateFromSettings();
-    offsetSetup=new BandOffsetSetup(s,afedri_t,this);
+    offsetSetup=new BandOffsetSetup(s,afedri_t,sizes,this);
     connect(bandOffsetPushButton,SIGNAL(clicked(bool)),offsetSetup,SLOT(exec()));
     connect(buttonBox,SIGNAL(accepted()),this,SLOT(updateAfedri()));
     connect(buttonBox,SIGNAL(rejected()),this,SLOT(rejectChanges()));

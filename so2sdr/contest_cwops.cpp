@@ -54,14 +54,19 @@ void Cwops::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int Cwops::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(70); break; // rcv name
-    case 1: return(50); break; // rcv #/QTH
-    default: return(35);
+    case 0: // name
+        return(8);
+        break;
+    case 1: // QTH
+        return(4);
+        break;
+    default:
+        return(4);
     }
 }
 

@@ -161,6 +161,7 @@ private:
     QUdpSocket           socketUdp,socketUdpN1MM;
     QXmlStreamReader     xmlReader;
     HelpDialog           *help;
+    uiSize               uiSizes;
 
     void addCall(QByteArray);
     bool checkUserDirectory();
@@ -171,6 +172,7 @@ private:
     int  getBand(double f);
     void qsyNext(bool up);
     void setBandName(int b);
+    void setUiSize();
     void startTimers();
     void stopTimers();
     void xmlParseN1MM();

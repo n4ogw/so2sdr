@@ -8,11 +8,11 @@
     <x>0</x>
     <y>0</y>
     <width>442</width>
-    <height>520</height>
+    <height>539</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -20,14 +20,20 @@
   <property name="minimumSize">
    <size>
     <width>442</width>
-    <height>520</height>
+    <height>460</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>446</width>
-    <height>520</height>
+    <width>600</width>
+    <height>700</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Voice Messages</string>
@@ -51,21 +57,21 @@
      <item>
       <widget class="QTabWidget" name="msgTab">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>430</width>
-         <height>350</height>
+         <width>420</width>
+         <height>400</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>430</width>
-         <height>495</height>
+         <width>600</width>
+         <height>700</height>
         </size>
        </property>
        <property name="font">
@@ -1279,6 +1285,12 @@
         </layout>
        </widget>
        <widget class="QWidget" name="tab">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <attribute name="title">
          <string>Play Scripts</string>
         </attribute>
@@ -1287,8 +1299,8 @@
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
-             <family>Cantarell [unknown]</family>
-             <pointsize>12</pointsize>
+             <family>Sans</family>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -1439,8 +1451,8 @@
           <widget class="QLabel" name="label_6">
            <property name="font">
             <font>
-             <family>Cantarell [unknown]</family>
-             <pointsize>12</pointsize>
+             <family>Sans</family>
+             <pointsize>10</pointsize>
             </font>
            </property>
            <property name="text">
@@ -1585,6 +1597,12 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="ssbmessage_buttons">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <pointsize>10</pointsize>

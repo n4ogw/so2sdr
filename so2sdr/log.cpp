@@ -39,7 +39,7 @@
 /*!
    n_exch is number of exchange fields; this can't change during the contest
  */
-Log::Log(QSettings &cs,QSettings &s, QObject *parent = 0) : QObject(parent),csettings(cs),settings(s)
+Log::Log(QSettings &cs,QSettings &s, uiSize sizes,QObject *parent = 0) : QObject(parent),csettings(cs),settings(s)
 {
     contest = 0;
     detail = 0;
@@ -52,7 +52,7 @@ Log::Log(QSettings &cs,QSettings &s, QObject *parent = 0) : QObject(parent),cset
     for (int i=0;i<N_BANDS;i++) qsoCnt[i]=0;
     logSearchFlag=false;
     searchList.clear();
-    detail=new DetailedEdit();
+    detail=new DetailedEdit(sizes);
     connect(detail,SIGNAL(editedRecord(QSqlRecord)),this,SLOT(updateRecord(QSqlRecord)));
     detail->hide();
     cty = new Cty(csettings);

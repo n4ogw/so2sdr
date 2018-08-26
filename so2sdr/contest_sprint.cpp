@@ -58,18 +58,42 @@ void Sprint::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int Sprint::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(33); break; // sent #
-    case 1: return(33); break; // rcv #
-    case 2: return(50); break; // rcv name
-    case 3: return(33); break; // rcv qth
-    case 4: return(33); break; // mult
-    default: return(35);
+    case 0: // sent #
+        return(4);
+        break;
+    case 1: // rcv #
+        return(4);
+        break;
+    case 2: // rcv name
+        return(5);
+        break;
+    case 3: // rcv qth
+        return(3);
+        break;
+    case 4: // mult
+        return(3);
+        break;
+    default:
+        return(5);
     }
+}
+
+QVariant Sprint::columnName(int c) const
+{
+    switch (c) {
+    case SQL_COL_SNT1:
+        return "#S";
+        break;
+    case SQL_COL_RCV1:
+        return "#R";
+        break;
+    }
+    return Contest::columnName(c);
 }
 
 /*!

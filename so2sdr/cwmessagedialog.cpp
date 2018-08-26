@@ -22,13 +22,14 @@
 #include "cwmessagedialog.h"
 #include "defines.h"
 
-CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(parent)
+CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,QWidget *parent) : QDialog(parent)
 {
     // m is an index for the mode: 0=CW, 1=SSB, 2=DIGI can all have different macros
     m=(int)modetype;
     if (m>1) m=0; // digi keys not implemented yet
 
     setupUi(this);
+
     upperValidate = new UpperValidator(this);
     connect(cwmessage_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(cwmessage_buttons, SIGNAL(accepted()), this, SLOT(updateCWMsg()));
@@ -45,6 +46,10 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(
     funcEditPtr[9]  = cq_f10_edit;
     funcEditPtr[10] = cq_f11_edit;
     funcEditPtr[11] = cq_f12_edit;
+    for (int i=0;i<12;i++) {
+        funcEditPtr[i]->setFixedWidth(sizes.width*35);
+        funcEditPtr[i]->setFixedHeight(sizes.height*1.2);
+    }
 
     ctrlFuncEditPtr[0]  = cq_ctrl_f1_edit;
     ctrlFuncEditPtr[1]  = cq_ctrl_f2_edit;
@@ -58,6 +63,10 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(
     ctrlFuncEditPtr[9]  = cq_ctrl_f10_edit;
     ctrlFuncEditPtr[10] = cq_ctrl_f11_edit;
     ctrlFuncEditPtr[11] = cq_ctrl_f12_edit;
+    for (int i=0;i<12;i++) {
+        ctrlFuncEditPtr[i]->setFixedWidth(sizes.width*35);
+        ctrlFuncEditPtr[i]->setFixedHeight(sizes.height*1.2);
+    }
 
     shiftFuncEditPtr[0]  = cq_shift_f1_edit;
     shiftFuncEditPtr[1]  = cq_shift_f2_edit;
@@ -71,6 +80,10 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(
     shiftFuncEditPtr[9]  = cq_shift_f10_edit;
     shiftFuncEditPtr[10] = cq_shift_f11_edit;
     shiftFuncEditPtr[11] = cq_shift_f12_edit;
+    for (int i=0;i<12;i++) {
+        shiftFuncEditPtr[i]->setFixedWidth(sizes.width*35);
+        shiftFuncEditPtr[i]->setFixedHeight(sizes.height*1.2);
+    }
 
     excFuncEditPtr[0]  = exc_f1_edit;
     excFuncEditPtr[1]  = exc_f2_edit;
@@ -84,6 +97,11 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(
     excFuncEditPtr[9]  = exc_f10_edit;
     excFuncEditPtr[10] = exc_f11_edit;
     excFuncEditPtr[11] = exc_f12_edit;
+    for (int i=0;i<12;i++) {
+        excFuncEditPtr[i]->setFixedWidth(sizes.width*35);
+        excFuncEditPtr[i]->setFixedHeight(sizes.height*1.2);
+    }
+
     for (int i = 0; i < N_FUNC; i++) {
         funcEditPtr[i]->setValidator(upperValidate);
         ctrlFuncEditPtr[i]->setValidator(upperValidate);
@@ -100,6 +118,9 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, QWidget *parent) : QDialog(
     sp_exc_edit->setValidator(upperValidate);
     dupe_msg_edit->setValidator(upperValidate);
     quick_qsl_edit->setValidator(upperValidate);
+
+    adjustSize();
+    setFixedSize(size());
 }
 
 /*!

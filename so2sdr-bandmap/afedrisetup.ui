@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -27,9 +27,15 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>292</width>
-    <height>510</height>
+    <width>600</width>
+    <height>1000</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Liberation Sans</family>
+    <pointsize>10</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Afedri Net SDR</string>
@@ -52,6 +58,12 @@
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="tcpipaddressLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>IP address of Afedri SDR</string>
        </property>
@@ -66,6 +78,12 @@
      </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="tcpportLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>TCP port number. Default often 50000.</string>
        </property>
@@ -80,6 +98,12 @@
      </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="udpportLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>UDP port number. Default often 50000.</string>
        </property>
@@ -94,6 +118,12 @@
      </item>
      <item row="3" column="1">
       <widget class="QComboBox" name="multiChannelComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Allows dual or quad reception if supported by Afedri hardware.</string>
        </property>
@@ -123,6 +153,12 @@
      </item>
      <item row="4" column="1">
       <widget class="QComboBox" name="channelComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Channel number. Channels above 1 require dual or quad hardware.</string>
        </property>
@@ -157,6 +193,12 @@
      </item>
      <item row="5" column="1">
       <widget class="QLineEdit" name="lineEditFreq1">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Center frequency for SDR</string>
        </property>
@@ -171,6 +213,12 @@
      </item>
      <item row="6" column="1">
       <widget class="QLineEdit" name="lineEditFreq2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
@@ -188,6 +236,12 @@
      </item>
      <item row="7" column="1">
       <widget class="QLineEdit" name="lineEditFreq3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Center frequency, third receiver</string>
        </property>
@@ -202,6 +256,12 @@
      </item>
      <item row="8" column="1">
       <widget class="QLineEdit" name="lineEditFreq4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Center frequency, fourth receiver.</string>
        </property>
@@ -216,6 +276,12 @@
      </item>
      <item row="9" column="1">
       <widget class="QLineEdit" name="lineEditOffset">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>IF offset: difference in Hz from SDR center frequency and center of display.</string>
        </property>
@@ -230,6 +296,12 @@
      </item>
      <item row="13" column="1">
       <widget class="QLineEdit" name="sampleFreqLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Sample rate of SDR. Not all values can be set with Afedri, see Afedri docs.</string>
        </property>
@@ -244,11 +316,17 @@
      </item>
      <item row="15" column="1">
       <widget class="QRadioButton" name="broadcastMasterButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Turn on UDP broadcast option. Master controls the SDR.</string>
        </property>
        <property name="text">
-        <string>Master</string>
+        <string>&amp;Master</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">broadcastButtonGroup</string>
@@ -257,11 +335,17 @@
      </item>
      <item row="16" column="1">
       <widget class="QRadioButton" name="broadcastSlaveButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Connect to UDP broadcast as Slave. Cannot change any SDR parameters. Use for multichannel SDR's.</string>
        </property>
        <property name="text">
-        <string>Slave</string>
+        <string>S&amp;lave</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">broadcastButtonGroup</string>
@@ -270,6 +354,12 @@
      </item>
      <item row="17" column="1">
       <widget class="QRadioButton" name="broadcastOffButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Do not use UDP broadcast protocol.</string>
        </property>
@@ -293,6 +383,12 @@
      </item>
      <item row="12" column="1">
       <widget class="QComboBox" name="fftComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <item>
         <property name="text">
          <string>1</string>
@@ -312,6 +408,12 @@
      </item>
      <item row="10" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Invert I/Q channels. Use if spectrum is inverted.</string>
        </property>
@@ -323,7 +425,7 @@
      <item row="11" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -336,7 +438,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>125</width>
+         <width>1000</width>
          <height>16777215</height>
         </size>
        </property>

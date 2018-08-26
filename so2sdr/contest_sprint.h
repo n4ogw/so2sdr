@@ -34,6 +34,7 @@ public:
     unsigned int rcvFieldShown() const;
     bool showQsoPtsField() const { return false;}
     unsigned int sntFieldShown() const;
+    QVariant columnName(int c) const;
 };
 
 #endif // CONTEST_SPRINT_H

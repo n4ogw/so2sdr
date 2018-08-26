@@ -262,6 +262,7 @@ private:
     SettingsDialog       *progsettings;
     StationDialog        *station;
     Telnet               *telnet;
+    uiSize               sizes;
     UDPReader            *wsjtxUDP;
     WinkeyDialog         *winkeyDialog;
     Winkey               *winkey;
@@ -316,6 +317,7 @@ private:
     void sendCalls(int);
     void sendFunc(int i, Qt::KeyboardModifiers mode);
     void setDupeColor(int nr,bool dupe);
+    void setUiSize();
     bool setupContest();
     void showDupesheet(int nr, bool checkboxState);
     void spaceAltD();

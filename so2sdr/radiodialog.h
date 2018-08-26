@@ -36,7 +36,7 @@ class RadioDialog : public QDialog, public Ui::RadioDialog
 Q_OBJECT
 
 public:
-    RadioDialog(QSettings& s,RigSerial& cat, QWidget *parent = 0);
+    RadioDialog(QSettings& s,RigSerial& cat, uiSize sizes,QWidget *parent = 0);
     ~RadioDialog();
 
 signals:

@@ -30,21 +30,27 @@
  *   Global QSettings object
  * \param parent
  */
-SDRDialog::SDRDialog(QSettings &s,QWidget *parent) : QDialog(parent),settings(s)
+SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
+    tcpPortLineEdit->setFixedWidth(sizes.width*15);
+    udpPortLineEdit->setFixedWidth(sizes.width*15);
+    n1mmUdpLineEdit->setFixedWidth(sizes.width*15);
+    adjustSize();
+    setFixedSize(size());
+
     n1mmUdpLineEdit->setEnabled(false);
     comboBoxSdrType->addItem("Soundcard");
     comboBoxSdrType->addItem("SDR-IP SDR");
     comboBoxSdrType->addItem("Afedri Net SDR");
     connect(configureButton,SIGNAL(clicked()),this,SLOT(launchConfigure()));
-    soundcard=new SoundCardSetup(settings,this);
+    soundcard=new SoundCardSetup(settings,sizes,this);
     connect(soundcard,SIGNAL(PortAudioError(QString)),this,SIGNAL(setupErrors(QString)));
     soundcard->hide();
-    afedri=new AfedriSetup(settings,this);
+    afedri=new AfedriSetup(settings,sizes,this);
     connect(afedri,SIGNAL(afedriError(QString)),this,SIGNAL(setupErrors(QString)));
     afedri->hide();
-    network=new NetworkSetup(settings,this);
+    network=new NetworkSetup(settings,sizes,this);
     connect(network,SIGNAL(networkError(QString)),this,SIGNAL(setupErrors(QString)));
     network->hide();
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSDR()));

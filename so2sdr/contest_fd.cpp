@@ -83,16 +83,20 @@ void FD::addQso(Qso *qso)
     addQsoMult(qso);
 }
 
+/*! width in characters of data fields shown
+ * */
 int FD::fieldWidth(int col) const
-
-// width in pixels of data fields shown
 {
     switch (col) {
-    case 0: return(49); break; // rcv class
-    case 1: return(35); break; // rcv section
-    default: return(35);
+    case 0: // rcv class
+        return(4);
+        break;
+    case 1: // rcv section
+        return(4);
+        break;
+    default:
+        return(4);
     }
-    return(0);
 }
 
 /*!
