@@ -812,14 +812,6 @@ void So2sdrBandmap::setDefaultCenter()
     display->setVfoPos(vfoPos);
 }
 
-/*!
-   Set added IF offset
- */
-//void So2sdrBandmap::setAddOffset(int i)
-//{
-//    spectrumProcessor->setAddOffset(i);
-//}
-
 /*! set x1 scale
  */
 void So2sdrBandmap::setScaleX1()
@@ -1378,7 +1370,7 @@ void So2sdrBandmap::writeUdpXML(double freq,QByteArray call,bool del)
     stream.writeEndElement();
     stream.writeEndElement();
     stream.writeEndDocument();
-    socketUdp.writeDatagram(msg.data(), msg.size(),QHostAddress::Broadcast,
+    socketUdp.writeDatagram(msg.data(), msg.size(),QHostAddress::LocalHost,
                             settings->value(s_sdr_bandmap_udp_port,s_sdr_bandmap_udp_port_def).toInt());
 }
 
