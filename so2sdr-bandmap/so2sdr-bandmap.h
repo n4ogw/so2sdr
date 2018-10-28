@@ -74,7 +74,7 @@ public:
     void initVariables();
     bool invert() const;
     int nextFreq(bool) const;
-    void setAddOffset(int);
+   // void setAddOffset(int);
     void setDefaultCenter();
     void setInvert(bool t);
     void setIQ(bool, bool);

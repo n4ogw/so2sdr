@@ -2234,7 +2234,7 @@ void So2sdr::updateRadioFreq()
         if (bandmap->bandmapon(i)) {
             bandmap->bandmapSetFreq(rigFreq[i],i);
             //add additional offset if specified by radio (like K3)
-            bandmap->setAddOffset(cat[i]->ifFreq(),i);
+            bandmap->setAddOffset((double)cat[i]->ifFreq(),i);
         }
         double f = rigFreq[i] / 1000.0;
         if (cat[i]->radioOpen()) {

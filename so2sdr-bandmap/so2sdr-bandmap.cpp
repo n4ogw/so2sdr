@@ -815,10 +815,10 @@ void So2sdrBandmap::setDefaultCenter()
 /*!
    Set added IF offset
  */
-void So2sdrBandmap::setAddOffset(int i)
-{
-    spectrumProcessor->setAddOffset(i);
-}
+//void So2sdrBandmap::setAddOffset(int i)
+//{
+//    spectrumProcessor->setAddOffset(i);
+//}
 
 /*! set x1 scale
  */
@@ -829,8 +829,6 @@ void So2sdrBandmap::setScaleX1()
     scaleX1->setChecked(true);
     scaleX2->setChecked(false);
     spectrumProcessor->updateParams();
-//    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/1000);
-//    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt());
     pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/1000);
     pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble());
 
@@ -848,8 +846,6 @@ void So2sdrBandmap::setScaleX2()
     scaleX1->setChecked(false);
     scaleX2->setChecked(true);
     spectrumProcessor->updateParams();
-//    pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * 2 / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/1000);
-//    pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() * 2 / (double) (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt());
     pix_per_khz = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() * 2 / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/1000);
     pix_per_hz  = settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() * 2 / (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble());
 
