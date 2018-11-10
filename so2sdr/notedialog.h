@@ -20,6 +20,7 @@
 #define NOTEDIALOG_H
 
 #include <QString>
+#include "defines.h"
 #include "ui_notedialog.h"
 
 /*!
@@ -30,7 +31,7 @@ class NoteDialog : public QDialog, public Ui::NoteDialog
 Q_OBJECT
 
 public:
-    NoteDialog(QWidget *parent = 0);
+    NoteDialog(uiSize sizes, QWidget *parent = 0);
     void enterNote(QString fname, QString dir, QString time, bool grab = false);
 
 private slots:

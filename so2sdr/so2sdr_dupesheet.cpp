@@ -93,7 +93,8 @@ int So2sdr::nDupesheet() const
 
 
 /*! populates dupe sheet. Needs to be called when switching bands
- or first turning on the dupesheet
+ or first turning on the dupesheet. If band has not changed, will do
+ nothing.
  */
 void So2sdr::populateDupesheet()
 {
@@ -110,6 +111,7 @@ void So2sdr::populateDupesheet()
             }
         }
     }
+
     for (int id=0;id<NRIG;id++) {
         if (!dupesheet[id]) continue;
         int ib=id;
@@ -117,9 +119,14 @@ void So2sdr::populateDupesheet()
             if (nr!=id) continue;
             ib=activeRadio;
         }
+        // abort if not on known band, or if band has not changed
+        int b=cat[ib]->band();
+        if (b==BAND_NONE || b==dupesheet[id]->band()) continue;
+
         dupesheet[id]->clear();
+        dupesheet[id]->setBand(b);
         QSqlQueryModel m;
-        m.setQuery("SELECT * FROM log WHERE valid=1 and BAND=" + QString::number(cat[ib]->band()), log->dataBase());
+        m.setQuery("SELECT * FROM log WHERE valid=1 and BAND=" + QString::number(b), log->dataBase());
 
         while (m.canFetchMore()) {
             m.fetchMore();
@@ -128,6 +135,6 @@ void So2sdr::populateDupesheet()
             QByteArray tmp = m.record(i).value("call").toString().toLatin1();
             dupesheet[id]->updateDupesheet(tmp);
         }
-        dupesheet[id]->setWindowTitle("Dupesheet " + cat[ib]->bandName());
+        dupesheet[id]->setWindowTitle("Dupesheet " + bandName[b]);
     }
 }

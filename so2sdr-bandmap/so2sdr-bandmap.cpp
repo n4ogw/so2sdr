@@ -1224,94 +1224,60 @@ void So2sdrBandmap::startConnection()
 
 int So2sdrBandmap::getBand(double f)
 {
-    int ff=f/1000000;
-    switch (ff) {
-    case 1:
-    case 2:
-        return BAND160;
+    int g=f / 1000000.0;
+    switch (g) {
+    case 1: case 2: return(BAND160);
         break; // 160
-    case 3: case 4:
-        return BAND80;
+    case 3: case 4: return(BAND80);
         break; // 80
-    case 5:
-        return BAND60;
+    case 5: return(BAND60);
         break; // 60
-    case 6:
-    case 7:
-        return BAND40;
+    case 6: case 7: return(BAND40);
         break; // 40
-    case 9: case 10:
-        return BAND30;
+    case 9: case 10: return(BAND30);
         break; // 30
-    case 13:
-    case 14:
-        return BAND20;
+    case 13: case 14: return(BAND20);
         break; // 20
-    case 18:
-        return BAND17;
+    case 18: return(BAND17);
         break; // 17
-    case 20: case 21:
-        return BAND15;
+    case 20: case 21: return(BAND15);
         break; // 15
-    case 24: case 25:
-        return BAND12;
+    case 24: case 25: return(BAND12);
         break; // 12
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-        return BAND10;
+    case 27: case 28: case 29: case 30: case 31: return(BAND10);
         break; // 10
-    case 49:
-    case 50:
-    case 51:
-    case 52:
-    case 53:
-    case 54:
-    case 55:
-        return BAND6;
+    case 49: case 50:case 51:case 52:case 53:case 54: case 55: case 56: return(BAND6);
         break; // 6
-    case 143:
-    case 144:
-    case 145:
-    case 146:
-    case 147:
-    case 148:
-    case 149:
-        return BAND2;
+    case 143: case 144:case 145:case 146:case 147:case 148: case 149: return(BAND2);
         break; // 2
-    case 219:
-    case 220:
-    case 221:
-    case 222:
-    case 223:
-    case 224:
-    case 225:
-        return BAND222;
+    case 219:case 220:case 221:case 222:case 223:case 224:case 225: return(BAND222);
         break; // 220 MHz
     }
     // handle UHF
-    int fmhz=f/1000000;
-    if (fmhz>419 && fmhz<451)
-    {
-        return BAND420;
-    } else if (fmhz>901 && fmhz<929)
-    {
-        return BAND902;
-    } else if (fmhz>1239 && fmhz<1301)
-    {
-        return BAND1240;
+    double fmhz=f/1000000;
+    if (fmhz>419 && fmhz<451) {
+        return(BAND420);
+    } else if (fmhz>901 && fmhz<929) {
+        return(BAND902);
+    } else if (fmhz>1239 && fmhz<1301) {
+        return(BAND1240);
     }
-
-    return BAND_NONE;
+    // 630m, 2200m
+    double khz=f/1000;
+    if (khz>400 && khz<500) {
+        return(BAND630);
+    } else if (khz>100 && khz<150) {
+        return(BAND2200);
+    }
+    // @todo microwave bands!
+    return(BAND_NONE);
 }
 
 void So2sdrBandmap::setBandName(int b)
 {
     const QString bands[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
                                         "70cm","1.25M","33cm","23cm","13cm","9cm","6cm","3cm","1.25cm","6mm",
-                                        "4mm","2.5mm","2mm","1mm"};
+                                        "4mm","2.5mm","2mm","1mm","630","2200"};
     if (b<0 || b>N_BANDS) {
         bandName.clear();
     } else {
@@ -1358,14 +1324,14 @@ void So2sdrBandmap::writeUdpXML(double freq,QByteArray call,bool del)
     stream.writeStartElement("So2sdr");
     stream.writeStartElement("bandmap");
     stream.writeAttribute("RadioNr",QString::number(settings->value(s_sdr_nrig,s_sdr_nrig).toInt()+1));
-    if (freq>0) {
-        stream.writeAttribute("freq",QString::number(freq,'f'));
-    }
     if (!call.isEmpty()) {
         stream.writeAttribute("call",call);
     }
     if (del) {
         stream.writeAttribute("operation","delete");
+    }
+    if (freq>0) {
+        stream.writeAttribute("freq",QString::number(freq,'f'));
     }
     stream.writeEndElement();
     stream.writeEndElement();

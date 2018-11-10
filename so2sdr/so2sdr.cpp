@@ -208,7 +208,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(bandmap,SIGNAL(qsy1(double)),cat[0],SLOT(qsyExact(double)));
     connect(bandmap,SIGNAL(qsy2(double)),cat[1],SLOT(qsyExact(double)));
     connect(bandmap,SIGNAL(sendMsg(QString)),So2sdrStatusBar,SLOT(showMessage(QString)));
-    notes = new NoteDialog(this);
+    notes = new NoteDialog(sizes,this);
     connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(notes, SIGNAL(rejected()), this, SLOT(regrab()));
     newContest = new NewDialog(this);
@@ -900,11 +900,12 @@ void So2sdr::startMaster()
 
 /*!
  * \brief So2sdr::updateHistory
- * update the exchange history. RTC: why is this so slow?
+ * update the exchange history.
  *
  */
 void So2sdr::updateHistory() {
     if (csettings->value(c_historymode,c_historymode_def).toBool()) {
+        progress.setLabelText("Updating history");
         log->updateHistory();
     }
 }
@@ -1267,9 +1268,6 @@ void So2sdr::timerEvent(QTimerEvent *event)
         // check bandmap
         checkSpot(0);
         checkSpot(1);
-
-        // update bandmap calls
-        decaySpots();
     } else if (event->timerId() == timerId[0]) {
         // clock update; every 1000 mS
         TimeDisplay->setText(QDateTime::currentDateTimeUtc().toString("MM-dd hh:mm:ss"));
@@ -1279,6 +1277,14 @@ void So2sdr::timerEvent(QTimerEvent *event)
         }
         // check bandmap tcp connection
         bandmap->connectTcp();
+
+        // update dupsheet
+        if (nDupesheet()) {
+            populateDupesheet();
+        }
+
+        // update bandmap calls
+        decaySpots();
     }
 }
 
@@ -1320,9 +1326,11 @@ void So2sdr::autoSendActivate (bool state) {
 
 void So2sdr::duelingCQActivate (bool state) {
     if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return; // disabled in Sprint mode
-    if (cat[0]->band()==cat[1]->band()) {
-        So2sdrStatusBar->showMessage("Dueling CQ disabled: same band",5000);
-        state = false;
+    if (cat[0]->band()!=BAND_NONE && cat[1]->band()!=BAND_NONE) {
+        if (cat[0]->band()==cat[1]->band()) {
+            So2sdrStatusBar->showMessage("Dueling CQ disabled: same band",5000);
+            state = false;
+        }
     }
     duelingCQMode = state;
     if (duelingCQMode) {
@@ -1654,9 +1662,6 @@ void So2sdr::switchRadios(bool switchcw)
        @todo Implement option of mults display following non-active radio
      */
     updateMults(activeRadio);
-
-    // if only using 1 dupesheet, repopulate it so that it follows the active radio
-    if (nDupesheet()==1) populateDupesheet();
 }
 
 /*!
@@ -1788,7 +1793,7 @@ bool So2sdr::logPartial(int nrig, QByteArray partial)
             txt.append("<font color=#FF0000>" + calls.at(i) + " <font color=#000000>");
         } else {
             // show dupe with current band in grey, available calls from other bands in blue
-            if (bits[cat[nrig]->band()] & worked[i]) {
+            if (cat[nrig]->band()!=BAND_NONE &&(bits[cat[nrig]->band()] & worked[i])) {
                 txt.append("<font color=#AAAAAA>" + calls.at(i) + " <font color=#000000>");
                 if (calls.at(i) == partial) {
                     dupe          = true;
@@ -1914,7 +1919,7 @@ void So2sdr::updateWorkedDisplay(int nr,unsigned int worked)
     QString tmp = "Q :";
     for (int j = 0; j < N_BANDS; j++) {
         int i=log->highlightBand(j);
-        if (i==-1) continue;
+        if (i==BAND_NONE) continue;
         if (worked & bits[j]) {
             tmp = tmp + "<font color=#000000>" + log->bandLabel(i) + "</font> ";
         } else {
@@ -1968,7 +1973,7 @@ void So2sdr::updateWorkedMult(int nr)
         } else {
             for (int i = 0; i < N_BANDS; i++) {
                 int j=log->highlightBand(i);
-                if (j==-1) continue;
+                if (j==BAND_NONE) continue;
                 if (worked[ii] & bits[i]) {
                     tmp = tmp + "<font color=#000000>" + log->bandLabel(j) + "</font> ";
                 } else {
@@ -2013,19 +2018,16 @@ bool So2sdr::enterFreqOrMode()
         }
 
         int b;
-        if ((b = getBand(f)) != -1) {
+        if ((b = getBand(f)) != BAND_NONE) {
             // if band change, update bandmap calls
-            if (b!=cat[nr]->band() && bandmap->bandmapon(nr)) {
+            if (cat[nr]->band()!= BAND_NONE && b!=cat[nr]->band() && bandmap->bandmapon(nr)) {
                 bandmap->syncCalls(nr,spotList[b]);
             }
         }
         if (bandmap->bandmapon(nr)) {
             bandmap->bandmapSetFreq(f,nr);
             bandmap->setAddOffset(cat[nr]->ifFreq(),nr);
-            // invert spectrum if needed
-            // bandmap[nr]->setInvert(bandInvert[nr][band[nr]] ^ (cat->mode(nr) == RIG_MODE_CWR));
         }
-
     } else if (rx.indexIn(qso[activeRadio]->call) == 0) {
         pbwidth_t pb = RIG_PASSBAND_NORMAL;
         QString pass = rx.cap(2);
@@ -2097,12 +2099,8 @@ bool So2sdr::enterFreqOrMode()
     grabWidget = lineEditCall[activeRadio];
     lineEditCall[activeRadio]->setModified(false);
     updateBreakdown();
-    if (getBand(f)!=-1) {
+    if (getBand(f)!=BAND_NONE) {
         updateMults(activeRadio,getBand(f));
-    }
-
-    if (nDupesheet()) {
-        populateDupesheet();
     }
     clearWorked(activeRadio);
     clearDisplays(activeRadio);
@@ -2152,11 +2150,11 @@ void So2sdr::updateMults(int ir,int bandOverride)
     if (!log) return; // do nothing if contest not loaded
 
     int band;
-    if (bandOverride!=-1) band=bandOverride;
+    if (bandOverride!=BAND_NONE) band=bandOverride;
     else band=cat[ir]->band();
 
     // in case tuned out of a ham band
-    if (band==-1) return;
+    if (band==BAND_NONE) return;
 
     MultTextEdit->clear();
     if (!csettings->value(c_showmults,c_showmults_def).toBool()) return;
@@ -2212,6 +2210,7 @@ void So2sdr::updateRadioFreq()
 {
     static ModeTypes oldModeType[2]={CWType,CWType};
     static bool init=false;
+    static int previousBand[2]={BAND_NONE,BAND_NONE};
 
     if (!init) {
         oldModeType[0]=cat[0]->modeType();
@@ -2233,8 +2232,13 @@ void So2sdr::updateRadioFreq()
         rigFreq[i] = cat[i]->getRigFreq();
         if (bandmap->bandmapon(i)) {
             bandmap->bandmapSetFreq(rigFreq[i],i);
-            //add additional offset if specified by radio (like K3)
+            // add additional offset if specified by radio (like K3)
             bandmap->setAddOffset((double)cat[i]->ifFreq(),i);
+            // sync bandmap if band change
+            if (cat[i]->band()!=BAND_NONE && cat[i]->band()!=previousBand[i]) {
+                bandmap->syncCalls(i,spotList[cat[i]->band()]);
+                previousBand[i]=cat[i]->band();
+            }
         }
         double f = rigFreq[i] / 1000.0;
         if (cat[i]->radioOpen()) {
@@ -2246,10 +2250,10 @@ void So2sdr::updateRadioFreq()
         int t;
         if (!log) {
             t=cat[i]->band();
-        } else if (log->bandLabelEnable(cat[i]->band()) && cat[i]->band()!=-1) {
+        } else if (log->bandLabelEnable(cat[i]->band()) && cat[i]->band()!=BAND_NONE) {
             t=log->highlightBand(cat[i]->band(),cat[i]->modeType());
         } else {
-            t=-1;
+            t=BAND_NONE;
         }
         if (t>=0 && t<6) bandLabel[t]->setStyleSheet("QLabel { background-color : grey; color : white; }");
 
@@ -2746,7 +2750,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         out.append(QByteArray::number(qRound(cat[activeRadio ^ 1]->getRigFreq()/ 1000.0)));
                         break;
                     case 22: // best cq
-                        if (cat[activeRadio]->band()==-1) break;
+                        if (cat[activeRadio]->band()==BAND_NONE) break;
                         bandmap->setFreqLimits(activeRadio,settings->value(s_sdr_cqlimit_low[cat[activeRadio]->band()],
                                                cqlimit_default_low[cat[activeRadio]->band()]).toDouble(),
                                 settings->value(s_sdr_cqlimit_high[cat[activeRadio]->band()],
@@ -2754,7 +2758,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         bandmap->findFreq(activeRadio);
                         break;
                     case 23: // best cq radio2
-                        if (cat[activeRadio^1]->band()==-1) break;
+                        if (cat[activeRadio^1]->band()==BAND_NONE) break;
                         bandmap->setFreqLimits(activeRadio^1,settings->value(s_sdr_cqlimit_low[cat[activeRadio^1]->band()],
                                 cqlimit_default_low[cat[activeRadio]->band()]).toDouble(),
                                 settings->value(s_sdr_cqlimit_high[cat[activeRadio^1]->band()],
@@ -2955,7 +2959,6 @@ void So2sdr::rescore()
     log->rescore();
     updateBreakdown();
     updateMults(activeRadio);
-    if (nDupesheet()) populateDupesheet();
 }
 
 
@@ -3556,9 +3559,6 @@ void So2sdr::bandChange(int nr, int band)
     }
     if (nr == activeRadio) {
         updateMults(nr);
-        if (nDupesheet()) {
-            populateDupesheet();
-        }
     }
 }
 
@@ -3773,6 +3773,8 @@ void So2sdr::setUiSize()
     WPMLineEdit2->setFixedHeight(sizes.height*1.5);
     NumLabel->setFixedHeight(sizes.height*1.5);
     NumLabel2->setFixedHeight(sizes.height*1.5);
+    Sun1Label->setFixedHeight(sizes.height*1.5);
+    Sun2Label->setFixedHeight(sizes.height*1.5);
     for (int i=0;i<6;i++) {
         qsoLabel[i]->setFixedSize(QSize(sizes.smallWidth*4,sizes.smallHeight));
     }

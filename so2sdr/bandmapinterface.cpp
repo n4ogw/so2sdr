@@ -276,17 +276,19 @@ void BandmapInterface::udpRead()
  */
 void BandmapInterface::xmlParse()
 {
+    bool deleteCall=false;
+    int nr=-1;
+    double f=0;
+    QByteArray call;
+    call.clear();
+
     while (!xmlReader.atEnd() && !xmlReader.hasError()) {
         QXmlStreamReader::TokenType token=xmlReader.readNext();
         if (token==QXmlStreamReader::StartDocument) continue;
 
         if (token==QXmlStreamReader::StartElement) {
             if (xmlReader.name()=="bandmap") {
-                int nr=-1;
-                double f=0;
-                QByteArray call="";
                 QXmlStreamAttributes attr=xmlReader.attributes();
-
                 if (attr.hasAttribute("RadioNr")) {
                     bool ok;
                     nr=attr.value("RadioNr").toString().toInt(&ok)-1;
@@ -294,29 +296,30 @@ void BandmapInterface::xmlParse()
                         bandmapAvailable[nr]=true;
                     }
                 }
-
-                if (attr.hasAttribute("freq")) {
-                    f=attr.value("freq").toString().toDouble();
-                    if (nr==0)
-                        emit(qsy1(f));
-                    else
-                        emit(qsy2(f));
-                }
-
                 if (attr.hasAttribute("call")) {
                     call=attr.value("call").toString().toLatin1();
                 }
-
                 if (attr.hasAttribute("operation")) {
-                    if (attr.value("operation").toString()=="delete" && !call.isEmpty() && f>0) {
-                        emit(removeCall(call,getBand(f)));
+                    if (attr.value("operation").toString()=="delete") {
+                        deleteCall=true;
                     }
+                }
+                if (attr.hasAttribute("freq")) {
+                    f=attr.value("freq").toString().toDouble();
                 }
             }
         }
     }
     xmlReader.clear();
-
+    if (deleteCall && !call.isEmpty() && f>0) {
+        emit(removeCall(call,getBand(f)));
+    } else if (f>0 && (nr!=-1)) {
+        if (nr==0) {
+            emit(qsy1(f));
+        } else {
+            emit(qsy2(f));
+        }
+    }
 }
 
 void BandmapInterface::launchBandmap1State(QProcess::ProcessState state)
@@ -496,12 +499,7 @@ void BandmapInterface::showBandmap(int nr, bool state)
         if (!bandmapOn[nr]) {
             QStringList args;
             args <<  settings.value(s_sdr_config[nr],s_sdr_config_def[nr]).toString();
-#ifdef Q_OS_LINUX
             bandmapProcess[nr].start(settings.value(s_sdr_path[nr],QCoreApplication::applicationDirPath()+"/so2sdr-bandmap").toString(),args);
-#endif
-#ifdef Q_OS_WIN
-            bandmapProcess[nr].start(settings.value(s_sdr_path[nr],QCoreApplication::applicationDirPath()+"/so2sdr-bandmap.exe").toString(),args);
-#endif
             bandmapProcess[nr].waitForStarted();
         }
     } else {

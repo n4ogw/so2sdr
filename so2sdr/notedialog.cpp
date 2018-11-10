@@ -19,9 +19,12 @@
 #include <QDir>
 #include "notedialog.h"
 
-NoteDialog::NoteDialog(QWidget *parent) : QDialog(parent)
+NoteDialog::NoteDialog(uiSize sizes, QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
+    NoteLineEdit->setFixedWidth(sizes.width*30);
+    adjustSize();
+    setFixedSize(size());
     connect(NoteButtonBox, SIGNAL(accepted()), this, SLOT(writeNotes()));
 }
 

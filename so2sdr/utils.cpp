@@ -120,8 +120,15 @@ int getBand(double f)
     } else if (fmhz>1239 && fmhz<1301) {
         return(BAND1240);
     }
+    // 630m, 2200m
+    double khz=f/1000;
+    if (khz>400 && khz<500) {
+        return(BAND630);
+    } else if (khz>100 && khz<150) {
+        return(BAND2200);
+    }
     // @todo microwave bands!
-    return(-1);
+    return(BAND_NONE);
 }
 
 /*! returns directory where program data is stored

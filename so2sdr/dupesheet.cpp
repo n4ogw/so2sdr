@@ -55,10 +55,21 @@ DupeSheet::DupeSheet(QWidget *parent) : QDialog(parent)
     Dupes9->setFocusPolicy(Qt::NoFocus);
     Dupes9->setLineWrapMode(QTextEdit::NoWrap);
     Dupes9->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    band_=BAND_NONE;
 }
 
 DupeSheet::~DupeSheet()
 {
+}
+
+int DupeSheet::band() const
+{
+    return band_;
+}
+
+void DupeSheet::setBand(int b)
+{
+    band_=b;
 }
 
 /*!

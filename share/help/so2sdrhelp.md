@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.4.5
+## SO2SDR Help file version 2.4.6
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,14 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.6 (11/10/2018)
+
+* add 630M and 2200M bands
+* fix crashes when not on a contest band
+* fix bug with window layout changing when call entered
+* fix bug could not delete call/freq moved
+* fix bug calls on bandmap not removed if band had changed
 
 ## version 2.4.5 (08/10/2018)
 

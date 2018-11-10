@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.4.5";
+const QByteArray Version = "2.4.6";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -339,9 +339,10 @@ const int WORK_DUPES=1;       // work dupes during CQ but not during S&P
 const int NO_DUPE_CHECKING=2; // no dupe checking
 
 // number of bands
-const int N_BANDS=26;
+const int N_BANDS=28;
 
 const int N_BANDS_HF=6;
+const int BAND_NONE=-1;
 const int BAND160 =0;
 const int BAND80 = 1;
 const int BAND40 = 2;
@@ -368,6 +369,8 @@ const int BAND76000 = 22;
 const int BAND122000 = 23;
 const int BAND134000 = 24;
 const int BAND241000 = 25;
+const int BAND630 = 26;
+const int BAND2200 = 27;
 
 // mode types
 typedef enum {
@@ -382,7 +385,7 @@ const QString modeNames[NModeTypes]={"CW","Phone","Digital"};
 
 const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
                                     "1.25M","70cm","33cm","23cm","13cm","9cm","6cm","3cm","1.25cm","6mm",
-                                    "4mm","2.5mm","2mm","1mm"};
+                                    "4mm","2.5mm","2mm","1mm","630","2200"};
 
 // maximum number of Cabrillo fields
 const int MAX_CAB_FIELDS=7;
@@ -553,15 +556,17 @@ const int s_sdr_spottime_def=1800;
 
 const QString s_sdr_cqlimit_low[N_BANDS]={"sdr/160low","sdr/80low","sdr/40low","sdr/20low","sdr/15low","sdr/10low","sdr/60low",
                                           "sdr/30low","sdr/17low","sdr/12low","sdr/6low","sdr/2low","sdr/420low","sdr/222low","sdr/902low",
-                                          "sdr/1240low"};
+                                          "sdr/1240low","sdr/620low","sdr/2200low"};
 const double cqlimit_default_low[N_BANDS]={1805000,3505000,7005000,14005000,21005000,28005000, 5330500, 10100000,
-                                       18068000, 24890000, 50000000, 144000000, 420000000,222000000,902000000,1240000000};
+                                       18068000, 24890000, 50000000, 144000000, 420000000,222000000,902000000,1240000000,
+                                          472000,135700};
 
 const QString s_sdr_cqlimit_high[N_BANDS]={"sdr/160high","sdr/80high","sdr/40high","sdr/20high","sdr/15high","sdr/10high","sdr/60high",
                                            "sdr/30high","sdr/17high","sdr/12high","sdr/6high","sdr/2high","sdr/420high","sdr/222high",
-                                           "sdr/902high","sdr/1240high"};
+                                           "sdr/902high","sdr/1240high","sdr/620high","sdr/2200high"};
 const double cqlimit_default_high[N_BANDS]={1845000,3555000,7550000,14055000,21055000,28055000, 5403500,10150000,
-                                        18110000, 24930000,50100000,144100000,450000000,225000000,928000000,1300000000};
+                                        18110000, 24930000,50100000,144100000,450000000,225000000,928000000,1300000000,
+                                           479000,137800};
 
 const QString s_radios_rigctld_enable[NRIG]={"radios/rigctldenable1","radios/rigctldenable2"};
 const bool s_radios_rigctld_enable_def[NRIG]={false,false};

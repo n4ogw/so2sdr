@@ -141,6 +141,7 @@ void So2sdr::addSpot(QByteArray call, double f)
         tmp.call = call;
         tmp.freq = f;
         tmp.band = getBand(f);
+        if (tmp.band==BAND_NONE) return;
         d        = log->isDupe(&tmp, log->dupeCheckingByBand(), false);
     }
     addSpot(call, f, d);
@@ -160,6 +161,7 @@ void So2sdr::addSpot(QByteArray call, double f, bool d)
     spot.createdTime = t;
     spot.dupe = d;
     int b = getBand(f);
+    if (b==BAND_NONE) return;
     if (b >= 0 && b < N_BANDS) {
         bool dupe  = false;
         int  idupe = spotList[b].size();
@@ -242,7 +244,7 @@ void So2sdr::checkSpot(int nr)
         return;
     }
     double f = cat[nr]->getRigFreq();
-    if (cat[nr]->band()==-1) return;
+    if (cat[nr]->band()==BAND_NONE) return;
 
     // freq changed, so recheck spot list
     // @todo move to double freqs; should this have some tolerance?
@@ -369,6 +371,8 @@ void So2sdr::checkSpot(int nr)
  */
 void So2sdr::removeSpot(QByteArray call, int band)
 {
+    if (band==BAND_NONE) return;
+
     int indx = -1;
     for (int i = 0; i < spotList[band].size(); i++) {
         if (spotList[band][i].call == call) {
@@ -390,6 +394,8 @@ void So2sdr::removeSpot(QByteArray call, int band)
  */
 void So2sdr::removeSpotFreq(double f, int band)
 {
+    if (band==BAND_NONE) return;
+
     int indx = -1;
     for (int i = 0; i < spotList[band].size(); i++) {
         if (abs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
@@ -411,6 +417,8 @@ void So2sdr::removeSpotFreq(double f, int band)
  */
 bool So2sdr::isaSpot(double f, int band)
 {
+    if (band==BAND_NONE) return false;
+
     for (int i = 0; i < spotList[band].size(); i++) {
         if (abs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
             return(true);
@@ -425,6 +433,8 @@ bool So2sdr::isaSpot(double f, int band)
  */
 void So2sdr::updateBandmapDupes(const Qso *qso)
 {
+    if (qso->band==BAND_NONE) return;
+
     for (int i = 0; i < spotList[qso->band].size(); i++) {
         if (spotList[qso->band].at(i).call == qso->call) {
             for (int j=0;j<NRIG;j++) {
@@ -482,5 +492,5 @@ void So2sdr::sendCalls2(bool b)
 void So2sdr::sendCalls(int nr)
 {
     int b=getBand(cat[nr]->getRigFreq());
-    bandmap->syncCalls(nr,spotList[b]);
+    if (b!=BAND_NONE) bandmap->syncCalls(nr,spotList[b]);
 }

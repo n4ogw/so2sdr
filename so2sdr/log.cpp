@@ -167,6 +167,8 @@ bool Log::exportADIF(QFile *adifFile) const
         case BAND420: tmp = tmp + "<BAND:4>70CM"; break;
         case BAND902: tmp = tmp + "<BAND:4>33CM"; break;
         case BAND1240: tmp = tmp + "<BAND:4>23CM"; break;
+        case BAND630: tmp = tmp + "<BAND:3>630M"; break;
+        case BAND2200: tmp = tmp + "<BAND:5>2200M"; break;
         }
 
         // frequency
@@ -430,6 +432,9 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 {
     // if called with no call, abort
     if (qso->call.isEmpty()) return false;
+
+    // only keep dupes on known bands
+    if (qso->band==BAND_NONE) return false;
 
     bool dupe = false;
     qso->worked = 0;
@@ -915,6 +920,7 @@ void Log::importCabrillo(QString cabFile)
         contest->addQso(&qso);
         model->insertRecord(-1, newqso);
         emit(progressCnt(cnt));
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     model->submitAll();
     model->database().commit();
@@ -1098,6 +1104,7 @@ void Log::updateHistory()
         }
         emit(addQsoHistory(&tmpqso));
         emit(progressCnt(row));
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     emit(progressCnt(log.rowCount()));
 }

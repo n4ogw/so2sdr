@@ -31,6 +31,8 @@ Q_OBJECT
 public:
     explicit DupeSheet(QWidget *parent = 0);
     ~DupeSheet();
+    int band() const;
+    void setBand(int);
     void clear();
     void updateDupesheet(QByteArray call);
 
@@ -44,5 +46,6 @@ protected:
 private:
     QList<char>          dupeCallsKey[dsColumns];
     QList<QByteArray>    dupeCalls[dsColumns];
+    int                  band_;
 };
 #endif
