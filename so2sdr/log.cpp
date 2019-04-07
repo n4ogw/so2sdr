@@ -1,4 +1,4 @@
-/*! Copyright 2010-2018 R. Torsten Clay N4OGW
+/*! Copyright 2010-2019 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -1123,11 +1123,11 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
     }
     for (int i = 0; i < m.rowCount(); i++) {
         // if multi-mode contest, check for matching mode
-      //  if (csettings.value(c_multimode,c_multimode_def).toBool()) {
-       //     if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
-       //         continue;
-       //     }
-      //  }
+        if (csettings.value(c_multimode,c_multimode_def).toBool()) {
+            if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
+                continue;
+            }
+        }
         QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
 
         // special case: ARRL 10M contest: use band slots 4 and 5 for CW/SSB

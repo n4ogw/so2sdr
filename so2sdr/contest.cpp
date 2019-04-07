@@ -1,4 +1,4 @@
-/*! Copyright 2010-2018 R. Torsten Clay N4OGW
+/*! Copyright 2010-2019 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -594,11 +594,13 @@ void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
             }
         }
     } else {
-        // option 3: mults count once on all bands (Sweepstakes, qso parties, etc). Here the mult status is
-        // stored in the N_BANDS slot. Note that this is only set up for HF contests.
+        // option 3: mults count once on all bands (Sweepstakes, qso parties, etc) on any mode. Here
+        // the mult status is stored in the N_BANDS slot. Note that this is only set up for HF contests.
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
             if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
-                if (multWorked[ii][qso->modeType][N_BANDS][qso->mult[ii]]) worked[ii] = 1 + 2 + 4 + 8 + 16 + 32;
+                if (multWorked[ii][CWType][N_BANDS][qso->mult[ii]] ||
+                        multWorked[ii][PhoneType][N_BANDS][qso->mult[ii]] ||
+                        multWorked[ii][DigiType][N_BANDS][qso->mult[ii]]) worked[ii] = 1 + 2 + 4 + 8 + 16 + 32;
             }
         }
     }

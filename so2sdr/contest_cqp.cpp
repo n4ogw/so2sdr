@@ -1,4 +1,4 @@
-/*! Copyright 2010-2018 R. Torsten Clay N4OGW
+/*! Copyright 2010-2019 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -182,7 +182,7 @@ bool CQP::validateExchange(Qso *qso)
     // CA also gets mults for states; can also work DX
 
     // check first for DX:
-    if (!qso->isamult[1]) {
+    if (withinState && !qso->isamult[1]) {
         finalExch[1]="DX";
         ok_part[1]=true;
     } else {

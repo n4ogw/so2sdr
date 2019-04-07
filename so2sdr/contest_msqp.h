@@ -1,4 +1,4 @@
-/*! Copyright 2010-2018 R. Torsten Clay N4OGW
+/*! Copyright 2010-2019 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,7 +21,7 @@
 
 #include "contest.h"
 
-// Mississippi QSO party; updated for 2018 rules
+// Mississippi QSO party; updated for 2019 rules
 
 class MSQP : public Contest {
 public:

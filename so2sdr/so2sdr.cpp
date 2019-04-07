@@ -1,4 +1,4 @@
-/*! Copyright 2010-2018 R. Torsten Clay N4OGW
+/*! Copyright 2010-2019 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -1194,7 +1194,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2018 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2019 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>QtSolutions_Telnet 2.1"

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2018 R. Torsten Clay N4OGW
+/*! Copyright 2010-2019 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -175,7 +175,7 @@ bool WPX::validateExchange(Qso *qso)
 void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
 
 // determines prefix from call
-// rewritten 05/30/2018
+// rewritten 05/30/2019
 //  -may not correctly handle callsigns with two /'s: will assume pfx before FIRST / is correct
 {
     const char digits[10] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };

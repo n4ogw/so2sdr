@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.4.6
+## SO2SDR Help file version 2.4.7
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -907,6 +907,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.7 (04/07/2019)
+
+* fix bug in multimode contests. Second mode qsos were showing as dupes
+* fix multiplier bug in CQP
 
 ## version 2.4.6 (11/10/2018)
 

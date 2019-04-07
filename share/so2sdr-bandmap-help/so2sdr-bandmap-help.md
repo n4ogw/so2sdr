@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.4.6
+## So2sdr-bandmap Help Version 2.4.7
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.7 (04/07/2019)
+
+* fix bug in multimode contests. Second mode qsos were showing as dupes
+* fix multiplier bug in CQP
 
 ## version 2.4.6 (11/10/2018)
 
