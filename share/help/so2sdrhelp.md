@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.4.7
+## SO2SDR Help file version 2.4.8
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -63,7 +63,7 @@ Other various development packages include g++, Git, and pkg-config.
 
 2. By default, so2sdr will be installed in /usr/local/bin, and associated
   data files will be placed in /usr/local/share/so2sdr. If you want to
-  change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri
+  change the location of the program, edit SO2SDR\_INSTALL\_DIR in common.pri
 
 3. In the directory so2sdr, 
 
@@ -621,15 +621,15 @@ and one for SSB. For notes on voice keyer set, see  [voice keyer setup](#ssb).
 * {TOGGLESTEREOPIN} :  toggle parallel port pin for audio control. This macro should be used alone and will not work with other CW macros
 * {CQMODE} :   switch to CQ mode
 * {SPMODE} :   switch to SP mode
-* {SWAP_RADIOS} :  swap frequencies between radios
-  <li> {SWITCH_RADIOS} : same as alt-R
+* {SWAP\_RADIOS} :  swap frequencies between radios
+  <li> {SWITCH\_RADIOS} : same as alt-R
 * {REPEAT_LAST} :  repeats previously sent message
 * {REPEAT_NR} :  if the call entry line is not empty, send current qso #. If call entry line is empty, sends number sent for last logged qso.
 *   {CLEAR_RIT} : clear the RIT
 * {RIG_FREQ} : send frequency of radio rounded to nearest KHz
 * {RIG2_FREQ} : send frequency of 2nd radio rounded to nearest KHz
 * {BEST_CQ} qsy current radio to "best" CQ freq
-* {BEST_CQ_R2} qsy 2nd radio to "best" CQ freq
+* {BEST\_CQ\_R2} qsy 2nd radio to "best" CQ freq
 * | : insert 1/2 dit extra space
 * {MCP}{/MCP} : send Microham Control Protocol commands
 * {OTRSP}{/OTRSP} : send OTRSP Control Protocol commands
@@ -667,9 +667,9 @@ The sound card line out should be connected to the radio mic or line in. For so2
 (two radios), the same output from the sound card is fed to both radios; PTT
 will be mapped to the correct radio for transmitting.
 
-* The pulseaudio loopback module needs to be loaded so the mic is looped back
+* Loopback  needs to be enabled so the mic is looped back
 to the soundcard output. This can be
-done with the following command:
+done either from alsamixer, or with the following command:
 
     pactl load-module module-loopback latency_msec=1
 
@@ -880,7 +880,7 @@ radio CQ is active, the program will take the call from the "wrong"
 radio, transfer it to the new radio, and switch radios. Now you
 continue as before.  During this qso you can again press F7 to call CQ
 on 80M. If you have the bandmaps running, using the {BEST_CQ} or
-{BEST_CQ_R2} macro is very helpful to quickly find an open frequency
+{BEST\_CQ\_R2} macro is very helpful to quickly find an open frequency
 to call CQ on in this situation.
 
 [Return to top](#top)
@@ -907,6 +907,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.8 (06/05/2019)
+
+* fix bugs with echo of winkey sending
+* fix some typos in help file
 
 ## version 2.4.7 (04/07/2019)
 

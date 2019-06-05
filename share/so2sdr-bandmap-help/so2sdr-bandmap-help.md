@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.4.7
+## So2sdr-bandmap Help Version 2.4.8
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.4.8 (06/05/2019)
+
+* fix bugs with echo of winkey sending
+* fix some typos in help file
 
 ## version 2.4.7 (04/07/2019)
 
