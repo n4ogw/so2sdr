@@ -1611,7 +1611,7 @@ void So2sdr::switchAudio(int r)
  */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
-    if (cat[r]->modeType()==CWType) {
+    if (cat[r]->modeType()==CWType && winkey->isSending()) {
         winkey->cancelcw();
     }
     if (CWspeed) {

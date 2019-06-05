@@ -121,7 +121,7 @@ void Winkey::processEcho(unsigned char byte)
     // will skip some special characters which are not echoed (half space, etc)
     int i=sent.indexOf(byte,txPtr);
     if (i!=-1) {
-        txPtr=i;
+        txPtr=i+1;
         QString s=QString::number(rigNum+1)+":"+sent;
         s.truncate(i+3);
         emit(textSent(s,1700));
