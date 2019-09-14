@@ -9,7 +9,7 @@ can be used separately from so2sdr.
 Copyright 2010-2019 R. Torsten Clay N4OGW
 
 # News
-
+* 09/14/2019 new feature in version 2.5.0: two keyboard support (experimental)
 * 06/08/2018 support ARRL June VHF contest
 * 04/05/2018 support Mississippi qso party
 * 02/18/2018 lots of code updates; Qt4 support dropped- you must now use Qt5
@@ -29,7 +29,7 @@ You will need the following development libraries installed: Qt (version 5), FFT
 ```
 or download one of the source code distributions and extract it:
 ````
-    tar xzvof so2sdr-2.4.0.tgz
+    tar xzvof so2sdr-2.5.0.tgz
 ````
 
 2. By default, so2sdr will be installed in /usr/local/bin, and associated
