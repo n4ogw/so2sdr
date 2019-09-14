@@ -36,9 +36,6 @@ WinkeyDialog::WinkeyDialog(QSettings& s, QWidget *parent) : QDialog(parent),sett
 
     // load from settings file
     DeviceLineEdit->setText(settings.value(s_winkey_device,s_winkey_device_def).toString());
-#ifdef Q_OS_WIN
-    DeviceLineEdit->setToolTip("serial port COM1, COM2, ...");
-#endif
 #ifdef Q_OS_LINUX
     DeviceLineEdit->setToolTip("serial port /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, ...");
 #endif

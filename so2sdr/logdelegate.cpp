@@ -37,6 +37,9 @@ logDelegate::logDelegate(QObject *parent, Contest& c, bool *e, QList<int> *l) : 
 {
     logSearchFlag = e;
     searchList = l;
+    currentlyEditing = false;
+    currentEditor = 0;
+    connect(this,SIGNAL(closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)),this,SLOT(closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)));
 }
 
 /*!
@@ -54,6 +57,7 @@ bool logDelegate::editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOpti
         emit(startLogEdit());
         emit(setOrigRecord(currentlyEditingIndex));
         emit(editLogRow(currentlyEditingIndex));
+        currentlyEditing = true;
         return false;
     }
     // handle clicks in valid column
@@ -106,6 +110,7 @@ QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewIte
         // edit in upper case
         le->setValidator(new UpperValidator(le));
     }
+    currentEditor=le;
     return(le);
 }
 
@@ -261,5 +266,12 @@ bool logDelegate::eventFilter(QObject *obj, QEvent *event)
         }
     }
     return QStyledItemDelegate::eventFilter(obj, event);
+}
+
+void logDelegate::closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint)
+{
+    Q_UNUSED(editor);
+    Q_UNUSED(hint);
+    currentlyEditing = false;
 }
 

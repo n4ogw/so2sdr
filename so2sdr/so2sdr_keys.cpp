@@ -16,6 +16,8 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include <QApplication>
+#include <QErrorMessage>
 #include <QKeyEvent>
 #include <QSettings>
 #include "so2sdr.h"
@@ -25,12 +27,14 @@
 #include "cwmessagedialog.h"
 #include "dupesheet.h"
 #include "helpdialog.h"
+#include "keyboardhandler.h"
 #include "log.h"
 #include "notedialog.h"
 #include "radiodialog.h"
 #include "serial.h"
 #include "sdrdialog.h"
 #include "settingsdialog.h"
+#include "so2r.h"
 #include "ssbmessagedialog.h"
 #include "stationdialog.h"
 #include "winkeydialog.h"
@@ -44,12 +48,24 @@
  */
 bool So2sdr::eventFilter(QObject* o, QEvent* e)
 {
+    int kbdNr;
+    int activeRadioNr;
+
+    if (o==lineEditCall[1] || o==lineEditExchange[1]) {
+        kbdNr=1;
+    } else {
+        kbdNr=0;
+    }
+    if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        activeRadioNr=kbdNr;
+    } else {
+        activeRadioNr=activeRadio;
+    }
+
     if (!uiEnabled) {
         return QObject::eventFilter(o,e);
     }
     // out-of-focus event: refocus line edits
-    // on Windows, this eats all mouse presses into the bandmap!
-#ifdef Q_OS_LINUX
     if (grabbing && e->type()==QEvent::FocusOut) {
         QFocusEvent* ev = static_cast<QFocusEvent*>(e);
         if (ev->reason()==Qt::MouseFocusReason || ev->reason()==Qt::ActiveWindowFocusReason) {
@@ -57,8 +73,6 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             return true;
         }
     }
-#endif
-
     // set r true if this completely handles the key. Otherwise
     // it will be passed on to other widgets
     bool r   = false;
@@ -71,7 +85,6 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
         for (int i=0;i<NRIG;i++) {
             if (lineEditCall[i]->underMouse()) {
                 if (activeRadio!=i) {
-                   // switchRadios(false);
                     switchRadios(true);
                 }
                 callFocus[activeRadio]=true;
@@ -183,7 +196,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 }
             }
 
-            esc(mod);
+            esc(mod,kbdNr);
             r = true;
             break;
         case Qt::Key_QuoteLeft: // left quote ` Toggles audio stereo
@@ -197,7 +210,8 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             }
             break;
         case Qt::Key_D:     // alt-D
-            if (mod == Qt::AltModifier) {
+            // alt-D not allowed in two keyboard mode
+            if (mod == Qt::AltModifier && !settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
                 altd();
                 r = true;
             }
@@ -215,7 +229,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 return(true);
             } else if (mod == Qt::ControlModifier) {
                 // ctrl-F : log search
-                logSearch();
+                logSearch(activeRadioNr);
                 return(true);
             }
             break;
@@ -244,8 +258,9 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                 r=true;
             }
             break;
-        case Qt::Key_Q:     // alt-Q
-            if (mod == Qt::AltModifier) {
+        case Qt::Key_Q:     // alt-Q : auto-repeating cq
+            // this is incompatible with two keyboard mode
+            if (mod == Qt::AltModifier && !settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
                 autoCQActivate(autoCQMode ^ 1);
                 r = true;
             }
@@ -263,7 +278,8 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             // if radio switched during alt-D process, clear altD unless
             // an alt-d qso is in progress (altDActive==3)
             if (mod == Qt::AltModifier || mod == Qt::ControlModifier) {
-                if (altDActive==1 || altDActive==2) {
+                if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() &&
+                        (altDActive==1 || altDActive==2)) {
                     QPalette palette(lineEditCall[altDActiveRadio]->palette());
                     palette.setColor(QPalette::Base, CQ_COLOR);
                     lineEditCall[altDActiveRadio]->setPalette(palette);
@@ -289,7 +305,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
         case Qt::Key_S:
             // alt-S
             if (mod == Qt::AltModifier) {
-                launch_WPMDialog();
+                launch_WPMDialog(activeRadioNr);
                 r = true;
             }
             if ((mod & Qt::AltModifier) && (mod & Qt::ControlModifier)) {
@@ -304,20 +320,21 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             }
             break;
         case Qt::Key_Tab:
-            tab();
+            tab(kbdNr);
             r = true;
             break;
         case Qt::Key_Space:
-            if (callFocus[activeRadio]) {
+            if (callFocus[activeRadioNr]) {
                 spaceBar();
                 r = true;
-            } else if (mod == Qt::AltModifier && altDActive == 2 && activeRadio != altDActiveRadio) {
+            } else if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() &&
+                       mod == Qt::AltModifier && altDActive == 2 && activeRadio != altDActiveRadio) {
                 spaceAltD();
                 r = true;
             }
             break;
         case Qt::Key_Backslash:
-            backSlash();
+            backSlash(kbdNr);
             r = true;
             break;
         case Qt::Key_Up:
@@ -390,13 +407,13 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             }
             // toggle mode
             if (duelingCQMode) {
-                enter(mod);
+                enter(mod,kbdNr);
             } else if (toggleMode || mod == Qt::AltModifier) {
                 enter(mod);
             } else if (altDActive) {
                 altDEnter(altDActive, mod);
             } else {
-                enter(mod);
+                enter(mod,kbdNr);
             }
             r = true;
             break;
@@ -404,7 +421,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (mod == Qt::AltModifier) {
                 autoCQdelay(true); // increase
             } else {
-                launch_speedUp(mod);
+                launch_speedUp(mod,activeRadioNr);
             }
             r = true;
             break;
@@ -412,12 +429,14 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
             if (mod == Qt::AltModifier) {
                 autoCQdelay(false); // decrease
             } else {
-                launch_speedDn(mod);
+                launch_speedDn(mod,activeRadioNr);
             }
             r = true;
             break;
         case Qt::Key_F1:
-            if (((duelingCQMode && !duelingCQModePause) || (autoCQMode && !autoCQModePause) || (toggleMode && !duelingCQMode)) && !excMode[activeRadio]
+            if (((duelingCQMode && !duelingCQModePause)
+                 || (autoCQMode && !autoCQModePause)
+                 || (toggleMode && !duelingCQMode)) && !excMode[activeRadio]
                     && mod != Qt::ShiftModifier && mod != Qt::ControlModifier
                     && !(altDActive > 2 && altDActiveRadio == activeRadio)) { // set long CQ MSG, no CW
                 sendLongCQ = true;
@@ -431,6 +450,7 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                         sendLongCQ = true;
                     }
                 }
+                activeRadio=activeRadioNr;
                 sendFunc(0, mod);
             }
             r = true;
@@ -450,66 +470,77 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                         sendLongCQ = false;
                     }
                 }
+                activeRadio=activeRadioNr;
                 sendFunc(1, mod);
             }
             r = true;
             break;
         case Qt::Key_F3:
+            activeRadio=activeRadioNr;
             sendFunc(2, mod);
             r = true;
             break;
         case Qt::Key_F4:
+            activeRadio=activeRadioNr;
             sendFunc(3, mod);
             r = true;
             break;
         case Qt::Key_F5:
+            activeRadio=activeRadioNr;
             sendFunc(4, mod);
             r = true;
             break;
         case Qt::Key_F6:
+            activeRadio=activeRadioNr;
             sendFunc(5, mod);
             r = true;
             break;
         case Qt::Key_F7:
+            activeRadio=activeRadioNr;
             sendFunc(6, mod);
             r = true;
             break;
         case Qt::Key_F8:
+            activeRadio=activeRadioNr;
             sendFunc(7, mod);
             r = true;
             break;
         case Qt::Key_F9:
+            activeRadio=activeRadioNr;
             sendFunc(8, mod);
             r = true;
             break;
         case Qt::Key_F10:
+            activeRadio=activeRadioNr;
             sendFunc(9, mod);
             r = true;
             break;
         case Qt::Key_F11:
+            activeRadio=activeRadioNr;
             sendFunc(10, mod);
             r = true;
             break;
         case Qt::Key_F12:
+            activeRadio=activeRadioNr;
             sendFunc(11, mod);
             r = true;
             break;
         case Qt::Key_Equal:
-            markDupe(activeRadio ^ 1);
+            markDupe(activeRadioNr ^ 1);
             r = true;
             break;
         case Qt::Key_Minus:
-            if (mod == Qt::ControlModifier) {
+            if (mod == Qt::ControlModifier && !settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
                 duelingCQActivate(duelingCQMode ^ 1);
             } else if (mod == Qt::AltModifier) {
                 autoSendActivate(autoSend ^ 1);
             } else {
-                markDupe(activeRadio);
+                markDupe(activeRadioNr);
             }
             r = true;
             break;
         case Qt::Key_Backspace:
-            if (lineEditCall[activeRadio]->text().isEmpty()) {
+            if (lineEditCall[activeRadioNr]->text().isEmpty()) {
                 autoSendTrigger = false;
                 autoSendPause = false;
                 autoSendCall.clear();
@@ -721,8 +752,14 @@ void So2sdr::keyCtrlDn()
 
    if in S&P mode, switch between fields
  */
-void So2sdr::tab()
+void So2sdr::tab(int kbdNr)
 {
+    // two keyboard mode: set focus based on keyboard number
+    if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        if (activeRadio!=kbdNr) {
+            activeRadio=kbdNr;
+        }
+    }
     if (cqMode[activeRadio]) {
         if (autoCQRadio == activeRadio) {
             autoCQActivate(false);
@@ -751,13 +788,21 @@ void So2sdr::tab()
 /*!
    Backslash == quick qsl key
  */
-void So2sdr::backSlash()
+void So2sdr::backSlash(int kbdNr)
 {
     // this key is operational if:
     // 1) text in call field
     // 2) exchange is validated, is not a dupe
     // 3) CQ mode
     // 4) exchange has been sent
+
+    // two keyboard mode: set focus based on keyboard number
+    if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        if (activeRadio!=kbdNr) {
+            activeRadio=kbdNr;
+        }
+    }
+
     qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toLatin1();
     qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
     if (!qso[activeRadio]->call.isEmpty() &&
@@ -883,7 +928,7 @@ void So2sdr::spaceBar()
  */
 void So2sdr::spaceSprint()
 {
-    // if already in SP mode and in call field, move to exch field, otherwise, no nothing
+    // if already in SP mode and in call field, move to exch field, otherwise, do nothing
     if (!cqMode[activeRadio]) {
         if (callFocus[activeRadio] && !lineEditCall[activeRadio]->text().isEmpty()) {
             callFocus[activeRadio] = false;
@@ -1115,10 +1160,15 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
    mod=Qt::ShiftModifier   : same except no cw
 
  */
-void So2sdr::enter(Qt::KeyboardModifiers mod)
+void So2sdr::enter(Qt::KeyboardModifiers mod,int kbdNr)
 {
-    // enable/disable if alt-Enter, unless dueling CQ (dependent on toggle)
-    if (mod == Qt::AltModifier && !duelingCQMode) {
+    // two keyboard mode: set focus based on keyboard number
+    if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        if (activeRadio!=kbdNr) {
+            activeRadio=kbdNr;
+        }
+    } else if (mod == Qt::AltModifier && !duelingCQMode) {
+        // enable/disable if alt-Enter, unless dueling CQ (dependent on toggle)
         toggleMode ^= 1;
         if (toggleMode) {
             autoCQActivate(false);
@@ -1133,10 +1183,9 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
             return;
         }
     }
-    if (toggleMode) {
+    if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && toggleMode) {
         switchTransmit(activeRadio);
     }
-
     int                 i1;
     int                 i2;
     int                 i3;
@@ -1349,7 +1398,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod)
 
     // focus exchange
     if ((enterState[i1][i2][i3][i4] & 4) && (!autoSendTrigger || autoSendPause) 
-        && (!qso[activeRadio]->dupe || csettings->value(c_dupemode,c_dupemode_def).toInt() != STRICT_DUPES) 
+        && (!qso[activeRadio]->dupe || csettings->value(c_dupemode,c_dupemode_def).toInt() != STRICT_DUPES)
     ) {
         callFocus[activeRadio] = false;
         setEntryFocus();
@@ -1619,22 +1668,31 @@ void So2sdr::prefillExch(int nr)
    <li> pause autoCQ                    12=4096
    </ol>
  */
-void So2sdr::esc(Qt::KeyboardModifiers mod)
+void So2sdr::esc(Qt::KeyboardModifiers mod,int kbdNr)
 {
     int                 i1;
     int                 i2;
     int                 i3;
     int                 i4;
+    int                 activeRadioNr;
     static unsigned int escState[2][2][2][2];
     unsigned int        x;
     static bool         first     = true;
 
-    ModeTypes mode=cat[activeTxRadio]->modeType();
+    ModeTypes mode;
+    // two keyboard mode: only apply to 1 radio, determined by kbdNr
+    if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        mode=cat[activeTxRadio]->modeType();
+        activeRadioNr=activeRadio;
+    } else {
+        mode=cat[kbdNr]->modeType();
+        activeRadioNr=kbdNr;
+    }
 
     // define states
     if (first) {
         // RTC: 128 not needed here (?), leads to multiple cancelCw being called
-        escState[0][0][0][0] = 1 + 2 + 8 + 32 + 64 + 256 + 512 + 2048;//+128
+        escState[0][0][0][0] = 1 + 2 + 8 + 32 + 64 + 256 + 512 + 2048;
         escState[1][0][0][0] = 1 + 2 + 8 + 32 + 64 + 1024 + 2048;
         escState[0][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
         escState[1][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
@@ -1644,23 +1702,26 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
         escState[1][1][1][0] = 2;
         escState[0][0][0][1] = 1 + 4 + 64 + 2048;
         escState[1][0][0][1] = 1 + 2 + 64 + 1024 + 2048;
-        escState[0][1][0][1] = 1 + 2 + 8 + 64; // 32
-        escState[1][1][0][1] = 1 + 2 + 8 + 64 + 256;// 1024;
+        escState[0][1][0][1] = 1 + 2 + 8 + 64;
+        escState[1][1][0][1] = 1 + 2 + 8 + 64 + 256;
         escState[0][0][1][1] = 4 + 8 + 64;
         escState[1][0][1][1] = 1 + 8 + 64 + 1024;
         escState[0][1][1][1] = 2 + 8 + 64 + 1024;
         escState[1][1][1][1] = 2 + 1024;
         first                = false;
     }
-    qso[activeRadio]->exch = lineEditExchange[activeRadio]->text().toLatin1();
-    qso[activeRadio]->exch = qso[activeRadio]->exch.trimmed();
+    qso[activeRadioNr]->exch = lineEditExchange[activeRadioNr]->text().toLatin1();
+    qso[activeRadioNr]->exch = qso[activeRadioNr]->exch.trimmed();
 
     // if sending CW or audio, stop
+    // two keyboard: only stop if the current radio is sending
     if (mod != Qt::AltModifier) {
         switch (mode) {
         case CWType:
         {
-            if (winkey->isSending()) {
+            if ((!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && winkey->isSending()) ||
+                    (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && winkey->isSending() && activeRadio==activeRadioNr))
+            {
                 winkey->cancelcw();
                 // de-activate dueling-CQ
                 if (duelingCQMode) duelingCQModePause = true;
@@ -1674,7 +1735,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
                     autoCQModePause = true;
                 }
                 if (toggleMode && !duelingCQMode) toggleStatus->setText("<font color=#0000FF>TOGGLE</font>");
-                if (autoSend && !lineEditCall[activeRadio]->text().isEmpty()) {
+                if (autoSend && !lineEditCall[activeRadioNr]->text().isEmpty()) {
                     autoSendPause = true;
                 }
                 return;
@@ -1683,7 +1744,8 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
         }
         case PhoneType:
         {
-            if (csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray().isEmpty()) {
+            if ((!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && ssbMessage->isPlaying()) ||
+                    (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && ssbMessage->isPlaying() && activeRadio==activeRadioNr)) {
                 ssbMessage->cancelMessage();
             } else {
                 expandMacro(csettings->value(c_ssb_cancel,c_ssb_cancel_def).toByteArray());
@@ -1696,23 +1758,23 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
     }
     // ESC needs to return focus to call field if it
     // screwed up by the mouse
-    if (callFocus[activeRadio] && !lineEditCall[activeRadio]->hasFocus()) {
+    if (callFocus[activeRadioNr] && !lineEditCall[activeRadioNr]->hasFocus()) {
         setEntryFocus();
     }
 
-    QByteArray call = lineEditCall[activeRadio]->text().toLatin1().toUpper();
+    QByteArray call = lineEditCall[activeRadioNr]->text().toLatin1().toUpper();
     if (!call.isEmpty()) {
         i1 = 1;
     } else {
         i1 = 0;
     }
-    if (!qso[activeRadio]->exch.simplified().isEmpty()) {
+    if (!qso[activeRadioNr]->exch.simplified().isEmpty()) {
         i2 = 1;
     } else {
         i2 = 0;
     }
-    i3 = callFocus[activeRadio] ^ 1;
-    i4 = cqMode[activeRadio] ^ 1;
+    i3 = callFocus[activeRadioNr] ^ 1;
+    i4 = cqMode[activeRadioNr] ^ 1;
     x  = escState[i1][i2][i3][i4];
 
     // reset alt-d state
@@ -1752,85 +1814,86 @@ void So2sdr::esc(Qt::KeyboardModifiers mod)
     // clear call field
     if (x & 1) {
         // reset color if red for a dupe
-        setDupeColor(activeRadio,false);
-        lineEditCall[activeRadio]->clear();
-        lineEditCall[activeRadio]->setModified(false);
-        clearDisplays(activeRadio);
-        lineEditCall[activeRadio]->setCursorPosition(0);
-        qso[activeRadio]->call.clear();
-        qso[activeRadio]->valid=false;
+        setDupeColor(activeRadioNr,false);
+        lineEditCall[activeRadioNr]->clear();
+        lineEditCall[activeRadioNr]->setModified(false);
+        clearDisplays(activeRadioNr);
+        lineEditCall[activeRadioNr]->setCursorPosition(0);
+        qso[activeRadioNr]->call.clear();
+        qso[activeRadioNr]->valid=false;
         So2sdrStatusBar->clearMessage();
-        clearWorked(activeRadio);
-        origCallEntered[activeRadio].clear();
-        nrReserved[activeRadio] = 0;
+        clearWorked(activeRadioNr);
+        origCallEntered[activeRadioNr].clear();
+        nrReserved[activeRadioNr] = 0;
         updateNrDisplay();
         MasterTextEdit->clear();
         statusBarDupe         = false;
-        callSent[activeRadio] = false;
+        callSent[activeRadioNr] = false;
         if (autoSend) {
             autoSendPause = false;
             autoSendTrigger = false;
             autoSendCall.clear();
         }
         for (int ii = 0; ii < MMAX; ii++) {
-            qso[activeRadio]->mult[ii]=-1;
+            qso[activeRadioNr]->mult[ii]=-1;
         }
-        qso[activeRadio]->worked=0;
+        qso[activeRadioNr]->worked=0;
     }
 
     // clear exchange field
     if (x & 2) {
-        lineEditExchange[activeRadio]->clear();
-        lineEditExchange[activeRadio]->setModified(false);
-        lineEditExchange[activeRadio]->setCursorPosition(0);
-        qso[activeRadio]->prefill.clear();
-        qso[activeRadio]->exch.clear();
-        qso[activeRadio]->valid=false;
-        nrReserved[activeRadio] = 0;
-        validLabel[activeRadio]->clear();
-        editingExchange[activeRadio] = false;
+        lineEditExchange[activeRadioNr]->clear();
+        lineEditExchange[activeRadioNr]->setModified(false);
+        lineEditExchange[activeRadioNr]->setCursorPosition(0);
+        qso[activeRadioNr]->prefill.clear();
+        qso[activeRadioNr]->exch.clear();
+        qso[activeRadioNr]->valid=false;
+        nrReserved[activeRadioNr] = 0;
+        validLabel[activeRadioNr]->clear();
+        editingExchange[activeRadioNr] = false;
     }
 
     // exit S&P, set CQ
     if (x & 4) {
-        setCqMode(activeRadio);
-        callSent[activeRadio] = false;
-        editingExchange[activeRadio] = false;
+        setCqMode(activeRadioNr);
+        callSent[activeRadioNr] = false;
+        editingExchange[activeRadioNr] = false;
     }
 
     // return focus to call
     if (x & 8) {
-        callFocus[activeRadio] = true;
+        callFocus[activeRadioNr] = true;
         setEntryFocus();
     }
 
     // return focus to exch
     if (x & 16) {
-        callFocus[activeRadio] = false;
+        callFocus[activeRadioNr] = false;
         setEntryFocus();
     }
 
     // exit exchange mode
     if (x & 32) {
-        excMode[activeRadio] = false;
-        lineEditExchange[activeRadio]->hide();
-        cqQsoInProgress[activeRadio] = false;
-        editingExchange[activeRadio] = false;
+        excMode[activeRadioNr] = false;
+        lineEditExchange[activeRadioNr]->hide();
+        cqQsoInProgress[activeRadioNr] = false;
+        editingExchange[activeRadioNr] = false;
     }
 
     // exch sent=false
     if (x & 64) {
-        exchangeSent[activeRadio] = false;
+        exchangeSent[activeRadioNr] = false;
     }
 
     // reset winkey output port // transmit focus
+    //rtc this needs updating for two keyboard. But it is currently not used.
     if (x & 128) {
-        switchTransmit(activeRadio);
+        switchTransmit(activeRadioNr);
     }
 
     // clear radio2 cq status
     if (x & 512) {
-        clearR2CQ(activeRadio ^ 1);
+        clearR2CQ(activeRadioNr ^ 1);
     }
 
     // clear alt-d state
@@ -2011,4 +2074,209 @@ void So2sdr::clearDisplays(int nr)
     labelLPBearing[nr]->clear();
     labelCountry[nr]->clear();
     sunLabelPtr[nr]->clear();
+}
+
+/*!
+   Initialize two keyboard mode
+   */
+void So2sdr::twoKeyboard()
+{
+    if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        if (kbdHandler[0] || kbdHandler[1]) {
+            stopTwokeyboard();
+            kbdHandler[0]->setDevice(settings->value(s_twokeyboard_device[0],s_twokeyboard_device_def[0]).toString());
+            kbdHandler[1]->setDevice(settings->value(s_twokeyboard_device[1],s_twokeyboard_device_def[1]).toString());
+        } else {
+            for (int i=0;i<NRIG;i++) {
+                if (!kbdHandler[i]) {
+                    kbdHandler[i]=new KeyboardHandler(settings->value(s_twokeyboard_device[i],s_twokeyboard_device_def[i]).toString());
+                }
+            }
+            connect(kbdHandler[0],SIGNAL(readKey(int,bool,bool,bool)),this,SLOT(kbd1(int,bool,bool,bool)));
+            connect(kbdHandler[1],SIGNAL(readKey(int,bool,bool,bool)),this,SLOT(kbd2(int,bool,bool,bool)));
+            for (int i=0;i<NRIG;i++) {
+                kbdHandler[i]->moveToThread(&kbdThread[i]);
+                connect(&kbdThread[i], SIGNAL(started()), kbdHandler[i], SLOT(run()));
+            }
+        }
+        for (int i=0;i<NRIG;i++) {
+            kbdThread[i].start();
+        }
+        if (toggleMode) {
+            toggleMode=false;
+            toggleStatus->clear();
+        }
+        twoKeyboardStatus->setText("<font color=#0000FF>2KB</font>");
+    } else {
+        if (kbdHandler[0] || kbdHandler[1]) {
+            stopTwokeyboard();
+        }
+        twoKeyboardStatus->clear();
+    }
+}
+
+/*!
+ * \brief So2sdr::slot connected to KeyboardHandler for keyboard 1
+ *   used in two keyboard mode
+ * \param code
+ * \param shift
+ */
+void So2sdr::kbd1(int code,bool shift,bool ctrl,bool alt)
+{
+    if (code<NKEYS) {
+        QString key=keys[code];
+        QFlags<Qt::KeyboardModifier> mod;
+        mod.setFlag(Qt::NoModifier,true);
+        if (shift) {
+            mod.setFlag(Qt::ShiftModifier,true);
+            key=shiftKeys[code];
+        }
+        if (ctrl) {
+            mod.setFlag(Qt::ControlModifier,true);
+        }
+        if (alt) {
+            mod.setFlag(Qt::AltModifier,true);
+        }
+        QKeyEvent *ev = new QKeyEvent (QEvent::KeyPress,qtkeys[code],mod,key);
+        if (errorBox->isVisible() || cabrillo->isVisible() || options->isVisible() || cwMessage->isVisible() || ssbMessage->isVisible()
+                || winkeyDialog->isVisible() || sdr->isVisible() || radios->isVisible() || progsettings->isVisible() || station->isVisible()
+                || so2r->isVisible() || aboutOn || help->isVisible()) {
+            qApp->postEvent (QApplication::focusWidget(),ev);
+            return;
+        }
+        if (FileMenu->isVisible()) {
+            qApp->postEvent(FileMenu,ev);
+            return;
+        }
+        if (HelpMenu->isVisible()) {
+            qApp->postEvent(HelpMenu,ev);
+            return;
+        }
+        if (SetupMenu->isVisible()) {
+            qApp->postEvent(SetupMenu,ev);
+            return;
+        }
+        if (menuWindows->isVisible()) {
+            qApp->postEvent(menuWindows,ev);
+            return;
+        }
+        if (enterCW[0]) {
+            qApp->postEvent(wpmLineEditPtr[0],ev);
+            return;
+        }
+        if (notes->isVisible()) {
+            qApp->postEvent(notes->NoteLineEdit,ev);
+            return;
+        }
+        if (log) {
+            if (log->isEditing() && log->currentEditor()) {
+                log->postEditorEvent(ev);
+                return;
+            }
+            if (log->detailIsVisible()) {
+                qApp->postEvent (QApplication::focusWidget(),ev);
+                return;
+            }
+        }
+        if (!uiEnabled) {
+            QObject *w;
+            if ((w=qApp->activeWindow())) {
+                qApp->postEvent(w,ev);
+            } else if ((w=focusWidget())) {
+                qApp->postEvent(w,ev);
+            }
+        } else {
+            if (callFocus[0]) {
+                qApp->postEvent(lineEditCall[0],ev);
+            } else {
+                qApp->postEvent(lineEditExchange[0],ev);
+            }
+        }
+    }
+}
+
+/*!
+ * \brief So2sdr::slot connected to KeyboardHandler for keyboard 2
+ *   used in two keyboard mode
+ * \param code
+ * \param shift
+ */
+void So2sdr::kbd2(int code, bool shift, bool ctrl, bool alt)
+{
+    if (code<NKEYS) {
+        QString key=keys[code];
+        QFlags<Qt::KeyboardModifier> mod;
+        mod.setFlag(Qt::NoModifier,true);
+        if (shift) {
+            mod.setFlag(Qt::ShiftModifier,true);
+            key=shiftKeys[code];
+        }
+        if (ctrl) {
+            mod.setFlag(Qt::ControlModifier,true);
+        }
+        if (alt) {
+            mod.setFlag(Qt::AltModifier,true);
+        }
+        QKeyEvent * ev = new QKeyEvent (QEvent::KeyPress,qtkeys[code],mod,key);
+        if (errorBox->isVisible() || cabrillo->isVisible() || options->isVisible() || cwMessage->isVisible() || ssbMessage->isVisible()
+                || winkeyDialog->isVisible() || sdr->isVisible() || radios->isVisible() || progsettings->isVisible() || station->isVisible()
+                || so2r->isVisible() || aboutOn || help->isVisible()) {
+            qApp->postEvent (QApplication::focusWidget(),ev);
+            return;
+        }
+        if (FileMenu->isVisible()) {
+            qApp->postEvent(FileMenu,ev);
+            return;
+        }
+        if (HelpMenu->isVisible()) {
+            qApp->postEvent(HelpMenu,ev);
+            return;
+        }
+        if (SetupMenu->isVisible()) {
+            qApp->postEvent(SetupMenu,ev);
+            return;
+        }
+        if (menuWindows->isVisible()) {
+            qApp->postEvent(menuWindows,ev);
+            return;
+        }
+        if (enterCW[1]) {
+            qApp->postEvent(wpmLineEditPtr[1],ev);
+            return;
+        }
+        if (notes->isVisible()) {
+            qApp->postEvent(notes->NoteLineEdit,ev);
+            return;
+        }
+        if (log) {
+            if (log->isEditing() && log->currentEditor()) {
+                log->postEditorEvent(ev);
+                return;
+            }
+        }
+        if (callFocus[1]) {
+            qApp->postEvent(lineEditCall[1],ev);
+        } else {
+            qApp->postEvent(lineEditExchange[1],ev);
+        }
+    }
+}
+
+/*! Disable two keyboard mode
+ */
+void So2sdr::stopTwokeyboard()
+{
+    for (int i=0;i<NRIG;i++) {
+        if (kbdHandler[i]) {
+            kbdHandler[i]->quitHandler();
+            if (kbdThread[i].isRunning()) {
+                kbdThread[i].quit();
+                kbdThread[i].wait();
+            }
+        }
+    }
+    // delay is necessary to prevent issues when switch to/from two keyboard mode
+    // without delay, keypresses registered by KeyboardHandler can
+    // also get registered in regular non-two-keyboard mode
+    usleep(100000);
 }

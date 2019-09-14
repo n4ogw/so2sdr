@@ -592,6 +592,7 @@ void SSBMessageDialog::playMessage3(int signal)
     emit(setPtt(playMessageRig,0));
     disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
     scriptProcess->start(csettings->value(s_after_play,s_after_play_def).toString());
+    emit(finished());
 }
 
 void SSBMessageDialog::recMessage(QString m)

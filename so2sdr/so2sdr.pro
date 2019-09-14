@@ -76,7 +76,8 @@ HEADERS += cwmessagedialog.h \
     udpreader.h \
     multdisplay.h \
     centergriddialog.h \
-    adifparse.h
+    adifparse.h \
+    keyboardhandler.h
 
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
@@ -158,7 +159,8 @@ SOURCES += cwmessagedialog.cpp \
     udpreader.cpp \
     multdisplay.cpp \
     centergriddialog.cpp \
-    adifparse.cpp
+    adifparse.cpp \
+    keyboardhandler.cpp
 
  unix { 
     include (../common.pri)

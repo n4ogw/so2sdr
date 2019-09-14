@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.4.8
+## SO2SDR Help file version 2.5.0
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -8,6 +8,7 @@
 * [Key Reference](#keyref)
 * [Message macros](#macros)
 * [Voice keyer setup](#ssb)
+* [Two keyboard mode](#twokeyboard)
 * [Operating notes](#notes)
 * [Known issues](#issues)
 * [Changelog](#changes)
@@ -162,6 +163,47 @@ characters have been entered.
 * Dueling CQ Delay : Dueling CQ between the two
 radios is activated with Crtl- (Control Minus). This setting
 adds an extra delay before switching radios.
+* WSJT-X UDP : this enables so2sdr to read UDP packets from WSJT-X. This
+can be used to log qsos from QSJT-X. The UDP port number defined in WSJT-X
+must be filled in.
+* CTY file : the web location where so2sdr will download prefix (CTY) files.
+
+
+<a name="twokeyboard"></a>
+#### Two keyboard mode
+
+From version 2.5.0 so2sdr includes the option of using two keyboards. In this mode
+one keyboard is mapped to the radio one entry window and the second to the radio two
+entry window. Two keyboard mode is useful for interleaving CQs on two radios.
+The settings for two keyboard mode are in "General Settings." There you will
+need to fill in the input devices for the two keyboards. For USB keyboards you can
+find the correct deivce paths by looking at dmesg after plugging in the keyboards.
+The checkbox setting in th general settings dialog will activate two keyboard mode.
+You can also place the macro "@{2KBD}" in a function key macro, which will allow
+toggling two keyboard mode from that function key.
+
+If the "Queue Messages" option is enabled, macro message will not start until
+previous macros have finished playing. When a message is playing and a function key
+is pressed, the new macro will be queued and will play next. This behavior makes
+the timing of interleaving qsos less critical. If "Queue Messages" is not enabled
+(the default), then pressing a function key will immediately cancel any sending
+message and send the new one. While using the queued mode, certain function
+macros that do not send CW or play a voice message can still be sent immediately.
+This is done by placing "@" and the beginning of the macro definition. Macros
+that will work with "@" include TOGGLESTEREOPIN, BEST_CQ, BEST\_CQ\_R2, MCP,
+OTRSP, CAT, CATR2, CAT1, CAT2, SCRIPT, SCRIPTNR, and 2KBD. These should be used
+alone with "@"-mixing them with a macro sending CW in queued mode may do bad things.
+
+In two keyboard mode so2sdr reads directly from /dev/input and blocks
+other programs from receiving keyboard input; this has the same effect
+as the Windows->Grab Keyboard option, which is not needed in two
+keyboard mode. As of version 2.5.0 several other so2r features are
+disabled while using two keyboard, including alt-D, toggling CQs, and
+dueling CQs. Sprint mode is also not compatible with two keyboards.
+
+[Return to top](#top)
+
+
 
 ---
 
@@ -599,10 +641,12 @@ Screenshot files are placed in the same directory as the log file.
 
 ### CW/SSB Message macros
 
-
-
 Two separate sets of macros are stored by the program, one for CW
-and one for SSB. For notes on voice keyer set, see  [voice keyer setup](#ssb).
+and one for SSB. Beginning a macro definition with "@" will ignored
+the queue message mode (see [Two keyboard mode](#twokeyboard)) and activate the macro immediately. 
+Macros that will work with "@" include TOGGLESTEREOPIN, BEST_CQ, BEST\_CQ\_R2, MCP,
+OTRSP, CAT, CATR2, CAT1, CAT2, SCRIPT, SCRIPTNR, and 2KBD. 
+For notes on voice keyer setup, see  [voice keyer setup](#ssb).
 
 * {CALL} :     callsign
 * {#} :        qso number
@@ -651,6 +695,7 @@ the "Call Updated QSL" message from being sent when not needed.
 * {PTTONR2} {PTTOFFR2} : turn inactive radio PTT on/off
 * {RECORD} : record a voice message. Followed by a string which is the filename
 that will be recorded. {RECORD}call will record call.wav
+* {2KBD} : toggle two keyboard mode
 [Return to top](#top)
 
 ---
@@ -713,6 +758,7 @@ but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.
 
 
 [Return to top](#top)
+
 
 <a name="notes"></a>
 ### Operating notes
@@ -907,6 +953,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.0 (09/14/2019)
+
+* add two keyboard support
+* update help file
 
 ## version 2.4.8 (06/05/2019)
 

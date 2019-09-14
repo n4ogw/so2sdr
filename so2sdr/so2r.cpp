@@ -102,6 +102,14 @@ So2r::~So2r()
     delete so2rDialog;
 }
 
+bool So2r::isVisible()
+{
+    if (so2rDialog) {
+        return so2rDialog->isVisible();
+    } else {
+        return false;
+    }
+}
 int So2r::transmitRadio() const { return txRadio;}
 
 void So2r::toggleStereo(int activeRadio)

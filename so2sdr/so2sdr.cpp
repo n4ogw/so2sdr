@@ -24,15 +24,19 @@
 #include <QDialog>
 #include <QDir>
 #include <QErrorMessage>
+#include <QEvent>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QFlags>
 #include <QFont>
 #include <QFontMetricsF>
+#include <QKeyEvent>
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPalette>
+#include <QQueue>
 #include <QSettings>
 #include <QSize>
 #include <QStringList>
@@ -51,6 +55,7 @@
 #include "filedownloader.h"
 #include "helpdialog.h"
 #include "history.h"
+#include "keyboardhandler.h"
 #include "log.h"
 #include "master.h"
 #include "newcontestdialog.h"
@@ -111,6 +116,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     duelingCQStatus   = new QLabel("");
     toggleStatus      = new QLabel("");
     autoSendStatus    = new QLabel("");
+    twoKeyboardStatus = new QLabel("");
     progress.setMinimum(0);
     progress.setMaximum(100);
     progress.setValue(100);
@@ -123,6 +129,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     So2sdrStatusBar->addPermanentWidget(duelingCQStatus);
     So2sdrStatusBar->addPermanentWidget(autoCQStatus);
     So2sdrStatusBar->addPermanentWidget(toggleStatus);
+    So2sdrStatusBar->addPermanentWidget(twoKeyboardStatus);
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[0]);
     So2sdrStatusBar->addPermanentWidget(rLabelPtr[1]);
     So2sdrStatusBar->addPermanentWidget(winkeyLabel);
@@ -166,6 +173,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     ssbMessage = new SSBMessageDialog(sizes, this);
     connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
+    connect(ssbMessage,SIGNAL(finished()),this,SLOT(messageFinished()));
     connect(ssbMessage,SIGNAL(sendMsg(QByteArray,bool)),this,SLOT(expandMacro(QByteArray,bool)));
     connect(ssbMessage,SIGNAL(recordingStatus(bool)),this,SLOT(showRecordingStatus(bool)));
     ssbMessage->hide();
@@ -220,8 +228,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(newContest, SIGNAL(finished(int)), this, SLOT(setupNewContest(int)));
     RateLabel->setText("Rate=0");
     HourRateLabel->setText("0/hr");
-    connect(wpmLineEditPtr[0], SIGNAL(textEdited(QString)), this, SLOT(launch_enterCWSpeed(QString)));
-    connect(wpmLineEditPtr[1], SIGNAL(textEdited(QString)), this, SLOT(launch_enterCWSpeed(QString)));
+    connect(wpmLineEditPtr[0], SIGNAL(textEdited(QString)), this, SLOT(launch_enterCWSpeed0(QString)));
+    connect(wpmLineEditPtr[1], SIGNAL(textEdited(QString)), this, SLOT(launch_enterCWSpeed1(QString)));
     connect(actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     connect(actionNewContest, SIGNAL(triggered()), newContest, SLOT(show()));
     connect(actionWinkey, SIGNAL(triggered()), winkeyDialog, SLOT(show()));
@@ -290,6 +298,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     for (int i = 0; i < clist.size(); i++) {
         clist.at(i)->installEventFilter(this);
     }
+    removeEventFilter(cabrillo);
+    removeEventFilter(wpmLineEditPtr[0]);
+    removeEventFilter(wpmLineEditPtr[1]);
+
     contestDirectory = QDir::homePath();
     so2r=new So2r(*settings,sizes,this);
     connect(so2r,SIGNAL(error(QString)),errorBox,SLOT(showMessage(const QString &)));
@@ -310,16 +322,22 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
         wpmLineEditPtr[i]->setText(QString::number(wpm[i]));
         wpmLineEditPtr[i]->setPalette(palette);
     }
+    // help dialog
+    QDir::setCurrent(dataDirectory()+"/help");
+    help = new HelpDialog("so2sdrhelp.html", this);
+    connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
+    connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
 
     // start serial comm
     winkey = new Winkey(*settings,this);
-    connect(winkey, SIGNAL(version(int)), winkeyDialog, SLOT(setWinkeyVersionLabel(int)));
-    connect(winkey, SIGNAL(winkeyTx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
-    connect(winkeyDialog, SIGNAL(startWinkey()), this, SLOT(startWinkey()));
-    connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
+    connect(winkey,SIGNAL(version(int)), winkeyDialog, SLOT(setWinkeyVersionLabel(int)));
+    connect(winkey,SIGNAL(winkeyTx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
+    connect(winkeyDialog,SIGNAL(startWinkey()), this, SLOT(startWinkey()));
+    connect(radios,SIGNAL(startRadios()), this, SLOT(openRadios()));
     connect(winkey,SIGNAL(textSent(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
     connect(winkey,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
-    connect(winkey, SIGNAL(winkeyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(winkey,SIGNAL(winkeyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(winkey,SIGNAL(finished()),this,SLOT(messageFinished()));
     startWinkey();
     openRadios();
     switchAudio(activeRadio);
@@ -360,6 +378,9 @@ So2sdr::~So2sdr()
     }
     cat[0]->deleteLater();
     cat[1]->deleteLater();
+    stopTwokeyboard();
+    if (kbdHandler[0]) kbdHandler[0]->deleteLater();
+    if (kbdHandler[1]) kbdHandler[1]->deleteLater();
     delete cabrillo;
     delete radios;
     delete cwMessage;
@@ -454,7 +475,9 @@ void So2sdr::settingsUpdate()
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     }
     wsjtxUDP->enable(settings->value(s_wsjtx_enable,s_wsjtx_enable_def).toBool());
+    twoKeyboard();
 }
+
 
 /*! this will have clean-up code
  */
@@ -1194,6 +1217,7 @@ void So2sdr::initLogView()
 void So2sdr::about()
 {
     ungrab();
+    aboutOn=true;
     QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2019 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
@@ -1201,6 +1225,7 @@ void So2sdr::about()
                        + "<li>MASTER.DTA algorithm, IQ balancing: Alex Shovkoplyas VE3NEA, http://www.dxatlas.com</ul>"
                        + "<hr><p>SO2SDR is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License "
                        + "as published by the Free Software Foundation, either version 3 of the License, or any later version, http://www.gnu.org/licenses/</p>");
+    aboutOn=false;
     regrab();
 }
 
@@ -1300,7 +1325,7 @@ void So2sdr::autoCQActivate (bool state) {
         autoCQModePause = false;
         autoCQModeWait = true;
         sendLongCQ = true;
-        if (lineEditCall[autoCQRadio]->text().isEmpty() && !winkey->isSending()) {
+        if (lineEditCall[autoCQRadio]->text().isEmpty() && !winkey->isSending() && !ssbMessage->isPlaying()) {
             switchTransmit(autoCQRadio);
             sendFunc(0, Qt::NoModifier); // send F1 immediately
         }
@@ -1326,6 +1351,8 @@ void So2sdr::autoSendActivate (bool state) {
 
 void So2sdr::duelingCQActivate (bool state) {
     if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) return; // disabled in Sprint mode
+    if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) return; // disabled in two keyboard mode
+
     if (cat[0]->band()!=BAND_NONE && cat[1]->band()!=BAND_NONE) {
         if (cat[0]->band()==cat[1]->band()) {
             So2sdrStatusBar->showMessage("Dueling CQ disabled: same band",5000);
@@ -1356,7 +1383,7 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQWait = true;
         if (lineEditCall[activeRadio]->text().isEmpty()) {
             duelingCQModePause = false;
-            if (!winkey->isSending()) {
+            if (!winkey->isSending() && !ssbMessage->isPlaying()) {
                 enter(Qt::NoModifier); // start CQ immediately
             } else {
                 switchRadios(false); // focus other radio to begin dueling or toggle sequence
@@ -1440,7 +1467,7 @@ void So2sdr::autoSendExch() {
  AutoSend exchange handler
  */
 void So2sdr::autoSendExch_exch() {
-    if (!winkey->isSending()) { // wait until complete call is sent, then start exchange
+    if (!winkey->isSending() && !ssbMessage->isPlaying()) { // wait until complete call is sent, then start exchange
         autoSendTrigger = false;
         autoSendPause = false;
         // duplicated from pieces of So2sdr::enter, {CALL_ENTERED} removed in Exch message macro
@@ -1495,14 +1522,14 @@ void So2sdr::autoCQ () {
 
     int delay = settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt();
     if (autoCQModeWait) {
-        if (winkey->isSending()) { // prevent switching hysteresis
+        if (winkey->isSending() || ssbMessage->isPlaying()) { // prevent switching hysteresis
             autoCQModeWait = false;
         }
     } else if (autoCQModePause) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
     } else if (!lineEditCall[autoCQRadio]->text().isEmpty() || altDActive > 2) {
         autoCQModePause = true;
-    } else if (winkey->isSending()) {
+    } else if (winkey->isSending() || ssbMessage->isPlaying()) {
         cqTimer.restart();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
@@ -1535,7 +1562,7 @@ void So2sdr::autoCQdelay (bool incr) {
     }
     progsettings->CQRepeatLineEdit->setText(QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1));
     settings->sync();
-    if (autoCQMode && winkey->isSending()) {
+    if (autoCQMode && (winkey->isSending() || ssbMessage->isPlaying())) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     } else {
@@ -1555,14 +1582,14 @@ void So2sdr::duelingCQ () {
     if (!cqMode[activeRadio ^ 1]) setCqMode(activeRadio ^ 1);
 
     if (duelingCQWait) {
-        if (winkey->isSending()) { // prevent switching hysteresis
+        if (winkey->isSending() || ssbMessage->isPlaying()) { // prevent switching hysteresis
             duelingCQWait = false;
         }
     } else if (duelingCQModePause) {
         // prevent further processing if paused
     } else if (!lineEditCall[activeRadio]->text().isEmpty() || !lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
         duelingCQModePause = true;
-    } else if (winkey->isSending()) {
+    } else if (winkey->isSending() || ssbMessage->isPlaying()) {
         cqTimer.restart();
     } else if (cqTimer.elapsed() > delay) {
         duelingCQWait = true;
@@ -1613,6 +1640,9 @@ void So2sdr::switchTransmit(int r, int CWspeed)
 {
     if (cat[r]->modeType()==CWType && winkey->isSending()) {
         winkey->cancelcw();
+    }
+    if (cat[r]->modeType()==PhoneType && ssbMessage->isPlaying()) {
+        ssbMessage->cancelMessage();
     }
     if (CWspeed) {
         winkey->setSpeed(CWspeed);
@@ -2276,14 +2306,14 @@ void So2sdr::updateRadioFreq()
 /*!
    Launch speed up: if modifier=ctrl key, apply to 2nd radio
  */
-void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod)
+void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod,int nr)
 {
     switch (mod) {
     case Qt::NoModifier:
-        speedUp(activeRadio);
+        speedUp(nr);
         break;
     case Qt::ControlModifier:
-        speedUp(activeRadio ^ 1);
+        speedUp(nr ^ 1);
         break;
     default:
         return;
@@ -2293,14 +2323,14 @@ void So2sdr::launch_speedUp(Qt::KeyboardModifiers mod)
 /*!
    Launch speed down: if modifier=ctrl key, apply to 2nd radio
  */
-void So2sdr::launch_speedDn(Qt::KeyboardModifiers mod)
+void So2sdr::launch_speedDn(Qt::KeyboardModifiers mod,int nr)
 {
     switch (mod) {
     case Qt::NoModifier:
-        speedDn(activeRadio);
+        speedDn(nr);
         break;
     case Qt::ControlModifier:
-        speedDn(activeRadio ^ 1);
+        speedDn(nr ^ 1);
         break;
     default:
         return;
@@ -2348,29 +2378,46 @@ void So2sdr::speedDn(int nrig)
 /*!
    Start entering CW speed
  */
-void So2sdr::launch_WPMDialog()
+void So2sdr::launch_WPMDialog(int nr)
 {
+    enterCW[nr]=true;
     // save where keyboard focus was
-    if (lineEditCall[activeRadio]->hasFocus()) {
-        callFocus[activeRadio] = true;
+    if (lineEditCall[nr]->hasFocus()) {
+        callFocus[nr] = true;
     } else {
-        callFocus[activeRadio] = false;
+        callFocus[nr] = false;
     }
-    wpmLineEditPtr[activeRadio]->setReadOnly(false);
-    wpmLineEditPtr[activeRadio]->setFocus();
+    wpmLineEditPtr[nr]->setReadOnly(false);
+    wpmLineEditPtr[nr]->setFocus();
     if (grab) {
-        wpmLineEditPtr[activeRadio]->grabKeyboard();
+        wpmLineEditPtr[nr]->grabKeyboard();
     }
-    grabWidget = wpmLineEditPtr[activeRadio];
-    wpmLineEditPtr[activeRadio]->selectAll();
+    grabWidget = wpmLineEditPtr[nr];
+    wpmLineEditPtr[nr]->selectAll();
 }
 
 /*!
-   slot called when cw speed edited
+   slot called when cw speed edited, radio 0
  */
-void So2sdr::launch_enterCWSpeed(const QString & text)
+void So2sdr::launch_enterCWSpeed0(const QString & text)
 {
-    enterCWSpeed(activeRadio, text);
+    if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        enterCWSpeed(activeRadio, text);
+    } else {
+        if (enterCW[0]) enterCWSpeed(0, text);
+    }
+}
+
+/*!
+   slot called when cw speed edited, radio 1
+ */
+void So2sdr::launch_enterCWSpeed1(const QString & text)
+{
+    if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        enterCWSpeed(activeRadio, text);
+    } else {
+        if (enterCW[1]) enterCWSpeed(1, text);
+    }
 }
 
 /*!
@@ -2379,13 +2426,14 @@ void So2sdr::launch_enterCWSpeed(const QString & text)
 void So2sdr::enterCWSpeed(int nrig, const QString & text)
 {
     bool ok = false;
-
     // try to convert to a digit. Ok=false for non-digits
     int w = text.toInt(&ok);
 
     // must enter exactly 2 digits
     if (text.size() < 2) {
-        if (ok) return;
+        if (ok) {
+            return;
+        }
     } else {
         if (ok) {
             wpm[nrig] = w;
@@ -2395,25 +2443,28 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
             }
         }
     }
+    enterCW[nrig]=false;
 
     // reset focus
-    wpmLineEditPtr[nrig]->setReadOnly(true);
-    if (callFocus[nrig]) {
-        lineEditCall[nrig]->setFocus();
-        lineEditCall[nrig]->deselect();
-        if (grab) {
-            lineEditCall[activeRadio]->grabKeyboard();
-            lineEditCall[activeRadio]->activateWindow();
+    if (!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+        wpmLineEditPtr[nrig]->setReadOnly(true);
+        if (callFocus[nrig]) {
+            lineEditCall[nrig]->setFocus();
+            lineEditCall[nrig]->deselect();
+            if (grab) {
+                lineEditCall[activeRadio]->grabKeyboard();
+                lineEditCall[activeRadio]->activateWindow();
+            }
+            grabWidget = lineEditCall[activeRadio];
+        } else {
+            lineEditExchange[nrig]->setFocus();
+            lineEditExchange[nrig]->deselect();
+            if (grab) {
+                lineEditExchange[activeRadio]->grabKeyboard();
+                lineEditExchange[activeRadio]->activateWindow();
+            }
+            grabWidget = lineEditExchange[activeRadio];
         }
-        grabWidget = lineEditCall[activeRadio];
-    } else {
-        lineEditExchange[nrig]->setFocus();
-        lineEditExchange[nrig]->deselect();
-        if (grab) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-            lineEditExchange[activeRadio]->activateWindow();
-        }
-        grabWidget = lineEditExchange[activeRadio];
     }
 
     // revert to previous number in case of bad input
@@ -2509,10 +2560,51 @@ void So2sdr::clearR2CQ(int nr)
 }
 
 /*!
- * \brief So2sdr::expandMacro parse messages
+ * \brief So2sdr::messageFinished
+ * slot called when message finishes playing
+ */
+void So2sdr::messageFinished()
+{
+    expandMacro("",false,true);
+}
+
+/*!
+ * load messages into outgoing queue. If two keyboard mode is
+ * not active, simply call expandMacro2
+ *
+ * this can be called as a slot when winkey finishes sending a message;
+ * for this case restart is set to true
+ */
+void So2sdr::expandMacro(QByteArray msg, bool stopcw, bool restart)
+{
+    if (restart) {
+        if (!queue.isEmpty()) {
+            activeRadio=rqueue.dequeue();
+            expandMacro2(queue.dequeue());
+        }
+        return;
+    }
+    // if first character of message is '@', send immediately
+    if (!settings->value(s_queuemessages,s_queuemessages_def).toBool() || msg.at(0)=='@') {
+        if (msg.at(0)=='@') msg.replace('@',QByteArray(""));
+        expandMacro2(msg,stopcw,true);
+        return;
+    } else {
+        queue.enqueue(msg);
+        rqueue.enqueue(activeRadio);
+        if (!winkey->isSending() && !ssbMessage->isPlaying()) {
+            activeRadio=rqueue.dequeue();
+            msg=queue.dequeue();
+            expandMacro2(msg);
+        }
+    }
+}
+
+/*!
+ * \brief So2sdr:: parse messages
  * \param msg Text of message
  */
-void So2sdr::expandMacro(QByteArray msg, bool stopcw)
+void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
 {
     int        tmp_wpm;
     if (toggleMode) {
@@ -2525,55 +2617,60 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
     QByteArray out     = "";
     QByteArray command = "";
 
+    struct macroMsg {
+        QByteArray token_name;  // macro keyword
+        bool instant;           // if true, macro can be sent immediately in queued mode without clearing queue
+    };
+
     // will not overwrite a dupe message that is present
     if (!statusBarDupe) So2sdrStatusBar->clearMessage();
-    const QByteArray token_names[] = { "CALL",
-                                       "#",
-                                       "UP",
-                                       "DN",
-                                       "R2",
-                                       "R2CQ",
-                                       "STATE",
-                                       "SECTION",
-                                       "NAME",
-                                       "CQZ",
-                                       "ITUZ",
-                                       "GRID",
-                                       "CALL_ENTERED",
-                                       "TOGGLESTEREOPIN",
-                                       "CQMODE",
-                                       "SPMODE",
-                                       "SWAP_RADIOS",
-                                       "REPEAT_LAST",
-                                       "REPEAT_NR",
-                                       "CLEAR_RIT",
-                                       "RIG_FREQ",
-                                       "RIG2_FREQ",
-                                       "BEST_CQ",
-                                       "BEST_CQ_R2",
-                                       "CANCEL",
-                                       "PLAY",
-                                       "SWITCH_RADIOS",
-                                       "MCP",
-                                       "OTRSP",
-                                       "CAT",
-                                       "CATR2",
-                                       "CAT1",
-                                       "CAT2",
-                                       "CALL_OK",
-                                       "SCRIPT",
-                                       "SCRIPTNR",
-                                       "PTTON",
-                                       "PTTON1",
-                                       "PTTON2",
-                                       "PTTONR2",
-                                       "PTTOFF",
-                                       "PTTOFF1",
-                                       "PTTOFF2",
-                                       "PTTOFFR2",
-                                       "RECORD"
-                                     };
-    const int        n_token_names = 45;
+    const macroMsg names[] = { {"CALL",false},
+                               {"#",false},
+                               {"UP",false},
+                               {"DN",false},
+                               {"R2",false},
+                               {"R2CQ",false},
+                               {"STATE",false},
+                               {"SECTION",false},
+                               {"NAME",false},
+                               {"CQZ",false},
+                               {"ITUZ",false},
+                               {"GRID",false},
+                               {"CALL_ENTERED",false},
+                               {"TOGGLESTEREOPIN",true},
+                               {"CQMODE",false},
+                               {"SPMODE",false},
+                               {"SWAP_RADIOS",false},
+                               {"REPEAT_LAST",false},
+                               {"REPEAT_NR",false},
+                               {"CLEAR_RIT",false},
+                               {"RIG_FREQ",false},
+                               {"RIG2_FREQ",false},
+                               {"BEST_CQ",true},
+                               {"BEST_CQ_R2",true},
+                               {"CANCEL",false},
+                               {"PLAY",false},
+                               {"SWITCH_RADIOS",false},
+                               {"MCP",true},
+                               {"OTRSP",true},
+                               {"CAT",true},
+                               {"CATR2",true},
+                               {"CAT1",true},
+                               {"CAT2",true},
+                               {"CALL_OK",false},
+                               {"SCRIPT",true},
+                               {"SCRIPTNR",true},
+                               {"PTTON",false},
+                               {"PTTON1",false},
+                               {"PTTON2",false},
+                               {"PTTONR2",false},
+                               {"PTTOFF",false},
+                               {"PTTOFF1",false},
+                               {"PTTOFF2",false},
+                               {"PTTOFFR2",false},
+                               {"RECORD",false},
+                               {"2KBD",true}};
+    const int        n_token_names = 46;
 
     /*!
        cw/ssb message macros
@@ -2619,7 +2716,8 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
        - {PTTON1} {PTTOFF1} turn radio 1 PTT on/off
        - {PTTON2} {PTTOFF2} turn radio 2 PTT on/off
        - {PTTONR2} {PTTOFFR2} turn inactive radio PTT on/off
-       - {RECORD}file  record audio to file "file.wav"
+       - {RECORD} file  record audio to file "file.wav"
+       - {2KBD} toggle two keyboard mode
     */
     bool switchradio=true;
     bool first=true;
@@ -2637,7 +2735,14 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
             val = val.trimmed();
             val = val.toUpper();
             for (int i = 0; i < n_token_names; i++) {
-                if (val == token_names[i]) {
+              //  if (val == token_names[i]) {
+                // macros not marked "instant" will clear the message queue if
+                // they are called with instant option ("@" at beginning of macro, see So2sdr::expandMacro)
+                if (val == names[i].token_name) {
+                    if (instant && !names[i].instant) {
+                        queue.clear();
+                        rqueue.clear();
+                    }
                     switch (i) {
                     case 0:  // CALL
                         out.append(settings->value(s_call,s_call_def).toByteArray());
@@ -2867,6 +2972,12 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
                         command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
                         ssbMessage->recMessage(command);
                         break;
+                    case 45: // 2KBD
+                        settings->setValue(s_twokeyboard_enable,!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
+                        twoKeyboard();
+                        progsettings->kbdCheckBox->setChecked(settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
+                        return;
+                        break;
                     }
                     break;
                 }
@@ -2902,6 +3013,10 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw)
         }
     } else {
         // no macro present send as-is
+        if (instant) {
+            queue.clear();
+            rqueue.clear();
+        }
         if (toggleMode) {
             switchTransmit(activeTxRadio, tmp_wpm); // don't switch TX focus, pass speed change
         } else if (autoCQMode && !autoCQModePause) {
@@ -2946,6 +3061,11 @@ void So2sdr::openFile()
     if (setupContest()) {
         actionOpen->setEnabled(false);
         actionNewContest->setEnabled(false);
+        // enable two keyboard mode. It is not enabled before because otherwise file dialog cannot get
+        // keyboard input
+        if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+            twoKeyboard();
+        }
         regrab();
     }
 }
@@ -3006,13 +3126,6 @@ void So2sdr::fillSentExch(Qso *qso,int nr)
  */
 void So2sdr::showHelp()
 {
-    if (help == 0) {
-        // open help file and display it
-        QDir::setCurrent(dataDirectory()+"/help");
-        help = new HelpDialog("so2sdrhelp.html", this);
-        connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
-        connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
-    }
     help->show();
     help->setFocus();
 }
@@ -3146,9 +3259,9 @@ void So2sdr::qsy(int nrig, double &freq, bool exact)
   do callsign-partial search on contents of call entry window, display matching calls in log window
   for editing
   */
-void So2sdr::logSearch()
+void So2sdr::logSearch(int nr)
 {
-    QByteArray searchFrag=lineEditCall[activeRadio]->text().toLatin1();
+    QByteArray searchFrag=lineEditCall[nr]->text().toLatin1();
     So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\"");
     if (!log->logSearch(searchFrag)) {
         So2sdrStatusBar->showMessage("Searching log for \""+searchFrag+"\" : NOT FOUND");
@@ -3343,6 +3456,8 @@ void So2sdr::initPointers()
     bandmap      = 0;
     scriptProcess = 0;
     telnet            = 0;
+    kbdHandler[0]  = 0;
+    kbdHandler[1]  = 0;
     wpmLineEditPtr[0] = WPMLineEdit;
     wpmLineEditPtr[1] = WPMLineEdit2;
     lineEditCall[0] = lineEditCall1;
@@ -3499,6 +3614,11 @@ void So2sdr::initVariables()
     autoSendTrigger = false;
     sendLongCQ = true;
     autoSendCall.clear();
+    aboutOn=false;
+    enterCW[0]=false;
+    enterCW[1]=false;
+    queue.clear();
+    rqueue.clear();
 }
 
 /*!

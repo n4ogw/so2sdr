@@ -20,8 +20,11 @@
 #define SO2SDR_H
 
 #include <QByteArray>
+#include <QMainWindow>
 #include <QPixmap>
+#include <QObject>
 #include <QProgressDialog>
+#include <QQueue>
 #include <QSqlRecord>
 #include <QString>
 #include <QThread>
@@ -39,6 +42,7 @@ class DupeSheet;
 class FileDownloader;
 class HelpDialog;
 class History;
+class KeyboardHandler;
 class Log;
 class Master;
 class NewDialog;
@@ -77,7 +81,9 @@ public slots:
     void addSpot(QByteArray call, double f);
     void addSpot(QByteArray call, double f, bool d);
     void bandChange(int nr,int band);
-    void expandMacro(QByteArray msg, bool stopcw = true);
+    void messageFinished();
+    void expandMacro(QByteArray msg, bool stopcw = true, bool restart = false);
+    void expandMacro2(QByteArray msg, bool stopcw = true, bool instant = false);
     void removeSpot(QByteArray call, int band);
     void removeSpotFreq(double f, int band);
     void rescore();
@@ -107,8 +113,10 @@ private slots:
     void exportADIF();
     void exportCabrillo();
     void importCabrillo();
-    void launch_WPMDialog();
-    void launch_enterCWSpeed(const QString &text);
+    void kbd1(int code, bool shift, bool ctrl, bool alt);
+    void kbd2(int code, bool shift, bool ctrl, bool alt);
+    void launch_enterCWSpeed0(const QString &text);
+    void launch_enterCWSpeed1(const QString &text);
     void logWsjtx(Qso *qso);
     void openFile();
     void openRadios();
@@ -168,10 +176,12 @@ private:
     bool                 duelingCQWait;
     bool                 duelingCQModePause;
     bool                 dupeCheckDone;
+    bool                 enterCW[NRIG];
     bool                 exchangeSent[NRIG];
     bool                 excMode[NRIG];
     bool                 grab;
     bool                 grabbing;
+    bool                 aboutOn;
     bool                 initialized;
     bool                 logSearchFlag;
     bool                 editingExchange[NRIG];
@@ -201,6 +211,8 @@ private:
     int                  timerId[N_TIMERS];
     int                  wpm[NRIG];
     FileDownloader       *downloader;
+    KeyboardHandler      *kbdHandler[NRIG];
+    QThread              kbdThread[NRIG];
     Log                  *log;
     Master               *master;
     ModeTypes             modeTypeShown;
@@ -235,6 +247,7 @@ private:
     QLabel               *rLabelPtr[NRIG];
     QLabel               *sunLabelPtr[NRIG];
     QLabel               *toggleStatus;
+    QLabel               *twoKeyboardStatus;
     QLabel               *validLabel[NRIG];
     QLabel               *winkeyLabel;
     QLineEdit            *lineEditCall[NRIG];
@@ -245,6 +258,8 @@ private:
     QProcess             *scriptProcess;
     Qso                  *qso[NRIG];
     BandmapInterface     *bandmap;
+    QQueue<QByteArray>   queue;
+    QQueue<int>          rqueue;
     QSettings            *csettings;
     QSettings            *settings;
     History              *history;
@@ -271,7 +286,7 @@ private:
     void addQso(Qso *qso);
     void altd();
     void altDEnter(int level, Qt::KeyboardModifiers mod);
-    void backSlash();
+    void backSlash(int kbdNr);
     void keyCtrlDn();
     void keyCtrlUp();
     void checkSpot(int nr);
@@ -286,9 +301,9 @@ private:
     void disableUI();
     void down();
     void enableUI();
-    void enter(Qt::KeyboardModifiers);
+    void enter(Qt::KeyboardModifiers, int kbdNr=0);
     bool enterFreqOrMode();
-    void esc(Qt::KeyboardModifiers);
+    void esc(Qt::KeyboardModifiers, int kbdNr=0);
     void exchCheck(int nr,const QString &exch);
     void fillSentExch(Qso *qso,int nr);
     void initDupeSheet();
@@ -296,11 +311,12 @@ private:
     void initPointers();
     void initVariables();
     bool isaSpot(double f, int band);
-    void launch_speedUp(Qt::KeyboardModifiers);
-    void launch_speedDn(Qt::KeyboardModifiers);
+    void launch_speedUp(Qt::KeyboardModifiers, int nr);
+    void launch_speedDn(Qt::KeyboardModifiers, int nr);
+    void launch_WPMDialog(int);
     void loadSpots();
     bool logPartial(int nrig, QByteArray partial);
-    void logSearch();
+    void logSearch(int nr);
     void markDupe(int nrig);
     int nDupesheet() const;
     void populateDupesheet();
@@ -328,9 +344,11 @@ private:
     void sprintMode();
     void startTimers();
     void stopTimers();
+    void stopTwokeyboard();
     void superPartial(QByteArray partial);
     void swapRadios();
-    void tab();
+    void tab(int kbdNr);
+    void twoKeyboard();
     void up();
     void updateBandmapDupes(const Qso *qso);
     void updateBreakdown();
@@ -351,6 +369,78 @@ private:
     void autoSendActivate(bool state = false);
     void autoCQdelay(bool incr = true);
     void autoCQActivate(bool state = false);
+    const Qt::Key qtkeys[NKEYS] = {
+                                Qt::Key_Any,       Qt::Key_Escape,     Qt::Key_1,           Qt::Key_2,        Qt::Key_3,
+                                Qt::Key_4,         Qt::Key_5,          Qt::Key_6,           Qt::Key_7,        Qt::Key_8,
+                                Qt::Key_9,         Qt::Key_0,          Qt::Key_Minus,       Qt::Key_Equal,    Qt::Key_Backspace,
+                                Qt::Key_Tab,       Qt::Key_Q,          Qt::Key_W,           Qt::Key_E,        Qt::Key_R,
+                                Qt::Key_T,         Qt::Key_Y,          Qt::Key_U,           Qt::Key_I,        Qt::Key_O,
+                                Qt::Key_P,         Qt::Key_BracketLeft,Qt::Key_BracketRight,Qt::Key_Return,   Qt::Key_Control,
+                                Qt::Key_A,         Qt::Key_S,          Qt::Key_D,           Qt::Key_F,        Qt::Key_G,
+                                Qt::Key_H,         Qt::Key_J,          Qt::Key_K,           Qt::Key_L,        Qt::Key_Semicolon,
+                                Qt::Key_Apostrophe,Qt::Key_QuoteLeft,  Qt::Key_Any,         Qt::Key_Backslash,Qt::Key_Z,
+                                Qt::Key_X,         Qt::Key_C,          Qt::Key_V,           Qt::Key_B,        Qt::Key_N,
+                                Qt::Key_M,         Qt::Key_Comma,      Qt::Key_Period,      Qt::Key_Slash,    Qt::Key_Shift,
+                                Qt::Key_Asterisk,  Qt::Key_Alt,        Qt::Key_Space,       Qt::Key_CapsLock, Qt::Key_F1,
+                                Qt::Key_F2,        Qt::Key_F3,         Qt::Key_F4,          Qt::Key_F5,       Qt::Key_F6,
+                                Qt::Key_F7,        Qt::Key_F8,         Qt::Key_F9,          Qt::Key_F10,      Qt::Key_NumLock,
+                                Qt::Key_ScrollLock,Qt::Key_7,          Qt::Key_8,           Qt::Key_9,        Qt::Key_Minus,
+                                Qt::Key_4,         Qt::Key_5,          Qt::Key_6,           Qt::Key_Plus,     Qt::Key_1,
+                                Qt::Key_2,         Qt::Key_3,          Qt::Key_0,           Qt::Key_Period,   Qt::Key_Any,
+                                Qt::Key_Any,       Qt::Key_Any,        Qt::Key_F11,         Qt::Key_F12,      Qt::Key_Any,
+                                Qt::Key_Any,       Qt::Key_Any,        Qt::Key_Any,         Qt::Key_Any,      Qt::Key_Any,
+                                Qt::Key_Enter,     Qt::Key_Control,    Qt::Key_Slash,       Qt::Key_SysReq,   Qt::Key_Alt,
+                                Qt::Key_Any,       Qt::Key_Any,        Qt::Key_Home,        Qt::Key_Up,       Qt::Key_PageUp,
+                                Qt::Key_Left,      Qt::Key_Right,      Qt::Key_End,         Qt::Key_Down,     Qt::Key_PageDown,
+                                Qt::Key_Insert,    Qt::Key_Delete};
+
+
+    const QString keys[NKEYS] = { "", QByteArray::fromHex("1b"),"1","2",                      "3",
+                               "4","5",                      "6","7",                      "8",
+                               "9","0",                      "-","=",                      "",
+                               "", "q",                      "w","e",                      "r",
+                               "t","y",                      "u","i",                      "o",
+                               "p","[",                      "]",QByteArray::fromHex("0d"),QByteArray::fromHex("09"),
+                               "a","s",                      "d","f",                      "g",
+                               "h","j",                      "k","l",                      ";",
+                               "'","`",                      "", "\\",                     "z",
+                               "x","c",                      "v","b",                      "n",
+                               "m",",",                      ".","/",                      "",
+                               "", "",                       " ","",                       "",
+                               "", "",                       "", "",                       "",
+                               "", "",                       "", "",                       "",
+                               "", "7",                      "8","9",                      "-",
+                               "4","5",                      "6","+",                      "1",
+                               "2","3",                      "0",".",                      "",
+                                "","",                       "", "",                       "",
+                                "","",                       "", "",                       "",
+                                "","",                       "", "",                       "",
+                                "","",                       "", "",                       "",
+                                "","",                       "", "",                       "",
+                                "",""};
+
+    const QString shiftKeys[NKEYS] = {"",  "",  "!", "@", "#",
+                                   "$", "%", "^", "&", "*",
+                                   "(", ")", "_", "+", "",
+                                   "",  "Q", "W", "E", "R",
+                                   "T", "Y", "U", "I", "O",
+                                   "P", "{", "}", "",  "",
+                                   "A", "S", "D", "F", "G",
+                                   "H", "J", "K", "L", ":",
+                                   "\"","~", "",  "|", "Z",
+                                   "X", "C", "V", "B", "N",
+                                   "M","<",">","?","","","",
+                                   "",  "",  "",  "",  "",
+                                   "",  "",  "",  "",  "",
+                                   "", "",   "",  "",  "",
+                                   "", "7",  "8", "9", "-",
+                                   "4","5",  "6", "+", "1",
+                                   "2","3",  "0", ".", "",
+                                   "", "",   "",  "",  "",
+                                   "", "",   "",  "",  "",
+                                   "", "",   "",  "",  "",
+                                   "", "",   "",  "",  "",
+                                   "", ""};
 };
 
 #endif

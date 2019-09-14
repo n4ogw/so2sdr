@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>SettingsDialog</class>
  <widget class="QDialog" name="SettingsDialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>280</width>
-    <height>335</height>
+    <width>450</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +21,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>280</width>
-    <height>335</height>
+    <width>450</width>
+    <height>380</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>505</width>
-    <height>431</height>
+    <width>565</width>
+    <height>680</height>
    </size>
   </property>
   <property name="font">
@@ -154,7 +157,7 @@
      <item row="4" column="1">
       <widget class="QLineEdit" name="AutoSendLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -167,7 +170,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>200</width>
+         <width>300</width>
          <height>16777215</height>
         </size>
        </property>
@@ -193,7 +196,7 @@
      <item row="5" column="1">
       <widget class="QLineEdit" name="CQRepeatLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -206,7 +209,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>200</width>
+         <width>300</width>
          <height>16777215</height>
         </size>
        </property>
@@ -232,7 +235,7 @@
      <item row="6" column="1">
       <widget class="QLineEdit" name="DuelingCQLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -245,8 +248,8 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>200</width>
-         <height>16777215</height>
+         <width>350</width>
+         <height>400</height>
         </size>
        </property>
        <property name="font">
@@ -286,7 +289,7 @@
      <item row="9" column="1">
       <widget class="QLineEdit" name="UDPPortLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -299,7 +302,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>200</width>
+         <width>300</width>
          <height>16777215</height>
         </size>
        </property>
@@ -313,11 +316,7 @@
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+     <item row="10" column="0">
       <widget class="QLabel" name="label_5">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -342,10 +341,10 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="10" column="1">
       <widget class="QLineEdit" name="ctyLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -372,7 +371,67 @@
        </property>
       </widget>
      </item>
+     <item row="11" column="0">
+      <widget class="QCheckBox" name="kbdCheckBox">
+       <property name="toolTip">
+        <string>In this mode two keyboards are mapped separately to radio1 and radio2. Sprint mode, toggle mode, and alt-D do not coexist with two keyboard mode.</string>
+       </property>
+       <property name="text">
+        <string>Two keyboard mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Keyboard 1 device</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QLineEdit" name="kbd1LineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>/dev/input device for keyboard 1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Keyboard 2 device</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QLineEdit" name="kbd2LineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>/dev/input device for keyboard 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0">
+      <widget class="QCheckBox" name="queueCheckBox">
+       <property name="text">
+        <string>Queue Messages</string>
+       </property>
+      </widget>
+     </item>
     </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="settings_dialog_buttons">
@@ -435,6 +494,38 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kbdCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>kbd1LineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>297</x>
+     <y>294</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>kbdCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>kbd2LineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>297</x>
+     <y>319</y>
     </hint>
    </hints>
   </connection>

@@ -16,33 +16,30 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QFont>
-#include <QFontMetricsF>
-#include "centergriddialog.h"
+#ifndef KEYBOARDHANDLER_H
+#define KEYBOARDHANDLER_H
 
-CenterGridDialog::CenterGridDialog(QWidget *parent) : QDialog(parent)
+#include <QObject>
+#include <QString>
+
+class KeyboardHandler : public QObject
 {
-    setupUi(this);
-    connect(lineEdit,SIGNAL(editingFinished()),this,SLOT(emitgrid()));
+    Q_OBJECT
+public:
+    explicit KeyboardHandler(QString deviceName, QObject *parent = nullptr);
+    void quitHandler();
+    void setDevice(QString);
 
-    QFont font12("sans", 12);
-    QFontMetricsF fm12(font12);
-    label->setFixedHeight(fm12.height());
-    lineEdit->setFixedWidth(fm12.width("0")*50);
-    lineEdit->setFixedHeight(fm12.height());
-    adjustSize();
-    setFixedSize(size());
-    show();
-}
+signals:
+    void readKey(int code,bool shift,bool ctrl,bool alt);
 
-void CenterGridDialog::setText(QByteArray s)
-{
-    lineEdit->setText(s);
-}
+public slots:
+    void run();
 
-void CenterGridDialog::emitgrid()
-{
-    QByteArray text=lineEdit->text().toLatin1();
-    emit(grid(text));
-    close();
-}
+private:
+    QString device;
+    bool quitFlag;
+    int fd;
+};
+
+#endif // KEYBOARDHANDLER_H

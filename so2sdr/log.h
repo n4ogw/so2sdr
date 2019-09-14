@@ -21,6 +21,8 @@
 #include <QFile>
 #include <QList>
 #include <QDateTime>
+#include <QEvent>
+#include <QObject>
 #include <QSettings>
 #include <QSqlDatabase>
 #include "contest.h"
@@ -70,8 +72,10 @@ public:
     QVariant columnName(int c) const;
     ContestType contestType() const;
     Cty* ctyPtr() const;
+    QWidget* currentEditor() const;
     QSqlDatabase &dataBase();
     logDelegate* delegate() const;
+    bool detailIsVisible() const;
     bool dupeCheckingByBand() const;
     void editLogDetail(QModelIndex index);
     QString exchangeName(int) const;
@@ -87,6 +91,7 @@ public:
     void importCabrillo(QString cabFile);
     void initializeContest();
     bool isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const;
+    bool isEditing() const;
     int lastNr() const;
     bool logSearch(QByteArray searchFrag);
     void logSearchClear();
@@ -103,6 +108,7 @@ public:
     int nQso(int band) const;
     QString offTime(int minOffTime, QDateTime start, QDateTime end);
     bool openLogFile(QString fname,bool clear);
+    void postEditorEvent(QEvent *event);
     QByteArray prefillExchange(Qso *qso);
     unsigned int rcvFieldShown() const;
     QSqlRecord record(QModelIndex index);
@@ -155,6 +161,7 @@ private slots:
     void finishEdit(int row,QSqlRecord &r);
 
 private:
+    logDelegate  *logdel;
     bool         logSearchFlag;
     Contest      *contest;
     Cty          *cty;
@@ -162,7 +169,6 @@ private:
     double       lat;
     double       lon;
     int          qsoCnt[N_BANDS];
-    logDelegate  *logdel;
     QList<int>   searchList;
     QSettings&   csettings;
     QSettings&   settings;

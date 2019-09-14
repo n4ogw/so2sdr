@@ -37,6 +37,9 @@
     <pointsize>10</pointsize>
    </font>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>QSO Edit</string>
   </property>
@@ -110,6 +113,9 @@
          <pointsize>10</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
       </widget>
      </item>
      <item row="0" column="0">
@@ -145,6 +151,9 @@
         <font>
          <pointsize>10</pointsize>
         </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
        </property>
       </widget>
      </item>
@@ -199,6 +208,9 @@
            <pointsize>10</pointsize>
           </font>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -207,6 +219,9 @@
           <font>
            <pointsize>10</pointsize>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
          </property>
         </widget>
        </item>
@@ -217,6 +232,9 @@
            <pointsize>10</pointsize>
           </font>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -225,6 +243,9 @@
           <font>
            <pointsize>10</pointsize>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
          </property>
         </widget>
        </item>
@@ -239,6 +260,9 @@
            <pointsize>10</pointsize>
           </font>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -247,6 +271,9 @@
           <font>
            <pointsize>10</pointsize>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
          </property>
         </widget>
        </item>
@@ -257,6 +284,9 @@
            <pointsize>10</pointsize>
           </font>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -265,6 +295,9 @@
           <font>
            <pointsize>10</pointsize>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
          </property>
         </widget>
        </item>

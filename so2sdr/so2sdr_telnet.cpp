@@ -23,6 +23,7 @@
 #include "bandmapinterface.h"
 #include "log.h"
 #include "so2sdr.h"
+#include "ssbmessagedialog.h"
 #include "telnet.h"
 #include "winkey.h"
 
@@ -277,9 +278,13 @@ void So2sdr::checkSpot(int nr)
         prefixCheck(nr, lineEditCall[nr]->text());
         spotListPopUp[nr] = true;
     } else if (abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && log) {
-        if (winkey->isSending() && nr == activeTxRadio)
+        if (cat[nr]->modeType()==CWType && winkey->isSending() && nr == activeTxRadio)
         {
             winkey->cancelcw();
+        }
+        if (cat[nr]->modeType()==PhoneType && ssbMessage->isPlaying() && nr == activeTxRadio)
+        {
+            ssbMessage->cancelMessage();
         }
         if (autoCQMode && nr == autoCQRadio) {
             autoCQActivate(false);
@@ -343,7 +348,7 @@ void So2sdr::checkSpot(int nr)
         setDupeColor(nr,false);
         if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
             if ( lineEditCall[nr ^ 1]->text().simplified().isEmpty() && lineEditExchange[nr ^ 1]->text().simplified().isEmpty()
-                 && nr != activeRadio && !activeR2CQ && !winkey->isSending()) {
+                 && nr != activeRadio && !activeR2CQ && !winkey->isSending() && !ssbMessage->isPlaying()) {
                 if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
                     if (cqMode[nr ^ 1]) {
                         switchRadios();

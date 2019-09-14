@@ -92,17 +92,10 @@ So2rDialog::So2rDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(pa
     ParallelPortComboBox->insertItem(0, "/dev/parport1");
     ParallelPortComboBox->insertItem(0, "/dev/parport0");
 #endif
-#ifdef Q_OS_WIN
-    ParallelPortComboBox->insertItem(0, "0x278");
-    ParallelPortComboBox->insertItem(0, "0x378");
-#endif
     ParallelPortComboBox->setEditable(true); // allow other port numbers to be entered
     ParallelPortComboBox->setCurrentIndex(0);
 #ifdef Q_OS_LINUX
     ParallelPortComboBox->setToolTip("Parallel port access requires the PPDEV kernel module and being in the correct group (usually lp).");
-#endif
-#ifdef Q_OS_WIN
-    ParallelPortComboBox->setToolTip("Parallel port access uses INPOUT32.");
 #endif
     connect(so2rdialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(so2rdialog_buttons, SIGNAL(accepted()), this, SLOT(updateSo2r()));

@@ -19,6 +19,7 @@
 
 #ifndef LOGDELEGATE_H
 #define LOGDELEGATE_H
+#include <QAbstractItemDelegate>
 #include <QStyledItemDelegate>
 #include <QModelIndex>
 #include <QStyleOptionViewItem>
@@ -40,6 +41,9 @@ Q_OBJECT
 
 public:
     logDelegate(QObject *parent, Contest& c, bool *e, QList<int> *l);
+    bool currentlyEditing;
+    mutable QWidget* currentEditor;
+
 signals:
     void startLogEdit();
     void logUpdate(QModelIndex);
@@ -53,8 +57,12 @@ protected:
     virtual QWidget *	createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
     bool editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index );
     bool eventFilter(QObject *obj, QEvent *event);
+
 public slots:
     void startDetailedEdit();
+
+private slots:
+    void closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint = QAbstractItemDelegate::NoHint);
 
 private:
     Contest& contest;

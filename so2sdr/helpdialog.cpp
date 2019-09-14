@@ -20,9 +20,11 @@
 #include <QFile>
 #include <QIODevice>
 #include <QCommonStyle>
+#include<QStringList>
 #include <QStyle>
 #include <QTextStream>
 #include "helpdialog.h"
+#include "utils.h"
 
 HelpDialog::HelpDialog(QString fileName, QWidget *parent) : QDialog(parent)
 {
@@ -35,7 +37,7 @@ HelpDialog::HelpDialog(QString fileName, QWidget *parent) : QDialog(parent)
     backButton->setIcon(style.standardIcon(QStyle::SP_ArrowBack));
     connect(forwardButton,SIGNAL(clicked()),HelpTextEdit,SLOT(forward()));
     forwardButton->setIcon(style.standardIcon(QStyle::SP_ArrowForward));
-
+    HelpTextEdit->setSearchPaths(QStringList(dataDirectory()+"help/"));
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream ts(&file);

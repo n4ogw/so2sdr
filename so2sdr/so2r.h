@@ -34,6 +34,7 @@ class So2r : public QObject
 public:
     explicit So2r(QSettings &s,uiSize sz,QObject *parent = 0);
     ~So2r();
+    bool isVisible();
     void sendMicrohamCommand(QByteArray c);
     void sendOtrspCommand(QByteArray c,int nr);
     bool stereoActive() const;

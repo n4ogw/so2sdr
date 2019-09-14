@@ -48,6 +48,7 @@ public:
     friend class So2sdr;
 
 signals:
+    void finished();
     void recordingStatus(bool);
     void sendMsg(QByteArray,bool);
     void setPtt(int nr,int state);

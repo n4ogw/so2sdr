@@ -44,6 +44,7 @@ public:
 
 signals:
     void cwCanceled();
+    void finished();
     void textSent(const QString& t,int);
     void version(int ver);
     void winkeyTx(bool, int);

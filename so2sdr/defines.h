@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.4.8";
+const QByteArray Version = "2.5.0";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -51,9 +51,6 @@ const int defaultParallelPortAudioPin=4;
 const int defaultParallelPortTxPin=3;
 #ifdef Q_OS_LINUX
 const QString defaultParallelPort = "/dev/parport0";
-#endif
-#ifdef Q_OS_WIN
-const QString defaultParallelPort = "0x378";
 #endif
 
 // /////////////// winkey //////////////////
@@ -80,9 +77,6 @@ Q_DECLARE_TYPEINFO(WinkeyParam, Q_PRIMITIVE_TYPE);
 
 #ifdef Q_OS_LINUX
 const QString defaultSerialPort[3] = {"/dev/ttyS0","/dev/ttyS1","/dev/ttyS2"};
-#endif
-#ifdef Q_OS_WIN
-const QString defaultSerialPort[3] = {"COM1","COM2","COM3"};
 #endif
 
 const int NRIG=2;
@@ -318,6 +312,9 @@ const int timerSettings[]={
     100 // auto-CQ, dueling CQ resolution
 };
 
+// delay in ms between queued messages (two keyboard mode)
+const int queueDelay=200;
+
 /*! number of minutes in moving average of rate display
  */
 const int RATE_AVG_MINUTES=3;
@@ -325,6 +322,9 @@ const int RATE_AVG_MINUTES=3;
 // powers of 2
 const unsigned int bits[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
                             131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432};
+
+// number of keys in two keyboard keymap
+const int NKEYS=112;
 
 // maximum number of exchange fields
 // NOTE: the SQL fields are currently hard-coded at 4, do not change this!
@@ -394,6 +394,18 @@ const int MAX_CAB_FIELDS=7;
 
 // s_xxx are used in station config file (so2sdr.ini)
 // c_xxx are used in contest config file
+
+const QString s_twokeyboard_enable="twokeyboard/enable";
+const bool s_twokeyboard_enable_def=false;
+
+const QString s_twokeyboard_device[NRIG]={"twokeyboard/device1","twokeyboard/device2"};
+const QString s_twokeyboard_device_def[NRIG]={"",""};
+
+const QString s_twokeyboard_dev1="twokeyboard/device1";
+const QString s_twokeyboard_dev1_def="";
+
+const QString s_queuemessages="twokeyboard/queuemessages";
+const bool s_queuemessages_def=false;
 
 const QString s_contestdirectory="main/contestdirectory";
 const QString s_contestdirectory_def=QDir::homePath();
@@ -532,9 +544,6 @@ const QString s_sdr_config[NRIG]={"sdr/config1","sdr/config2"};
 #ifdef Q_OS_LINUX
 const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/.so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/.so2sdr/so2sdr-bandmap2.ini"};
 #endif
-#ifdef Q_OS_WIN
-const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/so2sdr/so2sdr-bandmap2.ini"};
-#endif
 
 const QString s_sdr_ip[NRIG]={"sdr/ip1","sdr/ip2"};
 const QString s_sdr_ip_def[NRIG]={"localhost","localhost"};
@@ -626,7 +635,7 @@ const QString s_settings_cqrepeat="main/cqrepeat";
 const double s_settings_cqrepeat_def=3000;
 
 const QString s_settings_duelingcqdelay="main/duelingcqdelay";
-const double s_settings_duelingcqdelay_def=0.0;
+const double s_settings_duelingcqdelay_def=4.0;
 
 const QString s_settings_autosend_mode="main/autosendmode";
 const int s_settings_autosend_mode_def=0;

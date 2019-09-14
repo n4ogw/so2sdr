@@ -17,6 +17,7 @@
 
  */
 #include <QSettings>
+#include <QTimer>
 #include "defines.h"
 #include "winkey.h"
 
@@ -94,6 +95,7 @@ void Winkey::receive()
                     // the radio may have been switched since transmit started, need rx signal
                     // for the sending radio
                     emit(winkeyTx(false, txRig));
+                    QTimer::singleShot(queueDelay,this,SIGNAL(finished()));
                 }
                 // Pushbutton status only sent to host in WK2 mode by admin command, (0x00, 11)
             } else if ((wkbyte & 0xc0) == 0x80) {

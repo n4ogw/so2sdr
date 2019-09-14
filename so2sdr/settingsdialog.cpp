@@ -33,11 +33,12 @@ SettingsDialog::SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent)  : Q
     DuelingCQLineEdit->setFixedWidth(sizes.width*5);
     label_5->setFixedWidth(sizes.width*8);
     ctyLineEdit->setFixedWidth(sizes.width*20);
-    adjustSize();
-    setFixedSize(size());
-
+    kbd1LineEdit->setFixedWidth(sizes.width*20);
+    kbd2LineEdit->setFixedWidth(sizes.width*20);
     AutoSendComboBox->insertItem(0, "Semi");
     AutoSendComboBox->insertItem(1, "Auto");
+    adjustSize();
+    setFixedSize(size());
     connect(settings_dialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(settings_dialog_buttons, SIGNAL(accepted()), this, SLOT(updateSettings()));
     loadSettings();
@@ -60,6 +61,12 @@ void SettingsDialog::loadSettings()
     ctyLineEdit->setCursorPosition(0);
     UDPCheckBox->setChecked(settings.value(s_wsjtx_enable,s_wsjtx_enable_def).toBool());
     UDPPortLineEdit->setText(settings.value(s_wsjtx_udp,s_wsjtx_udp_def).toString());
+    kbd1LineEdit->setText(settings.value(s_twokeyboard_device[0],s_twokeyboard_device_def[0]).toString());
+    kbd2LineEdit->setText(settings.value(s_twokeyboard_device[1],s_twokeyboard_device_def[1]).toString());
+    kbd1LineEdit->setEnabled(settings.value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
+    kbd2LineEdit->setEnabled(settings.value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
+    kbdCheckBox->setChecked(settings.value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
+    queueCheckBox->setChecked(settings.value(s_queuemessages,s_queuemessages_def).toBool());
 }
 
 void SettingsDialog::updateSettings()
@@ -74,6 +81,10 @@ void SettingsDialog::updateSettings()
     settings.setValue(s_cty_url,ctyLineEdit->text().trimmed());
     settings.setValue(s_wsjtx_enable,UDPCheckBox->isChecked());
     settings.setValue(s_wsjtx_udp,UDPPortLineEdit->text().toInt());
+    settings.setValue(s_twokeyboard_enable,kbdCheckBox->isChecked());
+    settings.setValue(s_twokeyboard_device[0],kbd1LineEdit->text());
+    settings.setValue(s_twokeyboard_device[1],kbd2LineEdit->text());
+    settings.setValue(s_queuemessages,queueCheckBox->isChecked());
     settings.sync();
     emit(settingsUpdate());
     accept();

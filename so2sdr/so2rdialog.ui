@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>So2rDialog</class>
  <widget class="QDialog" name="So2rDialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -33,6 +36,9 @@
     <family>Liberation Sans</family>
     <pointsize>10</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>SO2R devices</string>

@@ -1,3 +1,11 @@
+These documentation files are out of date. I suggest reading the help
+file available inside so2sdr, which is much more up to date.
+
+RTC 09/2019
+
+------------
+
+
 Building the HTML and PDF versions of this manual requires the
 asciidoc package which is dependent on docbook and tex packages.
 Needless to say, this is a large dependency, and the generation

@@ -135,11 +135,6 @@ int getBand(double f)
 */
 QString dataDirectory()
 {
-#ifdef Q_OS_WIN
-    // in Windows keep data files in same directory as executable
-	return qApp->applicationDirPath();
-#endif
-
 #ifdef Q_OS_LINUX
 	// INSTALL_DIR is usually /usr/local
         return QString(INSTALL_DIR)+QString("/share/so2sdr/");
@@ -150,10 +145,6 @@ QString dataDirectory()
 	*/
 QString userDirectory()
 {
-#ifdef Q_OS_WIN
-	return QDir::homePath() + "/so2sdr";
-#endif
-
 #ifdef Q_OS_LINUX
 	return QDir::homePath() + "/.so2sdr";
 #endif

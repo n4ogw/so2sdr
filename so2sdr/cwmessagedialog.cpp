@@ -48,7 +48,6 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,QWidget *paren
     funcEditPtr[11] = cq_f12_edit;
     for (int i=0;i<12;i++) {
         funcEditPtr[i]->setFixedWidth(sizes.width*35);
-        funcEditPtr[i]->setFixedHeight(sizes.height*1.2);
     }
 
     ctrlFuncEditPtr[0]  = cq_ctrl_f1_edit;
@@ -65,7 +64,6 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,QWidget *paren
     ctrlFuncEditPtr[11] = cq_ctrl_f12_edit;
     for (int i=0;i<12;i++) {
         ctrlFuncEditPtr[i]->setFixedWidth(sizes.width*35);
-        ctrlFuncEditPtr[i]->setFixedHeight(sizes.height*1.2);
     }
 
     shiftFuncEditPtr[0]  = cq_shift_f1_edit;
@@ -82,7 +80,6 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,QWidget *paren
     shiftFuncEditPtr[11] = cq_shift_f12_edit;
     for (int i=0;i<12;i++) {
         shiftFuncEditPtr[i]->setFixedWidth(sizes.width*35);
-        shiftFuncEditPtr[i]->setFixedHeight(sizes.height*1.2);
     }
 
     excFuncEditPtr[0]  = exc_f1_edit;
@@ -99,7 +96,6 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,QWidget *paren
     excFuncEditPtr[11] = exc_f12_edit;
     for (int i=0;i<12;i++) {
         excFuncEditPtr[i]->setFixedWidth(sizes.width*35);
-        excFuncEditPtr[i]->setFixedHeight(sizes.height*1.2);
     }
 
     for (int i = 0; i < N_FUNC; i++) {
