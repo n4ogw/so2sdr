@@ -5,6 +5,54 @@ category: changes
 date: 2015-07-31 08:53:50
 order: 1
 ---
+
+## version 2.5.0 (09/14/2019)
+
+* add two keyboard support
+* update help file
+
+## version 2.4.8 (06/05/2019)
+
+* fix bugs with echo of winkey sending
+* fix some typos in help file
+
+## version 2.4.7 (04/07/2019)
+
+* fix bug in multimode contests. Second mode qsos were showing as dupes
+* fix multiplier bug in CQP
+
+## version 2.4.6 (11/10/2018)
+
+* add 630M and 2200M bands
+* fix crashes when not on a contest band
+* fix bug with window layout changing when call entered
+* fix bug could not delete call/freq moved
+* fix bug calls on bandmap not removed if band had changed
+
+## version 2.4.5 (08/10/2018)
+
+* improve appeareance on high-DPI displays
+* fix bug with dupesheet in Sprint
+
+## version 2.4.4 (07/11/2018)
+
+* update IARU HQ mults
+* fix display of frequency when editing qso with ctrl-e
+
+## version 2.4.3 (07/03/2018)
+
+bug fixes:
+
+* fix core dump if no network connection for CTY download
+* fix x2 zoom in bandmap
+* make bandmap offset/swap IQ consistent between main setting and per-band
+* prevent some writes to network SDR when port closed
+* fix qsy by clicking on bandmap on 144 MHz (was only qsying to nearest KHz)
+* correct freq format in cabrillo output for VHF contests; only give band
+* clicking on entry window changes RX and TX. This fixes bug where entering a frequency immediately after program start also changed the radio
+* Fix error in contest.cpp where uninitialized score object might be accessed.
+* Fix error in mobile dupe checking.
+
 ## version 2.4.2 (06/09/2018)
 
 * frequency not sent correctly to bandmap; caused bandmap freq to only update every KHz
