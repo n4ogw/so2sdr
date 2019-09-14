@@ -13,6 +13,8 @@ The program is primarily developed for Linux.
 
 ### News
 
+* 09/14/2019 new feature version 2.5.0: two keyboard support (experimental)
+
 * 06/08/2018 support ARRL June VHF contest
 
 * 04/05/2018 support Mississippi qso party
