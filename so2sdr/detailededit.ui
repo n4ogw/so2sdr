@@ -33,12 +33,11 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
     <pointsize>10</pointsize>
    </font>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::NoFocus</enum>
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>QSO Edit</string>

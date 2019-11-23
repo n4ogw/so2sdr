@@ -21,9 +21,11 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
     <pointsize>10</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Cabrillo export</string>
@@ -59,7 +61,6 @@
           <widget class="QLabel" name="label_11">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -72,7 +73,6 @@
           <widget class="QComboBox" name="comboBoxContestName">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -404,7 +404,6 @@
           <widget class="QLabel" name="labelCabrillo1">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -426,7 +425,6 @@
           <widget class="QLabel" name="labelCabrillo2">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -448,7 +446,6 @@
           <widget class="QLabel" name="labelCabrillo3">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -470,7 +467,6 @@
           <widget class="QLabel" name="labelCabrillo4">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -492,7 +488,6 @@
           <widget class="QLabel" name="labelCabrillo5">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -514,7 +509,6 @@
           <widget class="QLabel" name="labelCabrillo6">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -536,7 +530,7 @@
           <widget class="QLabel" name="labelCabrillo7">
            <property name="font">
             <font>
-             <family>Sans</family>
+             <family>Bitstream Vera Sans Mono</family>
              <pointsize>10</pointsize>
             </font>
            </property>

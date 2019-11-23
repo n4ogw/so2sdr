@@ -33,9 +33,11 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
     <pointsize>10</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
@@ -81,7 +83,7 @@
         <string>LED indicators to show audio and transmit focus</string>
        </property>
        <property name="text">
-        <string>Audio/TX Focus Indictors</string>
+        <string>Focus Indictors</string>
        </property>
       </widget>
      </item>
@@ -96,7 +98,7 @@
         <string>Immediately log QSO when sending exchange (S&amp;P mode)</string>
        </property>
        <property name="text">
-        <string>Send exch and log (S/P)</string>
+        <string>Send and log (S/P)</string>
        </property>
       </widget>
      </item>
@@ -150,7 +152,7 @@
         <string>Automatically start CW when this many characters are entered in the callsign (Set to 0 to disable)</string>
        </property>
        <property name="text">
-        <string>Auto Send &quot;Auto&quot; Char Count</string>
+        <string>Auto Send Char Count</string>
        </property>
       </widget>
      </item>
@@ -189,7 +191,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Auto CQ Repeat Time (sec)</string>
+        <string>Auto CQ Repeat (s)</string>
        </property>
       </widget>
      </item>
@@ -228,7 +230,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Dueling CQ Delay (sec)</string>
+        <string>Dueling CQ Delay (s)</string>
        </property>
       </widget>
      </item>
@@ -332,12 +334,11 @@
        </property>
        <property name="font">
         <font>
-         <family>Sans</family>
          <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>CTY file</string>
+        <string>CTY file </string>
        </property>
       </widget>
      </item>
@@ -449,7 +450,6 @@
      </property>
      <property name="font">
       <font>
-       <family>Sans</family>
        <pointsize>10</pointsize>
       </font>
      </property>

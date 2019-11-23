@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QSettings>
 #include <QString>
+#include <QWidget>
 #include "defines.h"
 #include "otrsp.h"
 #include "microham.h"
@@ -32,7 +33,7 @@ class So2r : public QObject
 {
     Q_OBJECT
 public:
-    explicit So2r(QSettings &s,uiSize sz,QObject *parent = 0);
+  explicit So2r(QSettings &s,uiSize sz,QObject *parent = 0,QWidget *widgetParent = 0);
     ~So2r();
     bool isVisible();
     void sendMicrohamCommand(QByteArray c);

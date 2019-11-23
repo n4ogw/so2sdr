@@ -303,7 +303,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     removeEventFilter(wpmLineEditPtr[1]);
 
     contestDirectory = QDir::homePath();
-    so2r=new So2r(*settings,sizes,this);
+    so2r=new So2r(*settings,sizes,this,this);
     connect(so2r,SIGNAL(error(QString)),errorBox,SLOT(showMessage(const QString &)));
     connect(actionSo2r,SIGNAL(triggered()),so2r,SLOT(showDialog()));
     connect(so2r,SIGNAL(So2rDialogAccepted()),this,SLOT(regrab()));

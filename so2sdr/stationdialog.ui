@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>StationDialog</class>
  <widget class="QDialog" name="StationDialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -30,9 +33,11 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
     <pointsize>10</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Station Data</string>
@@ -684,7 +689,6 @@ the exchange</string>
     <widget class="QDialogButtonBox" name="station_dialog_buttons">
      <property name="font">
       <font>
-       <family>Sans</family>
        <pointsize>10</pointsize>
       </font>
      </property>

@@ -30,7 +30,7 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
+    <family>Monospace</family>
     <pointsize>10</pointsize>
    </font>
   </property>

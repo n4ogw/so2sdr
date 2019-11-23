@@ -30,7 +30,6 @@
   </property>
   <property name="font">
    <font>
-    <family>Liberation Sans</family>
     <pointsize>10</pointsize>
    </font>
   </property>
@@ -42,7 +41,6 @@
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
-       <family>Sans</family>
        <pointsize>10</pointsize>
       </font>
      </property>

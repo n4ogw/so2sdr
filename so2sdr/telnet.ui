@@ -24,7 +24,6 @@
     <widget class="QTextEdit" name="TelnetTextEdit">
      <property name="font">
       <font>
-       <family>Monospace</family>
        <italic>false</italic>
       </font>
      </property>

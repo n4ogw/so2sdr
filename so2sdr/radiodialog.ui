@@ -30,9 +30,11 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
     <pointsize>10</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Radios</string>
@@ -402,7 +404,6 @@
     <widget class="QDialogButtonBox" name="radiodialog_buttons">
      <property name="font">
       <font>
-       <family>Sans</family>
        <pointsize>10</pointsize>
       </font>
      </property>

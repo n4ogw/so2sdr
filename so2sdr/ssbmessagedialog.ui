@@ -34,9 +34,11 @@
   </property>
   <property name="font">
    <font>
-    <family>Sans</family>
     <pointsize>10</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Voice Messages</string>
@@ -1305,7 +1307,6 @@
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>
@@ -1457,7 +1458,6 @@
           <widget class="QLabel" name="label_6">
            <property name="font">
             <font>
-             <family>Sans</family>
              <pointsize>10</pointsize>
             </font>
            </property>

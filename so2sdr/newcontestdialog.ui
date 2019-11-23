@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>NewContestDialog</class>
  <widget class="QDialog" name="NewContestDialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +12,9 @@
     <width>414</width>
     <height>163</height>
    </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>New Contest</string>
