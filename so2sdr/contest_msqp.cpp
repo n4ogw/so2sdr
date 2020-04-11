@@ -23,6 +23,7 @@
 MSQP::MSQP(QSettings &cs, QSettings &ss) : Contest(cs,ss)
 {
     setVExch(true);
+    setZoneType(1);
     dupeCheckingEveryBand = true;
     nExch                 = 2;
     logFieldPrefill       = new bool[nExch];
