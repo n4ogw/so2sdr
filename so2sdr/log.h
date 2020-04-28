@@ -153,7 +153,7 @@ signals:
 public slots:
     void mobileDupeCheck(Qso *qso);
     void setOrigRecord(QModelIndex index);
-    void updateRecord(QSqlRecord r);
+    void updateRecord(QSqlRecord &r);
 
 private slots:
     void startQsoEditRow(QModelIndex index);

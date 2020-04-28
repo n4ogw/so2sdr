@@ -44,9 +44,12 @@ Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
     // set flags appropriate for each column
     // this defines which columns are editable
     switch (index.column()) {
+   // case SQL_COL_NR:
+   //     f=Qt::NoItemFlags;
+  //      break;
     case SQL_COL_NR:
-        f=Qt::NoItemFlags;
-        break;
+    case SQL_COL_BAND:
+    case SQL_COL_DATE:
     case SQL_COL_CALL:
     case SQL_COL_FREQ:
     case SQL_COL_TIME:
@@ -58,6 +61,7 @@ Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
     case SQL_COL_RCV2:
     case SQL_COL_RCV3:
     case SQL_COL_RCV4:
+    case SQL_COL_MODE:
         f=f | Qt::ItemIsEditable;
         break;
     case SQL_COL_VALID:
@@ -140,7 +144,6 @@ bool LogQLineEdit::eventFilter(QObject *obj, QEvent *event)
             if (!undoText.isEmpty()) {
                 setText(undoText);
             }
-          //  emit(editingFinished());
             break;
         }
     }

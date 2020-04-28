@@ -53,7 +53,7 @@ Log::Log(QSettings &cs,QSettings &s, uiSize sizes,QObject *parent = 0) : QObject
     logSearchFlag=false;
     searchList.clear();
     detail=new DetailedEdit(sizes);
-    connect(detail,SIGNAL(editedRecord(QSqlRecord)),this,SLOT(updateRecord(QSqlRecord)));
+    connect(detail,SIGNAL(editedRecord(QSqlRecord &)),this,SLOT(updateRecord(QSqlRecord &)));
     detail->hide();
     cty = new Cty(csettings);
 }
@@ -938,13 +938,10 @@ void Log::importCabrillo(QString cabFile)
         emit(progressCnt(cnt));
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
-    model->submitAll();
-    model->database().commit();
-    rescore();
-
     while (model->canFetchMore()) {
         model->fetchMore();
     }
+    emit(update());
     emit(progressCnt(maxLines));
 }
 
@@ -1089,12 +1086,11 @@ void Log::rescore()
     }
 }
 
-void Log::updateRecord(QSqlRecord r)
+void Log::updateRecord(QSqlRecord &r)
 {
     if (!model->setRecord(r.value(SQL_COL_NR).toInt()-1,r)) {
         qDebug("Log::setRecord failed");
     }
-    model->submitAll();
     while (model->canFetchMore()) {
         model->fetchMore();
     }
@@ -1139,11 +1135,11 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
     }
     for (int i = 0; i < m.rowCount(); i++) {
         // if multi-mode contest, check for matching mode
-      //  if (csettings.value(c_multimode,c_multimode_def).toBool()) {
-       //     if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
-       //         continue;
-       //     }
-      //  }
+        if (csettings.value(c_multimode,c_multimode_def).toBool()) {
+            if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
+                continue;
+            }
+        }
         QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
 
         // special case: ARRL 10M contest: use band slots 4 and 5 for CW/SSB

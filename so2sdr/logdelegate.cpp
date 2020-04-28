@@ -97,9 +97,14 @@ QWidget* logDelegate::createEditor ( QWidget * parent, const QStyleOptionViewIte
     Q_UNUSED(option)
     Q_UNUSED(index)
 
-    // no editor for checkbox or frequency; frequency can still be edited in
+    // no editor for nr, valid checkbox, band, mode, date, or frequency; date, mode and frequency can still be edited in
     // detailed edit dialog (control-e)
-    if (index.column()==SQL_COL_VALID || index.column()==SQL_COL_FREQ) return 0;
+    if (index.column()==SQL_COL_VALID ||
+            index.column()==SQL_COL_MODE ||
+            index.column()==SQL_COL_FREQ ||
+            index.column()==SQL_COL_NR ||
+            index.column()==SQL_COL_BAND ||
+            index.column()==SQL_COL_DATE) return 0;
 
     QLineEdit *le=new LogQLineEdit(parent);
     le->installEventFilter(le);

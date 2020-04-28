@@ -31,9 +31,26 @@ DetailedEdit::DetailedEdit(uiSize sizes,QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
     connect(this,SIGNAL(accepted()),this,SLOT(updateRecord()));
-    for (int i=0;i<nModes;i++) {
-        modeComboBox->insertItem(i,modes[i]);
-    }
+    modeComboBox->insertItem(modeComboBox->count(),"NONE",RIG_MODE_NONE);
+    modeComboBox->insertItem(modeComboBox->count(),"CW",RIG_MODE_CW);
+    modeComboBox->insertItem(modeComboBox->count(),"CWR",RIG_MODE_CWR);
+    modeComboBox->insertItem(modeComboBox->count(),"LSB",RIG_MODE_LSB);
+    modeComboBox->insertItem(modeComboBox->count(),"USB",RIG_MODE_USB);
+    modeComboBox->insertItem(modeComboBox->count(),"RTTY",RIG_MODE_RTTY);
+    modeComboBox->insertItem(modeComboBox->count(),"RTTYR",RIG_MODE_RTTYR);
+    modeComboBox->insertItem(modeComboBox->count(),"FM",RIG_MODE_FM);
+    modeComboBox->insertItem(modeComboBox->count(),"FMN",RIG_MODE_FMN);
+    modeComboBox->insertItem(modeComboBox->count(),"AMS",RIG_MODE_AMS);
+    modeComboBox->insertItem(modeComboBox->count(),"DSB",RIG_MODE_DSB);
+    modeComboBox->insertItem(modeComboBox->count(),"FAX",RIG_MODE_FAX);
+    modeComboBox->insertItem(modeComboBox->count(),"SAH",RIG_MODE_SAH);
+    modeComboBox->insertItem(modeComboBox->count(),"SAM",RIG_MODE_SAM);
+    modeComboBox->insertItem(modeComboBox->count(),"PKTAM",RIG_MODE_PKTAM);
+    modeComboBox->insertItem(modeComboBox->count(),"PKTLSB",RIG_MODE_PKTLSB);
+    modeComboBox->insertItem(modeComboBox->count(),"PKTUSB",RIG_MODE_PKTUSB);
+    modeComboBox->insertItem(modeComboBox->count(),"ECSSLSB",RIG_MODE_ECSSLSB);
+    modeComboBox->insertItem(modeComboBox->count(),"ECSSUSB",RIG_MODE_ECSSUSB);
+
     rec.clear();
     callLineEdit->setValidator(new UpperValidator(callLineEdit));
     sentExch1LineEdit->setValidator(new UpperValidator(sentExch1LineEdit));
@@ -63,7 +80,7 @@ void DetailedEdit::loadRecord(const QSqlRecord &r,int nexchange)
                      rec.value(SQL_COL_DATE).toByteArray().mid(2,2).toInt());
     QTime time=QTime(rec.value(SQL_COL_TIME).toByteArray().left(2).toInt(),
                      rec.value(SQL_COL_TIME).toByteArray().right(2).toInt());
-    modeComboBox->setCurrentIndex(rec.value(SQL_COL_MODE).toInt());
+    modeComboBox->setCurrentIndex(modeComboBox->findData(QVariant(rec.value(SQL_COL_MODE))));
     dateTimeEdit->setDateTime(QDateTime(date,time));
     dateTimeEdit->setTimeSpec(Qt::UTC);
     callLineEdit->setText(rec.value(SQL_COL_CALL).toString());
@@ -76,7 +93,6 @@ void DetailedEdit::loadRecord(const QSqlRecord &r,int nexchange)
     rcvExch2LineEdit->setText(rec.value(SQL_COL_RCV2).toString());
     rcvExch3LineEdit->setText(rec.value(SQL_COL_RCV3).toString());
     rcvExch4LineEdit->setText(rec.value(SQL_COL_RCV4).toString());
-    //freqLineEdit->setText(rec.value(SQL_COL_FREQ).toString());
     freqLineEdit->setText(QString::number(rec.value(SQL_COL_FREQ).toDouble(),'f',0));
     if (nexchange<4) {
         sentExch4LineEdit->hide();
@@ -135,7 +151,7 @@ void DetailedEdit::updateRecord()
         rec.setGenerated(SQL_COL_FREQ,true);
     }
     if (modeComboBox->currentIndex()!=rec.value(SQL_COL_MODE).toInt()) {
-        rec.setValue(SQL_COL_MODE,QVariant(modeComboBox->currentIndex()));
+        rec.setValue(SQL_COL_MODE,QVariant(modeComboBox->currentData()));
         rec.setGenerated(SQL_COL_MODE,true);
     }
     if (dateTimeEdit->date().toString("MMddyyyy")!=rec.value(SQL_COL_DATE).toString()) {

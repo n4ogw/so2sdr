@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.1
+## SO2SDR Help file version 2.5.2
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -953,6 +953,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.2 (04/28/2020)
+
+* fix dupe checking in multi-mode contests
+* fix cabrillo import
+* allow changing mode when editing qso
 
 ## version 2.5.1 (11/23/2019)
 

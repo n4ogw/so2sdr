@@ -38,7 +38,7 @@ public:
 private slots:
     void updateRecord();
 signals:
-    void editedRecord(QSqlRecord);
+    void editedRecord(QSqlRecord &) ;
 private:
     QSqlRecord rec;
 };
