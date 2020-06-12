@@ -67,11 +67,9 @@ int MSQP::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // RST
-        return(4);
-        break;
+        return 4;
     case 1: //  mult
-        return(5);
-        break;
+        return 5;
     default:
         return 4;
     }
@@ -82,24 +80,19 @@ int MSQP::fieldWidth(int col) const
  */
 int MSQP::numberField() const
 {
-    return(-1);
+    return -1;
 }
 
 unsigned int MSQP::rcvFieldShown() const
 // 1 2=mult --> show
 {
-    return(2);
+    return 2;
 }
 
 void MSQP::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
 {
     readMultFile(MultFile, cty);
     zeroScore();
-}
-
-unsigned int MSQP::sntFieldShown() const
-{
-    return(0); // show nothing
 }
 
 /*!

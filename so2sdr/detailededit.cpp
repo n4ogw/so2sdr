@@ -52,6 +52,7 @@ DetailedEdit::DetailedEdit(uiSize sizes,QWidget *parent) : QDialog(parent)
     modeComboBox->insertItem(modeComboBox->count(),"ECSSUSB",RIG_MODE_ECSSUSB);
 
     rec.clear();
+    adifLineEdit->setValidator(new UpperValidator(adifLineEdit));
     callLineEdit->setValidator(new UpperValidator(callLineEdit));
     sentExch1LineEdit->setValidator(new UpperValidator(sentExch1LineEdit));
     sentExch2LineEdit->setValidator(new UpperValidator(sentExch2LineEdit));
@@ -63,7 +64,7 @@ DetailedEdit::DetailedEdit(uiSize sizes,QWidget *parent) : QDialog(parent)
     rcvExch4LineEdit->setValidator(new UpperValidator(rcvExch4LineEdit));
     freqLineEdit->setValidator(new QIntValidator(freqLineEdit));
     callLineEdit->setFocus();
-    callLineEdit->setFixedWidth(sizes.width*12);
+    callLineEdit->setFixedWidth(qRound(sizes.width*12));
     adjustSize();
     setFixedSize(size());
 }
@@ -81,6 +82,7 @@ void DetailedEdit::loadRecord(const QSqlRecord &r,int nexchange)
     QTime time=QTime(rec.value(SQL_COL_TIME).toByteArray().left(2).toInt(),
                      rec.value(SQL_COL_TIME).toByteArray().right(2).toInt());
     modeComboBox->setCurrentIndex(modeComboBox->findData(QVariant(rec.value(SQL_COL_MODE))));
+    adifLineEdit->setText(rec.value(SQL_COL_ADIF_MODE).toString());
     dateTimeEdit->setDateTime(QDateTime(date,time));
     dateTimeEdit->setTimeSpec(Qt::UTC);
     callLineEdit->setText(rec.value(SQL_COL_CALL).toString());
@@ -153,6 +155,10 @@ void DetailedEdit::updateRecord()
     if (modeComboBox->currentIndex()!=rec.value(SQL_COL_MODE).toInt()) {
         rec.setValue(SQL_COL_MODE,QVariant(modeComboBox->currentData()));
         rec.setGenerated(SQL_COL_MODE,true);
+    }
+    if (adifLineEdit->text()!=rec.value(SQL_COL_ADIF_MODE).toString()) {
+        rec.setValue(SQL_COL_ADIF_MODE,QVariant(adifLineEdit->text()));
+        rec.setGenerated(SQL_COL_ADIF_MODE,true);
     }
     if (dateTimeEdit->date().toString("MMddyyyy")!=rec.value(SQL_COL_DATE).toString()) {
         rec.setValue(SQL_COL_DATE,QVariant(dateTimeEdit->date().toString("MMddyyyy")));

@@ -29,10 +29,10 @@
 SDRDialog::SDRDialog(QSettings& s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    lineEditIP1->setFixedWidth(sizes.width*15);
-    lineEditPort1->setFixedWidth(sizes.width*15);
-    lineEditIP2->setFixedWidth(sizes.width*15);
-    lineEditPort2->setFixedWidth(sizes.width*15);
+    lineEditIP1->setFixedWidth(qRound(sizes.width*15));
+    lineEditPort1->setFixedWidth(qRound(sizes.width*15));
+    lineEditIP2->setFixedWidth(qRound(sizes.width*15));
+    lineEditPort2->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 
@@ -55,7 +55,7 @@ SDRDialog::SDRDialog(QSettings& s, uiSize sizes, QWidget *parent) : QDialog(pare
 
 void SDRDialog::fileGetter(QString msg,QString path,QString files,QString key,QLabel *label)
 {
-    QString fileName = QFileDialog::getSaveFileName(this,msg, path,files,0,QFileDialog::DontConfirmOverwrite);
+    QString fileName = QFileDialog::getSaveFileName(this,msg, path,files,nullptr,QFileDialog::DontConfirmOverwrite);
     if (fileName.isNull()) {
         return;
     }

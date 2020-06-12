@@ -27,9 +27,9 @@ CenterGridDialog::CenterGridDialog(QWidget *parent) : QDialog(parent)
 
     QFont font12("sans", 12);
     QFontMetricsF fm12(font12);
-    label->setFixedHeight(fm12.height());
-    lineEdit->setFixedWidth(fm12.width("0")*50);
-    lineEdit->setFixedHeight(fm12.height());
+    label->setFixedHeight(qRound(fm12.height()));
+    lineEdit->setFixedWidth(qRound(fm12.width("0")*50));
+    lineEdit->setFixedHeight(qRound(fm12.height()));
     adjustSize();
     setFixedSize(size());
     show();

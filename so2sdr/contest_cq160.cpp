@@ -131,7 +131,7 @@ QByteArray CQ160::prefillExchange(Qso *qso)
 
 unsigned int CQ160::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return(2);  // show second field
 }
 
 /*!

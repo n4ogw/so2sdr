@@ -33,7 +33,7 @@ class AudioReaderPortAudio : public SdrDataSource
 Q_OBJECT
 
 public:
-    AudioReaderPortAudio(QString settingsFile,QObject *parent=0);
+    AudioReaderPortAudio(QString settingsFile,QObject *parent=nullptr);
     ~AudioReaderPortAudio();
 
 protected:

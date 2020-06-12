@@ -35,7 +35,7 @@ class ComboBoxItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    ComboBoxItemDelegate(QObject* parent=0);
+    ComboBoxItemDelegate(QObject* parent=nullptr);
     ~ComboBoxItemDelegate();
     int bandNameToIndex(QString name);
 
@@ -51,7 +51,7 @@ class BandOffsetSetup : public QDialog, public Ui::bandOffsetSetup
     Q_OBJECT
 
 public:
-    BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes, QWidget *parent=0);
+    BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes, QWidget *parent=nullptr);
     ~BandOffsetSetup();
     bool hasOffset(int band) const;
     bool invert(int band) const;

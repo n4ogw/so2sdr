@@ -89,7 +89,7 @@ void DupeSheet::keyPressEvent(QKeyEvent *event)
 
 void DupeSheet::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     emit(closed(false));
     QDialog::closeEvent(event);
 }

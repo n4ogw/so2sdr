@@ -99,11 +99,6 @@ void KQP::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     zeroScore();
 }
 
-unsigned int KQP::sntFieldShown() const
-{
-    return(0); // show nothing
-}
-
 /*!
    KQP exchange validator
  */

@@ -29,7 +29,7 @@
 class UpperValidator : public QValidator
 {
 public:
-    explicit UpperValidator(QObject *parent = 0);
+    explicit UpperValidator(QObject *parent = nullptr);
     QValidator::State validate(QString &input, int &pos) const;
 };
 
@@ -39,7 +39,7 @@ public:
 class TimeValidator : public QValidator
 {
 public:
-    explicit TimeValidator(QObject *parent = 0);
+    explicit TimeValidator(QObject *parent = nullptr);
     void fixup ( QString & input ) const;
     QValidator::State validate(QString &input, int &pos) const;
 };
@@ -47,6 +47,8 @@ public:
 int getBand(double f);
 QString dataDirectory();
 QString userDirectory();
+QByteArray getAdifMode(rmode_t mode);
+ModeTypes getAdifModeType(QByteArray mode);
 ModeTypes getModeType(rmode_t mode);
 
 #endif // UTILS_H

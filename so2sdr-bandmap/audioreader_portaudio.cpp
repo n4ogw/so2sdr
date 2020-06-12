@@ -22,16 +22,11 @@
 #include "audioreader_portaudio.h"
 #include "utils.h"
 
-#ifdef Q_OS_LINUX
-#include <unistd.h>
-#endif
-
-
 AudioReaderPortAudio::AudioReaderPortAudio(QString settingsFile, QObject *parent):SdrDataSource(settingsFile,parent)
 {
     bptr        = 0;
-    buff        = 0;
-    stream      = NULL;
+    buff        = nullptr;
+    stream      = nullptr;
     bpmax       = 0;
     periodSize  = 0;
 }
@@ -74,7 +69,7 @@ void AudioReaderPortAudio::initialize()
         break;
     }
     inputParameters.channelCount=2;
-    inputParameters.hostApiSpecificStreamInfo=NULL;
+    inputParameters.hostApiSpecificStreamInfo=nullptr;
 
     if (buff) {
         delete [] buff;
@@ -83,7 +78,7 @@ void AudioReaderPortAudio::initialize()
     for (unsigned long i = 0; i < sizes.chunk_size; i++) {
         buff[i] = 0;
     }
-    stream = NULL;
+    stream = nullptr;
     err    = Pa_Initialize();
     if (checkError(err)) {
         stop();
@@ -94,7 +89,7 @@ void AudioReaderPortAudio::initialize()
         emit(error("ERROR: PortAudio found no audio devices"));
         return;
     }
-    if (Pa_GetDeviceInfo(inputParameters.device)==NULL) {
+    if (Pa_GetDeviceInfo(inputParameters.device)==nullptr) {
         emit(error("ERROR: getdeviceinfo returned null pointer"));
         return;
     }
@@ -106,7 +101,7 @@ void AudioReaderPortAudio::initialize()
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
     periodSize=settings->value(s_sdr_fft,s_sdr_fft_def).toInt()/4;
 
-    err = Pa_IsFormatSupported(&inputParameters, NULL,
+    err = Pa_IsFormatSupported(&inputParameters, nullptr,
                                settings->value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt());
     if (checkError(err)) {
         stop();
@@ -114,7 +109,7 @@ void AudioReaderPortAudio::initialize()
     }
     err = Pa_OpenStream(
                 &stream,
-                &inputParameters, NULL,
+                &inputParameters, nullptr,
                 settings->value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt(),
                 periodSize,
                 paClipOff | paDitherOff,
@@ -169,10 +164,10 @@ int AudioReaderPortAudio::callback(const void *input, void *output, unsigned lon
                                    const PaStreamCallbackTimeInfo* timeInfo,
                                    PaStreamCallbackFlags statusFlags, void *userdata)
 {
-    Q_UNUSED(output);
-    Q_UNUSED(frameCount);
-    Q_UNUSED(timeInfo);
-    Q_UNUSED(statusFlags);
+    Q_UNUSED(output)
+    Q_UNUSED(frameCount)
+    Q_UNUSED(timeInfo)
+    Q_UNUSED(statusFlags)
     int           sz       = static_cast<AudioReaderPortAudio*>(userdata)->sizes.advance_size;
     int           bp       = static_cast<AudioReaderPortAudio*>(userdata)->bptr;
     unsigned char *ptr_in  = (unsigned char *) input;

@@ -28,9 +28,9 @@
 So2rDialog::So2rDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    lineEditOTRSPPort1->setFixedWidth(sizes.width*15);
-    lineEditOTRSPPort2->setFixedWidth(sizes.width*15);
-    lineEditMicroHamPort->setFixedWidth(sizes.width*15);
+    lineEditOTRSPPort1->setFixedWidth(qRound(sizes.width*15));
+    lineEditOTRSPPort2->setFixedWidth(qRound(sizes.width*15));
+    lineEditMicroHamPort->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 
@@ -88,15 +88,11 @@ So2rDialog::So2rDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(pa
     StereoPinComboBox->insertItem(0, "4");
     StereoPinComboBox->insertItem(0, "3");
     StereoPinComboBox->insertItem(0, "2");
-#ifdef Q_OS_LINUX
     ParallelPortComboBox->insertItem(0, "/dev/parport1");
     ParallelPortComboBox->insertItem(0, "/dev/parport0");
-#endif
     ParallelPortComboBox->setEditable(true); // allow other port numbers to be entered
     ParallelPortComboBox->setCurrentIndex(0);
-#ifdef Q_OS_LINUX
     ParallelPortComboBox->setToolTip("Parallel port access requires the PPDEV kernel module and being in the correct group (usually lp).");
-#endif
     connect(so2rdialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     connect(so2rdialog_buttons, SIGNAL(accepted()), this, SLOT(updateSo2r()));
     updateFromSettings();

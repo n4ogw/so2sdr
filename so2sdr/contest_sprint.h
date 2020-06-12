@@ -21,20 +21,22 @@
 
 #include "contest.h"
 
-class Sprint : public Contest {
+class Sprint : public Contest
+{
 public:
     Sprint(QSettings &cs,QSettings &ss);
-    ~Sprint();
-    ContestType contestType() const { return Sprint_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    unsigned int rcvFieldShown() const;
-    bool showQsoPtsField() const { return false;}
-    unsigned int sntFieldShown() const;
-    QVariant columnName(int c) const;
+    ~Sprint() override;
+
+    ContestType contestType() const override { return Sprint_t;}
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    unsigned int rcvFieldShown() const override;
+    bool showQsoPtsField() const override { return false;}
+    unsigned int sntFieldShown() const override;
+    QVariant columnName(int c) const override;
 };
 
 #endif // CONTEST_SPRINT_H

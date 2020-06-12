@@ -22,7 +22,7 @@
 NoteDialog::NoteDialog(uiSize sizes, QWidget *parent) : QDialog(parent)
 {
     setupUi(this);
-    NoteLineEdit->setFixedWidth(sizes.width*30);
+    NoteLineEdit->setFixedWidth(qRound(sizes.width*30));
     adjustSize();
     setFixedSize(size());
     connect(NoteButtonBox, SIGNAL(accepted()), this, SLOT(writeNotes()));

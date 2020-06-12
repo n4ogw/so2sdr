@@ -22,22 +22,23 @@
 #include "cty.h"
 #include "contest.h"
 
-class Dxped : public Contest {
+class Dxped : public Contest
+{
 public:
     Dxped(QSettings &cs,QSettings &ss);
-    ~Dxped();
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    ContestType contestType() const { return Dxped_t;}
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
-    int Score() const;
-    QByteArray prefillExchange(Qso *qso);
-    bool showQsoPtsField() const { return false;}
-    int rstField() const { return 0;}
+    ~Dxped() override;
+
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    ContestType contestType() const override { return Dxped_t;}
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    unsigned int rcvFieldShown() const override;
+    int Score() const override;
+    QByteArray prefillExchange(Qso *qso) override;
+    bool showQsoPtsField() const override { return false;}
+    int rstField() const override { return 0;}
 };
 
 #endif

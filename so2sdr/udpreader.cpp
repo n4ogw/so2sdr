@@ -17,23 +17,75 @@
 
  */
 #include "udpreader.h"
+#include <QByteArray>
+#include <QColor>
+#include <QDataStream>
+#include <QDateTime>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlQueryModel>
+#include <QSqlRecord>
+#include <QTime>
 #include <QDebug>
+#include <QObject>
 #include <QString>
+#include "qso.h"
 #include "utils.h"
+#include "wsjtxmessage.h"
 
-UDPReader::UDPReader(QSettings &cs,QObject *parent=0) : QObject(parent),settings(cs)
+UDPReader::UDPReader(int rig,QSettings &cs,QObject *parent) : QObject(parent),settings(cs)
 {
     qRegisterMetaType<QAbstractSocket::SocketError>("socketerror");
     connect(&usocket,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(tcpError(QAbstractSocket::SocketError)));
     isOpen=false;
-    parser=new ADIFParse();
+    maxSchema=2;
+    _nrig=rig;
+    _freq=1800000.0;
+    _band=0;
+    decayTime=300;
+    schema=2;
+    id.clear();
+    wsjtxAddress=QHostAddress::LocalHost;
+    wsjtxPort=0;
+    dbName="WSJTX"+QString::number(_nrig+1);
+    QSqlDatabase::addDatabase("QSQLITE",dbName);
+    QSqlDatabase db = QSqlDatabase::database(dbName);
+    db.setDatabaseName(":memory:");
+    if (db.open()) {
+        QSqlQuery query(db);
+        QString queryStr;
+        queryStr.append("CREATE TABLE IF NOT EXISTS wsjtxcalls (`Call` TEXT PRIMARY KEY NOT NULL, `Grid` TEXT, `Age` INT, "
+                        "`SNR` INT,`Freq` INT,`RX` INT,`last` INT,`dupe` BOOLEAN, `mult` BOOLEAN)");
+        query.exec(queryStr);
+        queryStr="CREATE UNIQUE INDEX idx_call ON wsjtxcalls (call)";
+        query.exec(queryStr);
+        model = new QSqlTableModel(nullptr,db);
+        model->setTable("wsjtxcalls");
+        model->setEditStrategy(QSqlTableModel::OnFieldChange);
+        model->select();
+        model->setHeaderData(WSJTX_SQL_COL_CALL,Qt::Horizontal,"Call");
+        model->setHeaderData(WSJTX_SQL_COL_GRID,Qt::Horizontal,"Grid");
+        model->setHeaderData(WSJTX_SQL_COL_AGE,Qt::Horizontal,"Age");
+        model->setHeaderData(WSJTX_SQL_COL_SNR,Qt::Horizontal,"SNR");
+        model->setHeaderData(WSJTX_SQL_COL_FREQ,Qt::Horizontal,"Freq");
+        model->setHeaderData(WSJTX_SQL_COL_RX,Qt::Horizontal,"RX");
+        model->setHeaderData(WSJTX_SQL_COL_LAST,Qt::Horizontal,"Last");
+        model->setHeaderData(WSJTX_SQL_COL_DUPE,Qt::Horizontal,"Dupe");
+        model->setHeaderData(WSJTX_SQL_COL_MULT,Qt::Horizontal,"Mult");
+    } else {
+        qDebug("ERROR: wsjtx call database could not be opened");
+    }
 }
 
 UDPReader::~UDPReader()
 {
-    delete parser;
+    delete model;
+    QSqlDatabase::removeDatabase(dbName);
 }
 
+/*! close udp port
+ */
 void UDPReader::stop()
 {
     usocket.close();
@@ -43,6 +95,15 @@ void UDPReader::stop()
     isOpen=false;
 }
 
+void UDPReader::callClicked(const QModelIndex &index)
+{
+    if (index.isValid()) {
+        sendCall(index.model()->data(index.model()->index(index.row(),WSJTX_SQL_COL_CALL)).toString().toLatin1());
+    }
+}
+
+/*! open the udp port and start reading data
+ */
 void UDPReader::enable(bool b)
 {
     if (b) {
@@ -52,7 +113,7 @@ void UDPReader::enable(bool b)
                 usocket.waitForDisconnected(1000);
             }
         }
-        if (!usocket.bind(settings.value(s_wsjtx_udp,s_wsjtx_udp_def).toInt(), QUdpSocket::ShareAddress)) {
+        if (!usocket.bind(settings.value(s_wsjtx_udp[_nrig],s_wsjtx_udp_def[_nrig]).toInt(), QAbstractSocket::ReuseAddressHint | QAbstractSocket::ShareAddress)) {
             emit(error("UDPsocket: UDP connection to wsjtx failed"));
             isOpen=false;
             return;
@@ -68,28 +129,448 @@ void UDPReader::enable(bool b)
     }
 }
 
+/*! if b=true only show non-dupe calls;
+ *  if b=false show all calls including dupes
+ */
+void UDPReader::setDupeDisplay(bool b)
+{
+    if (b) {
+        model->setFilter("DUPE = false");
+    } else {
+        model->setFilter("");
+    }
+}
+
+/*! clear all calls from list
+ */
+void UDPReader::clearCalls()
+{
+    QSqlQuery query(QSqlDatabase::database(dbName));
+    query.exec("DELETE from wsjtxcalls");
+    model->select();
+    while (model->canFetchMore()) {
+        model->fetchMore();
+    }
+    // clear wsjtx colors by sending invalid QColor
+    QColor invalid;
+    highlightCall("",invalid,invalid);
+}
+
+/*!
+ * UDPReader::decayCalls
+ *
+ *  updates age of calls, removes those with age > decayTime
+ *  also update dupe status and multiplier status for VHF contest
+ */
+void UDPReader::decayCalls()
+{
+    QSqlQuery query(QSqlDatabase::database(dbName));
+    query.exec("SELECT * FROM wsjtxcalls");
+    qint64 currentTime=QDateTime::currentDateTimeUtc().toSecsSinceEpoch();
+    QStringList updates;
+    updates.clear();
+    while (query.next()) {
+        // update age
+        qint64 age=currentTime-query.value(WSJTX_SQL_COL_LAST).toLongLong();
+        if (age<decayTime) {
+            updates.append("UPDATE wsjtxcalls SET age = "+QString::number(age)+" WHERE call LIKE '"+query.value(WSJTX_SQL_COL_CALL).toString()+"';");
+        } else {
+            updates.append("DELETE FROM wsjtxcalls WHERE call LIKE '"+query.value(WSJTX_SQL_COL_CALL).toString()+"';");
+            continue;
+        }
+        // update dupe and mult status
+        Qso qso;
+        qso.call=query.value(WSJTX_SQL_COL_CALL).toByteArray();
+        qso.band=_band;
+        qso.modeType=DigiType;
+        qso.nr=_nrig;
+        qso.freq=_freq;
+        qso.mult_name=query.value(WSJTX_SQL_COL_GRID).toByteArray();
+        qso.valid=true;
+        qso.isamult[0]=true;
+        bool oldDupe=query.value(WSJTX_SQL_COL_DUPE).toBool();
+        bool oldMult=query.value(WSJTX_SQL_COL_MULT).toBool();
+        emit(dupeCheck(&qso));
+        if ( (_band < BAND6) || (_band==BAND630) || (_band==BAND2200)) {
+            qso.isnewmult[0]=false;
+        }
+        if (qso.dupe!=oldDupe || qso.isnewmult[0]!=oldMult) {
+            if (qso.dupe) {
+                highlightCall(qso.call,Qt::white,DUPE_COLOR);
+            } else if (qso.isnewmult[0]) {
+                highlightCall(qso.call,Qt::white,Qt::cyan);
+            } else {
+                highlightCall(qso.call,Qt::white,Qt::black);
+            }
+            updates.append("UPDATE wsjtxcalls set dupe = " + ((qso.dupe==true) ? QString("true") : QString("false")) +
+                           ", mult = " + ((qso.isnewmult[0]==true) ? QString("true") : QString("false")) + " WHERE call like '"
+                    + qso.call +"';");
+        }
+    }
+    for (int row=0;row<updates.size();++row) {
+        query.exec(updates.at(row));
+    }
+    model->select();
+    while (model->canFetchMore()) {
+        model->fetchMore();
+    }
+}
+
+/*! update dupe and mult status in database
+ *
+ * currently only grid square mults are supported, and only on VHF+ bands
+ *
+ */
+void UDPReader::redupe()
+{
+    QStringList updates;
+    QSqlQuery query(QSqlDatabase::database(dbName));
+    query.exec("UPDATE wsjtxcalls set dupe = false, mult = false");
+    model->select();
+    while (model->canFetchMore()) {
+        model->fetchMore();
+    }
+    query.clear();
+    query.exec("SELECT * FROM wsjtxcalls");
+    while (query.next()) {
+        Qso qso;
+        qso.call=query.value(WSJTX_SQL_COL_CALL).toByteArray();
+        qso.band=_band;
+        qso.modeType=DigiType;
+        qso.nr=_nrig;
+        bool oldDupe=query.value(WSJTX_SQL_COL_DUPE).toBool();
+        bool oldMult=query.value(WSJTX_SQL_COL_MULT).toBool();
+        qso.freq=_freq;
+        qso.valid=true;
+        qso.mult_name=query.value(WSJTX_SQL_COL_GRID).toByteArray();
+        qso.isamult[0]=true;
+        emit(dupeCheck(&qso));
+        if ( (_band < BAND6) || (_band==BAND630) || (_band==BAND2200)) {
+            qso.isnewmult[0]=false;
+        }
+        if (qso.dupe!=oldDupe || qso.isnewmult[0]!=oldMult) {
+            if (qso.dupe) {
+                highlightCall(qso.call,Qt::white,DUPE_COLOR);
+            } else if (qso.isnewmult[0]) {
+                highlightCall(qso.call,Qt::white,Qt::cyan);
+            } else {
+                highlightCall(qso.call,Qt::white,Qt::black);
+            }
+            updates.append("UPDATE wsjtxcalls set dupe = " + ((qso.dupe==true) ? QString("true") : QString("false")) +
+                           ", mult = " + ((qso.isnewmult[0]==true) ? QString("true") : QString("false")) + " WHERE call like '"
+                    + qso.call +"';");
+        }
+    }
+    model->select();
+    while (model->canFetchMore()) {
+        model->fetchMore();
+    }
+    for (int row=0;row<updates.size();++row) {
+        query.exec(updates.at(row));
+    }
+    model->select();
+    while (model->canFetchMore()) {
+        model->fetchMore();
+    }
+}
+
+/* read data from udp port and process it
+ * only selected message from wsjtx are supported
+ */
 void UDPReader::readDatagram()
 {
     qint64 udp_size;
-    char *data;
-
     udp_size=usocket.pendingDatagramSize();
-    data=new char[udp_size];
-    if (usocket.readDatagram((char*)data,udp_size)==-1) {
+    QByteArray data;
+    data.resize(udp_size);
+    if (usocket.readDatagram(data.data(),udp_size,&wsjtxAddress,&wsjtxPort)==-1) {
         emit(error("UDPReader: UDP read failed"));
-        delete data;
         return;
     }
-    Qso qso;
-    QByteArray tmp=data;
-    parser->parse(tmp,&qso);
-    emit(wsjtxQso(&qso));
-    delete[] data;
+    // experimental read from new wsjtx UDP. See file NetworkMessage.hpp in wsjt-x
+    QDataStream in(data);
+    quint32 i1;
+    in >> i1 >> schema;
+    if (i1==magic) {
+        if (schema <= 1) {
+             in.setVersion(QDataStream::Qt_5_0); // Qt schema version
+        }
+#if QT_VERSION >= 0x050200
+        else if (schema <= 2) {
+            in.setVersion(QDataStream::Qt_5_2); // Qt schema version
+        }
+#endif
+#if QT_VERSION >= 0x050400
+        else if (schema <= 3) {
+             in.setVersion(QDataStream::Qt_5_4); // Qt schema version
+        }
+#endif
+        else {
+            return;
+        }
+        quint32 key;
+        in >> key;
+        switch (key) {
+        case 0: // heartbeat
+        {
+            QByteArray id,version,revision;
+            in >> wsjtxId >> maxSchema >> wsjtxVersion >> wsjtxRevision;
+            break;
+        }
+        case 1: // status
+            break;
+        case 2: // decode
+        {
+            in >> id;
+            bool newDecode;
+            in >> newDecode;
+            QTime time;
+            in >> time;
+            // if decode is older than max age, ignore it
+            if (time.secsTo(QTime::currentTime()) > decayTime) break;
+            qint32 snr;
+            in >> snr;
+            double dt;
+            in >> dt;
+            quint32 delta;
+            in >> delta;
+            QByteArray mode,msg;
+            in >> mode >> msg;
+            QByteArray call,grid;
+            call.clear();
+            grid.clear();
+            int rx=1;
+            if (decode(msg,call,grid)) {
+                Qso qso;
+                qso.call=call;
+                qso.band=_band;
+                qso.modeType=DigiType;
+                qso.nr=_nrig;
+                qso.dupe=false;
+                qso.valid=true;
+                qso.freq=_freq;
+                qso.isamult[0]=true;
+                qso.isnewmult[0]=false;
+                QSqlQuery query(QSqlDatabase::database(dbName));
+                query.exec("SELECT * FROM wsjtxcalls where call LIKE '" + call + "'");
+                QByteArray oldGrid;
+                while (query.next()) {
+                    // call already in list; increment rx count
+                    rx=query.value(WSJTX_SQL_COL_RX).toInt();
+                    rx++;
+                    oldGrid=query.value(WSJTX_SQL_COL_GRID).toByteArray();
+                }
+                if (grid.isEmpty() && !oldGrid.isEmpty()) {
+                    grid=oldGrid;
+                }
+                qso.mult_name=grid;
+                emit(dupeCheck(&qso));
+                // only highlight mults on VHF+ @todo make this more general
+                if ( (_band < BAND6) || (_band==BAND630) || (_band==BAND2200)) {
+                    qso.isnewmult[0]=false;
+                }
+                if (qso.dupe) {
+                    highlightCall(qso.call,Qt::white,DUPE_COLOR);
+                } else if (qso.isnewmult[0]) {
+                    highlightCall(qso.call,Qt::white,Qt::cyan);
+                } else {
+                    highlightCall(qso.call,Qt::white,Qt::black);
+                }
+                query.clear();
+                query.prepare("REPLACE INTO wsjtxcalls (call,snr,grid,freq,rx,age,last,dupe,mult)"
+                              "VALUES (:call,:snr,:grid,:freq,:rx,:age,:last,:dupe,:mult)");
+                query.bindValue(":call",call);
+                query.bindValue(":grid",grid);
+                query.bindValue(":snr",snr);
+                query.bindValue(":freq",delta);
+                query.bindValue(":rx",rx);
+                query.bindValue(":age",0);
+                query.bindValue(":dupe",qso.dupe);
+                query.bindValue(":mult",qso.isnewmult[0] || qso.isnewmult[1]);
+                // use current time rather than time from wsjtx; prevents problems when day changes
+                query.bindValue(":last",QDateTime::currentDateTimeUtc().toSecsSinceEpoch());
+                query.exec();
+                model->select();
+                while (model->canFetchMore()) {
+                    model->fetchMore();
+                }
+            }
+            break;
+        }
+        case 3: // decodes cleared
+            break;
+        case 5: // qso logged
+        {
+            Qso qso;
+            QByteArray id,grid;
+            in >> id >> qso.time >> qso.call >> grid;
+            quint64 f;
+            in >> f;
+            qso.nr=_nrig;
+            qso.freq=_freq;
+            qso.band=_band;
+            if (qso.band!=_band) {
+                qDebug("Warning: wsjtx and radio are set to different bands!");
+            }
+            QByteArray repSent,repRecv,txPower,comments,name,opCall,myCall,myGrid;
+            QDateTime timeOn;
+            in >> qso.adifMode >> repSent >> repRecv >> txPower >> comments >> name >> timeOn >> opCall;
+            in >> myCall >> myGrid;
+            in >> qso.snt_exch[0] >> qso.exch;
+            qso.mult_name=grid;
+            if (qso.exch.isEmpty()) {
+                qso.exch=grid;
+            }
+            qso.dupe=true;
+            emit(wsjtxQso(&qso));
+            // mark call as dupe
+            QSqlQuery query(QSqlDatabase::database(dbName));
+            QString queryStr="UPDATE wsjtxcalls SET dupe= true, mult = false WHERE call LIKE '"+qso.call+"'";
+            query.exec(queryStr);
+            model->select();
+            while (model->canFetchMore()) {
+                model->fetchMore();
+            }
+            break;
+        }
+        case 6: // shutting down
+            break;
+        case 10: // WSPR decode
+            break;
+        case 11: // logged ADIF
+            break;
+        }
+    }
 }
 
+/*! decode wsjt-x received messages. Extracts call and grid of station sending msg
+ *
+ * returns true if at least call could be decoded
+ * will fail for station in grid "RR73"
+ *
+ */
+bool UDPReader::decode(QByteArray msg,QByteArray &call,QByteArray &grid)
+{
+    bool ret=false;
+    QList<QByteArray> list=msg.split(' ');
+    if (list.size()>=3) {
+        // look for last element being grid square
+        // check to see if this is a valid grid square. This fails in the (unlikely) case
+        // there is someone in grid RR73!
+        if (list.last().size() == 4 && list.last() != "RR73") {
+            if ((list.last().at(0) >= 'A' && list.last().at(0) <= 'R') &&
+                    (list.last().at(1) >= 'A' && list.last().at(1) <= 'R') &&
+                    (list.last().at(2) >= '0' && list.last().at(2) <= '9') &&
+                    (list.last().at(3) >= '0' && list.last().at(3) <= '9')) {
+                call=list.at(list.size()-2);
+                grid=list.last();
+                ret=true;
+            }
+        } else if (list.size()==3 && (list.last().contains('+') || list.last().contains('-'))) {
+            // station giving signal report; grid unknown, just return call
+            call=list.at(list.size()-2);
+            grid.clear();
+            ret=true;
+        } else if (list.size()==3 && (list.last()=="73" || list.last()=="RR73" || list.last()=="RRR")) {
+            // station sending 73, RR73, RRR; grid unknown, just return call
+            call=list.at(list.size()-2);
+            grid.clear();
+            ret=true;
+        }
+    }
+    if (call=="<...>") {
+        call.clear();
+        grid.clear();
+        ret=false;
+    }
+    if (call.contains('<')) {
+        call.replace('<',"");
+    }
+    if (call.contains('>')) {
+        call.replace('>',"");
+    }
+    if (grid.size()!=4) grid.clear();
+    return ret;
+}
+
+/*! called on udp port error.
+ * @todo display this in an error box
+ */
 void UDPReader::tcpError(QAbstractSocket::SocketError err)
 {
     Q_UNUSED(err)
     QString errstring="UDReader: "+usocket.errorString();
     qDebug("%s",errstring.toLatin1().data());
 }
+
+/*! send a call from a double-clicked row to wsjtx, and generate messages
+ */
+void UDPReader::sendCall(QByteArray call)
+{
+    if (id.isEmpty() || wsjtxPort==0) return;
+    QSqlQuery query(QSqlDatabase::database(dbName));
+    query.exec("SELECT * FROM wsjtxcalls where call LIKE '" + call + "'");
+    if (query.next()) {
+        QByteArray data;
+        WsjtxMessage out(&data,QIODevice::WriteOnly);
+        out.setSchema(schema);
+        out.startMessage(Configure);
+        out << QByteArray("") << static_cast<quint32>(0);
+        out << QByteArray("") << static_cast<bool>(false) << static_cast<quint32>(0) << static_cast<quint32>(0);
+        out << call << query.value(WSJTX_SQL_COL_GRID).toByteArray() << static_cast<bool>(true);
+        usocket.writeDatagram(data,wsjtxAddress,wsjtxPort);
+    }
+}
+
+/*! clear color highlights in wsjtx
+ */
+void UDPReader::clearColors()
+{
+    if (id.isEmpty() || wsjtxPort==0) return;
+    QByteArray data;
+    WsjtxMessage out(&data,QIODevice::WriteOnly);
+    out.setSchema(schema);
+    out.startMessage(HighlightCallsign);
+    QColor invalid;
+    out  << QByteArray("") << invalid << invalid << static_cast<bool>(false);
+    usocket.writeDatagram(data,wsjtxAddress,wsjtxPort);
+}
+
+/*! color highlight a call in wsjtx
+ */
+void UDPReader::highlightCall(QByteArray call, QColor bg, QColor fg)
+{
+    if (id.isEmpty() || wsjtxPort==0) return;
+    QByteArray data;
+    WsjtxMessage out(&data,QIODevice::WriteOnly);
+    out.setSchema(schema);
+    out.startMessage(HighlightCallsign);
+    out  << call << bg << fg << static_cast<bool>(false);
+    usocket.writeDatagram(data,wsjtxAddress,wsjtxPort);
+}
+
+/*! sends wsjtx command to resend all decodes in Band Activity window
+ */
+void UDPReader::replay()
+{
+    if (id.isEmpty() || wsjtxPort==0) return;
+    QByteArray data;
+    WsjtxMessage out(&data,QIODevice::WriteOnly);
+    out.setSchema(schema);
+    out.startMessage(Replay);
+    usocket.writeDatagram(data,wsjtxAddress,wsjtxPort);
+}
+
+/*! sends wsjtx command to resend all decodes in Band Activity window
+ */
+void UDPReader::clearWsjtxCalls()
+{
+    if (id.isEmpty() || wsjtxPort==0) return;
+    QByteArray data;
+    WsjtxMessage out(&data,QIODevice::WriteOnly);
+    out.setSchema(schema);
+    out.startMessage(Clear);
+    out << static_cast<quint8>(2);
+    usocket.writeDatagram(data,wsjtxAddress,wsjtxPort);
+}
+

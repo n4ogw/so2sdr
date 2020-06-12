@@ -24,7 +24,7 @@
 NetworkSDR::NetworkSDR(QString settingsFile, QObject *parent) : SdrDataSource(settingsFile,parent)
 {
     bptr        = 0;
-    buff        = 0;
+    buff        = nullptr;
     iptr        = 0;
     tsocket.setParent(this);
     usocket.setParent(this);

@@ -33,7 +33,7 @@ class So2r : public QObject
 {
     Q_OBJECT
 public:
-  explicit So2r(QSettings &s,uiSize sz,QObject *parent = 0,QWidget *widgetParent = 0);
+  explicit So2r(QSettings &s,uiSize sz,QObject *parent = nullptr,QWidget *widgetParent = nullptr);
     ~So2r();
     bool isVisible();
     void sendMicrohamCommand(QByteArray c);

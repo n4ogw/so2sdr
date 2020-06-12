@@ -21,21 +21,23 @@
 
 #include "contest.h"
 
-class CQP : public Contest {
+class CQP : public Contest
+{
 public:
     CQP(QSettings &cs,QSettings &ss);
-    ~CQP();
-    QVariant columnName(int c) const;
-    ContestType contestType() const { return Cqp_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
+    ~CQP() override;
+
+    QVariant columnName(int c) const override;
+    ContestType contestType() const override { return Cqp_t;}
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    unsigned int rcvFieldShown() const override;
+    unsigned int sntFieldShown() const override;
     void setWithinState(bool);
-    bool showQsoPtsField() const { return true;}
+    bool showQsoPtsField() const override { return true;}
 private:
     bool withinState;
 };

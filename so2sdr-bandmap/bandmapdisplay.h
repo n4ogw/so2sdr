@@ -33,7 +33,7 @@ class BandmapDisplay : public QWidget
 Q_OBJECT
 
 public:
-    explicit BandmapDisplay(QWidget *parent = 0);
+    explicit BandmapDisplay(QWidget *parent = nullptr);
     ~BandmapDisplay();
     friend class So2sdrBandmap;
 

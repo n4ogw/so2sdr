@@ -24,7 +24,6 @@
 #include <QEvent>
 #include <QObject>
 #include <QSettings>
-#include <QSqlDatabase>
 #include "contest.h"
 #include "contest_arrldx.h"
 #include "contest_arrl10.h"
@@ -67,13 +66,11 @@ public:
     void addQso(Qso *qso);
     QString bandLabel(int i) const;
     bool bandLabelEnable(int i) const;
-    void closeLogFile();
     int columnCount(int col) const;
     QVariant columnName(int c) const;
     ContestType contestType() const;
     Cty* ctyPtr() const;
     QWidget* currentEditor() const;
-    QSqlDatabase &dataBase();
     logDelegate* delegate() const;
     bool detailIsVisible() const;
     bool dupeCheckingByBand() const;
@@ -90,7 +87,7 @@ public:
     int idPfx(Qso *qso, bool &qsy) const;
     void importCabrillo(QString cabFile);
     void initializeContest();
-    bool isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const;
+    void isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const;
     bool isEditing() const;
     int lastNr() const;
     bool logSearch(QByteArray searchFrag);
@@ -107,7 +104,7 @@ public:
     int nMultsColumn(int col,int ii) const;
     int nQso(int band) const;
     QString offTime(int minOffTime, QDateTime start, QDateTime end);
-    bool openLogFile(QString fname,bool clear);
+    bool openLogFile(QString fname);
     void postEditorEvent(QEvent *event);
     QByteArray prefillExchange(Qso *qso);
     unsigned int rcvFieldShown() const;
@@ -172,7 +169,6 @@ private:
     QList<int>   searchList;
     QSettings&   csettings;
     QSettings&   settings;
-    QSqlDatabase db;
     QSqlRecord   origEditRecord;
     tableModel   *model;
 };

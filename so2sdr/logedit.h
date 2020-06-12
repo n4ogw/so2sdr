@@ -24,6 +24,7 @@
 #include <QObject>
 #include <QPainter>
 #include <QWidget>
+#include <QSqlDatabase>
 #include <QStyle>
 #include <QStyledItemDelegate>
 #include <QSqlTableModel>
@@ -41,7 +42,7 @@ class tableModel : public QSqlTableModel
     Q_OBJECT
 
 public:
-    tableModel(QObject * parent = 0, QSqlDatabase db = QSqlDatabase());
+    tableModel(QObject * parent = nullptr, QSqlDatabase db = QSqlDatabase());
 
 protected:
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;

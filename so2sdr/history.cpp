@@ -33,11 +33,13 @@
 History::History(QSettings& s,QObject *parent) :
     QObject(parent),csettings(s)
 {
+    QSqlDatabase::addDatabase("QSQLITE","HISTORY");
+    isopen = false;
 }
 
 History::~History()
 {
-    stopHistory();
+    QSqlDatabase::removeDatabase("HISTORY");
 }
 
 /*!
@@ -47,8 +49,6 @@ History::~History()
  */
 void History::addQso(const Qso *qso)
 {
-    if (!history.isOpen()) return;
-
     QString query;
     query.append("INSERT OR REPLACE INTO history (Call,General,DMult,Name,State,ARRLSection,Grid,Number,Zone) ");
     query.append("SELECT new.Call, old.General, old.DMult, old.Name, old.State, old.ARRLSection, old.Grid, old.Number, old.Zone ");
@@ -92,7 +92,7 @@ void History::addQso(const Qso *qso)
         }
     }
     query.append(") AS new LEFT JOIN ( SELECT Call,General,DMult,Name,State,ARRLSection,Grid,Number,Zone FROM history ) AS old ON new.Call = old.Call");
-    QSqlQuery h(history);
+    QSqlQuery h(QSqlDatabase::database("HISTORY"));
     h.exec(query);
     query.clear();
 }
@@ -104,7 +104,6 @@ void History::addQso(const Qso *qso)
  */
 void History::fillExchange(Qso *qso,QByteArray part)
 {
-    if (!history.isOpen()) return;
     QSqlQueryModel h;
     QString query;
     query.append("SELECT Call");
@@ -140,7 +139,7 @@ void History::fillExchange(Qso *qso,QByteArray part)
         }
     }
     query.append(" FROM history where Call = '" + part + "'");
-    h.setQuery(query, history);
+    h.setQuery(query, QSqlDatabase::database("HISTORY"));
     if (h.rowCount()) {
         for (int i = 1; i < h.columnCount(); i++) { // skip call field
             qso->prefill.append(h.record(0).value(i).toString().toLatin1());
@@ -154,7 +153,7 @@ void History::fillExchange(Qso *qso,QByteArray part)
 
 bool History::isOpen()
 {
-    return history.open();
+    return isopen;
 }
 
 /*! initialize the history database. If historyfile is not found, it will be created.
@@ -162,45 +161,33 @@ bool History::isOpen()
  */
 void History::startHistory()
 {
-    if (history.isOpen()) {
-        history.close();
-        history = QSqlDatabase();
-        QSqlDatabase::removeDatabase("HISTORY");
-    }
+    QSqlDatabase history=QSqlDatabase::database("HISTORY");
     QString filename=csettings.value(c_historyfile,c_historyfile_def).toString();
     QFileInfo info(userDirectory() + "/" + filename);
     if (info.exists()) {
-        history = QSqlDatabase::addDatabase("QSQLITE", "HISTORY");
         history.setDatabaseName(userDirectory() + "/" + filename);
         if (!history.open()) {
-            history = QSqlDatabase();
-            QSqlDatabase::removeDatabase("HISTORY");
             emit(message("ERROR: can't open history file " + userDirectory() + "/" + filename,3000));
         } else {
+            isopen = true;
             emit(message("History file " + userDirectory() + "/" + filename + " loaded",3000));
         }
     } else { // create new history file
-        history = QSqlDatabase::addDatabase("QSQLITE", "HISTORY");
         history.setDatabaseName(userDirectory() + "/" + filename);
-        history.open();
-
-        QSqlQuery h(history);
-        QString query;
-        query.append("CREATE TABLE IF NOT EXISTS history (`Call` TEXT PRIMARY KEY, `General` TEXT, `DMult` TEXT, `Name` TEXT, `State` TEXT, `ARRLSection` TEXT, `Grid` TEXT, `Number` TEXT, `Zone` TEXT)");
-        h.exec(query);
-        query.clear();
-        query.append("CREATE UNIQUE INDEX `call_idx` ON history (`Call`)");
-        h.exec(query);
-        query.clear();
-        emit(message("INFO: History file " + userDirectory() + "/" + filename + " created",3000));
+        if (!history.open()) {
+            emit(message("ERROR: can't open history file " + userDirectory() + "/" + filename,3000));
+        } else {
+            isopen = true;
+            QSqlQuery h(history);
+            QString query;
+            query.append("CREATE TABLE IF NOT EXISTS history (`Call` TEXT PRIMARY KEY, `General` TEXT, `DMult` TEXT, `Name` TEXT, `State` TEXT, `ARRLSection` TEXT, `Grid` TEXT, `Number` TEXT, `Zone` TEXT)");
+            h.exec(query);
+            query.clear();
+            query.append("CREATE UNIQUE INDEX `call_idx` ON history (`Call`)");
+            h.exec(query);
+            query.clear();
+            emit(message("INFO: History file " + userDirectory() + "/" + filename + " created",3000));
+        }
     }
 }
 
-void History::stopHistory()
-{
-    if (history.isOpen()) {
-        history.close();
-        history = QSqlDatabase();
-        QSqlDatabase::removeDatabase("HISTORY");
-    }
-}

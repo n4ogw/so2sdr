@@ -34,15 +34,17 @@ public:
     void         setExchangeType(int, FieldTypes);
 
     bool       dupe;
+    bool       externalQso;
     bool       isMM;
     bool       isMobile;
     bool       isRover;
     bool       valid;
     int        band;
     int        bandColumn;
-    double        freq;
+    double     freq;
     int        mult[MMAX];
     int        newmult[MMAX];
+    bool       isnewmult[MMAX];
     int        nr;
     int        pts;
     QByteArray call;
@@ -60,6 +62,7 @@ public:
     int          distance;
     int          n_exchange;
     int          zone;
+    QByteArray   adifMode;
     QByteArray   country_name;
     QByteArray   exch;
     QByteArray   mult_name;

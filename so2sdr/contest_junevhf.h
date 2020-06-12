@@ -26,21 +26,21 @@ class JuneVHF : public Contest
 {
 public:
     JuneVHF(QSettings &cs,QSettings &ss);
+    ~JuneVHF() override;
 
-    QString bandLabel(int i) const;
-    bool bandLabelEnable(int i) const;
-    int highlightBand(int b, ModeTypes modeType=CWType) const;
-    int nMultsColumn(int col,int ii) const;
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    QVariant columnName(int c) const;
-    ContestType contestType() const { return JuneVHF_t;}
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const { return -1; }
-    unsigned int rcvFieldShown() const { return 1; }
-    unsigned int sntFieldShown() const { return 0; }
-    bool showQsoPtsField() const { return true;}
+    QString bandLabel(int i) const override;
+    bool bandLabelEnable(int i) const override;
+    int highlightBand(int b, ModeTypes modeType=CWType) const override;
+    int nMultsColumn(int col,int ii) const override;
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    QVariant columnName(int c) const override;
+    ContestType contestType() const  override{ return JuneVHF_t;}
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override { return -1; }
+    unsigned int rcvFieldShown() const override { return 1; }
+    bool showQsoPtsField() const override { return true;}
 };
 
 #endif // CONTEST_JUNEVHF_H

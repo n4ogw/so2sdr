@@ -38,7 +38,7 @@ class MicroHam : public QObject
 Q_OBJECT
 
 public:
-    MicroHam(QSettings& s, QObject *parent = 0);
+    MicroHam(QSettings& s, QObject *parent = nullptr);
     ~MicroHam();
     bool MicroHamIsOpen() const;
     void switchAudio(int nr);

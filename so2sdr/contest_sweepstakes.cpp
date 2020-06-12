@@ -75,22 +75,17 @@ int Sweepstakes::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // sent #
-        return(4);
-        break;
+        return 4;
     case 1: // rcv #
-        return(4);
-        break;
+        return 4;
     case 2: // prec
-        return(3);
-        break;
+        return 3;
     case 3: // check
-        return(3);
-        break;
+        return 3;
     case 4: // section
-        return(4);
-        break;
+        return 4;
     default:
-        return(4);
+        return 4;
     }
 }
 
@@ -99,15 +94,15 @@ int Sweepstakes::fieldWidth(int col) const
  */
 int Sweepstakes::numberField() const
 {
-    return(0);
+    return 0;
 }
 
-unsigned int Sweepstakes::rcvFieldShown() const
 
 // 0 1=NR --> show
 // 1 2=prec --> show
 // 2 4=check --> show
 // 3 8=section --> show
+unsigned int Sweepstakes::rcvFieldShown() const
 {
     return(1 + 2 + 4 + 8);  // show 4 fields
 }
@@ -121,11 +116,11 @@ void Sweepstakes::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     zeroScore();
 }
 
-unsigned int Sweepstakes::sntFieldShown() const
 
 // 0 1=NR   --> show
+unsigned int Sweepstakes::sntFieldShown() const
 {
-    return(1); // show qso # only
+    return 1; // show qso # only
 }
 
 /*!
@@ -186,7 +181,7 @@ bool Sweepstakes::validateExchange(Qso *qso)
                 if (!tmp.isEmpty()) {
                     bool ok = false;
                     int nr=tmp.toInt(&ok, 10);
-                    Q_UNUSED(nr);
+                    Q_UNUSED(nr)
                     if (ok) {
                         used[i]=true;
                         if (!ok_part[0]) {
@@ -233,7 +228,7 @@ bool Sweepstakes::validateExchange(Qso *qso)
             if (used[i]) continue;
             bool nrok = false;
             int  nr   = exchElement.at(i).toInt(&nrok, 10);
-            Q_UNUSED(nr);
+            Q_UNUSED(nr)
             if (nrok && (exchElement.at(i).size()==2)) {
                 ok_part[2]   = true;
                 used[i]      = true;
@@ -249,7 +244,7 @@ bool Sweepstakes::validateExchange(Qso *qso)
 
                 bool ok;
                 int nr = exchElement.at(i).toInt(&ok, 10);
-                Q_UNUSED(nr);
+                Q_UNUSED(nr)
                 if (ok && !ok_part[0]) {
                     finalExch[0] = exchElement.at(i);
                     ok_part[0]=true;
@@ -265,7 +260,7 @@ bool Sweepstakes::validateExchange(Qso *qso)
                 if (!used[i]) {
                     bool ok;
                     int nr = exchElement.at(i).toInt(&ok, 10);
-                    Q_UNUSED(nr);
+                    Q_UNUSED(nr)
                     if (!ok) {
                         qso->call = exchElement.at(i);
                     }

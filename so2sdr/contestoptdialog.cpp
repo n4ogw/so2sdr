@@ -43,8 +43,8 @@ ContestOptionsDialog::ContestOptionsDialog(uiSize sizes, QWidget *parent) : QDia
     offMinimumLineEdit->setValidator(offValidator);
 
     for (int i=0;i<4;i++) {
-        sent[i]->setFixedWidth(sizes.width*6);
-        sentName[i]->setFixedWidth(sizes.width*6);
+        sent[i]->setFixedWidth(qRound(sizes.width*6));
+        sentName[i]->setFixedWidth(qRound(sizes.width*6));
     }
     adjustSize();
     setFixedSize(size());

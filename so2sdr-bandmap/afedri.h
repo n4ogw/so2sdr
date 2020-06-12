@@ -41,7 +41,7 @@ class Afedri : public NetworkSDR
 {
     Q_OBJECT
 public:
-    Afedri(QString settingsFile,QObject *parent = 0);
+    Afedri(QString settingsFile,QObject *parent = nullptr);
     ~Afedri();
 
 public slots:

@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.2
+## SO2SDR Help file version 2.5.3
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -164,7 +164,7 @@ characters have been entered.
 radios is activated with Crtl- (Control Minus). This setting
 adds an extra delay before switching radios.
 * WSJT-X UDP : this enables so2sdr to read UDP packets from WSJT-X. This
-can be used to log qsos from QSJT-X. The UDP port number defined in WSJT-X
+can be used to log qsos from WSJT-X. The UDP port number defined in WSJT-X
 must be filled in.
 * CTY file : the web location where so2sdr will download prefix (CTY) files.
 
@@ -200,6 +200,27 @@ as the Windows->Grab Keyboard option, which is not needed in two
 keyboard mode. As of version 2.5.0 several other so2r features are
 disabled while using two keyboard, including alt-D, toggling CQs, and
 dueling CQs. Sprint mode is also not compatible with two keyboards.
+
+Here is how to figure out what to put in "Keyboard 1 device" and "Keyboard 2 device".
+After both keyboards are plugged in, list the files in /dev/input/by-path. Here
+is an example using two Logitech K360 wireless USB keyboards:
+
+     ls -al /dev/input/by-path
+     total 0
+     drwxr-xr-x 2 root root 160 May 29 19:12 .
+     drwxr-xr-x 4 root root 360 May 29 19:12 ..
+     lrwxrwxrwx 1 root root  10 May 29 17:58 pci-0000:02:00.0-usb-0:5:1.1-event -> ../event10
+     lrwxrwxrwx 1 root root   9 May 29 17:58 pci-0000:02:00.0-usb-0:5:1.2-event -> ../event9
+     lrwxrwxrwx 1 root root   9 May 29 17:58 pci-0000:02:00.0-usb-0:5:1.2-event-kbd -> ../event9
+     lrwxrwxrwx 1 root root  10 May 29 17:58 pci-0000:02:00.0-usb-0:6:1.2-event-mouse -> ../event10
+     lrwxrwxrwx 1 root root   9 May 29 17:58 pci-0000:02:00.0-usb-0:6:1.2-mouse -> ../mouse0
+     lrwxrwxrwx 1 root root  10 May 29 19:12 pci-0000:02:00.0-usb-0:9:1.2-event-kbd -> ../event11
+
+The "event-kbd" devices are what you need. Put /dev/input/event9 and /dev/input/event11
+in two keyboard device settings. You will have to figure out by trial and error which keyboard
+is which.  These device numbers may change every time you reboot, but can be fixed by
+using a udev configuration file.
+
 
 [Return to top](#top)
 
@@ -953,6 +974,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.3 (06/11/2020)
+
+* change in log file format. Logs from older version cannot be opened, must be imported from Cabrillo
+* add new WSJTX window showing decoded calls and dupe/mult status. This is only fully functional for ARRL June VHF contest
+* many code cleanups and small bug fixes
 
 ## version 2.5.2 (04/28/2020)
 

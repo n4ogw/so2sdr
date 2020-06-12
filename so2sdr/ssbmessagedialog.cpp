@@ -52,7 +52,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent) : QDialog(pare
     funcEditPtr[10] = cq_f11_edit;
     funcEditPtr[11] = cq_f12_edit;
     for (int i=0;i<12;i++) {
-        funcEditPtr[i]->setFixedWidth(sizes.width*16);
+        funcEditPtr[i]->setFixedWidth(qRound(sizes.width*16));
     }
 
     funcRecEditPtr[0]  = cq_f1_rec_edit;
@@ -68,7 +68,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent) : QDialog(pare
     funcRecEditPtr[10] = cq_f11_rec_edit;
     funcRecEditPtr[11] = cq_f12_rec_edit;
     for (int i=0;i<12;i++) {
-        funcRecEditPtr[i]->setFixedWidth(sizes.width*16);
+        funcRecEditPtr[i]->setFixedWidth(qRound(sizes.width*16));
     }
     funcRecPtr[0]   = recF1;
     funcRecPtr[1]   = recF2;
@@ -116,7 +116,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent) : QDialog(pare
     excFuncEditPtr[10] = exc_f11_edit;
     excFuncEditPtr[11] = exc_f12_edit;
     for (int i=0;i<12;i++) {
-        excFuncEditPtr[i]->setFixedWidth(sizes.width*16);
+        excFuncEditPtr[i]->setFixedWidth(qRound(sizes.width*16));
     }
     excFuncRecEditPtr[0]  = exc_f1_rec_edit;
     excFuncRecEditPtr[1]  = exc_f2_rec_edit;
@@ -131,7 +131,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent) : QDialog(pare
     excFuncRecEditPtr[10] = exc_f11_rec_edit;
     excFuncRecEditPtr[11] = exc_f12_rec_edit;
     for (int i=0;i<12;i++) {
-        excFuncRecEditPtr[i]->setFixedWidth(sizes.width*16);
+        excFuncRecEditPtr[i]->setFixedWidth(qRound(sizes.width*16));
     }
     excFuncRecPtr[0]   = recExcF1;
     excFuncRecPtr[1]   = recExcF2;
@@ -227,7 +227,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent) : QDialog(pare
     quick_qsl_rec_edit->setValidator(upperValidate);
     cancel_edit->setValidator(upperValidate);
     message.clear();
-    scriptProcess=0;
+    scriptProcess=nullptr;
     playMessageRig=0;
     recording=false;
     playing=false;
@@ -400,12 +400,22 @@ void SSBMessageDialog::initialize(QSettings *cs,QSettings *s)
 
     // audio script csettings
     // PLAY csettings
-    beforePlayLineEdit->setText(csettings->value(s_before_play,s_before_play_def).toString());
-    beforePlayLineEdit->setCursorPosition(0);
-    afterPlayLineEdit->setText(csettings->value(s_after_play,s_after_play_def).toString());
-    afterPlayLineEdit->setCursorPosition(0);
-    playLineEdit->setText(csettings->value(s_play_command,s_play_command_def).toString());
-    playLineEdit->setCursorPosition(0);
+    beforePlayLineEdit1->setText(csettings->value(s_before_play[0],s_before_play_def).toString());
+    beforePlayLineEdit1->setCursorPosition(0);
+    beforePlayLineEdit2->setText(csettings->value(s_before_play[1],s_before_play_def).toString());
+    beforePlayLineEdit2->setCursorPosition(0);
+    afterPlayLineEdit1->setText(csettings->value(s_after_play[0],s_after_play_def).toString());
+    afterPlayLineEdit1->setCursorPosition(0);
+    afterPlayLineEdit2->setText(csettings->value(s_after_play[1],s_after_play_def).toString());
+    afterPlayLineEdit2->setCursorPosition(0);
+    playLineEdit1->setText(csettings->value(s_play_command[0],s_play_command_def).toString());
+    playLineEdit1->setCursorPosition(0);
+    playLineEdit2->setText(csettings->value(s_play_command[1],s_play_command_def).toString());
+    playLineEdit2->setCursorPosition(0);
+    switchRadioLineEdit1->setText(csettings->value(s_switch_command[0],s_switch_command_def).toString());
+    switchRadioLineEdit1->setCursorPosition(0);
+    switchRadioLineEdit2->setText(csettings->value(s_switch_command[1],s_switch_command_def).toString());
+    switchRadioLineEdit2->setCursorPosition(0);
 
     // REC csettings
     beforeRecLineEdit->setText(csettings->value(s_before_rec,s_before_rec_def).toString());
@@ -461,18 +471,26 @@ void SSBMessageDialog::rejectChanges()
     quick_qsl_edit->setCursorPosition(0);
     quick_qsl_rec_edit->setText(csettings->value(c_qqsl_msg_rec,c_qqsl_msg_rec_def).toString());
     quick_qsl_rec_edit->setCursorPosition(0);
-    beforePlayLineEdit->setText(csettings->value(s_before_play,s_before_play_def).toString());
-    beforePlayLineEdit->setCursorPosition(0);
-    afterPlayLineEdit->setText(csettings->value(s_after_play,s_after_play_def).toString());
-    afterPlayLineEdit->setCursorPosition(0);
-    playLineEdit->setText(csettings->value(s_play_command,s_play_command_def).toString());
-    playLineEdit->setCursorPosition(0);
+    beforePlayLineEdit1->setText(csettings->value(s_before_play[0],s_before_play_def).toString());
+    beforePlayLineEdit1->setCursorPosition(0);
+    beforePlayLineEdit2->setText(csettings->value(s_before_play[1],s_before_play_def).toString());
+    beforePlayLineEdit2->setCursorPosition(0);
+    afterPlayLineEdit1->setText(csettings->value(s_after_play[0],s_after_play_def).toString());
+    afterPlayLineEdit1->setCursorPosition(0);
+    afterPlayLineEdit2->setText(csettings->value(s_after_play[1],s_after_play_def).toString());
+    afterPlayLineEdit2->setCursorPosition(0);
+    playLineEdit1->setText(csettings->value(s_play_command[0],s_play_command_def).toString());
+    playLineEdit1->setCursorPosition(0);
+    playLineEdit2->setText(csettings->value(s_play_command[1],s_play_command_def).toString());
+    playLineEdit2->setCursorPosition(0);
     beforeRecLineEdit->setText(csettings->value(s_before_rec,s_before_rec_def).toString());
     beforeRecLineEdit->setCursorPosition(0);
     afterRecLineEdit->setText(csettings->value(s_after_rec,s_after_rec_def).toString());
     afterRecLineEdit->setCursorPosition(0);
     recLineEdit->setText(csettings->value(s_rec_command,s_rec_command_def).toString());
     recLineEdit->setCursorPosition(0);
+    switchRadioLineEdit1->setText(csettings->value(s_switch_command[0],s_switch_command_def).toString());
+    switchRadioLineEdit2->setText(csettings->value(s_switch_command[1],s_switch_command_def).toString());
     reject();
 }
 
@@ -542,12 +560,17 @@ void SSBMessageDialog::updateSSBMsg()
     csettings->setValue(c_dupe_msg[m],dupe_msg_edit->text());
     csettings->setValue(c_dupe_msg_rec,dupe_msg_rec_edit->text());
     csettings->sync();
-    csettings->setValue(s_play_command,playLineEdit->text());
+    csettings->setValue(s_play_command[0],playLineEdit1->text());
     csettings->setValue(s_rec_command,recLineEdit->text());
-    csettings->setValue(s_before_play,beforePlayLineEdit->text());
-    csettings->setValue(s_after_play,afterPlayLineEdit->text());
+    csettings->setValue(s_play_command[1],playLineEdit2->text());
+    csettings->setValue(s_before_play[0],beforePlayLineEdit1->text());
+    csettings->setValue(s_after_play[0],afterPlayLineEdit1->text());
+    csettings->setValue(s_before_play[1],beforePlayLineEdit2->text());
+    csettings->setValue(s_after_play[1],afterPlayLineEdit2->text());
     csettings->setValue(s_before_rec,beforeRecLineEdit->text());
     csettings->setValue(s_after_rec,afterRecLineEdit->text());
+    csettings->setValue(s_switch_command[0],switchRadioLineEdit1->text());
+    csettings->setValue(s_switch_command[1],switchRadioLineEdit2->text());
     accept();
 }
 
@@ -555,6 +578,18 @@ void SSBMessageDialog::updateSSBMsg()
 // Audio play and record functions. These launch external scripts that record and play audio
 // messages.
 //
+
+/* Start script that is called when focus is changed to nrig
+ *
+ * this could be used for example to redirect mic audio to the correct rig
+ */
+void SSBMessageDialog::switchRadio(int nrig)
+{
+    playMessageRig=nrig;
+    disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
+    scriptProcess->close();
+    scriptProcess->start(csettings->value(s_switch_command[nrig],s_switch_command_def).toString());
+}
 
 /* Begin playing an audio message. Intended to be called from the main program thread
  *
@@ -565,20 +600,20 @@ void SSBMessageDialog::playMessage(int nrig,QString m)
 {
     message=m;
     playMessageRig=nrig;
-    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
     scriptProcess->close();
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage2(int)));
-    scriptProcess->start(csettings->value(s_before_play,s_before_play_def).toString());
+    scriptProcess->start(csettings->value(s_before_play[nrig],s_before_play_def).toString());
 }
 
 void SSBMessageDialog::playMessage2(int signal)
 {
     Q_UNUSED(signal)
-    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage3(int)));
 
     emit(setPtt(playMessageRig,1));
-    cmd=csettings->value(s_play_command,s_play_command_def).toString();
+    cmd=csettings->value(s_play_command[playMessageRig],s_play_command_def).toString();
     cmd=cmd.replace("$",message);
     scriptProcess->start(cmd);
     playing=true;
@@ -590,8 +625,8 @@ void SSBMessageDialog::playMessage3(int signal)
 
     playing=false;
     emit(setPtt(playMessageRig,0));
-    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
-    scriptProcess->start(csettings->value(s_after_play,s_after_play_def).toString());
+    disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
+    scriptProcess->start(csettings->value(s_after_play[playMessageRig],s_after_play_def).toString());
     emit(finished());
 }
 
@@ -601,12 +636,12 @@ void SSBMessageDialog::recMessage(QString m)
         recording=true;
         message=m;
         emit(recordingStatus(true));
-        disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+        disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
         scriptProcess->close();
         connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage2(int)));
         scriptProcess->start(csettings->value(s_before_rec,s_before_rec_def).toString());
     } else {
-        disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+        disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
         scriptProcess->close();
         recMessage3(0);
     }
@@ -615,7 +650,7 @@ void SSBMessageDialog::recMessage(QString m)
 void SSBMessageDialog::recMessage2(int signal)
 {
     Q_UNUSED(signal)
-    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage3(int)));
     QString t=csettings->value(s_rec_command,s_rec_command_def).toString();
     t=t.replace("$",message);
@@ -625,7 +660,7 @@ void SSBMessageDialog::recMessage2(int signal)
 void SSBMessageDialog::recMessage3(int signal)
 {
     Q_UNUSED(signal)
-    disconnect(scriptProcess,SIGNAL(finished(int)),0,0);
+    disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
     scriptProcess->start(csettings->value(s_after_rec,s_after_rec_def).toString());
     emit(recordingStatus(false));
     recording=false;

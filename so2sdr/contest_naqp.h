@@ -22,19 +22,20 @@
 #include "cty.h"
 #include "contest.h"
 
-class Naqp : public Contest {
+class Naqp : public Contest
+{
 public:
     Naqp(QSettings &cs,QSettings &ss);
-    ~Naqp();
-    ContestType contestType() const { return Naqp_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    unsigned int rcvFieldShown() const;
-    bool showQsoPtsField() const {return false;}
-    unsigned int sntFieldShown() const;
+    ~Naqp() override;
+
+    ContestType contestType() const override { return Naqp_t;}
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    unsigned int rcvFieldShown() const override;
+    bool showQsoPtsField() const override {return false;}
 };
 
 #endif

@@ -30,7 +30,7 @@ class NetworkSDR : public SdrDataSource
 {
     Q_OBJECT
 public:
-    NetworkSDR(QString settingsFile,QObject *parent = 0);
+    NetworkSDR(QString settingsFile,QObject *parent = nullptr);
     ~NetworkSDR();
 
 public slots:

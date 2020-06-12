@@ -75,7 +75,7 @@ bool MultDisplay::eventFilter(QObject* o, QEvent* e)
             int woffset=qCeil((width-nw*gridWidth)/(QWidget::fontMetrics().averageCharWidth()*2.0));
             x=x-woffset*QWidget::fontMetrics().averageCharWidth();
             x=x/gridWidth;
-            y=(y-document()->documentMargin())/QWidget::fontMetrics().height();
+            y=qRound((static_cast<qreal>(y)-document()->documentMargin())/QWidget::fontMetrics().height());
             for (int i=0;i<x;i++) {
                 upperLeft[2]++;
                 if (upperLeft[2]==10) {

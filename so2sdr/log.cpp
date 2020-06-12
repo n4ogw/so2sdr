@@ -39,16 +39,16 @@
 /*!
    n_exch is number of exchange fields; this can't change during the contest
  */
-Log::Log(QSettings &cs,QSettings &s, uiSize sizes,QObject *parent = 0) : QObject(parent),csettings(cs),settings(s)
+Log::Log(QSettings &cs,QSettings &s, uiSize sizes,QObject *parent = nullptr) : QObject(parent),csettings(cs),settings(s)
 {
-    contest = 0;
-    detail = 0;
-    model = 0;
+    contest = nullptr;
+    detail = nullptr;
+    model = nullptr;
     lat=0.0;
     lon=0.0;
-    logdel=0;
+    logdel=nullptr;
     origEditRecord.clear();
-    db=QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase::addDatabase("QSQLITE");   // sqlite3 database; default connection is for log
     for (int i=0;i<N_BANDS;i++) qsoCnt[i]=0;
     logSearchFlag=false;
     searchList.clear();
@@ -60,9 +60,7 @@ Log::Log(QSettings &cs,QSettings &s, uiSize sizes,QObject *parent = 0) : QObject
 
 Log :: ~Log()
 {
-    closeLogFile();
     if (model) {
-        QSqlDatabase::removeDatabase("QSQLITE");
         delete model;
     }
     if (contest) delete contest;
@@ -74,7 +72,6 @@ Log :: ~Log()
 QString Log::bandLabel(int i) const {return contest->bandLabel(i);}
 bool Log::bandLabelEnable(int i) const {return contest->bandLabelEnable(i);}
 int Log::columnCount(int col) const {return contest->columnCount(col);}
-QSqlDatabase& Log::dataBase() { return db; }
 tableModel* Log::mod() { return model;}
 int Log::nQso(int band) const { return qsoCnt[band];}
 QSqlRecord Log::record(QModelIndex index) { return model->record(index.row());}
@@ -114,14 +111,6 @@ QString Log::mySunTimes() const { return cty->mySunTimes();}
 int Log::zoneType() const { return contest->zoneType(); }
 
 /*!
-  close sql database
-  */
-void Log::closeLogFile()
-{
-    db.close();
-}
-
-/*!
    ADIF file export
 
  */
@@ -129,7 +118,7 @@ bool Log::exportADIF(QFile *adifFile) const
 {
     QSqlQueryModel m;
 
-    m.setQuery("SELECT * FROM log where valid=1", db);
+    m.setQuery("SELECT * FROM log where valid=1");
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -186,30 +175,20 @@ bool Log::exportADIF(QFile *adifFile) const
         // time
         tmp = tmp + "<TIME_ON:4>" + m.record(i).value(SQL_COL_TIME).toByteArray();
 
-        int rsti = 0;
-        switch (m.record(i).value(SQL_COL_MODE).toInt()) {
-        case RIG_MODE_LSB: case RIG_MODE_USB:
-            tmp  = tmp + "<MODE:3>SSB";
+        // mode
+        tmp = tmp + "<MODE:"+QByteArray::number(m.record(i).value(SQL_COL_ADIF_MODE).toString().length())+">"+
+                m.record(i).value(SQL_COL_ADIF_MODE).toString().toLatin1();
+
+        int rsti;
+        switch (m.record(i).value(SQL_COL_MODE_TYPE).toInt()) {
+        case PhoneType:
             rsti = 1;
-            break;
-        case RIG_MODE_CW: case RIG_MODE_CWR:
-            tmp = tmp + "<MODE:2>CW";
-            break;
-        case RIG_MODE_FM:
-            tmp  = tmp + "<MODE:2>FM";
-            rsti = 1;
-            break;
-        case RIG_MODE_AM:
-            tmp  = tmp + "<MODE:2>AM";
-            rsti = 1;
-            break;
-        case RIG_MODE_RTTY: case RIG_MODE_RTTYR:
-            tmp = tmp + "<MODE:4>RTTY";
             break;
         default:
-            tmp = tmp + "<MODE:2>CW";
+            rsti = 0;
             break;
         }
+
         // RS(T). If not in log, use 59/599
         if (rsti == 0) {
             // RST for CW, RTTY
@@ -273,7 +252,7 @@ bool Log::exportADIF(QFile *adifFile) const
 void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString snt_exch2,QString snt_exch3,QString snt_exch4) const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log  where valid=1", db);
+    m.setQuery("SELECT * FROM log  where valid=1");
 
     while (m.canFetchMore()) {
         m.fetchMore();
@@ -349,24 +328,21 @@ void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
             tmp = tmp + " ";
         }
         tmp = tmp + tmp2;
-        switch (m.record(i).value(SQL_COL_MODE).toInt()) {
-        case RIG_MODE_CW:
-        case RIG_MODE_CWR:
+
+        // mode
+        if (m.record(i).value(SQL_COL_ADIF_MODE).toString()=="CW") {
             tmp = tmp + " CW ";
-            break;
-        case RIG_MODE_USB:
-        case RIG_MODE_LSB:
-        case RIG_MODE_AM:
-        case RIG_MODE_FM:
+        } else if (m.record(i).value(SQL_COL_ADIF_MODE).toString()=="SSB" ||
+                   m.record(i).value(SQL_COL_ADIF_MODE).toString()=="LSB" ||
+                   m.record(i).value(SQL_COL_ADIF_MODE).toString()=="USB" ||
+                   m.record(i).value(SQL_COL_ADIF_MODE).toString()=="FM" ||
+                   m.record(i).value(SQL_COL_ADIF_MODE).toString()=="AM" ||
+                   m.record(i).value(SQL_COL_ADIF_MODE).toString()=="DIGITALVOICE") {
             tmp = tmp + " PH ";
-            break;
-        case RIG_MODE_RTTY:
-        case RIG_MODE_RTTYR:
+        } else if (m.record(i).value(SQL_COL_ADIF_MODE).toString()=="RTTY") {
             tmp = tmp + " RY ";
-            break;
-        default:
-            tmp = tmp + " CW ";
-            break;
+        } else {
+            tmp = tmp + " DG ";
         }
 
         // in SQL log, date is of format MMddyyyy
@@ -426,44 +402,48 @@ void Log::exportCabrillo(QFile *cbrFile,QString call,QString snt_exch1,QString s
    Dupe checking subroutine.
 
    - qso->worked returns with bits set according to bands worked
-   - DupeCheckingEveryBand controls whether calls can be worked on every band or only once.
+   - DupeCheckingEveryBand controls whether calls can be worked on every band or only once
+
+   @todo comparison of strings with '=' in sqlite does not work here. This is because
+   the strings were originally stored as QByteArrays. Need to change them all to QString so
+   that comparisons work correctly.
 */
-bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
+void Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 {
-    // if called with no call, abort
-    if (qso->call.isEmpty()) return false;
+    // if called with no call, abort; only keep dupes on known bands
+    if (qso->call.isEmpty() || qso->band==BAND_NONE) {
+        qso->dupe=false;
+        return;
+    }
 
-    // only keep dupes on known bands
-    if (qso->band==BAND_NONE) return false;
-
+    if (csettings.value(c_dupemode,c_dupemode_def).toInt() == NO_DUPE_CHECKING) {
+        qso->dupe=false;
+        return;
+    }
     bool dupe = false;
     qso->worked = 0;
     qso->prefill.clear();
     QSqlQueryModel m;
-
     // call can only be worked once on any band
     if (!DupeCheckingEveryBand) {
+        QString query;
         if (!settings.value(c_multimode,c_multimode_def).toBool()) {
-            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'", db);
+            query="SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'";
         } else {
-            // multimode: if voice mode, check for dupe with LSB, USB, or FM
-            // @todo this would be much simpler if modeType was stored in log, but this requires changing the so2sdr log
-            // format
-            if (qso->modeType==PhoneType) {
-                m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "' and  \
-                       (MODE="+QByteArray::number(RIG_MODE_AM)+" OR MODE="+QByteArray::number(RIG_MODE_LSB)+" OR MODE="+ \
-                        QByteArray::number(RIG_MODE_USB)+")'",db);
-           } else if (qso->modeType==CWType) {
-                m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "' and  \
-                       (MODE="+QByteArray::number(RIG_MODE_CW)+" OR MODE="+QByteArray::number(RIG_MODE_CWR)+")'",db);
-            }
-
+            // multimode contest: check for dupe with same mode type (cw, phone, digi)
+            query="SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "' and MODETYPE="
+                       +QByteArray::number(qso->modeType)+"'";
         }
-
+        // if qso already has an index number, only dupe check with qsos before this one. This
+        // allows isDupe to work when called to redupe an existing log
+        if (qso->nr > 0) {
+            query.append(" and nr < "+QString::number(qso->nr));
+        }
+        m.setQuery(query);
         while (m.canFetchMore()) {
             m.fetchMore();
         }
-        if (m.rowCount()) {
+        if (m.rowCount() > 0) {
             dupe = true;
             if (FillWorked) {
                 // mult not needed on any band
@@ -473,42 +453,47 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     } else {
         // if mobile station, check for mobile dupe option. In this
         // case, count dupe only if exchange is identical
-        QString query="SELECT * FROM log WHERE valid=1 and call like '" + qso->call + "' AND band=" + QString::number(qso->band);
+        QString query="SELECT * FROM log WHERE valid == 1 and call like '" + qso->call + "' AND band ==" + QString::number(qso->band);
 
         if ((qso->isMobile || qso->isRover) && csettings.value(c_mobile_dupes,c_mobile_dupes_def).toBool()) {
             QString exch=qso->rcv_exch[csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()-1];
             // if exchange not entered, can't determine dupe status yet
             if (exch.isEmpty()) {
-                return(false);
+                qso->dupe=false;
+                return;
             }
             query=query+ " AND ";
             switch (csettings.value(c_mobile_dupes_col,c_mobile_dupes_col_def).toInt()) {
             case 1:
-                query=query+"rcv1 like '"+exch+"'";
+                query=query+"rcv1 LIKE '"+exch+"'";
                 break;
             case 2:
-                query=query+"rcv2 like '"+exch+"'";
+                query=query+"rcv2 LIKE '"+exch+"'";
                 break;
             case 3:
-                query=query+"rcv3 like '"+exch+"'";
+                query=query+"rcv3 LIKE '"+exch+"'";
                 break;
             case 4:
-                query=query+"rcv4 like '"+exch+"'";
+                query=query+"rcv4 LIKE '"+exch+"'";
                 break;
             default:
-                return(false);
+                qso->dupe=false;
+                return;
+            }
+            if (qso->nr > 0) {
+                query.append(" and nr < "+QString::number(qso->nr));
             }
         }
-        m.setQuery(query, db);
+        m.setQuery(query);
         m.query().exec();
         while (m.canFetchMore()) {
             m.fetchMore();
         }
-        if (m.rowCount() > 1) {  // it's a dupe if more than one matching qso found
+        if (m.rowCount() > 0) {
             dupe=true;
         }
         if (FillWorked) {
-            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'", db);
+            m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call + "'");
             m.query().exec();
             while (m.canFetchMore()) {
                 m.fetchMore();
@@ -520,7 +505,14 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     }
     // if a dupe, set zero pts
     if (dupe) qso->pts = 0;
-    return(dupe);
+    qso->dupe=dupe;
+    // if not dupe, check if qso is a new mult; this is used by the wsjtx call list
+    // in contests using grids for mults. @todo update this for all mult types
+    if (!dupe && csettings.value(c_multfile1,c_multfile1_def).toString()=="grid" && !qso->mult_name.isEmpty()) {
+        contest->multIndx(qso);
+    } else {
+        qso->isnewmult[0]=false;
+    }
 }
 
 
@@ -530,7 +522,7 @@ bool Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
 int Log::lastNr() const
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log where valid=1", db);
+    m.setQuery("SELECT * FROM log where valid=1");
 
     while (m.canFetchMore()) {
         m.fetchMore();
@@ -557,29 +549,29 @@ is a new mult or not
 */
 void Log::mobileDupeCheck(Qso *qso)
 {
-    qso->dupe=isDupe(qso,true,false);
+    isDupe(qso,true,false);
 }
+
 
 /*!
    open log file on disk. If already exists, open as append.
-
-   s is pointer to contest settings file
- */
-bool Log::openLogFile(QString fname,bool clear)
+*/
+bool Log::openLogFile(QString fname)
 {
-    Q_UNUSED(clear);
     if (fname.isEmpty())
-        return(false);
+        return false;
 
     fname = fname.remove(".cfg") + ".log";
+    QSqlDatabase db=QSqlDatabase::database();
     db.setDatabaseName(fname);
     if (!db.open()) {
-        return(false);
+        return false;
     }
     QSqlQuery query(db);
 
-    if (!query.exec("create table if not exists log (nr int primary key,time text,freq double,call text,band int,date text,mode int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid boolean)")) {
-        return(false);
+    if (!query.exec("create table if not exists log (nr int primary key,time text,freq double,call text,band int,date text,mode int,adifmode text,modetype int,snt1 text,snt2 text,snt3 text,snt4 text,rcv1 text,rcv2 text,rcv3 text,rcv4 text,pts int,valid boolean)")) {
+        db.close();
+        return false;
     }
     if (model) delete model;
     model = new tableModel(this,db);
@@ -590,6 +582,13 @@ bool Log::openLogFile(QString fname,bool clear)
     model->select();
     while (model->canFetchMore()) {
         model->fetchMore();
+    }
+    // check to make sure number of columns matches (in case checkLogFileVersion wasn't called or file changed)
+    query.prepare("SELECT * FROM log");
+    query.exec();
+    if (query.record().count()!=SQL_N_COL) {
+        db.close();
+        return false;
     }
     return true;
 }
@@ -635,7 +634,7 @@ bool Log::showQsoPtsField() const
 QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
 {
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log where valid=1", db);
+    m.setQuery("SELECT * FROM log where valid=1");
 
     while (m.canFetchMore()) {
         m.fetchMore();
@@ -660,7 +659,7 @@ QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
         if (qsoTime<start || qsoTime>end) continue; // qso not during contest
 
         // calculate time difference from last qso
-        int diff=lastQsoTime.secsTo(qsoTime);
+        qint64 diff=lastQsoTime.secsTo(qsoTime);
         if (diff<0) continue; // probably means log is out of order, this will fail!
 
         diff/=60;
@@ -671,7 +670,7 @@ QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
         lastQsoTime=qsoTime;
     }
     // add any additional off time taken up to current time
-    int extra=0;
+    qint64 extra=0;
     if (lastQsoTime<end) {
         QDateTime current=QDateTime::currentDateTime();
         if (end<current) {
@@ -689,8 +688,8 @@ QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
     if (totOffTime>=6039) {
         return "Off 00:00/99:99";
     } else {
-        int ehr=extra/60;
-        int emin=extra-ehr*60;
+        qint64 ehr=extra/60;
+        qint64 emin=extra-ehr*60;
         int hr=totOffTime/60;
         int min=totOffTime-hr*60;
         QString tmp="Off "+QString("%1").arg(QString::number(ehr), 2, QChar('0'))+
@@ -707,9 +706,9 @@ QString Log::offTime(int minOffTime,QDateTime start,QDateTime end)
 */
 void Log::addQso(Qso *qso)
 {
-    QSqlQuery query(db);
-    query.prepare("INSERT INTO log (nr,time,freq,call,band,date,mode,snt1,snt2,snt3,snt4,rcv1,rcv2,rcv3,rcv4,pts,valid)"
-                    "VALUES (:nr,:time,:freq,:call,:band,:date,:mode,:snt1,:snt2,:snt3,:snt4,:rcv1,:rcv2,:rcv3,:rcv4,:pts,:valid)");
+    QSqlQuery query(QSqlDatabase::database());
+    query.prepare("INSERT INTO log (nr,time,freq,call,band,date,mode,adifmode,modetype,snt1,snt2,snt3,snt4,rcv1,rcv2,rcv3,rcv4,pts,valid)"
+                    "VALUES (:nr,:time,:freq,:call,:band,:date,:mode,:adifmode,:modetype,:snt1,:snt2,:snt3,:snt4,:rcv1,:rcv2,:rcv3,:rcv4,:pts,:valid)");
     query.bindValue(":nr",model->rowCount()+1);
     query.bindValue(":time",qso->time.toUTC().toString("hhmm"));
     query.bindValue(":freq",qso->freq);
@@ -717,6 +716,8 @@ void Log::addQso(Qso *qso)
     query.bindValue(":band",qso->band);
     query.bindValue(":date",qso->time.toUTC().toString("MMddyyyy"));
     query.bindValue(":mode",qso->mode);
+    query.bindValue(":modetype",qso->modeType);
+    query.bindValue(":adifmode",qso->adifMode);
     if (contest->nExchange()>0) {
         query.bindValue(":snt1",qso->snt_exch[0]);
         query.bindValue(":rcv1",qso->rcv_exch[0]);
@@ -792,29 +793,10 @@ void Log::importCabrillo(QString cabFile)
     for (int i = 0; i < N_BANDS; i++) qsoCnt[i] = 0;
     Qso qso (contest->nExchange());
     contest->zeroScore();
-    model->database().transaction();
 
+    QSqlQuery query(QSqlDatabase::database());
     QString buffer;
     QStringList field;
-    QSqlRecord  newqso;
-    newqso.append(QSqlField("nr", QVariant::Int));
-    newqso.append(QSqlField("time", QVariant::String));
-    newqso.append(QSqlField("freq", QVariant::Double));
-    newqso.append(QSqlField("call", QVariant::String));
-    newqso.append(QSqlField("band", QVariant::Int));
-    newqso.append(QSqlField("date", QVariant::String));
-    newqso.append(QSqlField("mode", QVariant::Int));
-    newqso.append(QSqlField("snt1", QVariant::String));
-    newqso.append(QSqlField("snt2", QVariant::String));
-    newqso.append(QSqlField("snt3", QVariant::String));
-    newqso.append(QSqlField("snt4", QVariant::String));
-    newqso.append(QSqlField("rcv1", QVariant::String));
-    newqso.append(QSqlField("rcv2", QVariant::String));
-    newqso.append(QSqlField("rcv3", QVariant::String));
-    newqso.append(QSqlField("rcv4", QVariant::String));
-    newqso.append(QSqlField("pts", QVariant::Int));
-    newqso.append(QSqlField("valid", QVariant::Int));
-    for (int i = 0; i < SQL_N_COL; i++) newqso.setGenerated(i, true);
 
     while (!file.atEnd()) {
         buffer = file.readLine();
@@ -825,49 +807,58 @@ void Log::importCabrillo(QString cabFile)
         field = buffer.split(" ", QString::SkipEmptyParts);
         int         nf    = field.size();
 
+        query.prepare("INSERT INTO log (nr,time,freq,call,band,date,mode,adifmode,modetype,snt1,snt2,snt3,snt4,rcv1,rcv2,rcv3,rcv4,pts,valid)"
+                      "VALUES (:nr,:time,:freq,:call,:band,:date,:mode,:adifmode,:modetype,:snt1,:snt2,:snt3,:snt4,:rcv1,:rcv2,:rcv3,:rcv4,:pts,:valid)");
+
         // Field1 = frequency in KHz
         double f = field.at(1).toDouble() * 1000;
-        newqso.setValue(SQL_COL_FREQ, QVariant(f));
+        query.bindValue(":freq",f);
 
         int b = getBand(f);
-        newqso.setValue(SQL_COL_BAND, QVariant(b));
         qso.band = b;
+        query.bindValue(":band",qso.band);
 
         // Field2 = mode
-        int m;
         if (field.at(2).toUpper() == "CW") {
-            m = RIG_MODE_CW;
-        } else if (field.at(2).toUpper() == "RY") {
-            m = RIG_MODE_RTTY;
-        } else if (field.at(2).toUpper() == "PH") {
-            // Cabrillo doesn't store LSB/USB?
-            if (f < 14000000) {
-                m = RIG_MODE_LSB;
-            } else {
-                m = RIG_MODE_USB;
-            }
+            qso.mode=RIG_MODE_CW;
+            qso.modeType=CWType;
+            qso.adifMode="CW";
+        } else if (field.at(2).toUpper() == "RY" || field.at(2).toUpper() == "DG") {
+            // from Cabrillo there is no way to determine what digital mode was used
+            qso.mode=RIG_MODE_RTTY;
+            qso.modeType=DigiType;
+            qso.adifMode="RTTY";
         } else if (field.at(2).toUpper() == "FM") {
-            m = RIG_MODE_FM;
-        } else {
-            m = RIG_MODE_CW;
+            qso.mode=RIG_MODE_FM;
+            qso.modeType=PhoneType;
+            qso.adifMode="FM";
+        } else if (field.at(2).toUpper() == "PH") {
+            qso.modeType=PhoneType;
+            qso.adifMode="SSB";
+            // Cabrillo doesn't store LSB/USB; make a guess
+            if (f < 14000000) {
+                qso.mode=RIG_MODE_USB;
+            } else {
+                qso.mode=RIG_MODE_LSB;
+            }
         }
-        qso.mode = (rmode_t) m;
-        qso.modeType=getModeType(qso.mode);
-        newqso.setValue(SQL_COL_MODE, QVariant(m));
+        query.bindValue(":mode",qso.mode);
+        query.bindValue(":modetype",qso.modeType);
+        query.bindValue(":adifmode",qso.adifMode);
         cnt++;
-        newqso.setValue(SQL_COL_NR, QVariant(cnt));
+        query.bindValue(":nr",cnt);
 
         // Field3 = date
         QDateTime time;
         time.setTimeSpec(Qt::UTC);
         int       y = field.at(3).mid(0, 4).toInt();
-        m = field[3].mid(5, 2).toInt();
+        int m = field[3].mid(5, 2).toInt();
         int       d = field.at(3).mid(8, 2).toInt();
         time.setDate(QDate(y, m, d));
-        newqso.setValue(SQL_COL_DATE, QVariant(time.toString("MMddyyyy").toLatin1()));
+        query.bindValue(":date",time.toString("MMddyyyy"));
 
         // Field4=time
-        newqso.setValue(SQL_COL_TIME, QVariant(field.at(4)));
+        query.bindValue(":time",field.at(4));
 
         // Field5=station call. ignore this
 
@@ -877,27 +868,27 @@ void Log::importCabrillo(QString cabFile)
         for (i = 6, j = 0; i < (6 + contest->nExchange()); i++, j++) {
             switch (j) {
             case 0:
-                newqso.setValue(SQL_COL_SNT1, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[0]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":snt1",qso.snt_exch[0]);
                 break;
             case 1:
-                newqso.setValue(SQL_COL_SNT2, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[1]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":snt2",qso.snt_exch[1]);
                 break;
             case 2:
-                newqso.setValue(SQL_COL_SNT3, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[2]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":snt3",qso.snt_exch[2]);
                 break;
             case 3:
-                newqso.setValue(SQL_COL_SNT4, QVariant(field.at(i).toUpper()));
                 qso.snt_exch[3]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":snt4",qso.snt_exch[3]);
                 break;
             }
         }
 
         // next field=call worked
-        newqso.setValue(SQL_COL_CALL, QVariant(field.at(6 + contest->nExchange()).toUpper()));
         qso.call = field.at(6 + contest->nExchange()).toLatin1().toUpper();
+        query.bindValue(":call",qso.call);
         bool bb;
         qso.country = idPfx(&qso, bb);
 
@@ -910,34 +901,35 @@ void Log::importCabrillo(QString cabFile)
             }
             switch (j) {
                 case 0:
-                newqso.setValue(SQL_COL_RCV1, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[0]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":rcv1",qso.rcv_exch[0]);
                 break;
             case 1:
-                newqso.setValue(SQL_COL_RCV2, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[1]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":rcv2",qso.rcv_exch[1]);
                 break;
             case 2:
-                newqso.setValue(SQL_COL_RCV3, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[2]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":rcv3",qso.rcv_exch[2]);
                 break;
             case 3:
-                newqso.setValue(SQL_COL_RCV4, QVariant(field.at(i).toUpper()));
                 qso.exch = qso.exch + " " + field.at(i).toLatin1().toUpper();
                 qso.rcv_exch[3]=field.at(i).toLatin1().toUpper();
+                query.bindValue(":rcv4",qso.rcv_exch[3]);
                 break;
             }
         }
-        newqso.setValue(SQL_COL_PTS, QVariant(qso.pts));
-        newqso.setValue(SQL_COL_VALID, QVariant(true)); // set to valid
+        query.bindValue(":pts",qso.pts);
+        query.bindValue(":valid",true);
         contest->addQso(&qso);
-        model->insertRecord(-1, newqso);
+        query.exec();
         emit(progressCnt(cnt));
         qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     }
+    model->select();
     while (model->canFetchMore()) {
         model->fetchMore();
     }
@@ -995,7 +987,7 @@ void Log::rescore()
 {
     Qso tmpqso(contest->nExchange());
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log", db);
+    m.setQuery("SELECT * FROM log");
     while (m.canFetchMore()) {
         m.fetchMore();
     }
@@ -1021,8 +1013,10 @@ void Log::rescore()
         for (int j = 0; j < contest->nExchange(); j++) {
             tmpqso.exch = tmpqso.exch + tmp[j] + " ";
         }
-        tmpqso.mode = (rmode_t) m.record(i).value("mode").toInt();
-        tmpqso.modeType = getModeType(tmpqso.mode);
+        tmpqso.adifMode = m.record(i).value("adifmode").toString().toLatin1();
+        // reset the modeType in case adifmode was edited
+        tmpqso.modeType = getAdifModeType(tmpqso.adifMode);
+        tmpqso.mode = static_cast<rmode_t>(m.record(i).value("mode").toInt());
         tmpqso.band = m.record(i).value("band").toInt();
         tmpqso.pts  = m.record(i).value("pts").toInt();
 
@@ -1043,7 +1037,7 @@ void Log::rescore()
                 QByteArray check=tmpqso.call;
                 // multi-mode contest: append a mode index to the call
                 if (csettings.value(c_multimode,c_multimode_def).toBool()) {
-                    check=check+QByteArray::number((int)tmpqso.modeType);
+                    check=check+QByteArray::number(tmpqso.modeType);
                 }
                 if (contest->dupeCheckingByBand()) {
                     if (dupes[tmpqso.band].contains(check)) {
@@ -1102,7 +1096,7 @@ void Log::updateHistory()
     QSqlQueryModel log;
     QString query_log = "SELECT call,rcv1,rcv2,rcv3,rcv4 from log where valid=1";
 
-    log.setQuery(query_log, db);
+    log.setQuery(query_log);
     while (log.canFetchMore()) log.fetchMore();
     emit(progressMax(log.rowCount()));
     Qso tmpqso(contest->nExchange());
@@ -1128,7 +1122,7 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
 
     // query for partial fragment
     QSqlQueryModel m;
-    m.setQuery("SELECT * FROM log WHERE VALID=1 AND (CALL LIKE'%" + part + "%' )", db);
+    m.setQuery("SELECT * FROM log WHERE VALID=1 AND (CALL LIKE'%" + part + "%' )");
 
     while (m.canFetchMore()) {
         m.fetchMore();
@@ -1136,7 +1130,7 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
     for (int i = 0; i < m.rowCount(); i++) {
         // if multi-mode contest, check for matching mode
         if (csettings.value(c_multimode,c_multimode_def).toBool()) {
-            if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())!=qso->modeType) {
+            if (m.record(i).value(SQL_COL_MODE_TYPE).toInt()!=qso->modeType) {
                 continue;
             }
         }
@@ -1146,15 +1140,13 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
         // @todo a better way to handle this?
         int ib=m.record(i).value(SQL_COL_BAND).toInt();
         if (contest->contestType()==Arrl10_t) {
-            if (getModeType((rmode_t)m.record(i).value(SQL_COL_MODE).toInt())==CWType) ib=4;
+            if (m.record(i).value(SQL_COL_MODE_TYPE).toInt()==CWType) ib=4;
             else ib=5;
         }
         // see if this call is already in list
         int j=calls.indexOf(tmp);
         if (j != -1) {
             // add this band
-
-            //worked[j] = worked[j] | bits[m.record(i).value(SQL_COL_BAND).toInt()];
             worked[j] = worked[j] | bits[ib];
         } else {
             // new call fragment, or same call and different mode
@@ -1247,14 +1239,14 @@ int Log::idPfx(Qso *qso, bool &qsy) const
  {
      int pp=cty->idPfx(qso,qsy);
      if (csettings.value(c_contestname,c_contestname_def).toString().toUpper()=="WPX") {
-         ((WPX*) contest)->wpxPrefix(qso->call, qso->mult_name);
+         static_cast<WPX*>(contest)->wpxPrefix(qso->call, qso->mult_name);
          qso->isamult[0]=true;
          contest->multIndx(qso);
      }
-      if (csettings.value(c_contestname,c_contestname_def).toString().toUpper()=="ARRLJUNE") {
-          qso->isamult[0]=true;
-          contest->multIndx(qso);
-      }
+     if (csettings.value(c_contestname,c_contestname_def).toString().toUpper()=="ARRLJUNE") {
+         qso->isamult[0]=true;
+         contest->multIndx(qso);
+     }
      return pp;
  }
 

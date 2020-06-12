@@ -98,7 +98,7 @@ int CQWW::numberField() const
 
 unsigned int CQWW::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return(2);  // show second field
 }
 
 void CQWW::setupContest(QByteArray MultFile[2], const Cty *cty)

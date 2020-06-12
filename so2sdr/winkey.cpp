@@ -50,6 +50,7 @@ Winkey::Winkey(QSettings &s, QObject *parent) : QObject(parent), settings(s)
 
 Winkey::~Winkey()
 {
+    cancelcw();
     closeWinkey();
     delete winkeyPort;
 }
@@ -288,7 +289,7 @@ void Winkey::openWinkey()
     winkeyPort->write((char *) buff, 1);
     winkeyPort->write((char *) buff, 1);
 
-    winkeyPort->waitForBytesWritten(100);;
+    winkeyPort->waitForBytesWritten(100);
     winkeyPort->waitForReadyRead(100);
 
     // Echo Test to see if WK is really there
@@ -372,7 +373,7 @@ void Winkey::closeWinkey()
         winkeyPort->flush();
     }
     winkeyPort->close();
-    disconnect(winkeyPort,SIGNAL(readyRead()),0,0);
+    disconnect(winkeyPort,SIGNAL(readyRead()),nullptr,nullptr);
     winkeyOpen=false;
 }
 

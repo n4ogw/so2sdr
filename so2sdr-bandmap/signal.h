@@ -33,7 +33,7 @@ public:
     double fcq;
     int  n;
     int  space;
-    long fsum;
+    double fsum;
 };
 Q_DECLARE_TYPEINFO(Signal, Q_MOVABLE_TYPE);
 

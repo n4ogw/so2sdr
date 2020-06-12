@@ -33,11 +33,11 @@ IQBalance::IQBalance(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f)
     // set default plot scales
     // gain: 0.9:1.1
     gainOffset = 1.0;
-    gainScale  = (double) IQ_PLOT_HEIGHT / 0.2;
+    gainScale  = static_cast<double>(IQ_PLOT_HEIGHT / 0.2);
 
     // phase: -5:5 degrees
     phaseOffset = 0.0;
-    phaseScale  = (double) IQ_PLOT_HEIGHT / 10.0;
+    phaseScale  = static_cast<double>(IQ_PLOT_HEIGHT / 10.0);
 }
 
 IQBalance::~IQBalance()
@@ -73,20 +73,20 @@ void IQBalance::restartIQ()
  */
 void IQBalance::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     emit(closed(false));
 }
 
 void IQBalance::setGainScale(double min, double max)
 {
     gainOffset = min + (max - min) * 0.5;
-    gainScale  = (double) IQ_PLOT_HEIGHT / (max - min);
+    gainScale  = static_cast<double>(IQ_PLOT_HEIGHT / (max - min));
 }
 
 void IQBalance::setPhaseScale(double min, double max)
 {
     phaseOffset = min + (max - min) * 0.5;
-    phaseScale  = (double) IQ_PLOT_HEIGHT / (max - min);
+    phaseScale  = static_cast<double>(IQ_PLOT_HEIGHT / (max - min));
 }
 
 void IQBalance::clearPlots()
@@ -136,7 +136,7 @@ void IQBalance::plotGainFunc(double a0, double a1, double a2, double a3)
     for (int i = -IQ_PLOT_WIDTH / 2; i < IQ_PLOT_WIDTH / 2; i++) {
         int    px   = i + IQ_PLOT_WIDTH / 2; // px is x index on plot
         double gain = a0;
-        double x    = (double) i;
+        double x    = static_cast<double>(i);
         double x0   = x;
         gain += a1 * x;
         x    *= x0;
@@ -177,7 +177,7 @@ void IQBalance::plotPhaseFunc(double a0, double a1, double a2, double a3)
     for (int i = -IQ_PLOT_WIDTH / 2; i < IQ_PLOT_WIDTH / 2; i++) {
         int    px    = i + IQ_PLOT_WIDTH / 2; // px is x index on plot
         double phase = a0;
-        double x     = (double) i;
+        double x     = static_cast<double>(i);
         double x0    = x;
         phase += a1 * x;
         x     *= x0;

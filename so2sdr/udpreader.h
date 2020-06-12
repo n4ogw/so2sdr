@@ -19,29 +19,83 @@
 #ifndef UDPREADER_H
 #define UDPREADER_H
 
+#include <QByteArray>
+#include <QColor>
+#include <QDataStream>
+#include <QHostAddress>
+#include <QIODevice>
 #include <QObject>
+#include <QModelIndex>
 #include <QSettings>
+#include <QSqlTableModel>
 #include <QString>
 #include <QUdpSocket>
-#include "adifparse.h"
 #include "defines.h"
 #include "qso.h"
+#include "utils.h"
 
+const quint32 magic=0xadbccbda;
+
+const int WSJTX_SQL_COL_CALL = 0;
+const int WSJTX_SQL_COL_GRID = 1;
+const int WSJTX_SQL_COL_AGE = 2;
+const int WSJTX_SQL_COL_SNR = 3;
+const int WSJTX_SQL_COL_FREQ = 4;
+const int WSJTX_SQL_COL_RX = 5;
+const int WSJTX_SQL_COL_LAST = 6;
+const int WSJTX_SQL_COL_DUPE = 7;
+const int WSJTX_SQL_COL_MULT = 8;
+const int WSJTX_SQL_COL_NCOL = 9;
+
+// from wsjtx NetworkMessage.hpp
+enum WsjtxMessageType
+{
+    Heartbeat,
+    Status,
+    Decode,
+    Clear,
+    Reply,
+    QSOLogged,
+    Close,
+    Replay,
+    HaltTx,
+    FreeText,
+    WSPRDecode,
+    Location,
+    LoggedADIF,
+    HighlightCallsign,
+    SwitchConfiguration,
+    Configure,
+    maximum_message_type_
+};
 
 // interface for external UDP log broadcasts (WSJTX)
 class UDPReader : public QObject
 {
     Q_OBJECT
 public:
-    explicit UDPReader(QSettings& cs,QObject *parent);
+    explicit UDPReader(int rig, QSettings& cs,QObject *parent=nullptr);
+    bool isEnabled() const { return isOpen;}
+    int nrig() const {return _nrig;}
+    void redupe();
+    void setDupeDisplay(bool);
+    void setFreq(double f) { _freq = f;
+                           _band = getBand(_freq);}
     ~UDPReader();
+    QSqlTableModel* tableModel() const { return model;}
 
 signals:
+    void dupeCheck(Qso *qso);
     void error(const QString &);
     void wsjtxQso(Qso *);
 
 public slots:
+    void callClicked(const QModelIndex & index);
+    void clearCalls();
+    void clearWsjtxCalls();
+    void decayCalls();
     void enable(bool);
+    void replay();
     void stop();
 
 private slots:
@@ -49,10 +103,28 @@ private slots:
     void tcpError(QAbstractSocket::SocketError err);
 
 private:
-    ADIFParse *parser;
-    QUdpSocket usocket;
     bool isOpen;
+    double _freq;
+    int _band;
+    int _nrig;
+    int decayTime;
+    quint32 schema;
+    QByteArray id;
+    QByteArray wsjtxId;
+    QByteArray wsjtxVersion;
+    QByteArray wsjtxRevision;
+    quint32 maxSchema;
+    QUdpSocket usocket;
     QSettings&   settings;
+    QSqlTableModel *model;
+    QString dbName;
+    QHostAddress wsjtxAddress;
+    quint16 wsjtxPort;
+
+    void clearColors();
+    bool decode(QByteArray msg, QByteArray &call, QByteArray &grid);
+    void highlightCall(QByteArray call,QColor bg,QColor fg);
+    void sendCall(QByteArray call);
 };
 
 #endif // UDPREADER_H

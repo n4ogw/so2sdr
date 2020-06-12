@@ -66,7 +66,7 @@
       <attribute name="title">
        <string>OTRSP</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_1">
        <item>
         <layout class="QFormLayout" name="formLayout_4">
          <property name="fieldGrowthPolicy">
@@ -89,7 +89,7 @@
          <item row="2" column="1">
           <widget class="QLineEdit" name="lineEditOTRSPPort1">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -169,7 +169,7 @@
       <attribute name="title">
        <string>OTRSP2</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QFormLayout" name="formLayout_46">
          <property name="fieldGrowthPolicy">

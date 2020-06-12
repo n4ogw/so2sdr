@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>396</height>
+    <width>465</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
   <property name="maximumSize">
    <size>
     <width>565</width>
-    <height>680</height>
+    <height>700</height>
    </size>
   </property>
   <property name="font">
@@ -262,7 +262,7 @@
       </widget>
      </item>
      <item row="8" column="0">
-      <widget class="QCheckBox" name="UDPCheckBox">
+      <widget class="QCheckBox" name="UDPCheckBox1">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -272,7 +272,7 @@
         <string>Receive UDP packets from WSJT-X</string>
        </property>
        <property name="text">
-        <string>WSJT-X UDP</string>
+        <string>WSJT-X Radio 1</string>
        </property>
       </widget>
      </item>
@@ -284,12 +284,12 @@
         </font>
        </property>
        <property name="text">
-        <string>UDP port</string>
+        <string>UDP port Radio 1</string>
        </property>
       </widget>
      </item>
      <item row="9" column="1">
-      <widget class="QLineEdit" name="UDPPortLineEdit">
+      <widget class="QLineEdit" name="UDPPortLineEdit1">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -318,7 +318,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_5">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -342,7 +342,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="12" column="1">
       <widget class="QLineEdit" name="ctyLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -372,7 +372,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="13" column="0">
       <widget class="QCheckBox" name="kbdCheckBox">
        <property name="toolTip">
         <string>In this mode two keyboards are mapped separately to radio1 and radio2. Sprint mode, toggle mode, and alt-D do not coexist with two keyboard mode.</string>
@@ -382,14 +382,14 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Keyboard 1 device</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
+     <item row="14" column="1">
       <widget class="QLineEdit" name="kbd1LineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -402,14 +402,14 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Keyboard 2 device</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="15" column="1">
       <widget class="QLineEdit" name="kbd2LineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -422,12 +422,29 @@
        </property>
       </widget>
      </item>
-     <item row="14" column="0">
+     <item row="16" column="0">
       <widget class="QCheckBox" name="queueCheckBox">
        <property name="text">
         <string>Queue Messages</string>
        </property>
       </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QCheckBox" name="UDPCheckBox2">
+       <property name="text">
+        <string>WSJT-X Radio 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>UDP port Radio 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QLineEdit" name="UDPPortLineEdit2"/>
      </item>
     </layout>
    </item>

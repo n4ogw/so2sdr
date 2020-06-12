@@ -17,7 +17,6 @@
 
  */
 #include <QDir>
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <QDate>
 #include <QDebug>
@@ -43,7 +42,7 @@ Cty::Cty(QSettings& s) : settings(s)
     portIdMobile.clear();
     portIdMobile << "M";
 
-    // portable ids for roverse
+    // portable ids for rovers
     portIdRover.clear();
     portIdRover << "R";
 }
@@ -169,7 +168,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const
     bool ok = false;
     // Allow the UI to receive values in kHz down to the Hz i.e. "14250.340"
     // will become 14250340 Hz.  Tested with K3 and Dummy rig models.
-    int  n  = (int)(double)(1000 * qso->call.toDouble(&ok));
+    int  n  = qRound(1000 * qso->call.toDouble(&ok));
 
     // semicolon indicates 2nd-radio qsy
     if (n || ok == true || qso->call.contains(";") || (rx.indexIn(qso->call) == 0)) {
@@ -532,10 +531,10 @@ void Cty::initialize(double la, double lo, int ZoneType)
             new_country->Continent = OC;
         }
         i1 = buffer.indexOf(":", i2 + 1);
-        double lat = buffer.mid(i2 + 1, i1 - i2 - 1).trimmed().toFloat();
+        double lat = buffer.mid(i2 + 1, i1 - i2 - 1).trimmed().toDouble();
 
         i2 = buffer.indexOf(":", i1 + 1);
-        double lon = buffer.mid(i1 + 1, i2 - i1 - 1).trimmed().toFloat();
+        double lon = buffer.mid(i1 + 1, i2 - i1 - 1).trimmed().toDouble();
 
         double dist;
         double head;
@@ -894,8 +893,8 @@ void Cty::sunTimes(double lat, double lon, QString &sunTime)
         double ut = t - lngHour;
         if (ut < 0.0) ut += 24.0;
         if (ut > 24.0) ut -= 24.0;
-        int hr = (int) floor(ut);          // hours
-        int rt = (int) ((ut - hr) * 60.0); // minutes
+        int hr = static_cast<int>(floor(ut));        // hours
+        int rt = static_cast<int>((ut - hr) * 60.0); // minutes
         rt += hr * 100;
         if (rt<10) {
             sunTime = "000" + QString::number(rt);
@@ -935,8 +934,8 @@ void Cty::sunTimes(double lat, double lon, QString &sunTime)
         double ut = t - lngHour;
         if (ut < 0.0) ut += 24.0;
         if (ut > 24.0) ut -= 24.0;
-        int hr = (int) floor(ut);          // hours
-        int st = (int) ((ut - hr) * 60.0); // minutes
+        int hr = static_cast<int>(floor(ut));        // hours
+        int st = static_cast<int>((ut - hr) * 60.0); // minutes
         st += hr * 100;
         if (st<10) {
             sunTime = sunTime+ ":000" + QString::number(st);

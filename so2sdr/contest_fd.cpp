@@ -47,34 +47,21 @@ FD::~FD()
 QVariant FD::columnName(int c) const
 {
     switch (c) {
-    case SQL_COL_RCV1:return(QVariant("Class"));break;
+    case SQL_COL_RCV1:return(QVariant("Class"));
     }
     return Contest::columnName(c);
 }
 
-void FD::addQso(Qso *qso)
-
 // determine qso point value, increase nqso, update score
 // update mult count
+void FD::addQso(Qso *qso)
 {
     if (!qso->dupe && qso->valid) {
-        // SSB=1 CW/RTTY=2
-        switch (qso->mode) {
-        case RIG_MODE_CW:
-        case RIG_MODE_CWR:
-        case RIG_MODE_RTTY:
-        case RIG_MODE_RTTYR:
+        // SSB=1 CW/Digital=2
+        if (qso->adifMode =="SSB" || qso->adifMode=="FM" || qso->adifMode=="AM" || qso->adifMode=="DIGITALVOICE") {
+            qso->pts = 1;
+        } else {
             qso->pts = 2;
-            break;
-        case RIG_MODE_USB:
-        case RIG_MODE_LSB:
-        case RIG_MODE_AM:
-        case RIG_MODE_FM:
-            qso->pts = 1;
-            break;
-        default:
-            qso->pts = 1;
-            break;
         }
         qsoPts += qso->pts;
     } else {
@@ -89,13 +76,11 @@ int FD::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // rcv class
-        return(4);
-        break;
+        return 4;
     case 1: // rcv section
-        return(4);
-        break;
+        return 4;
     default:
-        return(4);
+        return 4;
     }
 }
 
@@ -104,7 +89,7 @@ int FD::fieldWidth(int col) const
  */
 int FD::numberField() const
 {
-    return(-1);
+    return -1;
 }
 
 unsigned int FD::rcvFieldShown() const
@@ -112,12 +97,12 @@ unsigned int FD::rcvFieldShown() const
 // 0 1=Class --> show
 // 1 2=Section --> show
 {
-    return(1 + 2);  // show 2
+    return (1 + 2);  // show 2
 }
 
 int FD::Score() const
 {
-    return(qsoPts); // no mults
+    return qsoPts; // no mults
 }
 
 void FD::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
@@ -128,11 +113,6 @@ void FD::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     }
     readMultFile(MultFile, cty);
     zeroScore();
-}
-
-unsigned int FD::sntFieldShown() const
-{
-    return(0); // nothing shown
 }
 
 bool FD::validateExchange(Qso *qso)
@@ -158,5 +138,5 @@ bool FD::validateExchange(Qso *qso)
     for (int i = 0; i < nExch; i++) {
         qso->rcv_exch[i] = finalExch[i];
     }
-    return(ok);
+    return ok;
 }

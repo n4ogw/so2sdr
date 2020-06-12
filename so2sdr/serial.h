@@ -56,12 +56,6 @@ public:
     bool operator<(const hamlibmfg &other) const;
 };
 
-// this has to match the modes defined in hamlib rig.h, enum rmode_t
-const int nModes=23;
-const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
-                            "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB", "FM", "PKT" };
-const QString bandNames[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6", "2","1.25m",
-                                    "70cm","33cm","1.2G","2.3G","3.3G","5.6G","10G","24G","47G","76G","122G","134G","241G","630m","2200m"};
 class QSettings;
 class QTcpSocket;
 

@@ -79,21 +79,20 @@ int Stew::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // grid
-        return(5);
-        break;
+        return 5;
     default:
-        return(5);
+        return 5;
     }
 }
 
 int Stew::numberField() const
 {
-    return(-1);
+    return -1;
 }
 
 QByteArray Stew::prefillExchange(Qso *qso)
 {
-    Q_UNUSED(qso);
+    Q_UNUSED(qso)
 
     // nothing prefilled
     return("");
@@ -101,7 +100,7 @@ QByteArray Stew::prefillExchange(Qso *qso)
 
 unsigned int Stew::rcvFieldShown() const
 {
-    return(1);
+    return 1;
 }
 
 /*!
@@ -114,14 +113,9 @@ int Stew::Score() const
 
 void Stew::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
 {
-    Q_UNUSED(MultFile);
-    Q_UNUSED(cty);
+    Q_UNUSED(MultFile)
+    Q_UNUSED(cty)
     zeroScore();
-}
-
-unsigned int Stew::sntFieldShown() const
-{
-    return(0);  // show no sent fields
 }
 
 /*! no mults, any 4-char grid is acceptable for exchange
@@ -144,6 +138,6 @@ bool Stew::validateExchange(Qso *qso)
         finalExch[0]     = exchElement[idx];
         qso->rcv_exch[0] = finalExch[0];
     }
-    return(ok);
+    return ok;
 }
 

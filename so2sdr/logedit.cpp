@@ -37,16 +37,13 @@ tableModel::tableModel(QObject * parent, QSqlDatabase db) : QSqlTableModel(paren
 /*!
   returns appropriate flags for each log column
   */
-Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
+Qt::ItemFlags tableModel::flags( const QModelIndex & index ) const
 {
     Qt::ItemFlags f;
     f=Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     // set flags appropriate for each column
     // this defines which columns are editable
     switch (index.column()) {
-   // case SQL_COL_NR:
-   //     f=Qt::NoItemFlags;
-  //      break;
     case SQL_COL_NR:
     case SQL_COL_BAND:
     case SQL_COL_DATE:
@@ -62,6 +59,8 @@ Qt::ItemFlags tableModel::flags ( const QModelIndex & index ) const
     case SQL_COL_RCV3:
     case SQL_COL_RCV4:
     case SQL_COL_MODE:
+    case SQL_COL_MODE_TYPE:
+    case SQL_COL_ADIF_MODE:
         f=f | Qt::ItemIsEditable;
         break;
     case SQL_COL_VALID:

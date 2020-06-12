@@ -29,10 +29,10 @@
 RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s),catptr(cat)
 {
     setupUi(this);
-    lineEditIp1->setFixedWidth(sizes.width*15);
-    lineEditPort1->setFixedWidth(sizes.width*15);
-    lineEditIp2->setFixedWidth(sizes.width*15);
-    lineEditPort2->setFixedWidth(sizes.width*15);
+    lineEditIp1->setFixedWidth(qRound(sizes.width*15));
+    lineEditPort1->setFixedWidth(qRound(sizes.width*15));
+    lineEditIp2->setFixedWidth(qRound(sizes.width*15));
+    lineEditPort2->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 

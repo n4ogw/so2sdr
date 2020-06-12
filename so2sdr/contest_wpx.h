@@ -21,21 +21,23 @@
 
 #include "contest.h"
 
-class WPX : public Contest {
+class WPX : public Contest
+{
 public:
     WPX(QSettings &cs,QSettings &ss);
-    ~WPX();
-    QVariant columnName(int c) const;
-    ContestType contestType() const { return Wpx_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
-    int numberField() const;
-    bool showQsoPtsField() const { return true;}
-    int rstField() const { return 0;}
+    ~WPX() override;
+
+    QVariant columnName(int c) const override;
+    ContestType contestType() const override { return Wpx_t;}
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    unsigned int rcvFieldShown() const override;
+    unsigned int sntFieldShown() const override;
+    int numberField() const override;
+    bool showQsoPtsField() const override { return true;}
+    int rstField() const override { return 0;}
     void workedMults(QByteArray Call, int mult, unsigned int &worked);
     void wpxPrefix(QByteArray call, QByteArray &pfx);
 };

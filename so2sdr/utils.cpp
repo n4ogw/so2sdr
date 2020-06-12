@@ -29,7 +29,7 @@ UpperValidator::UpperValidator(QObject *parent) : QValidator(parent)
 
 QValidator::State UpperValidator::validate(QString &input, int &pos) const
 {
-    Q_UNUSED(pos);
+    Q_UNUSED(pos)
     input = input.toUpper();
     return(Acceptable);
 }
@@ -43,7 +43,7 @@ TimeValidator::TimeValidator(QObject *parent) : QValidator(parent)
 
 QValidator::State TimeValidator::validate(QString &input, int &pos) const
 {
-    Q_UNUSED(pos);
+    Q_UNUSED(pos)
     bool ok=false;
     int t=input.toInt(&ok,10);
     if (ok && t>=0 && t<=2359) {
@@ -82,34 +82,21 @@ void TimeValidator::fixup ( QString & input ) const
  */
 int getBand(double f)
 {
-    int g=f / 1000000.0;
+    int g=qRound(f / 1000000.0);
     switch (g) {
     case 1: case 2: return(BAND160);
-        break; // 160
     case 3: case 4: return(BAND80);
-        break; // 80
     case 5: return(BAND60);
-        break; // 60
     case 6: case 7: return(BAND40);
-        break; // 40
     case 9: case 10: return(BAND30);
-        break; // 30
     case 13: case 14: return(BAND20);
-        break; // 20
     case 18: return(BAND17);
-        break; // 17
     case 20: case 21: return(BAND15);
-        break; // 15
     case 24: case 25: return(BAND12);
-        break; // 12
     case 27: case 28: case 29: case 30: case 31: return(BAND10);
-        break; // 10
     case 49: case 50:case 51:case 52:case 53:case 54: case 55: case 56: return(BAND6);
-        break; // 6
     case 143: case 144:case 145:case 146:case 147:case 148: case 149: return(BAND2);
-        break; // 2
     case 219:case 220:case 221:case 222:case 223:case 224:case 225: return(BAND222);
-        break; // 220 MHz
     }
     // handle UHF
     double fmhz=f/1000000;
@@ -135,22 +122,20 @@ int getBand(double f)
 */
 QString dataDirectory()
 {
-#ifdef Q_OS_LINUX
-	// INSTALL_DIR is usually /usr/local
-        return QString(INSTALL_DIR)+QString("/share/so2sdr/");
-#endif
+    // INSTALL_DIR is usually /usr/local
+    return QString(INSTALL_DIR)+QString("/share/so2sdr/");
 }
 
 /*! returns directory where user data (station config, hamlib cache,...) are stored
 	*/
 QString userDirectory()
 {
-#ifdef Q_OS_LINUX
-	return QDir::homePath() + "/.so2sdr";
-#endif
+    return QDir::homePath() + "/.so2sdr";
 }
 
-/*! convert mode to ModeType
+/*! convert hamlib mode to ModeType
+ * @todo this should be depreciated, as it is impossible to tell the modetype from the hamlib mode;
+ * currently only used in one place in serial.cpp
 */
 ModeTypes getModeType(rmode_t mode)
 {
@@ -178,4 +163,49 @@ ModeTypes getModeType(rmode_t mode)
     case RIG_MODE_DSB: return PhoneType;
     default:return CWType;
     }
+}
+
+/*! convert ADIF mode to ModeType
+ */
+ModeTypes getAdifModeType(QByteArray mode)
+{
+    if (mode=="CW") {
+        return CWType;
+    } else if (mode=="SSB" || mode=="USB" || mode=="LSB" || mode=="AM" || mode=="FM" || mode=="DIGITALVOICE") {
+        return PhoneType;
+    } else {
+        return DigiType;
+    }
+}
+
+/*! convert hamlib mode to ADIF mode. In general it is not possible to guess the ADIF digital mode
+ * name from hamlib, so this must be used with care
+ */
+QByteArray getAdifMode(rmode_t mode)
+{
+    switch (mode) {
+    case RIG_MODE_NONE: return "CW";
+    case RIG_MODE_AM: return "AM";
+    case RIG_MODE_CW: return "CW";
+    case RIG_MODE_USB: return "USB";
+    case RIG_MODE_LSB: return "LSB";
+    case RIG_MODE_RTTY: return "RTTY";
+    case RIG_MODE_FM: return "FM";
+    case RIG_MODE_WFM: return "FM";
+    case RIG_MODE_CWR: return "CW";
+    case RIG_MODE_RTTYR: return "RTTY";
+    case RIG_MODE_AMS: return "AM";
+    case RIG_MODE_PKTLSB: return "PKT";
+    case RIG_MODE_PKTUSB: return "PKT";
+    case RIG_MODE_PKTFM: return "PKT";
+    case RIG_MODE_ECSSUSB: return "USB";
+    case RIG_MODE_ECSSLSB: return "USB";
+    case RIG_MODE_FAX: return "FAX";
+    case RIG_MODE_SAM: return "AM";
+    case RIG_MODE_SAL: return "AM";
+    case RIG_MODE_SAH: return "AM";
+    case RIG_MODE_DSB: return "AM";
+    default:return "CW";
+    }
+
 }

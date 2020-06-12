@@ -26,8 +26,8 @@
 Master::Master()
 {
     initialized = false;
-    index       = 0;
-    CallData    = 0;
+    index       = nullptr;
+    CallData    = nullptr;
     chars       = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/";
     nchars      = chars.size();
     indexSize   = nchars * nchars + 1;

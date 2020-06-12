@@ -39,10 +39,10 @@ BandmapDisplay::BandmapDisplay(QWidget *parent) : QWidget(parent)
     vfoPos = height()/2;
     cornery = 4096/2 - vfoPos;
     cornerx = MAX_W - width();
-    cmap=0;
-    markRgb0=0;
-    markRgb1=0;
-    markRgb2=0;
+    cmap=nullptr;
+    markRgb0=nullptr;
+    markRgb1=nullptr;
+    markRgb2=nullptr;
 }
 
 void BandmapDisplay::initialize(QSettings *s)
@@ -110,7 +110,7 @@ void BandmapDisplay::mousePressEvent(QMouseEvent *event)
         int y = event->y();
 
         // compute QSY as change in frequency
-        int delta_f = (int) (samplerate / (double) settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / scale* (vfoPos - y));
+        int delta_f = static_cast<int>(samplerate / settings->value(s_sdr_fft,s_sdr_fft_def).toDouble() / scale* (vfoPos - y));
         emit(mouseClick());
         emit(displayMouseQSY(delta_f));
     }
@@ -207,7 +207,7 @@ void BandmapDisplay::plotSpectrum(unsigned char *data, unsigned char bg)
 /*! Widget resize event: updates corners of pixmap which map to the widget corners */
 void BandmapDisplay::resizeEvent(QResizeEvent * event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     cornerx = MAX_W - width();
     cornery = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() / 2 - vfoPos;
 }
@@ -215,7 +215,7 @@ void BandmapDisplay::resizeEvent(QResizeEvent * event)
 /*! draw pixmap on the widget */
 void BandmapDisplay::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     QPainter p(this);
     p.drawPixmap(0, 0, pixmap, cornerx, cornery, width(), height());
 }

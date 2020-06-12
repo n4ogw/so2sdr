@@ -37,7 +37,7 @@ class OTRSP : public QObject
 Q_OBJECT
 
 public:
-    OTRSP(QSettings& s, int n, QObject *parent = 0);
+    OTRSP(QSettings& s, int n, QObject *parent = nullptr);
     ~OTRSP();
     QByteArray name() const;
     bool OTRSPIsOpen() const;

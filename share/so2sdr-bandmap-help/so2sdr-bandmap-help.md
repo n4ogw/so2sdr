@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.2
+## So2sdr-bandmap Help Version 2.5.3
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -338,6 +338,11 @@ from so2sdr, do this
 
 <a name="changes"></a>
 
+## version 2.5.3 (06/11/2020)
+
+* change in log file format. Logs from older version cannot be opened, must be imported from Cabrillo
+* add new WSJTX window showing decoded calls and dupe/mult status. This is only fully functional for ARRL June VHF contest
+* many code cleanups and small bug fixes
 
 ## version 2.5.2 (04/28/2020)
 

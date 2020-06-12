@@ -72,31 +72,28 @@ int Dxped::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // RST
-        return(4);
-        break;
+        return 4;
     case 1: // comment
-        return(8);
-        break;
+        return 8;
     default:
-        return(4);
+        return 4;
     }
 }
 
 int Dxped::numberField() const
 {
-    return(-1);
+    return -1;
 }
 
-unsigned int Dxped::rcvFieldShown() const
-
 // show RST + comment
+unsigned int Dxped::rcvFieldShown() const
 {
-    return(3);
+    return 3;
 }
 
 int Dxped::Score() const
 {
-    return(0);
+    return 0;
 }
 
 void Dxped::setupContest(QByteArray MultFile[2], const Cty *cty)
@@ -106,11 +103,6 @@ void Dxped::setupContest(QByteArray MultFile[2], const Cty *cty)
     }
     readMultFile(MultFile, cty);
     zeroScore();
-}
-
-unsigned int Dxped::sntFieldShown() const
-{
-    return(0);  // show no sent fields
 }
 
 bool Dxped::validateExchange(Qso *qso)
@@ -129,7 +121,7 @@ bool Dxped::validateExchange(Qso *qso)
     finalExch[1] = "";
     if (exchElement.isEmpty()) {
         copyFinalExch(true, qso);
-        return(true);
+        return true;
     }
 
     // check to see if first element is a number, assume this is RST
@@ -147,5 +139,5 @@ bool Dxped::validateExchange(Qso *qso)
     }
     copyFinalExch(true, qso);
 
-    return(true);
+    return true;
 }

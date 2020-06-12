@@ -60,13 +60,11 @@ int Cwops::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // name
-        return(8);
-        break;
+        return 8;
     case 1: // QTH
-        return(4);
-        break;
+        return 4;
     default:
-        return(4);
+        return 4;
     }
 }
 
@@ -75,7 +73,7 @@ int Cwops::fieldWidth(int col) const
  */
 int Cwops::numberField() const
 {
-    return(-1);
+    return -1;
 }
 
 unsigned int Cwops::rcvFieldShown() const
@@ -93,11 +91,6 @@ void Cwops::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     }
     readMultFile(MultFile, cty);
     zeroScore();
-}
-
-unsigned int Cwops::sntFieldShown() const
-{
-    return(0); // nothing
 }
 
 bool Cwops::validateExchange(Qso *qso)

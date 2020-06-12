@@ -29,7 +29,7 @@ class SdrDataSource : public QObject
 {
     Q_OBJECT
 public:
-    explicit SdrDataSource(QString settingsFile,QObject *parent = 0);
+    explicit SdrDataSource(QString settingsFile,QObject *parent = nullptr);
     ~SdrDataSource();
     void setSampleSizes(sampleSizes s);
     bool isRunning();

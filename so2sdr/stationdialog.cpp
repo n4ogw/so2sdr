@@ -32,10 +32,10 @@ StationDialog::StationDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDia
 {
     setupUi(this);
 
-    label_2->setFixedWidth(sizes.width*4);
-    label_5->setFixedWidth(sizes.width*5);
-    label_6->setFixedWidth(sizes.width*6);
-    CabrilloAddressEdit->setFixedHeight(sizes.height*5);
+    label_2->setFixedWidth(qRound(sizes.width*4));
+    label_5->setFixedWidth(qRound(sizes.width*5));
+    label_6->setFixedWidth(qRound(sizes.width*6));
+    CabrilloAddressEdit->setFixedHeight(qRound(sizes.height*5));
     adjustSize();
     setFixedSize(size());
 

@@ -77,7 +77,10 @@ HEADERS += cwmessagedialog.h \
     multdisplay.h \
     centergriddialog.h \
     adifparse.h \
-    keyboardhandler.h
+    keyboardhandler.h \
+    wsjtxcalldialog.h \
+    wsjtxdelegate.h \
+    wsjtxmessage.h
 
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
@@ -96,7 +99,8 @@ FORMS += cwmessagedialog.ui \
     ssbmessagedialog.ui \
     settingsdialog.ui \
     so2rdialog.ui \
-    centergrid.ui
+    centergrid.ui \
+    wsjtxcalldialog.ui
 SOURCES += cwmessagedialog.cpp \
     main.cpp \
     serial.cpp \
@@ -160,7 +164,10 @@ SOURCES += cwmessagedialog.cpp \
     multdisplay.cpp \
     centergriddialog.cpp \
     adifparse.cpp \
-    keyboardhandler.cpp
+    keyboardhandler.cpp \
+    wsjtxcalldialog.cpp \
+    wsjtxdelegate.cpp \
+    wsjtxmessage.cpp
 
  unix { 
     include (../common.pri)

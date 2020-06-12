@@ -60,7 +60,7 @@ int IARU::nMultsWorked() const
             }
         }
     }
-    return(n);
+    return n;
 }
 
 
@@ -94,11 +94,9 @@ int IARU::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // RST
-        return(4);
-        break;
+        return 4;
     case 1: //  zone/HQ
-        return(5);
-        break;
+        return 5;
     default:
         return 4;
     }
@@ -106,12 +104,12 @@ int IARU::fieldWidth(int col) const
 
 int IARU::numberField() const
 {
-    return(-1);
+    return -1;
 }
 
 unsigned int IARU::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return 2;  // show second field
 }
 
 void IARU::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
@@ -125,11 +123,6 @@ void IARU::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     }
     _nMults[0] = 90;
     readMultFile(MultFile, cty);
-}
-
-unsigned int IARU::sntFieldShown() const
-{
-    return(0);  // show no sent fields
 }
 
 bool IARU::validateExchange(Qso *qso)
@@ -187,7 +180,7 @@ bool IARU::validateExchange(Qso *qso)
     // dupes get zero pts
     if (qso->dupe) {
         qso->pts = 0;
-        return(ok);
+        return ok;
     }
 
     // unknown mults: assign 1 point; it may be a HQ station not on list
@@ -203,5 +196,5 @@ bool IARU::validateExchange(Qso *qso)
     } else {
         qso->pts = 5;
     }
-    return(ok);
+    return ok;
 }

@@ -101,11 +101,6 @@ void Naqp::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     zeroScore();
 }
 
-unsigned int Naqp::sntFieldShown() const
-{
-    return(0); // nothing shown
-}
-
 bool Naqp::validateExchange(Qso *qso)
 {
     if (!separateExchange(qso)) return(false);

@@ -95,6 +95,9 @@ void Afedri::initialize()
              * workaround: create a socket using OS calls and set SO_REUSEADDR.
              *
              * see https://bugreports.qt.io/browse/QTBUG-33419
+             *
+             * 04/30/2020 (Qt 5.14.1) above bug report is marked as fixed but this code still fails.
+             *
              */
             int socket_descriptor;
             if ((socket_descriptor = ::socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -119,6 +122,7 @@ void Afedri::initialize()
             }
 #endif
 #ifdef Q_OS_WIN
+            // code without the above workaround
             if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt()),
                     QUdpSocket::ReuseAddressHint) {
                 emit(error("Afedri: UDP connection failed"));
@@ -155,6 +159,9 @@ void Afedri::initialize()
          * workaround: create a socket using OS calls and set SO_REUSEADDR.
          *
          * see https://bugreports.qt.io/browse/QTBUG-33419
+         *
+         * 04/30/2020 (Qt 5.14.1) above bug report is marked as fixed but this code still fails.
+         *
          */
         int socket_descriptor;
         if ((socket_descriptor = ::socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -179,6 +186,7 @@ void Afedri::initialize()
         }
 #endif
 #ifdef Q_OS_WIN
+        // code without the above workaround
         if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt()),
                    QUdpSocket::ReuseAddressHint) {
             emit(error("Afedri: UDP connection failed"));

@@ -28,10 +28,10 @@
 NetworkSetup::NetworkSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    tcpipaddressLineEdit->setFixedWidth(sizes.width*15);
-    tcpportLineEdit->setFixedWidth(sizes.width*15);
-    udpportLineEdit->setFixedWidth(sizes.width*15);
-    lineEditOffset->setFixedWidth(sizes.width*15);
+    tcpipaddressLineEdit->setFixedWidth(qRound(sizes.width*15));
+    tcpportLineEdit->setFixedWidth(qRound(sizes.width*15));
+    udpportLineEdit->setFixedWidth(qRound(sizes.width*15));
+    lineEditOffset->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 

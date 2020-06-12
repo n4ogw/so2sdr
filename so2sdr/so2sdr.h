@@ -20,6 +20,7 @@
 #define SO2SDR_H
 
 #include <QByteArray>
+#include <QElapsedTimer>
 #include <QMainWindow>
 #include <QPixmap>
 #include <QObject>
@@ -61,7 +62,7 @@ class So2r;
 class SSBMessageDialog;
 class StationDialog;
 class Telnet;
-class UDPReader;
+class WsjtxCallDialog;
 class Winkey;
 class WinkeyDialog;
 
@@ -73,14 +74,13 @@ class So2sdr : public QMainWindow, public Ui::So2sdr
 Q_OBJECT
 
 public:
-    So2sdr(QStringList args, QWidget *parent = 0);
+    So2sdr(QStringList args, QWidget *parent = nullptr);
     ~So2sdr();
     bool so2sdrOk() const;
 
 public slots:
     void addSpot(QByteArray call, double f);
     void addSpot(QByteArray call, double f, bool d);
-    void bandChange(int nr,int band);
     void messageFinished();
     void expandMacro(QByteArray msg, bool stopcw = true, bool restart = false);
     void expandMacro2(QByteArray msg, bool stopcw = true, bool instant = false);
@@ -129,7 +129,6 @@ private slots:
     void sendCalls1(bool);
     void sendCalls2(bool);
     void setGrab(bool);
-    void setSummaryGroupBoxTitle();
     void setupNewContest(int result);
     void showBandmap1(bool);
     void showBandmap2(bool);
@@ -139,6 +138,8 @@ private slots:
     void showHelp();
     void showRecordingStatus(bool);
     void showTelnet(bool checkboxState);
+    void showWsjtx1(bool state);
+    void showWsjtx2(bool state);
     void speedDn(int nrig);
     void speedUp(int nrig);
     void startLogEdit();
@@ -269,7 +270,7 @@ private:
     QString              settingsFile;
     QString              autoSendCall;
     QThread              catThread[NRIG];
-    QTime                cqTimer;
+    QElapsedTimer        cqTimer;
     QWidget              *grabWidget;
     RadioDialog          *radios;
     RigSerial            *cat[NRIG];
@@ -278,7 +279,7 @@ private:
     StationDialog        *station;
     Telnet               *telnet;
     uiSize               sizes;
-    UDPReader            *wsjtxUDP;
+    WsjtxCallDialog      *wsjtx[NRIG];
     WinkeyDialog         *winkeyDialog;
     Winkey               *winkey;
 
@@ -289,6 +290,7 @@ private:
     void backSlash(int kbdNr);
     void keyCtrlDn();
     void keyCtrlUp();
+    bool checkLogFileVersion(QString fname);
     void checkSpot(int nr);
     bool checkUserDirectory();
     void clearDisplays(int nr);
@@ -315,7 +317,7 @@ private:
     void launch_speedDn(Qt::KeyboardModifiers, int nr);
     void launch_WPMDialog(int);
     void loadSpots();
-    bool logPartial(int nrig, QByteArray partial);
+    bool logPartial(int nrig, QByteArray partial, bool external=false, Qso *externalQso=nullptr);
     void logSearch(int nr);
     void markDupe(int nrig);
     int nDupesheet() const;

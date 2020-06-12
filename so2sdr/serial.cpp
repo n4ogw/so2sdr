@@ -57,28 +57,28 @@ RigSerial::RigSerial(int nr,QString s)
     settingsFile=s;
     nrig=nr;
 
-    // turn off all the debug crud coming from hamlib
+    // turn off all the debug messages coming from hamlib
     rig_set_debug_level(RIG_DEBUG_NONE);
 
     // load all backends and step through them. list_caps function defined below.
     // only radio 1 will do this, since one static copy is kept for both radios
     if (nr==0) {
         rig_load_all_backends();
-        rig_list_foreach(list_caps,NULL);
+        rig_list_foreach(list_caps,nullptr);
 
         // sort list by manufacturer name
-        qSort(mfg.begin(),mfg.end());
-        qSort(mfgName.begin(),mfgName.end());
+        std::sort(mfg.begin(),mfg.end());
+        std::sort(mfgName.begin(),mfgName.end());
 
         // sort list of rigs for each manuacturer
         for (int i=0;i<mfg.size();i++) {
-            qSort(mfg[i].models.begin(),mfg[i].models.end());
+            std::sort(mfg[i].models.begin(),mfg[i].models.end());
         }
     }
-    settings=0;
+    settings=nullptr;
     for (int i=0;i<nRigSerialTimers;i++) timerId[i]=0;
-    rig=0;
-    socket=0;
+    rig=nullptr;
+    socket=nullptr;
     pttOffFlag=    false;
     pttOnFlag=     false;
     clearRitFlag = 0;
@@ -291,7 +291,7 @@ void RigSerial::timerEvent(QTimerEvent *event)
             pttMutex.unlock();
 
             lock.lockForWrite();
-            if (qsyFreq) {
+            if (qAbs(qsyFreq)>0.0) {
                 rigFreq = qsyFreq;
                 qsyFreq = 0;
                 lock.unlock();
@@ -303,7 +303,7 @@ void RigSerial::timerEvent(QTimerEvent *event)
                 int j=chgMode;
                 chgMode=RIG_MODE_NONE;
                 lock.unlock();
-                QByteArray width=QByteArray::number((int)passBW)+"\n";
+                QByteArray width=QByteArray::number(static_cast<int>(passBW))+"\n";
                 switch (j) {
                 case RIG_MODE_CW:
                     socket->write(";\\set_mode CW "+width);
@@ -394,7 +394,7 @@ void RigSerial::timerEvent(QTimerEvent *event)
 
             // qsy radio
             lock.lockForWrite();
-            if (qsyFreq) {
+            if (qAbs(qsyFreq)>0.0) {
                 double f=qsyFreq;
                 qsyFreq=0;
                 lock.unlock();
@@ -440,7 +440,7 @@ void RigSerial::timerEvent(QTimerEvent *event)
                 int     status = rig_get_ext_level(rig, RIG_VFO_CURR, confParamsIF->token, &val);
                 if (status == RIG_OK) {
                     // no mutex protection since ifFreq is read-only from outside class
-                    ifFreq_ = (int) (val.f - 8210000.0);
+                    ifFreq_ = qRound(val.f - 8210000.0);
                 }
             }
         }
@@ -535,6 +535,7 @@ QString RigSerial::modeStr()
 
 
 /*! return current type of mode: CW, PHONE, DIGI
+ * @todo this does not handle digi modes correctly - there is no way to identify these from hamlib
  */
 ModeTypes RigSerial::modeType()
 {
@@ -550,7 +551,7 @@ void RigSerial::openSocket()
 {
     if (socket) {
         if (socket->isOpen()) socket->close();
-        disconnect(socket,0,0,0);
+        disconnect(socket,nullptr,nullptr,nullptr);
     }
     if (settings->value(s_radios_rigctld_enable[nrig],s_radios_rigctld_enable_def[nrig]).toBool()) {
         radioOK=true;
@@ -610,8 +611,8 @@ void RigSerial::openRig()
 
     // default starting freq/mode if communications to rigs
     // initially fails (or rig==RIG_MODEL_DUMMY)
-    if (rigFreq==0 && nrig==0) rigFreq = 14000000;
-    if (rigFreq==0 && nrig==1) rigFreq = 7000000;
+    if (rigFreq<1.0 && nrig==0) rigFreq = 14000000;
+    if (rigFreq<1.0 && nrig==1) rigFreq = 7000000;
     if (Mode==RIG_MODE_NONE)   Mode = RIG_MODE_CW;
 
     int r = rig_open(rig);
@@ -772,7 +773,7 @@ void RigSerial::rxSocket()
                     cmdList[1].truncate(14);
                     iff=cmdList.at(1).toDouble(&ok);
                     if (ok) {
-                        ifFreq_ = (int) (iff - 8210000.0);
+                        ifFreq_ = qRound(iff - 8210000.0);
                     }
                     break;
                 }
@@ -795,7 +796,7 @@ int RigSerial::band() const
 {
     // in case caught in the middle of a qsy
     double f=qsyFreq;
-    if (f!=0) {
+    if (qAbs(f)>0.0) {
         return getBand(f);
     } else {
         return getBand(rigFreq);
@@ -805,7 +806,7 @@ int RigSerial::band() const
 QString RigSerial::bandName()
 {
     double f=qsyFreq;
-    if (f!=0) {
+    if (qAbs(f)>0) {
         return bandNames[getBand(f)];
     } else {
         return bandNames[getBand(rigFreq)];

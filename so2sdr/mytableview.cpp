@@ -23,7 +23,6 @@
 
 MyTableView::MyTableView(QWidget *w) : QTableView(w)
 {
- //  verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     installEventFilter(this);
 }
 

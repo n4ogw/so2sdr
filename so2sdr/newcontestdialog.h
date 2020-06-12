@@ -32,7 +32,7 @@ class NewDialog : public QDialog, public Ui::NewContestDialog
 Q_OBJECT
 
 public:
-    NewDialog(QWidget *parent = 0);
+    NewDialog(QWidget *parent = nullptr);
     bool readContestList(QString fileName);
     QString selectedContest();
 signals:

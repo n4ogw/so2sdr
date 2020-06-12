@@ -35,7 +35,7 @@ class BandmapInterface : public QObject
 {
     Q_OBJECT
 public:
-    explicit BandmapInterface(QSettings &s,QObject *parent = 0);
+    explicit BandmapInterface(QSettings &s,QObject *parent = nullptr);
     ~BandmapInterface();
     void removeSpot(int nr,const BandmapEntry &spot);
     void addSpot(int nr,const BandmapEntry &spot);

@@ -62,22 +62,26 @@ bool ADIFParse::parse(QByteArray data, Qso *qso)
                                      "JT65",
                                      "MSK144",
                                      "QRA64",
-                                     "RTTY"};
+                                     "RTTY",
+                                     "FT4",
+                                     "DIGITALVOICE"};
     const rmode_t modes[] = { RIG_MODE_AM,
                               RIG_MODE_CW,
                               RIG_MODE_FM,
                               RIG_MODE_USB,
                               RIG_MODE_USB,
                               RIG_MODE_LSB,
+                              RIG_MODE_USB,
+                              RIG_MODE_USB,
+                              RIG_MODE_USB,
+                              RIG_MODE_USB,
+                              RIG_MODE_USB,
+                              RIG_MODE_USB,
+                              RIG_MODE_USB,
                               RIG_MODE_RTTY,
-                              RIG_MODE_RTTY,
-                              RIG_MODE_RTTY,
-                              RIG_MODE_RTTY,
-                              RIG_MODE_RTTY,
-                              RIG_MODE_RTTY,
-                              RIG_MODE_RTTY,
-                              RIG_MODE_RTTY};
-    const int n_mode_names=14;
+                              RIG_MODE_USB,
+                              RIG_MODE_USB};
+    const int n_mode_names=16;
 
     // bands are in the same order as in defines.h
     const QByteArray band_name[]= { "160M",
@@ -95,7 +99,19 @@ bool ADIFParse::parse(QByteArray data, Qso *qso)
                                     "1.25M",
                                     "70CM",
                                     "33CM",
-                                    "23CM"};
+                                    "23CM",
+                                    "13CM",
+                                    "9CM",
+                                    "6CM",
+                                    "3CM",
+                                    "1.25CM",
+                                    "6MM",
+                                    "4MM",
+                                    "2.5MM",
+                                    "2MM",
+                                    "1MM",
+                                    "2190M",
+                                    "630M"};
 
     qso->clear();
     data=data.toUpper();
@@ -126,13 +142,21 @@ bool ADIFParse::parse(QByteArray data, Qso *qso)
                     break;
                 case 2: // MODE
                 {
+                    bool found=false;
                     for (int k=0;k<n_mode_names;k++) {
                         if (val==mode_name[k]) {
+                            found=true;
                             qso->mode=modes[k];
-                            qso->modeType=getModeType(modes[k]);
-                            break;
+                            qso->adifMode=val;
+                            qso->modeType=getAdifModeType(val);
                         }
                     }
+                    if (!found) {
+                        // if mode wasn't found, assume it is a new digital mode
+                        qso->mode=RIG_MODE_USB;
+                        qso->adifMode=val;
+                        qso->modeType=DigiType;
+                        }
                     break;
                 }
                 case 3: // DATE
@@ -157,7 +181,7 @@ bool ADIFParse::parse(QByteArray data, Qso *qso)
                 case 5: // BAND
                 {
                     for (int k=0;k<N_BANDS;k++) {
-                        if (val==band_name[k]) {
+                        if (val.toUpper()==band_name[k]) {
                             qso->band=k;
                             break;
                         }

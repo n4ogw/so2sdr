@@ -21,21 +21,22 @@
 
 #include "contest.h"
 
-class CQWW : public Contest {
+class CQWW : public Contest
+{
 public:
     CQWW(QSettings &cs,QSettings &ss);
-    ~CQWW();
-    void addQso(Qso *qso);
-    ContestType contestType() const { return Cqww_t;}
-    QByteArray prefillExchange(int cntry, int zone);
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    int fieldWidth(int col) const;
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
-    int numberField() const;
-    bool showQsoPtsField() const { return true;}
-    int rstField() const { return 0;}
+    ~CQWW() override;
+
+    void addQso(Qso *qso) override;
+    ContestType contestType() const override { return Cqww_t;}
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    unsigned int rcvFieldShown() const override;
+    unsigned int sntFieldShown() const override;
+    int numberField() const override;
+    bool showQsoPtsField() const override { return true;}
+    int rstField() const override { return 0;}
 };
 
 #endif

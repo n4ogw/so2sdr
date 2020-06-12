@@ -27,7 +27,7 @@
 #include "telnet.h"
 #include "winkey.h"
 
-// /// Telnet/spot database stuff
+// Telnet/spot database stuff
 
 /*! load spots from a file xxxx.dat
  */
@@ -143,7 +143,8 @@ void So2sdr::addSpot(QByteArray call, double f)
         tmp.freq = f;
         tmp.band = getBand(f);
         if (tmp.band==BAND_NONE) return;
-        d        = log->isDupe(&tmp, log->dupeCheckingByBand(), false);
+        log->isDupe(&tmp, log->dupeCheckingByBand(), false);
+        d = tmp.dupe;
     }
     addSpot(call, f, d);
 }
@@ -240,7 +241,7 @@ void So2sdr::checkSpot(int nr)
 {
     static double lastFreq[2] = { 0, 0 };
     // initialize last freq
-    if (lastFreq[nr] == 0) {
+    if (qAbs(lastFreq[nr]) < 1.0) {
         lastFreq[nr] = cat[nr]->getRigFreq();
         return;
     }
@@ -248,8 +249,7 @@ void So2sdr::checkSpot(int nr)
     if (cat[nr]->band()==BAND_NONE) return;
 
     // freq changed, so recheck spot list
-    // @todo move to double freqs; should this have some tolerance?
-    if (f != lastFreq[nr] ) spotListPopUp[nr] = false;
+    if (qAbs(f - lastFreq[nr]) > 0.0 ) spotListPopUp[nr] = false;
 
     // currently have a call from list shown. Don't do anything
     if (spotListPopUp[nr]) {

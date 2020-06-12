@@ -21,19 +21,20 @@
 
 #include "contest.h"
 
-class Cwops : public Contest {
+class Cwops : public Contest
+{
 public:
     Cwops(QSettings &cs,QSettings &ss);
-    ~Cwops();
-    void addQso(Qso *qso);
-    ContestType contestType() const { return Cwops_t;}
-    int fieldWidth(int col) const;
-    int numberField() const;
-    void setupContest(QByteArray MultFile[2], const Cty * cty);
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
-    bool validateExchange(Qso *qso);
-    bool showQsoPtsField() const { return false;}
+    ~Cwops() override;
+
+    void addQso(Qso *qso) override;
+    ContestType contestType() const override { return Cwops_t;}
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    void setupContest(QByteArray MultFile[2], const Cty * cty) override;
+    unsigned int rcvFieldShown() const override;
+    bool validateExchange(Qso *qso) override;
+    bool showQsoPtsField() const override { return false;}
 };
 
 #endif

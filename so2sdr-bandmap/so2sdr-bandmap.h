@@ -64,7 +64,7 @@ class So2sdrBandmap : public QMainWindow, public Ui::Bandmap
 Q_OBJECT
 
 public:
-    So2sdrBandmap(QStringList args, QWidget *parent = 0);
+    So2sdrBandmap(QStringList args, QWidget *parent = nullptr);
     ~So2sdrBandmap();
     bool so2sdrBandmapOk() const;
     void calc();
@@ -73,7 +73,7 @@ public:
     void initPointers();
     void initVariables();
     bool invert() const;
-    int nextFreq(bool) const;
+    double nextFreq(bool) const;
     void setDefaultCenter();
     void setInvert(bool t);
     void setIQ(bool, bool);
@@ -123,7 +123,7 @@ private:
     int                  band;
     double               centerFreq;
     int                  dragPos;
-    int                  endFreqs[2];
+    double               endFreqs[2];
     double               freqMax;
     double               freqMin;
     int                  mouse_y;

@@ -64,22 +64,17 @@ int Sprint::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // sent #
-        return(4);
-        break;
+        return 4;
     case 1: // rcv #
-        return(4);
-        break;
+        return 4;
     case 2: // rcv name
-        return(5);
-        break;
+        return 5;
     case 3: // rcv qth
-        return(3);
-        break;
+        return 3;
     case 4: // mult
-        return(3);
-        break;
+        return 3;
     default:
-        return(5);
+        return 5;
     }
 }
 
@@ -88,10 +83,8 @@ QVariant Sprint::columnName(int c) const
     switch (c) {
     case SQL_COL_SNT1:
         return "#S";
-        break;
     case SQL_COL_RCV1:
         return "#R";
-        break;
     }
     return Contest::columnName(c);
 }
@@ -101,7 +94,7 @@ QVariant Sprint::columnName(int c) const
  */
 int Sprint::numberField() const
 {
-    return(0);
+    return 0;
 }
 
 unsigned int Sprint::rcvFieldShown() const
@@ -125,13 +118,12 @@ void Sprint::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     zeroScore();
 }
 
-unsigned int Sprint::sntFieldShown() const
-
 // 0 1=NR   --> show
 // 1 2=NAME
 // 2 4=STATE
+unsigned int Sprint::sntFieldShown() const
 {
-    return(1); // show qso # only
+    return 1; // show qso # only
 }
 
 bool Sprint::validateExchange(Qso *qso)
@@ -161,6 +153,5 @@ bool Sprint::validateExchange(Qso *qso)
     for (int i = 0; i < nExch; i++) {
         qso->rcv_exch[i] = finalExch[i];
     }
-
-    return(ok);
+    return ok;
 }

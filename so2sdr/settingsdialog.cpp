@@ -26,15 +26,16 @@ SettingsDialog::SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent)  : Q
 {
     setupUi(this);
 
-    AutoSendComboBox->setFixedWidth(sizes.width*8);
-    AutoSendLineEdit->setFixedWidth(sizes.width*5);
-    UDPPortLineEdit->setFixedWidth(sizes.width*5);
-    CQRepeatLineEdit->setFixedWidth(sizes.width*5);
-    DuelingCQLineEdit->setFixedWidth(sizes.width*5);
-    label_5->setFixedWidth(sizes.width*8);
-    ctyLineEdit->setFixedWidth(sizes.width*20);
-    kbd1LineEdit->setFixedWidth(sizes.width*20);
-    kbd2LineEdit->setFixedWidth(sizes.width*20);
+    AutoSendComboBox->setFixedWidth(qRound(sizes.width*8));
+    AutoSendLineEdit->setFixedWidth(qRound(sizes.width*5));
+    UDPPortLineEdit1->setFixedWidth(qRound(sizes.width*5));
+    UDPPortLineEdit2->setFixedWidth(qRound(sizes.width*5));
+    CQRepeatLineEdit->setFixedWidth(qRound(sizes.width*5));
+    DuelingCQLineEdit->setFixedWidth(qRound(sizes.width*5));
+    label_5->setFixedWidth(qRound(sizes.width*8));
+    ctyLineEdit->setFixedWidth(qRound(sizes.width*20));
+    kbd1LineEdit->setFixedWidth(qRound(sizes.width*20));
+    kbd2LineEdit->setFixedWidth(qRound(sizes.width*20));
     AutoSendComboBox->insertItem(0, "Semi");
     AutoSendComboBox->insertItem(1, "Auto");
     adjustSize();
@@ -59,8 +60,10 @@ void SettingsDialog::loadSettings()
     AutoSendComboBox->setCurrentIndex(settings.value(s_settings_autosend_mode,s_settings_autosend_mode_def).toInt());
     ctyLineEdit->setText(settings.value(s_cty_url,s_cty_url_def).toString());
     ctyLineEdit->setCursorPosition(0);
-    UDPCheckBox->setChecked(settings.value(s_wsjtx_enable,s_wsjtx_enable_def).toBool());
-    UDPPortLineEdit->setText(settings.value(s_wsjtx_udp,s_wsjtx_udp_def).toString());
+    UDPCheckBox1->setChecked(settings.value(s_wsjtx_enable[0],s_wsjtx_enable_def).toBool());
+    UDPCheckBox2->setChecked(settings.value(s_wsjtx_enable[1],s_wsjtx_enable_def).toBool());
+    UDPPortLineEdit1->setText(settings.value(s_wsjtx_udp[0],s_wsjtx_udp_def[0]).toString());
+    UDPPortLineEdit2->setText(settings.value(s_wsjtx_udp[1],s_wsjtx_udp_def[1]).toString());
     kbd1LineEdit->setText(settings.value(s_twokeyboard_device[0],s_twokeyboard_device_def[0]).toString());
     kbd2LineEdit->setText(settings.value(s_twokeyboard_device[1],s_twokeyboard_device_def[1]).toString());
     kbd1LineEdit->setEnabled(settings.value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
@@ -75,12 +78,14 @@ void SettingsDialog::updateSettings()
     settings.setValue(s_settings_focusindicators,FocusIndicatorsCheckBox->isChecked());
     settings.setValue(s_settings_exchangelogs,ExchangeLogCheckBox->isChecked());
     settings.setValue(s_settings_autosend,AutoSendLineEdit->text().toInt());
-    settings.setValue(s_settings_cqrepeat,(int)(CQRepeatLineEdit->text().toDouble()*1000));
+    settings.setValue(s_settings_cqrepeat,static_cast<int>((CQRepeatLineEdit->text().toDouble()*1000)));
     settings.setValue(s_settings_duelingcqdelay,DuelingCQLineEdit->text().toDouble());
     settings.setValue(s_settings_autosend_mode,AutoSendComboBox->currentIndex());
     settings.setValue(s_cty_url,ctyLineEdit->text().trimmed());
-    settings.setValue(s_wsjtx_enable,UDPCheckBox->isChecked());
-    settings.setValue(s_wsjtx_udp,UDPPortLineEdit->text().toInt());
+    settings.setValue(s_wsjtx_enable[0],UDPCheckBox1->isChecked());
+    settings.setValue(s_wsjtx_udp[0],UDPPortLineEdit1->text().toInt());
+    settings.setValue(s_wsjtx_enable[1],UDPCheckBox2->isChecked());
+    settings.setValue(s_wsjtx_udp[1],UDPPortLineEdit2->text().toInt());
     settings.setValue(s_twokeyboard_enable,kbdCheckBox->isChecked());
     settings.setValue(s_twokeyboard_device[0],kbd1LineEdit->text());
     settings.setValue(s_twokeyboard_device[1],kbd2LineEdit->text());

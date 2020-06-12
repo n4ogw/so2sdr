@@ -29,7 +29,19 @@ Contest::Contest(QSettings &cs,QSettings &ss) : settings(cs),stnSettings(ss)
     myGrid.clear();
     myLat = 0.0;
     myLon = 0.0;
+    dupeCheckingEveryBand=true;
+    prefill=false;
+    logFieldPrefill=nullptr;
+    myContinent=NA;
+    myCountry=0;
+    _myZone=0;
+    nExch=0;
+    qsoPts=0;
+    exchange_type=nullptr;
+    for (int i=0;i<MAX_EXCH_FIELDS;i++) multFieldHighlight[i]=-1;
+    for (int i=0;i< NModeTypes;i++) availableModeTypes[i]=true;
     for (int ii = 0; ii < MMAX; ii++) {
+        multType[ii]=None;
         mults[ii].clear();
         _nMults[ii] = 0;
         qsoTypeCntry[ii].clear();
@@ -54,12 +66,12 @@ Contest::Contest(QSettings &cs,QSettings &ss) : settings(cs),stnSettings(ss)
 QString Contest::bandLabel(int i) const
 {
     switch (i) {
-    case 0: return "160";break;
-    case 1: return "80";break;
-    case 2: return "40";break;
-    case 3: return "20";break;
-    case 4: return "15";break;
-    case 5: return "10";break;
+    case 0: return "160";
+    case 1: return "80";
+    case 2: return "40";
+    case 3: return "20";
+    case 4: return "15";
+    case 5: return "10";
     default: return "";
     }
 }
@@ -115,7 +127,6 @@ QByteArray Contest::contestName() const
     return(_contestName);
 }
 
-
 QString Contest::exchangeName(int i) const
 {
     return exchName[i];
@@ -126,72 +137,64 @@ QString Contest::exchangeName(int i) const
 QVariant Contest::columnName(int c) const
 {
     switch (c) {
-    case SQL_COL_NR:return QVariant("#");break;
-    case SQL_COL_TIME:return QVariant("Time");break;
-    case SQL_COL_FREQ:return QVariant("Freq");break;
-    case SQL_COL_CALL:return QVariant("Call");break;
-    case SQL_COL_BAND:return QVariant("Band");break;
-    case SQL_COL_MODE:return QVariant("Mode");break;
-    case SQL_COL_DATE:return QVariant("Date");break;
-    case SQL_COL_VALID:return QVariant("Valid");break;
-    case SQL_COL_PTS:return QVariant("Pts");break;
+    case SQL_COL_NR:return QVariant("#");
+    case SQL_COL_TIME:return QVariant("Time");
+    case SQL_COL_FREQ:return QVariant("Freq");
+    case SQL_COL_CALL:return QVariant("Call");
+    case SQL_COL_BAND:return QVariant("Band");
+    case SQL_COL_ADIF_MODE:return QVariant("Mode");
+    case SQL_COL_DATE:return QVariant("Date");
+    case SQL_COL_VALID:return QVariant("");
+    case SQL_COL_PTS:return QVariant("Pts");
     case SQL_COL_RCV1:
         if (nExch>0) {
             return QVariant(FieldTypesNames[exchange_type[0]]);
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_RCV2:
         if (nExch>1) {
             return QVariant(FieldTypesNames[exchange_type[1]]);
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_RCV3:
         if (nExch>2) {
             return QVariant(FieldTypesNames[exchange_type[2]]);
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_RCV4:
         if (nExch>3) {
             return QVariant(FieldTypesNames[exchange_type[3]]);
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_SNT1:
         if (nExch>0) {
             return QVariant("Sent1");
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_SNT2:
         if (nExch>1) {
             return QVariant("Sent2");
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_SNT3:
         if (nExch>2) {
             return QVariant("Sent3");
         } else {
             return QVariant("");
         }
-        break;
     case SQL_COL_SNT4:
         if (nExch>3) {
             return QVariant("Sent4");
         } else {
             return QVariant("");
         }
-        break;
-    default: return QVariant("");break;
+    default: return QVariant("");
     }
 }
 
@@ -229,6 +232,8 @@ void Contest::multIndx(Qso *qso) const
                 tmp = qso->mult_name;
             }
 
+            if (tmp.isEmpty()) continue;
+
             // search for the mult
             bool newmult = true;
             int j;
@@ -240,9 +245,9 @@ void Contest::multIndx(Qso *qso) const
             }
             if (newmult) {
                 qso->mult[ii]=-1;
-                qso->newmult[ii]=true;
+                qso->isnewmult[ii]=true;
             } else {
-                qso->newmult[ii]=false;
+                qso->isnewmult[ii]=false;
                 qso->mult[ii]=j;
             }
         }
@@ -1035,7 +1040,7 @@ bool Contest::hasPrefill() const
  */
 bool Contest::logPrefill(int n) const
 {
-    if (n >= 0 && n < nExch) return(logFieldPrefill[n]);
+    if (logFieldPrefill && n >= 0 && n < nExch) return(logFieldPrefill[n]);
     else return(false);
 }
 
@@ -1378,7 +1383,7 @@ void Contest::fillDefaultRST(Qso *qso) const
  */
 bool Contest::valExch_mm(Qso *qso)
 {
-    Q_UNUSED(qso);
+    Q_UNUSED(qso)
     bool ok = false;
 
     // look for ITU region
@@ -1459,7 +1464,7 @@ bool Contest::valExch_rst_state(int ii, int &mult_indx,Qso *qso)
         }
     }
     delete[] nr_indx;
-    return(ok[1]); // RST does not have to be entered
+    return ok[1]; // RST does not have to be entered
 }
 
 /*!
@@ -1725,9 +1730,9 @@ bool Contest::valExch_grid(Qso *qso)
 {
     Q_UNUSED(qso)
 
-    if (exchElement.size() == 0) return(false);
+    if (exchElement.size() == 0) return false;
 
-    bool ok;
+    bool ok=true;
     // check to see if this is a valid grid square
     if (exchElement.at(0).size() != 4 || exchElement.at(0).at(0) < 'A' || exchElement.at(0).at(0) > 'R' ||
         exchElement.at(0).at(1) < 'A' || exchElement.at(0).at(1) > 'R' ||
@@ -1737,7 +1742,7 @@ bool Contest::valExch_grid(Qso *qso)
     } else {
         finalExch[0]     = exchElement[0];
     }
-    return(ok);
+    return ok;
 }
 
 /*!
@@ -1861,10 +1866,10 @@ void Contest::zeroScore()
         // in these cases, the number of mults depends on the contents of the log
         if (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix) {
             mults[ii].clear();
-            for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
+            for (int jj = 0; jj < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); jj++) {
                 for (int k=0;k<NModeTypes;k++) {
                     for (int j = 0; j <= N_BANDS; j++) {
-                        multWorked[ii][k][j].clear();
+                        multWorked[jj][k][j].clear();
                     }
                 }
             }
@@ -1884,11 +1889,11 @@ void Contest::zeroScore()
 ModeTypes Contest::nextModeType(ModeTypes m) const
 {
     if (settings.value(c_multimode,c_multimode_def).toBool()) {
-        int i=(int)m;
+        int i=m;
         i=(i+1) % NModeTypes;
         while (i!=m) {
             if (availableModeTypes[i]) {
-                return((ModeTypes)i);
+                return(static_cast<ModeTypes>(i));
             } else {
                 i=(i+1)% NModeTypes;
             }

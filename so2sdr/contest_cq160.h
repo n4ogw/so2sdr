@@ -21,24 +21,25 @@
 
 #include "contest.h"
 
-class CQ160 : public Contest {
+class CQ160 : public Contest
+{
 public:
     CQ160(QSettings &cs,QSettings &ss);
-    ~CQ160();
-    QString bandLabel(int i) const;
-    bool bandLabelEnable(int i) const;
-    void addQso(Qso *qso);
-    ContestType contestType() const { return Cq160_t;}
-    QByteArray prefillExchange(Qso *qso);
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    int fieldWidth(int col) const;
-    unsigned int rcvFieldShown() const;
-    int Score() const;
-    unsigned int sntFieldShown() const;
-    int numberField() const;
-    bool showQsoPtsField() const { return true;}
-    int rstField() const { return 0;}
+    ~CQ160() override;
+    QString bandLabel(int i) const override;
+    bool bandLabelEnable(int i) const override;
+    void addQso(Qso *qso) override;
+    ContestType contestType() const override { return Cq160_t;}
+    QByteArray prefillExchange(Qso *qso) override;
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    unsigned int rcvFieldShown() const override;
+    int Score() const override;
+    unsigned int sntFieldShown() const override;
+    int numberField() const override;
+    bool showQsoPtsField() const override { return true;}
+    int rstField() const override { return 0;}
 };
 
 #endif // CONTEST_CQ160_H

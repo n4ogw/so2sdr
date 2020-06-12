@@ -22,7 +22,6 @@
 
 #include <QByteArray>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QSettings>
 #include <QSqlRecord>
 #include "qso.h"
@@ -34,11 +33,10 @@ class History : public QObject
 {
     Q_OBJECT
 public:
-    explicit History(QSettings& csettings,QObject *parent = 0);
+    explicit History(QSettings& csettings,QObject *parent = nullptr);
     ~History();
     void fillExchange(Qso *qso,QByteArray part);
     void startHistory();
-    void stopHistory();
     bool isOpen();
 
 signals:
@@ -48,8 +46,8 @@ public slots:
     void addQso(const Qso *qso);
 
 private:
-    QSqlDatabase         history;
-    QSettings&            csettings;
+    QSettings&  csettings;
+    bool        isopen;
 
 };
 

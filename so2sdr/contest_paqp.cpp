@@ -84,14 +84,11 @@ int PAQP::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // sent #
-        return(4);
-        break;
+        return 4;
     case 1: //  rcv #
-        return(4);
-        break;
+        return 4;
     case 2: // mult
-        return(4);
-        break;
+        return 4;
     default:
         return 4;
     }
@@ -118,11 +115,11 @@ void PAQP::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     zeroScore();
 }
 
-unsigned int PAQP::sntFieldShown() const
 
 // 0 1=NR   --> show
+unsigned int PAQP::sntFieldShown() const
 {
-    return(1); // show qso # only
+    return 1; // show qso # only
 }
 
 /*!

@@ -23,21 +23,23 @@
 #include <QList>
 #include <QString>
 
-class PAQP : public Contest {
+class PAQP : public Contest
+{
 public:
     PAQP(QSettings &cs,QSettings &ss);
-    ~PAQP();
-    QVariant columnName(int c) const;
-    ContestType contestType() const { return Paqp_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
+    ~PAQP() override;
+
+    QVariant columnName(int c) const override;
+    ContestType contestType() const override { return Paqp_t;}
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    unsigned int rcvFieldShown() const override;
+    unsigned int sntFieldShown() const override;
     void setWithinState(bool);
-    bool showQsoPtsField() const { return true;}
+    bool showQsoPtsField() const override { return true;}
 private:
     bool withinState;
     static QList<QString> EPA_counties;

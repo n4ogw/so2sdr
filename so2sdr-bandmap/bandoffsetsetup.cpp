@@ -29,7 +29,7 @@
 BandOffsetSetup::BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    tableView->setFixedWidth(sizes.width*45);
+    tableView->setFixedWidth(qRound(sizes.width*45));
     adjustSize();
     setFixedSize(size());
     sdr=stype;
@@ -123,8 +123,6 @@ void BandOffsetSetup::updateFromSettings()
     case (network_t):
         sz=settings.beginReadArray("custom_offset_netsdr");
         break;
-    default:
-        sz=0;
     }
     for (int i=0;i<sz;i++) {
         settings.setArrayIndex(i);
@@ -160,8 +158,6 @@ void BandOffsetSetup::updateSettings()
     case (network_t):
         settings.beginWriteArray("custom_offset_netsdr");
         break;
-    default:
-        settings.beginWriteArray("custom_offset_soundcard");
     }
     for (int i=0;i<model->rowCount();i++) {
         settings.setArrayIndex(i);

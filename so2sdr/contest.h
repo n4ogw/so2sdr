@@ -88,7 +88,7 @@ public:
     ModeTypes nextModeType(ModeTypes m) const;
     int nMults(int ii) const;
     virtual int nMultsColumn(int col,int ii) const;
-    int nMultsWorked() const;
+    virtual int nMultsWorked() const;
     int nMultsBWorked(int ii, int band) const;
     int nMultsBMWorked(int ii, int band, int mode) const;
     virtual int numberField() const = 0;
@@ -108,7 +108,7 @@ public:
     void setZoneMax(int);
     void setZoneType(int);
     virtual bool showQsoPtsField() const = 0;
-    virtual unsigned int sntFieldShown() const = 0;
+    virtual unsigned int sntFieldShown() const { return 0;}
     bool valid(int row) const;
     virtual bool validateExchange(Qso *qso)    = 0;
     bool vExch() const;

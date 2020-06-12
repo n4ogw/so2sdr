@@ -88,9 +88,8 @@ void Spectrum::setFFTSize(sampleSizes s)
     calcError(true);
 }
 
-Spectrum::Spectrum(QObject *parent, QSettings &s,QString dir) : QObject(parent),settings(s)
+Spectrum::Spectrum(QObject *parent, QSettings &s,QString dir) : QObject(parent),settings(s),userDirectory(dir)
 {
-    userDirectory   = dir;
     addOffset       = 0;
     offset          = 0;
     offsetSign      = 1;
@@ -101,20 +100,20 @@ Spectrum::Spectrum(QObject *parent, QSettings &s,QString dir) : QObject(parent),
     iqData          = false;
     bits            = 16;
     fftSize         = 4096;
-    in              = 0;
-    out             = 0;
-    errfunc         = 0;
-    plan            = 0;
-    window          = 0;
-    output          = 0;
+    in              = nullptr;
+    out             = nullptr;
+    errfunc         = nullptr;
+    plan            = nullptr;
+    window          = nullptr;
+    output          = nullptr;
     for (int i = 0; i < SIG_N_AVG; i++) {
-        peakAvg[i] = 0;
+        peakAvg[i] = nullptr;
     }
-    spec_smooth  = 0;
-    spec_tmp     = 0;
-    spec_tmp2    = 0;
-    tmp4         = 0;
-    calibSigList = 0;
+    spec_smooth  = nullptr;
+    spec_tmp     = nullptr;
+    spec_tmp2    = nullptr;
+    tmp4         = nullptr;
+    calibSigList = nullptr;
     background   = 0;
 
     // initialize on 160m
@@ -353,7 +352,7 @@ void Spectrum::makeGainPhase()
         }
         double phase = aPhase[0];
         double gain  = aGain[0];
-        double x     = (double) (ix / 8);
+        double x     = static_cast<double>(ix / 8);
         double x0    = x;
         for (int j = 1; j < FIT_ORDER; j++) {
             phase += aPhase[j] * x;
@@ -502,7 +501,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     } else {
         // IF offset included here
         double tmp = (offsetSign*(offset+addOffset) * fftSize * scale) / sampleFreq;
-        int offsetPix = -(int) tmp;
+        int offsetPix = - static_cast<int>(tmp);
         for (int i = 0; i < fftSize; i++) {
             unsigned int j = (fftSize - offsetPix - fftSize / 2 + i) % fftSize;
             spec_tmp[j] = (spec_tmp[j] - bga + 2.0) * 25.0;
@@ -516,7 +515,7 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
     }
     unsigned int cnt = 0;
     for (int i = 0; i < fftSize; i++) {
-        output[i] = (unsigned char) tmp4[i];
+        output[i] = static_cast<unsigned char>(tmp4[i]);
         cnt      += output[i];
     }
     background = cnt / fftSize;  // background measurement
@@ -615,10 +614,10 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                 double freq;
                 if (ipk > fftSize / 2) {
                     // neg freqs
-                    freq = centerFreq - invert * totOffset - invert*qRound((fftSize - ipk) * sampleFreq/ (double)fftSize);
+                    freq = centerFreq - invert * totOffset - invert*qRound((fftSize - ipk) * sampleFreq/ static_cast<double>(fftSize));
                 } else {
                     // positive freqs
-                    freq = centerFreq - invert * totOffset + invert*qRound(ipk * sampleFreq/(double)fftSize);
+                    freq = centerFreq - invert * totOffset + invert*qRound(ipk * sampleFreq/static_cast<double>(fftSize));
                 }
 
                 // is this a known signal already?
@@ -630,11 +629,11 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                         indx  = j;
                         sigList[j].cnt++;
                         sigList[j].fsum += freq; // update with new frequency
-                        sigList[j].f     = qRound(sigList[j].fsum / (double)sigList[j].cnt);
+                        sigList[j].f     = qRound(sigList[j].fsum / sigList[j].cnt);
 
                         // once signal has been detected 5 times, it becomes "active"
                         if (sigList[j].cnt > 5) {
-                            sigList[j].n      = (int) (SIG_KEEP_TIME / 0.008 / n_avg);
+                            sigList[j].n      = static_cast<int>(SIG_KEEP_TIME / 0.008 / n_avg);
                             sigList[j].active = true;
 
                             // add active signals to CQ finding list
@@ -646,7 +645,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                                     sigListCQ[k].f = freq;
 
                                     // reset the counter for this signal
-                                    sigListCQ[k].n = (int) (findCQTime / 0.008 / n_avg);
+                                    sigListCQ[k].n = static_cast<int>(findCQTime / 0.008 / n_avg);
                                     break;
                                 }
                             }
@@ -662,7 +661,7 @@ void Spectrum::detectPeaks(double bg, double sigma, double spec[])
                                 if (indx2 != -1) {
                                     sigListCQ[indx2].active = true;
                                     sigListCQ[indx2].f      = freq;
-                                    sigListCQ[indx2].n      = (int) (findCQTime / 0.008 / n_avg);
+                                    sigListCQ[indx2].n      = static_cast<int>(findCQTime / 0.008 / n_avg);
                                 }
                             }
                         }
@@ -949,7 +948,7 @@ void Spectrum::complexMult(double a[], double b[], double c[]) const
 void Spectrum::interp2(double in[], double out[], double bga)
 {
     double tmp = (offsetSign*(offset+addOffset) * fftSize * scale) / sampleFreq;
-    int offsetPix = -(int) tmp;
+    int offsetPix = - static_cast<int>(tmp);
 
     unsigned int j0 = (fftSize - offsetPix / 2 - fftSize / 4) % fftSize;
     in[j0] = (in[j0] - bga + 2.0) * 25.0;
@@ -999,8 +998,8 @@ void Spectrum::measureBackground(double &background, double &sigma, double spec[
         }
     }
     if (n != 0) {
-        background /= (double) n;
-        bg2        /= (double) n;
+        background /= n;
+        bg2        /= n;
         sigma       = 1.0 / (n - 1) * (bg2 - background * background);
         if (sigma > 1.0e-6) sigma = sqrt(sigma);
         else sigma = 0.;
@@ -1034,8 +1033,8 @@ void Spectrum::measureBackgroundLog(double &background, double &sigma, double sp
         }
     }
     if (n != 0) {
-        background /= (double) n;
-        bg2        /= (double) n;
+        background /= n;
+        bg2        /= n;
         sigma       = 1.0 / (n - 1) * (bg2 - background * background);
         if (sigma > 1.0e-6) sigma = sqrt(sigma);
         else sigma = 0.;
@@ -1092,7 +1091,7 @@ void Spectrum::fitErrors()
     for (int i = 0; i < FIT_ORDER * 2; i++) {
         sum[i] = 0.;
     }
-    sum[0] = (double) n;
+    sum[0] = n;
 
     double gain, phase;
     for (int k = 5; k < (sizeIQ - 5); k++) {
@@ -1107,7 +1106,7 @@ void Spectrum::fitErrors()
             gain  = calibSigList[k].gain;
             phase = calibSigList[k].phase;
 
-            double x0 = (double) ix;
+            double x0 = ix;
             double x  = x0;
 
             aGain[0]  += gain;
@@ -1197,14 +1196,14 @@ void Spectrum::gaussElim(double a[FIT_ORDER][FIT_ORDER], double y[FIT_ORDER], in
 
   if freq difference is larger than SIG_MIN_SPOT_DIFF, returns fin
   */
-int Spectrum::closestFreq(double fin) const
+double Spectrum::closestFreq(double fin) const
 {
     double f=fin;
-    int delta=SIG_MIN_SPOT_DIFF;
+    double delta=SIG_MIN_SPOT_DIFF;
     for (int i=0;i<SIG_MAX;i++) {
         if (sigList[i].active) {
             if (abs(fin-sigList[i].f)<delta) {
-                delta=abs(fin-sigList[i].f);
+                delta=qAbs(fin-sigList[i].f);
                 f=sigList[i].f;
             }
         }

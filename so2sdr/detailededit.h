@@ -33,7 +33,7 @@ class DetailedEdit : public QDialog, public Ui::DetailedQSOEdit
 Q_OBJECT
 
 public:
-    DetailedEdit(uiSize sizes, QWidget *parent = 0);
+    DetailedEdit(uiSize sizes, QWidget *parent = nullptr);
     void loadRecord(const QSqlRecord &r,int nexchange);
 private slots:
     void updateRecord();

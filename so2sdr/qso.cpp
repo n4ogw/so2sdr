@@ -29,6 +29,7 @@ Qso::Qso(int n)
         rcv_exch[i].clear();
         snt_exch[i].clear();
     }
+    externalQso = false;
     isMM = false;
     isMobile = false;
     isRover = false;
@@ -39,9 +40,11 @@ Qso::Qso(int n)
     for (int ii = 0; ii < MMAX; ii++) {
         mult[ii]    = -1;
         newmult[ii] = -1;
+        isnewmult[ii] = false;
     }
     mode = RIG_MODE_CW;
     modeType = CWType;
+    adifMode = "CW";
     band = 0;
     bandColumn=0;
     freq = 0.0;
@@ -76,6 +79,7 @@ void Qso::clear()
         rcv_exch[i].clear();
         snt_exch[i].clear();
     }
+    externalQso = false;
     isMM = false;
     isMobile = false;
     isRover = false;
@@ -86,6 +90,7 @@ void Qso::clear()
         mult[ii]    = -1;
         newmult[ii] = -1;
         isamult[ii] = false;
+        isnewmult[ii] = false;
     }
     zone=0;
     band=0;

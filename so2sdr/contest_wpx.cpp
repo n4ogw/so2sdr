@@ -106,14 +106,11 @@ int WPX::fieldWidth(int col) const
 {
     switch (col) {
     case 0: // sent #
-        return(5);
-        break;
+        return 5;
     case 1: //  RST
-        return(4);
-        break;
+        return 4;
     case 2: // rcv #
-        return(5);
-        break;
+        return 5;
     default:
         return 4;
     }
@@ -122,12 +119,12 @@ int WPX::fieldWidth(int col) const
 
 int WPX::numberField() const
 {
-    return(1);
+    return 1;
 }
 
 unsigned int WPX::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return 2;  // show second field
 }
 
 void WPX::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
@@ -144,12 +141,12 @@ void WPX::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
     _nMults[1] = 0;
 }
 
-unsigned int WPX::sntFieldShown() const
 
 // 0 1=RST
 // 1 2=qso # --> show
+unsigned int WPX::sntFieldShown() const
 {
-    return(2);  // show sent #
+    return 2;  // show sent #
 }
 
 bool WPX::validateExchange(Qso *qso)
@@ -168,15 +165,14 @@ bool WPX::validateExchange(Qso *qso)
 
     // determine prefix for mult
     wpxPrefix(qso->call, qso->mult_name);
-    return(ok);
+    return ok;
 }
 
 
 void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
 
 // determines prefix from call
-// rewritten 05/30/2019
-//  -may not correctly handle callsigns with two /'s: will assume pfx before FIRST / is correct
+// may not correctly handle callsigns with two /'s: will assume pfx before FIRST / is correct
 {
     const char digits[10] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
     const int nIgnorePfx=8;

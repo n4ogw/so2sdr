@@ -33,9 +33,9 @@
 SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    tcpPortLineEdit->setFixedWidth(sizes.width*15);
-    udpPortLineEdit->setFixedWidth(sizes.width*15);
-    n1mmUdpLineEdit->setFixedWidth(sizes.width*15);
+    tcpPortLineEdit->setFixedWidth(qRound(sizes.width*15));
+    udpPortLineEdit->setFixedWidth(qRound(sizes.width*15));
+    n1mmUdpLineEdit->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 
@@ -132,7 +132,7 @@ void SDRDialog::updateFromSettings()
     cqFinderCallsCheckbox->setChecked(settings.value(s_sdr_cq_finder_calls,s_sdr_cq_finder_calls_def).toBool());
     comboBoxIDNumber->setCurrentIndex(settings.value(s_sdr_nrig,s_sdr_nrig_def).toInt());
     reverseScrollCheckBox->setChecked(settings.value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool());
-    switch ((SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt()) {
+    switch (static_cast<SdrType>(settings.value(s_sdr_type,s_sdr_type_def).toInt())) {
     case soundcard_t:
         settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());
         settings.setValue(s_sdr_swapiq,settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool());
@@ -167,11 +167,11 @@ void SDRDialog::updateSDR()
     settings.setValue(s_sdr_n1mm_port,n1mmUdpLineEdit->text());
     settings.setValue(s_sdr_bandmap_tcp_port,tcpPortLineEdit->text().toInt());
     settings.setValue(s_sdr_bandmap_udp_port,udpPortLineEdit->text().toInt());
-    SdrType old=(SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt();
+    SdrType old=static_cast<SdrType>(settings.value(s_sdr_type,s_sdr_type_def).toInt());
     settings.setValue(s_sdr_type,comboBoxSdrType->currentIndex());
     settings.setValue(s_sdr_nrig,comboBoxIDNumber->currentIndex());
     settings.setValue(s_sdr_reverse_scroll,reverseScrollCheckBox->isChecked());
-    switch ((SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt()) {
+    switch (static_cast<SdrType>(settings.value(s_sdr_type,s_sdr_type_def).toInt())) {
     case soundcard_t:
         settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toInt());
         settings.setValue(s_sdr_swapiq,settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool());
@@ -188,7 +188,7 @@ void SDRDialog::updateSDR()
     emit(update());
 
     // restart sdr if type changed
-    if (old!=(SdrType)settings.value(s_sdr_type,s_sdr_type_def).toInt()) {
+    if (old!=static_cast<SdrType>(settings.value(s_sdr_type,s_sdr_type_def).toInt())) {
         emit(restartSdr());
     }
 }

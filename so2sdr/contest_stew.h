@@ -21,21 +21,22 @@
 
 #include "contest.h"
 
-class Stew : public Contest {
+class Stew : public Contest
+{
 public:
     Stew(QSettings &cs,QSettings &ss);
-    ~Stew();
-    void addQso(Qso *qso);
-    ContestType contestType() const { return Stew_t;}
-    QByteArray prefillExchange(Qso *qso);
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    int fieldWidth(int col) const;
-    unsigned int rcvFieldShown() const;
-    int Score() const;
-    bool showQsoPtsField() const { return true;}
-    unsigned int sntFieldShown() const;
-    int numberField() const;
+    ~Stew() override;
+
+    void addQso(Qso *qso) override;
+    ContestType contestType() const override { return Stew_t;}
+    QByteArray prefillExchange(Qso *qso) override;
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    unsigned int rcvFieldShown() const override;
+    int Score() const override;
+    bool showQsoPtsField() const override { return true;}
+    int numberField() const override;
 };
 
 #endif // CONTEST_STEW_H

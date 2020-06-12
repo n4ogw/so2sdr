@@ -32,7 +32,7 @@ class Winkey : public QObject
 Q_OBJECT
 
 public:
-    Winkey(QSettings& s, QObject *parent = 0);
+    Winkey(QSettings& s, QObject *parent = nullptr);
     ~Winkey();
     void loadbuff(QByteArray msg);
     bool isSending() const;

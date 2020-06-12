@@ -26,7 +26,7 @@
 Telnet::Telnet(QSettings &s, QWidget *parent) : QWidget(parent),settings(s)
 {
     setupUi(this);
-    telnet = 0;
+    telnet = nullptr;
     telnet = new QtTelnet();
     connect(TelnetConnectButton, SIGNAL(clicked()), this, SLOT(connectTelnet()));
     connect(TelnetDisconnectButton, SIGNAL(clicked()), this, SLOT(disconnectTelnet()));
@@ -64,7 +64,7 @@ Telnet::~Telnet()
 
 void Telnet::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     // disconnect
     disconnectTelnet();
 
@@ -147,8 +147,7 @@ void Telnet::showText(QString txt)
         if (call != settings.value(s_call,s_call_def)) {
             bool ok;
             QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
-            double  x = freq.toDouble(&ok);
-            double f = (int) (x * 1000);
+            double  f = 1000 * freq.toDouble(&ok);
             emit(dxSpot(call.toLatin1(), f));
         }
     }

@@ -29,7 +29,7 @@ class DupeSheet : public QDialog, public Ui::Dupesheet
 Q_OBJECT
 
 public:
-    explicit DupeSheet(QWidget *parent = 0);
+    explicit DupeSheet(QWidget *parent = nullptr);
     ~DupeSheet();
     int band() const;
     void setBand(int);

@@ -139,8 +139,8 @@ void BandmapInterface::socketError1(QAbstractSocket::SocketError err)
 /*! @todo implement TCP error handling */
 void BandmapInterface::socketError(int nr, QAbstractSocket::SocketError err)
 {
-    Q_UNUSED(nr);
-    Q_UNUSED(err);
+    Q_UNUSED(nr)
+    Q_UNUSED(err)
 }
 
 /*!

@@ -126,8 +126,7 @@ void So2sdr::populateDupesheet()
         dupesheet[id]->clear();
         dupesheet[id]->setBand(b);
         QSqlQueryModel m;
-        m.setQuery("SELECT * FROM log WHERE valid=1 and BAND=" + QString::number(b), log->dataBase());
-
+        m.setQuery("SELECT * FROM log WHERE valid=1 and BAND=" + QString::number(b));
         while (m.canFetchMore()) {
             m.fetchMore();
         }
@@ -135,6 +134,6 @@ void So2sdr::populateDupesheet()
             QByteArray tmp = m.record(i).value("call").toString().toLatin1();
             dupesheet[id]->updateDupesheet(tmp);
         }
-        dupesheet[id]->setWindowTitle("Dupesheet " + bandName[b]);
+        dupesheet[id]->setWindowTitle("Dupesheet " + bandNames[b]);
     }
 }

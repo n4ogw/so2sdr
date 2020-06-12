@@ -22,21 +22,23 @@
 #include "cty.h"
 #include "contest.h"
 
-class ARRLDX : public Contest {
+class ARRLDX : public Contest
+{
 public:
     ARRLDX(bool usve,QSettings &cs,QSettings &ss);
-    ~ARRLDX();
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    ContestType contestType() const { return Arrldx_t;}
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    QByteArray prefillExchange(Qso *qso);
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
-    bool showQsoPtsField() const { return true;}
-    int rstField() const { return 0;}
+    ~ARRLDX() override;
+
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    ContestType contestType() const override { return Arrldx_t;}
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    QByteArray prefillExchange(Qso *qso) override;
+    unsigned int rcvFieldShown() const override;
+    unsigned int sntFieldShown() const override;
+    bool showQsoPtsField() const override { return true;}
+    int rstField() const override { return 0;}
 private:
     bool usVe;
 };

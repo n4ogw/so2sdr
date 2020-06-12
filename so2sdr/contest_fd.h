@@ -22,21 +22,21 @@
 #include "cty.h"
 #include "contest.h"
 
-class FD : public Contest {
+class FD : public Contest
+{
 public:
     FD(QSettings &cs,QSettings &ss);
-    ~FD();
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty);
-    bool validateExchange(Qso *qso);
-    QVariant columnName(int c) const;
-    ContestType contestType() const { return Fd_t;}
-    void addQso(Qso *qso);
-    int fieldWidth(int col) const;
-    int numberField() const;
-    unsigned int rcvFieldShown() const;
-    unsigned int sntFieldShown() const;
-    int Score() const;
-    bool showQsoPtsField() const { return true;}
+    ~FD() override;
+    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
+    bool validateExchange(Qso *qso) override;
+    QVariant columnName(int c) const override;
+    ContestType contestType() const override { return Fd_t;}
+    void addQso(Qso *qso) override;
+    int fieldWidth(int col) const override;
+    int numberField() const override;
+    unsigned int rcvFieldShown() const override;
+    int Score() const override;
+    bool showQsoPtsField() const override { return true;}
 };
 
 #endif

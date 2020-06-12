@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.5.2";
+const QByteArray Version = "2.5.3";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -69,6 +69,7 @@ typedef struct WinkeyParam
     bool       WinkeyUsePot;
     bool       WinkeyPaddleSwap;
     bool       CTSpace;
+    char       padding[4];
 } WinkeyParam;
 Q_DECLARE_TYPEINFO(WinkeyParam, Q_PRIMITIVE_TYPE);
 
@@ -148,16 +149,16 @@ typedef enum {
  */
 typedef struct Country {
     int               indx;
-    QByteArray        name;
     int               Zone;
     Cont              Continent;
     float             delta_t;
     int               bearing;
-    QByteArray        MainPfx;
     bool              multipleZones;
     QList<QByteArray> zonePfx;
     QList<int>        zones;
     QString           sun;
+    QByteArray        MainPfx;
+    QByteArray        name;
 } Country;
 Q_DECLARE_TYPEINFO(Country, Q_PRIMITIVE_TYPE);
 
@@ -204,24 +205,28 @@ typedef struct uiSize {
 Q_DECLARE_TYPEINFO(uiSize, Q_PRIMITIVE_TYPE);
 
 // column numbers in SQL log
-const int SQL_COL_NR    =  0;    // ID number (SQL primary key)
-const int SQL_COL_TIME  =  1;    // time HHMM  (string)
-const int SQL_COL_FREQ  =  2;    // freq in Hz (double)
-const int SQL_COL_CALL  =  3;    // call (string)
-const int SQL_COL_BAND  =  4;    // band (int)
-const int SQL_COL_DATE  =  5;    // date MMddyyyy (string)
-const int SQL_COL_MODE  =  6;    // mode (int)
-const int SQL_COL_SNT1  =  7;    // sent exchange field 1 (string)
-const int SQL_COL_SNT2  =  8;    // sent exchange field 2 (string)
-const int SQL_COL_SNT3  =  9;    // sent exchange field 3 (string)
-const int SQL_COL_SNT4  =  10;   // sent exchange field 4 (string)
-const int SQL_COL_RCV1  =  11;   // rcv exchange field 1 (string)
-const int SQL_COL_RCV2  =  12;   // rcv exchange field 2 (string)
-const int SQL_COL_RCV3  =  13;   // rcv exchange field 3 (string)
-const int SQL_COL_RCV4  =  14;   // rcv exchange field 4 (string)
-const int SQL_COL_PTS   =  15;   // qso points (int)
-const int SQL_COL_VALID =  16;   // valid flag (int) if 0, qso not exported to cabrillo
-const int SQL_N_COL     =  17;   // total number of columns
+const int SQL_COL_NR    =  0;     // ID number (SQL primary key)
+const int SQL_COL_TIME  =  1;     // time HHMM  (string)
+const int SQL_COL_FREQ  =  2;     // freq in Hz (double)
+const int SQL_COL_CALL  =  3;     // call (string)
+const int SQL_COL_BAND  =  4;     // band (int)
+const int SQL_COL_DATE  =  5;     // date MMddyyyy (string)
+const int SQL_COL_MODE  =  6;     // mode (int)
+const int SQL_COL_ADIF_MODE = 7;  // ADIF mode (string)
+const int SQL_COL_MODE_TYPE = 8;  // mode type (int)
+const int SQL_COL_SNT1  =  9;     // sent exchange field 1 (string)
+const int SQL_COL_SNT2  =  10;    // sent exchange field 2 (string)
+const int SQL_COL_SNT3  =  11;    // sent exchange field 3 (string)
+const int SQL_COL_SNT4  =  12;    // sent exchange field 4 (string)
+const int SQL_COL_RCV1  =  13;    // rcv exchange field 1 (string)
+const int SQL_COL_RCV2  =  14;    // rcv exchange field 2 (string)
+const int SQL_COL_RCV3  =  15;    // rcv exchange field 3 (string)
+const int SQL_COL_RCV4  =  16;    // rcv exchange field 4 (string)
+const int SQL_COL_PTS   =  17;    // qso points (int)
+const int SQL_COL_VALID =  18;    // valid flag (int) if 0, qso not exported to cabrillo
+
+const int SQL_N_COL     =  19;    // total number of columns
+
 
 /*!
    Exchange field types
@@ -303,13 +308,14 @@ const int BANDMAP_CALL_X=15;
 const int N_FUNC=12;
 
 // timers
-const int N_TIMERS=3;
+const int N_TIMERS=4;
 
 // default frequency for various things (all in milliseconds)
 const int timerSettings[]={
     1000,  // clock update
     300, // radio/serial update
-    100 // auto-CQ, dueling CQ resolution
+    100, // auto-CQ, dueling CQ resolution
+    30000 // wsjtx call list
 };
 
 // delay in ms between queued messages (two keyboard mode)
@@ -320,8 +326,10 @@ const int queueDelay=200;
 const int RATE_AVG_MINUTES=3;
 
 // powers of 2
-const unsigned int bits[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
-                            131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432};
+const unsigned int bits[] = { 1, 2, 4, 8, 16, 32, 64, 128,
+                              256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+                              65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608,
+                              16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824, 2147483648};
 
 // number of keys in two keyboard keymap
 const int NKEYS=112;
@@ -340,6 +348,10 @@ const int NO_DUPE_CHECKING=2; // no dupe checking
 
 // number of bands
 const int N_BANDS=28;
+
+const QString bandNames[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12",
+                                     "6", "2","1.25m","70cm","33cm","1.2G","2.3G","3.3G","5.6G",
+                                     "10G","24G","47G","76G","122G","134G","241G","630m","2200m"};
 
 const int N_BANDS_HF=6;
 const int BAND_NONE=-1;
@@ -372,6 +384,11 @@ const int BAND241000 = 25;
 const int BAND630 = 26;
 const int BAND2200 = 27;
 
+// hamlib modes : this has to match the modes defined in hamlib rig.h, enum rmode_t
+const int nModes=23;
+const QString modes[nModes] = { "NONE", "AM",  "CW",  "USB", "LSB", "RTTY", "FM",  "WFM", "CWR", "RTTYR", "AMS",
+                            "PKT",  "PKT", "PKT", "USB", "LSB", "FAX",  "SAM", "SAL", "SAH", "DSB", "FM", "PKT" };
+
 // mode types
 typedef enum {
     CWType = 0,
@@ -380,12 +397,8 @@ typedef enum {
 } ModeTypes;
 const int NModeTypes=3;
 
-// mode names
+// mode type names
 const QString modeNames[NModeTypes]={"CW","Phone","Digital"};
-
-const QString bandName[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6M", "2M",
-                                    "1.25M","70cm","33cm","23cm","13cm","9cm","6cm","3cm","1.25cm","6mm",
-                                    "4mm","2.5mm","2mm","1mm","630","2200"};
 
 // maximum number of Cabrillo fields
 const int MAX_CAB_FIELDS=7;
@@ -534,11 +547,14 @@ const int c_col_width_def[SQL_N_COL]={5,5,7,9,0,0,0,5,5,5,5,5,5,5,5,2,2};
 
 const QString s_sdr_path[NRIG]={"sdr/path1","sdr/path2"};
 
-const QString s_wsjtx_enable="wsjtx/enable";
+const QString s_wsjtx_enable[NRIG]={"wsjtx/enable1","wsjtx/enable2"};
 const bool s_wsjtx_enable_def=false;
 
-const QString s_wsjtx_udp="wsjtx/udp";
-const int s_wsjtx_udp_def=2333;
+const QString s_wsjtx_udp[NRIG]={"wsjtx/udp1","wsjtx/udp2"};
+const int s_wsjtx_udp_def[NRIG]={2237,2238};
+
+const QString s_wsjtx_hide_dupes[NRIG]={"wsjtx/dupes1","wsjtx/dupes2"};
+const bool s_wsjtx_hide_dupes_def=true;
 
 const QString s_sdr_config[NRIG]={"sdr/config1","sdr/config2"};
 #ifdef Q_OS_LINUX
@@ -835,8 +851,11 @@ const int c_off_time_min_def=30;
 const QString c_off_time_enable="contest/offtime_enable";
 const bool c_off_time_enable_def=false;
 
-const QString s_play_command="play_command";
+const QString s_play_command[2]={"play_command1","play_command2"};
 const QString s_play_command_def="gst-launch-1.0 -q filesrc location=$.wav ! wavparse ! audioconvert ! pulsesink";
+
+const QString s_switch_command[2]={"switch_command1","switch_command2"};
+const QString s_switch_command_def="";
 
 const QString s_rec_command="rec_command";
 const QString s_rec_command_def="gst-launch-1.0 -q pulsesrc ! wavenc ! filesink location=$.wav";
@@ -847,10 +866,10 @@ const QString s_before_rec_def="pactl set-source-mute 1 0";
 const QString s_after_rec="after_rec";
 const QString s_after_rec_def="";
 
-const QString s_before_play="before_play";
+const QString s_before_play[2]={"before_play1","before_play2"};
 const QString s_before_play_def="pactl set-source-mute 1 1";
 
-const QString s_after_play="after_play";
+const QString s_after_play[2]={"after_play1","after_play2"};
 const QString s_after_play_def="pactl set-source-mute 1 0";
 
 const QString s_radios_ptt_type[NRIG]={"radios/ptt1_type","radios/ptt2_type"};

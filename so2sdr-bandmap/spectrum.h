@@ -47,7 +47,7 @@ public:
     void calcError(bool force);
     void clearCQ();
     void clearSigs();
-    int closestFreq(double) const;
+    double closestFreq(double) const;
     void resetAvg();
     void setAddOffset(double f);
     void stopSpectrum();

@@ -28,7 +28,7 @@
 SoundCardSetup::SoundCardSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
-    OffsetLineEdit->setFixedWidth(sizes.width*15);
+    OffsetLineEdit->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 
@@ -64,7 +64,7 @@ SoundCardSetup::SoundCardSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDia
     testFormat.channelCount              = 2;
     testFormat.sampleFormat              = paInt16;
     testFormat.suggestedLatency          = 0;
-    testFormat.hostApiSpecificStreamInfo = NULL;
+    testFormat.hostApiSpecificStreamInfo = nullptr;
     for (int i = 0; i < numDevices; i++) {
         const PaDeviceInfo *deviceInfo;
         deviceInfo = Pa_GetDeviceInfo(i);
@@ -84,7 +84,7 @@ SoundCardSetup::SoundCardSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDia
         }
 
         // test for support of chosen sample rate
-        PaError err = Pa_IsFormatSupported(&testFormat, NULL, settings.value(s_sdr_sound_sample_freq,
+        PaError err = Pa_IsFormatSupported(&testFormat, nullptr, settings.value(s_sdr_sound_sample_freq,
                                                                              s_sdr_sound_sample_freq_def).toInt());
         if (err != paNoError) ok = false;
         if (ok) {

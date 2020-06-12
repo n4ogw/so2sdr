@@ -32,7 +32,7 @@ class MultDisplay : public QTextEdit
     Q_OBJECT
 
 public:
-    MultDisplay(QWidget *parent = Q_NULLPTR);
+    MultDisplay(QWidget *parent = nullptr);
     void setGridMode(bool);
     void drawGrids();
     void updateMults();

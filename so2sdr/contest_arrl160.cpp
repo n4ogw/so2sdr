@@ -126,7 +126,7 @@ QByteArray ARRL160::prefillExchange(Qso *qso)
 
 unsigned int ARRL160::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return(2);  // show second field
 }
 
 int ARRL160::Score() const

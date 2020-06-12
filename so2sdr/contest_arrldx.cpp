@@ -84,7 +84,7 @@ void ARRLDX::addQso(Qso *qso)
  */
 QByteArray ARRLDX::prefillExchange(Qso *qso)
 {
-    Q_UNUSED(qso);
+    Q_UNUSED(qso)
     return("");
 }
 
@@ -98,7 +98,7 @@ int ARRLDX::numberField() const
 
 unsigned int ARRLDX::rcvFieldShown() const
 {
-    return(1+2);  // show first and second fields
+    return(2);  // show second field
 }
 
 void ARRLDX::setupContest(QByteArray MultFile[MMAX], const Cty *cty)
