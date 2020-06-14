@@ -463,6 +463,10 @@ bool UDPReader::decode(QByteArray msg,QByteArray &call,QByteArray &grid)
                     (list.last().at(2) >= '0' && list.last().at(2) <= '9') &&
                     (list.last().at(3) >= '0' && list.last().at(3) <= '9')) {
                 call=list.at(list.size()-2);
+                // XXXX XXXX R GRID in contest mode?
+                if (list.size()==4 && call=="R") {
+                    call=list.at(1);
+                }
                 grid=list.last();
                 ret=true;
             }
