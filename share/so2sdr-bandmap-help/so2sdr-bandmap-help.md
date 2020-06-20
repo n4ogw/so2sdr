@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.3
+## So2sdr-bandmap Help Version 2.5.4
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.4 (06/20/2020)
+
+* fix bugs with WSJTX interface; add dislay of sequence information. Double clicking on a call now sets the correct sequence
+* fix dupe status of rovers in June VHF contest logged from WSJTX
 
 ## version 2.5.3 (06/11/2020)
 

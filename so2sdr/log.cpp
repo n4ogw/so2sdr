@@ -436,8 +436,8 @@ void Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
         }
         // if qso already has an index number, only dupe check with qsos before this one. This
         // allows isDupe to work when called to redupe an existing log
-        if (qso->nr > 0) {
-            query.append(" and nr < "+QString::number(qso->nr));
+        if (qso->number > 0) {
+            query.append(" and nr < "+QString::number(qso->number));
         }
         m.setQuery(query);
         while (m.canFetchMore()) {
@@ -480,8 +480,8 @@ void Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
                 qso->dupe=false;
                 return;
             }
-            if (qso->nr > 0) {
-                query.append(" and nr < "+QString::number(qso->nr));
+            if (qso->number > 0) {
+                query.append(" and nr < "+QString::number(qso->number));
             }
         }
         m.setQuery(query);
@@ -1008,7 +1008,7 @@ void Log::rescore()
         tmp[1] = m.record(i).value("rcv2").toString().toLatin1();
         tmp[2] = m.record(i).value("rcv3").toString().toLatin1();
         tmp[3] = m.record(i).value("rcv4").toString().toLatin1();
-        tmpqso.nr=m.record(i).value("nr").toInt();
+        tmpqso.number=m.record(i).value("nr").toInt();
 
         for (int j = 0; j < contest->nExchange(); j++) {
             tmpqso.exch = tmpqso.exch + tmp[j] + " ";

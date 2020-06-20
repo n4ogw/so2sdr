@@ -21,6 +21,7 @@
 #include <QColor>
 #include <QDataStream>
 #include <QDateTime>
+#include <QNetworkDatagram>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -56,7 +57,8 @@ UDPReader::UDPReader(int rig,QSettings &cs,QObject *parent) : QObject(parent),se
         QSqlQuery query(db);
         QString queryStr;
         queryStr.append("CREATE TABLE IF NOT EXISTS wsjtxcalls (`Call` TEXT PRIMARY KEY NOT NULL, `Grid` TEXT, `Age` INT, "
-                        "`SNR` INT,`Freq` INT,`RX` INT,`last` INT,`dupe` BOOLEAN, `mult` BOOLEAN)");
+                        "`SNR` INT,`Freq` INT,`RX` INT,`last` INT,`dupe` BOOLEAN, `mult` BOOLEAN,`Seq` INT,`Msg` TEXT,"
+                        "`Time` TEXT,`Dt` REAL,`Mode` TEXT,`Conf` BOOLEAN)");
         query.exec(queryStr);
         queryStr="CREATE UNIQUE INDEX idx_call ON wsjtxcalls (call)";
         query.exec(queryStr);
@@ -71,8 +73,7 @@ UDPReader::UDPReader(int rig,QSettings &cs,QObject *parent) : QObject(parent),se
         model->setHeaderData(WSJTX_SQL_COL_FREQ,Qt::Horizontal,"Freq");
         model->setHeaderData(WSJTX_SQL_COL_RX,Qt::Horizontal,"RX");
         model->setHeaderData(WSJTX_SQL_COL_LAST,Qt::Horizontal,"Last");
-        model->setHeaderData(WSJTX_SQL_COL_DUPE,Qt::Horizontal,"Dupe");
-        model->setHeaderData(WSJTX_SQL_COL_MULT,Qt::Horizontal,"Mult");
+        model->setHeaderData(WSJTX_SQL_COL_MULT,Qt::Horizontal,"Seq");
     } else {
         qDebug("ERROR: wsjtx call database could not be opened");
     }
@@ -88,7 +89,7 @@ UDPReader::~UDPReader()
  */
 void UDPReader::stop()
 {
-    usocket.close();
+    usocket.abort();
     if (usocket.state() != QAbstractSocket::UnconnectedState) {
         usocket.waitForDisconnected(1000);
     }
@@ -107,11 +108,8 @@ void UDPReader::callClicked(const QModelIndex &index)
 void UDPReader::enable(bool b)
 {
     if (b) {
-        if (usocket.isOpen()) {
-            usocket.close();
-            if (usocket.state() != QAbstractSocket::UnconnectedState) {
-                usocket.waitForDisconnected(1000);
-            }
+        if (isOpen) {
+            usocket.abort();
         }
         if (!usocket.bind(settings.value(s_wsjtx_udp[_nrig],s_wsjtx_udp_def[_nrig]).toInt(), QAbstractSocket::ReuseAddressHint | QAbstractSocket::ShareAddress)) {
             emit(error("UDPsocket: UDP connection to wsjtx failed"));
@@ -120,12 +118,10 @@ void UDPReader::enable(bool b)
         }
         connect(&usocket,SIGNAL(readyRead()),this,SLOT(readDatagram()));
         isOpen=true;
-            } else {
-        usocket.close();
-        if (usocket.state() != QAbstractSocket::UnconnectedState) {
-            usocket.waitForDisconnected(1000);
-        }
+    } else {
+        usocket.abort();
         isOpen=false;
+        disconnect(&usocket,SIGNAL(readyRead()),nullptr,nullptr);
     }
 }
 
@@ -274,21 +270,26 @@ void UDPReader::redupe()
     }
 }
 
-/* read data from udp port and process it
- * only selected message from wsjtx are supported
+/*! Read datagrams from the udp socket
  */
 void UDPReader::readDatagram()
 {
-    qint64 udp_size;
-    udp_size=usocket.pendingDatagramSize();
-    QByteArray data;
-    data.resize(udp_size);
-    if (usocket.readDatagram(data.data(),udp_size,&wsjtxAddress,&wsjtxPort)==-1) {
-        emit(error("UDPReader: UDP read failed"));
-        return;
+    while (usocket.hasPendingDatagrams()) {
+        QNetworkDatagram datagram = usocket.receiveDatagram();
+        processDatagram(datagram);
     }
-    // experimental read from new wsjtx UDP. See file NetworkMessage.hpp in wsjt-x
-    QDataStream in(data);
+}
+
+/*! process wsjtx datagrams
+ *  See file NetworkMessage.hpp in wsjt-x source code for info on format
+ */
+void UDPReader::processDatagram(QNetworkDatagram datagram)
+{
+    wsjtxAddress=datagram.senderAddress();
+    if (datagram.senderPort()>=0) {
+        wsjtxPort=static_cast<quint16>(datagram.senderPort());
+    }
+    QDataStream in(datagram.data());
     quint32 i1;
     in >> i1 >> schema;
     if (i1==magic) {
@@ -335,12 +336,53 @@ void UDPReader::readDatagram()
             quint32 delta;
             in >> delta;
             QByteArray mode,msg;
-            in >> mode >> msg;
+            bool conf;
+            in >> mode >> msg >> conf;
+            // figure out which sequence
+            int s=time.second();
+            int seq=1;
+            switch (mode.at(0)) {
+            case '~': // FT8
+                // 1st = 0,30 sec
+                // 2nd = 15,45 sec
+                if (!(s % 30)) {
+                    seq=1;
+                } else {
+                    seq=2;
+                }
+                break;
+            case '+': // FT4
+                // 1st = 0,15,30,45
+                if (!(s % 15)) {
+                    seq=1;
+                } else {
+                    seq=2;
+                }
+                break;
+            case '&': // MSK144
+                // default 1st=0,30
+                // sequence time is user configurable so this can fail
+                if (!(s % 15)) {
+                    seq=1;
+                } else {
+                    seq=2;
+                }
+                break;
+            case '#': case ':': case '$': case '@': // JT4,JT9,JT65, QRA64
+                // 60 sec sequence
+                int m=time.minute();
+                if (!(m % 2)) {
+                    seq=1;
+                } else {
+                    seq=2;
+                }
+                break;
+            }
             QByteArray call,grid;
             call.clear();
             grid.clear();
-            int rx=1;
             if (decode(msg,call,grid)) {
+                int rx=1;
                 Qso qso;
                 qso.call=call;
                 qso.band=_band;
@@ -377,8 +419,8 @@ void UDPReader::readDatagram()
                     highlightCall(qso.call,Qt::white,Qt::black);
                 }
                 query.clear();
-                query.prepare("REPLACE INTO wsjtxcalls (call,snr,grid,freq,rx,age,last,dupe,mult)"
-                              "VALUES (:call,:snr,:grid,:freq,:rx,:age,:last,:dupe,:mult)");
+                query.prepare("REPLACE INTO wsjtxcalls (call,snr,grid,freq,rx,age,last,dupe,mult,seq,msg,time,dt,mode,conf)"
+                              "VALUES (:call,:snr,:grid,:freq,:rx,:age,:last,:dupe,:mult,:seq,:msg,:time,:dt,:mode,:conf)");
                 query.bindValue(":call",call);
                 query.bindValue(":grid",grid);
                 query.bindValue(":snr",snr);
@@ -386,7 +428,13 @@ void UDPReader::readDatagram()
                 query.bindValue(":rx",rx);
                 query.bindValue(":age",0);
                 query.bindValue(":dupe",qso.dupe);
+                query.bindValue(":seq",seq);
                 query.bindValue(":mult",qso.isnewmult[0] || qso.isnewmult[1]);
+                query.bindValue(":msg",msg);
+                query.bindValue(":time",time.toString());
+                query.bindValue(":dt",dt);
+                query.bindValue(":mode",mode);
+                query.bindValue(":conf",conf);
                 // use current time rather than time from wsjtx; prevents problems when day changes
                 query.bindValue(":last",QDateTime::currentDateTimeUtc().toSecsSinceEpoch());
                 query.exec();
@@ -448,39 +496,42 @@ void UDPReader::readDatagram()
  * returns true if at least call could be decoded
  * will fail for station in grid "RR73"
  *
+ * Currently works for general operating and NA VHF contest exchanges
+ *
+ * @todo These will need revising for special contests in wsjtx (RTTY Roundup, Field Day, etc)
+ * In that case, may need to get special exchange mode from wsjtx and adjust decoding to match
  */
 bool UDPReader::decode(QByteArray msg,QByteArray &call,QByteArray &grid)
 {
     bool ret=false;
     QList<QByteArray> list=msg.split(' ');
-    if (list.size()>=3) {
+    // signal report  XXXXX XXXXX R+05
+    // grid unknown, just return call
+    if (list.size()==3 && (list.last().contains('+') || list.last().contains('-'))) {
+        call=list.at(list.size()-2);
+        grid.clear();
+        ret=true;
+    } else if (list.size()>=3 && list.last().size() == 4 && list.last() != "RR73") {
         // look for last element being grid square
         // check to see if this is a valid grid square. This fails in the (unlikely) case
         // there is someone in grid RR73!
-        if (list.last().size() == 4 && list.last() != "RR73") {
-            if ((list.last().at(0) >= 'A' && list.last().at(0) <= 'R') &&
-                    (list.last().at(1) >= 'A' && list.last().at(1) <= 'R') &&
-                    (list.last().at(2) >= '0' && list.last().at(2) <= '9') &&
-                    (list.last().at(3) >= '0' && list.last().at(3) <= '9')) {
-                call=list.at(list.size()-2);
-                // XXXX XXXX R GRID in contest mode?
-                if (list.size()==4 && call=="R") {
-                    call=list.at(1);
-                }
-                grid=list.last();
-                ret=true;
+        if ((list.last().at(0) >= 'A' && list.last().at(0) <= 'R') &&
+                (list.last().at(1) >= 'A' && list.last().at(1) <= 'R') &&
+                (list.last().at(2) >= '0' && list.last().at(2) <= '9') &&
+                (list.last().at(3) >= '0' && list.last().at(3) <= '9')) {
+            call=list.at(list.size()-2);
+            // XXXX XXXX R GRID in NA Contest mode?
+            if (list.size()==4 && call=="R") {
+                call=list.at(1);
             }
-        } else if (list.size()==3 && (list.last().contains('+') || list.last().contains('-'))) {
-            // station giving signal report; grid unknown, just return call
-            call=list.at(list.size()-2);
-            grid.clear();
-            ret=true;
-        } else if (list.size()==3 && (list.last()=="73" || list.last()=="RR73" || list.last()=="RRR")) {
-            // station sending 73, RR73, RRR; grid unknown, just return call
-            call=list.at(list.size()-2);
-            grid.clear();
+            grid=list.last();
             ret=true;
         }
+    } else if (list.size()==3 && (list.last()=="73" || list.last()=="RR73" || list.last()=="RRR")) {
+        // station sending 73, RR73, RRR; grid unknown, just return call
+        call=list.at(list.size()-2);
+        grid.clear();
+        ret=true;
     }
     if (call=="<...>") {
         call.clear();
@@ -503,7 +554,7 @@ bool UDPReader::decode(QByteArray msg,QByteArray &call,QByteArray &grid)
 void UDPReader::tcpError(QAbstractSocket::SocketError err)
 {
     Q_UNUSED(err)
-    QString errstring="UDReader: "+usocket.errorString();
+    QString errstring="UDPReader: "+usocket.errorString();
     qDebug("%s",errstring.toLatin1().data());
 }
 
@@ -518,10 +569,16 @@ void UDPReader::sendCall(QByteArray call)
         QByteArray data;
         WsjtxMessage out(&data,QIODevice::WriteOnly);
         out.setSchema(schema);
-        out.startMessage(Configure);
-        out << QByteArray("") << static_cast<quint32>(0);
-        out << QByteArray("") << static_cast<bool>(false) << static_cast<quint32>(0) << static_cast<quint32>(0);
-        out << call << query.value(WSJTX_SQL_COL_GRID).toByteArray() << static_cast<bool>(true);
+        out.startMessage(Reply);
+        out << QTime::fromString(query.value(WSJTX_SQL_COL_TIME).toString())
+            << query.value(WSJTX_SQL_COL_SNR).toInt()
+            << query.value(WSJTX_SQL_COL_DT).toDouble()
+            << query.value(WSJTX_SQL_COL_FREQ).toUInt()
+            << query.value(WSJTX_SQL_COL_MODE).toByteArray()
+            << query.value(WSJTX_SQL_COL_MSG).toByteArray()
+            << static_cast<bool>(false)
+            << static_cast<quint8>(0)
+            << query.value(WSJTX_SQL_COL_CONF).toBool();
         usocket.writeDatagram(data,wsjtxAddress,wsjtxPort);
     }
 }

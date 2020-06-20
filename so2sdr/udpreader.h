@@ -26,6 +26,7 @@
 #include <QIODevice>
 #include <QObject>
 #include <QModelIndex>
+#include <QNetworkDatagram>
 #include <QSettings>
 #include <QSqlTableModel>
 #include <QString>
@@ -45,7 +46,13 @@ const int WSJTX_SQL_COL_RX = 5;
 const int WSJTX_SQL_COL_LAST = 6;
 const int WSJTX_SQL_COL_DUPE = 7;
 const int WSJTX_SQL_COL_MULT = 8;
-const int WSJTX_SQL_COL_NCOL = 9;
+const int WSJTX_SQL_COL_SEQ = 9;
+const int WSJTX_SQL_COL_MSG = 10;
+const int WSJTX_SQL_COL_TIME = 11;
+const int WSJTX_SQL_COL_DT = 12;
+const int WSJTX_SQL_COL_MODE = 13;
+const int WSJTX_SQL_COL_CONF = 14;
+const int WSJTX_SQL_COL_NCOL = 15;
 
 // from wsjtx NetworkMessage.hpp
 enum WsjtxMessageType
@@ -124,6 +131,7 @@ private:
     void clearColors();
     bool decode(QByteArray msg, QByteArray &call, QByteArray &grid);
     void highlightCall(QByteArray call,QColor bg,QColor fg);
+    void processDatagram(QNetworkDatagram datagram);
     void sendCall(QByteArray call);
 };
 

@@ -201,8 +201,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     wsjtx[1]=new WsjtxCallDialog(*settings,sizes,1,this);
     connect(wsjtx[0],SIGNAL(wsjtxQso(Qso *)),this,SLOT(logWsjtx(Qso *)));
     connect(wsjtx[1],SIGNAL(wsjtxQso(Qso *)),this,SLOT(logWsjtx(Qso *)));
-  //  wsjtx[0]->enable(settings->value(s_wsjtx_enable[0],s_wsjtx_enable_def).toBool());
-  //  wsjtx[1]->enable(settings->value(s_wsjtx_enable[1],s_wsjtx_enable_def).toBool());
     wsjtx[0]->replay();
     wsjtx[1]->replay();
     settings->beginGroup("WsjtxWindow1");
@@ -3960,12 +3958,15 @@ void So2sdr::checkCtyVersion()
  */
 void So2sdr::logWsjtx(Qso *qso)
 {
+    bool qsy;
+    int  pp = log->idPfx(qso, qsy);
+    Q_UNUSED(pp)
     fillSentExch(qso,nrReserved[qso->nr]);
     qso->externalQso=true;
     qso->valid=log->validateExchange(qso);
     qso->mode=cat[qso->nr]->mode();
     qso->modeType=getAdifModeType(qso->adifMode);
-    qso->dupe = logPartial(qso->nr, qso->call, true, qso) && (csettings->value(c_dupemode,c_dupemode_def).toInt() < NO_DUPE_CHECKING);
+    log->isDupe(qso, log->dupeCheckingByBand(), false);
     addQso(qso);
     rateCount[ratePtr]++;
     nrSent = log->rowCount()+1;

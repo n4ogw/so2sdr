@@ -348,6 +348,7 @@ void BandmapInterface::setBandmapState(int nr,QProcess::ProcessState state)
             emit(bandmap2state(false));
             break;
         }
+        break;
     case QProcess::Starting:
         break;
     case QProcess::Running:

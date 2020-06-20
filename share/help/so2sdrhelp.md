@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.3
+## SO2SDR Help file version 2.5.4
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -974,6 +974,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.4 (06/20/2020)
+
+* fix bugs with WSJTX interface; add dislay of sequence information. Double clicking on a call now sets the correct sequence
+* fix dupe status of rovers in June VHF contest logged from WSJTX
 
 ## version 2.5.3 (06/11/2020)
 

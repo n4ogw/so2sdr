@@ -29,6 +29,7 @@ WsjtxCallDialog::WsjtxCallDialog(QSettings &s,uiSize sizes, int nrig, QWidget *p
     tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     tableView->verticalHeader()->setDefaultSectionSize(qRound(sizes.height));
     tableView->setSelectionMode(QAbstractItemView::NoSelection);
+    tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     adjustSize();
     _nrig=nrig;
     setWindowTitle("WSJT-X Radio "+QString::number(_nrig+1));
@@ -44,24 +45,29 @@ WsjtxCallDialog::WsjtxCallDialog(QSettings &s,uiSize sizes, int nrig, QWidget *p
     tableView->setItemDelegateForColumn(WSJTX_SQL_COL_GRID,delegate);
     tableView->setItemDelegateForColumn(WSJTX_SQL_COL_AGE,delegate);
     tableView->setItemDelegateForColumn(WSJTX_SQL_COL_SNR,delegate);
-    tableView->setItemDelegateForColumn(WSJTX_SQL_COL_CALL,delegate);
     tableView->setItemDelegateForColumn(WSJTX_SQL_COL_FREQ,delegate);
     tableView->setItemDelegateForColumn(WSJTX_SQL_COL_RX,delegate);
     tableView->setItemDelegateForColumn(WSJTX_SQL_COL_LAST,delegate);
-    tableView->setItemDelegateForColumn(WSJTX_SQL_COL_DUPE,delegate);
-    tableView->setItemDelegateForColumn(WSJTX_SQL_COL_MULT,delegate);
+    tableView->setItemDelegateForColumn(WSJTX_SQL_COL_SEQ,delegate);
     proxy=new QSortFilterProxyModel(this);
     proxy->setSourceModel(reader->tableModel());
     tableView->setModel(proxy);
     tableView->setColumnHidden(WSJTX_SQL_COL_LAST,true);
     tableView->setColumnHidden(WSJTX_SQL_COL_DUPE,true);
     tableView->setColumnHidden(WSJTX_SQL_COL_MULT,true);
+    tableView->setColumnHidden(WSJTX_SQL_COL_MSG,true);
+    tableView->setColumnHidden(WSJTX_SQL_COL_TIME,true);
+    tableView->setColumnHidden(WSJTX_SQL_COL_DT,true);
+    tableView->setColumnHidden(WSJTX_SQL_COL_MODE,true);
+    tableView->setColumnHidden(WSJTX_SQL_COL_CONF,true);
+    tableView->setColumnWidth(WSJTX_SQL_COL_RX,qRound(sizes.width*5));
+    tableView->setColumnWidth(WSJTX_SQL_COL_SEQ,qRound(sizes.width*6));
+    tableView->setColumnWidth(WSJTX_SQL_COL_AGE,qRound(sizes.width*5));
+    tableView->setColumnWidth(WSJTX_SQL_COL_SNR,qRound(sizes.width*6));
+    tableView->setColumnWidth(WSJTX_SQL_COL_GRID,qRound(sizes.width*8));
+    tableView->setColumnWidth(WSJTX_SQL_COL_FREQ,qRound(sizes.width*8));
     tableView->setSortingEnabled(true);
-    tableView->resizeRowsToContents();
-    int width = tableView->horizontalHeader()->length();
-    setFixedWidth(width);
     connect(tableView,SIGNAL(doubleClicked(const QModelIndex &)),reader,SLOT(callClicked(const QModelIndex &)));
-
 }
 
 WsjtxCallDialog::~WsjtxCallDialog()
@@ -111,7 +117,4 @@ void WsjtxCallDialog::setFreq(double f)
 void WsjtxCallDialog::enable(bool b)
 {
     reader->enable(b);
-    tableView->resizeRowsToContents();
-    int width = tableView->horizontalHeader()->length();
-    setFixedWidth(width);
 }

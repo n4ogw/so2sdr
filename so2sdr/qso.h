@@ -46,6 +46,7 @@ public:
     int        newmult[MMAX];
     bool       isnewmult[MMAX];
     int        nr;
+    int        number;
     int        pts;
     QByteArray call;
     QByteArray *rcv_exch;

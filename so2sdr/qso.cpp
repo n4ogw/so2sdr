@@ -51,6 +51,7 @@ Qso::Qso(int n)
     zone=0;
     distance=-1;
     nr=0;
+    number=0;
     n_exchange    = n;
     exchange_type = new FieldTypes[n_exchange];
     for (int i = 0; i < n_exchange; i++) exchange_type[i] = General;
@@ -96,6 +97,7 @@ void Qso::clear()
     band=0;
     bandColumn=0;
     nr=0;
+    number=0;
     call.clear();
     exch.clear();
     country_name.clear();
