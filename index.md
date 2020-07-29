@@ -9,7 +9,7 @@ title: "Introduction"
 A ham radio contest log program that features a software-defined radio (SDR) 
 bandscope.  The main ideas behind the program are described in an article
 in May/June 2013 National Contest Journal [NCJ](http://ncjweb.com).
-The program is primarily developed for Linux.
+The program is  developed in Linux.
 
 ### News
 
@@ -48,8 +48,9 @@ AFE822x SDR-Net.
 * So2sdr is primarily designed for unassisted operating (it
 can connect to telnet dxclusters however).
 
-* There is currently no support for digital modes. The program can
-however read qso information from WSJT-X.
+* There is currently no support for digital modes, with the exception
+of WSJTX modes in VHF contests.
+
 
 * The number of different contests supported is small so far.
 
