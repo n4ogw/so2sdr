@@ -6,6 +6,27 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+## version 2.5.4 (06/20/2020)
+
+* fix bugs with WSJTX interface; add dislay of sequence information. Double clicking on a call now sets the correct sequence
+* fix dupe status of rovers in June VHF contest logged from WSJTX
+
+## version 2.5.3 (06/11/2020)
+
+* change in log file format. Logs from older version cannot be opened, must be imported from Cabrillo
+* add new WSJTX window showing decoded calls and dupe/mult status. This is only fully functional for ARRL June VHF contest
+* many code cleanups and small bug fixes
+
+## version 2.5.2 (04/28/2020)
+
+* fix dupe checking in multi-mode contests
+* fix cabrillo import
+* allow changing mode when editing qso
+
+## version 2.5.1 (11/23/2019)
+
+* minor fixes to UI and fonts
+
 ## version 2.5.0 (09/14/2019)
 
 * add two keyboard support
