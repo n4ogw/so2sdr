@@ -1,1 +1,1 @@
-../_posts/2015-07-31-setup.md
+/home/tclay/misc/radio/so2sdr/gh-pages/_posts/2015-07-31-setup.md

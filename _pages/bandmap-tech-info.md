@@ -1,1 +1,1 @@
-../_posts/2015-07-31-bandmap-tech-info.md
+/home/tclay/misc/radio/so2sdr/gh-pages/_posts/2015-07-31-bandmap-tech-info.md
