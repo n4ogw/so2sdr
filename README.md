@@ -1,7 +1,7 @@
 # So2sdr
 
 A ham radio contest logging program incorporating software-defined
-radio (SDR) spectral displays. Runs under Linux and Windows. Version
+radio (SDR) spectral displays. In runs on Linux. Version
 2 has two separate executables: 1) so2sdr, the logging program
 and 2) so2sdr-bandmap, the SDR spectral display. So2sdr-bandmap
 can be used separately from so2sdr.
@@ -19,7 +19,7 @@ Copyright 2010-2020 R. Torsten Clay N4OGW
 ------------------------
 
 
-## Install instructions (Linux)
+## Install instructions
 
 You will need the following development libraries installed: Qt (version 5), FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
 
