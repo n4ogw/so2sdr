@@ -83,7 +83,7 @@
         <string>LED indicators to show audio and transmit focus</string>
        </property>
        <property name="text">
-        <string>Focus Indictors</string>
+        <string>Focus Indicators</string>
        </property>
       </widget>
      </item>
