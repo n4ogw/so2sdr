@@ -99,7 +99,6 @@
   <li><a href="#notes">Operating notes</a></li>
   <li><a href="#keyref">Key reference</a></li>
   <li><a href="#macros">List of macros</a></li>
-  <li><a href="#ssb">Voice keyer setup</a></li>
 </ul>
 
 <hr />
@@ -164,9 +163,8 @@ Screenshot files are placed in the same directory as the log file.</li>
 <h3 id="cwssb-message-macros">CW/SSB Message macros</h3>
 
 <p>Two separate sets of macros are stored by the program, one for CW
-and one for SSB. So2sdr currently doesn’t have a built-in way to record voice
-messages, but external devices can be used with CAT or OTRSP
-macros (see below).</p>
+and one for voice. In voice modes external scripts (by default
+pulseaudio and gstreamer) are used to play and record messages.</p>
 
 <ul>
   <li>{CALL} :     callsign</li>
@@ -224,83 +222,12 @@ the “Call Updated QSL” message from being sent when not needed.</li>
   <li>{PTTON1} {PTTOFF1} : turn radio 1 PTT on/off</li>
   <li>{PTTON2} {PTTOFF2} : turn radio 2 PTT on/off</li>
   <li>{PTTONR2} {PTTOFFR2} : turn inactive radio PTT on/off</li>
+  <li>{PLAY} : play a voice message. Followed by a string which is the filename
+that will be played. {PLAY}call will play the file call.wav</li>
+  <li>{RECORD} : record a voice message. Followed by a string which is the filename
+that will be recorded. {RECORD}call will record call.wav</li>
+  <li>{2KBD} : toggle two keyboard mode</li>
 </ul>
-
-<hr />
-
-<p><a name="ssb"></a></p>
-<h3 id="voice-keyer-setup">Voice keyer setup</h3>
-
-<p>So2sdr can record and play voice messages through external scripts. The default
-scripts are located in /usr/local/share/so2sdr/scripts, and set up to use
-the Pulseaudio sound system. Here is how to set it up:</p>
-
-<ul>
-  <li>
-    <p>The microphone should be connected to the sound card mic input.
-The sound card line out should be connected to the radio mic or line in. For so2r
-(two radios), the same output from the sound card is fed to both radios; PTT
-will be mapped to the correct radio for transmitting.</p>
-  </li>
-  <li>
-    <p>The pulseaudio loopback module needs to be loaded so the mic is looped back
-to the soundcard output. This can be
-done with the following command:</p>
-
-    <p>pactl load-module module-loopback latency_msec=1</p>
-
-    <p>You can also add “load-module module-loopback latency_msec=1” to the file
-  /etc/pulse/default.pa to  load this module automatically on boot.</p>
-  </li>
-  <li>
-    <p>The voice keyer scripts require that the hamlib rigctld is used to
-control the radios in order to control the radio PTT line. The direct
-serial hamlib control built into so2sdr could be used if the radio is
-in VOX mode. A typical command line to start rigctld looks like:</p>
-
-    <p>rigctld –model=229 –port=4532 –rig-file=/dev/ttyS0</p>
-
-    <p>The second radio needs to use a different port such as 4534.</p>
-  </li>
-  <li>
-    <p>You may need to edit the settings in the file ~/.so2sdr/wav/wav_settings.
-The “mic” setting here is the number of the pulseaudio input device,
-which you can find using “pactl list short sources”. There are also
-settings for the rigctld IP address and IP port numbers for radio 0
-and radio 1.</p>
-  </li>
-  <li>
-    <p>For voice modes there are two sets of macros: F1-F12 for CQ mode, and
-F1-F12 for exchange/S&amp;P mode. To record a message, press Ctrl+Shift and the
-function key. This will activate the macro under the corresponding “REC” setting.
-Some other macros have no corresponding key. For example, the Cancel macro
-is sent when Esc is pressed; other macros are for sending the callsign
-in S&amp;P mode and other ESM functions. These can be recorded using the REC
-pushbutton in the “SSB Messages” dialog.</p>
-
-    <ul>
-      <li>
-        <p>A typical play message macro would look like this:</p>
-
-        <p>{SCRIPTNR}PLAY-MESSAGE # 1{\SCRIPTNR}</p>
-
-        <p>This will play the message in the file “1.WAV” located in the ~/.so2sdr/wav
-  directory. ‘#’ will be either 0 or 1 corresponding to the active radio.</p>
-      </li>
-      <li>
-        <p>A typical record message macro would look like this:</p>
-
-        <p>{SCRIPT}RECORD-MESSAGE 1{\SCRIPT}</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>As of version 2.1.0, basic CQ and S&amp;P operation with voice messages works,
-but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.</p>
-  </li>
-</ul>
-
-<p><a href="#top">Return to top</a></p>
 
 <hr />
 
@@ -401,6 +328,9 @@ are editable: time, callsign, sent exchange, and received exchange. The
 qso points (if displayed for that contest) will be recalculated 
 automatically.</p>
 
+<p>You can also bring up a more complete edit window by clicking on
+a row in the logbook and pressing control-e.</p>
+
 <p>To search for a call (or partial call) in the log, enter a call
 fragment in the callsign window and press ctrl-F. ESC clears the 
 search results.</p>
@@ -435,6 +365,9 @@ you can use the “-“ or “=” keys to mark that frequency as a dupe
 without having to enter the whole callsign. This can save a lot
 of typing and allow one to check a 2nd band for new stations
 very quickly.</p>
+
+<p>An alternate way to work SO2R with the program is using two
+keyboards. These need to be set up in Config-&gt;General Settings.</p>
 
 <h4 id="sprintsprintso2r">Sprint/Sprint+SO2R</h4>
 

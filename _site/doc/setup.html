@@ -128,8 +128,7 @@ number of new ways.</p>
 <p>If you are going to use the SDR bandmap, you need to configure this
 first before so2sdr.  The first time either program is run it will
 create a directory to store user settings. The default location is
-~/.so2sdr (Linux) or C:/Documents and Settings/Username/so2sdr
-(Windows). In this directory, the default configuration file for
+~/.so2sdr. In this directory, the default configuration file for
 so2sdr is so2sdr.ini, and the default configuration file for
 so2sdr-bandmap is so2sdr-bandmap.ini. If you are using two copies
 of the bandmap for SO2R, you will need to make two separate
@@ -182,7 +181,7 @@ radio, and so2sdr will detect when each has been started.</p>
   <li>start button</li>
   <li>stop button</li>
   <li>setup button</li>
-  <li>quit buton</li>
+  <li>quit button</li>
   <li>Mark signals: if checked, so2sdr-bandmap will peak-detect signals,
 placing a dot by each detected signal. This can be used to automatically
 tune the radio to the next signal or find the largest open space
@@ -245,8 +244,6 @@ are placed on either side of the main window.</li>
 <p><img src="../images/soundcard-setup.png" alt="Soundcard setup" /></p>
 
 <ul>
-  <li>Type: for Linux there is only one option, ALSA. In Windows there are several
-different sound API’s.</li>
   <li>Device: So2sdr-bandmap tries to test which available sound devices
 will work with the program, and puts a checkmark next to these. This
 check is not 100% effective however. Normally you want to use the line
@@ -363,7 +360,7 @@ to fill out default exchanges in various contests.</li>
 
 <hr />
 
-<h4 id="settings-dialog">Settings Dialog</h4>
+<h4 id="general-settings-dialog">General Settings Dialog</h4>
 
 <p>This dialog contains various settings that affect program
 behavior.</p>
@@ -373,7 +370,7 @@ behavior.</p>
 <ul>
   <li>Focus QSY Radio : switch audio focus to the second
 radio while the other radio is sending.</li>
-  <li>Audio and Transmit Focus Indicators : small “LED”
+  <li>Focus indicators : small “LED”
 indicators that show the state of RX and TX focus.</li>
   <li>Send exchange and log (S/P) : In Search and Pounce
 mode, if this setting is checked, the QSO will be immediately
@@ -387,35 +384,50 @@ of characters have been entered.</li>
   <li>Auto Send “Auto” Character Count : if using
 Auto mode above, start sending when this number of
 characters have been entered.</li>
+  <li>Auto CQ repeat : delay between repeating CQ’s (start with alt-Q)</li>
   <li>Dueling CQ Delay : Dueling CQ between the two
 radios is activated with Crtl- (Control Minus). This setting
 adds an extra delay before switching radios.</li>
+  <li>WSJT-X ports: connect to WSJT-X UDP server to receive decodes.
+in WSJT-X “Accept UDP requests” should be checked. Two different
+WSJT-X instances can be connected, one for each radio.</li>
+  <li>Two keyboard mode: in this mode the Keyboard 1 device will type
+into the Radio 1 entry boxes, and Keyboard 2 into the Radio 2 boxes.
+If  “Queue messages” is checked (recommended), macro keys that are pressed
+will be stored and played when the other radio has finished transmitting.
+See in-program help file for more information.</li>
 </ul>
 
 <hr />
 
-<h4 id="radio-and-so2r-switching-setup">Radio and SO2R switching setup</h4>
+<h4 id="radio-setup">Radio setup</h4>
 
-<p><img src="../images/radio_dialog.png" alt="Radio/SO2R Dialog" title="Radio/SO2R Dialog" /></p>
+<p><img src="../images/radio_dialog.png" alt="Radio Dialog" title="Radio Dialog" /></p>
 
 <ul>
   <li>Radio control uses the Hamlib library. The current version
 being used is shown at the top.</li>
   <li>
     <p>Tabs 1 and 2 are for the two radios. The “Dummy” model
-can be used for testing when no radio is attached. Note that
-the PTT method setting is not currently used.</p>
+can be used for testing when no radio is attached.</p>
   </li>
   <li>Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
 You may have to add your username to a particular group to access
-these ports. Under Windows ports are COM1, COM2, …</li>
-  <li>
-    <p>When the radios are configured correctly, after
+these ports.</li>
+  <li>When the radios are configured correctly, after
 clicking “OK” in the radio dialog the “R1” and “R2”
 indicators at the bottom of the main window
-should say “ON” and turn black. Red here indicates a problem.</p>
-  </li>
+should say “ON” and turn black. Red here indicates a problem.</li>
+</ul>
+
+<hr />
+
+<h4 id="so2r-devices">SO2R devices</h4>
+
+<p><img src="../images/so2r_dialog.png" alt="SO2R Dialog" title="SO2R Dialog" /></p>
+
+<ul>
   <li>Three different methods are supported for switch audio
 and keying between the two radios:
     <ol>
@@ -424,7 +436,7 @@ and keying between the two radios:
       <li>Parallel port : This option toggles pins on the
    parallel port. To use this in Linux, you need the PPDEV
    kernel option, and your user name must be in the
-   correct group (usuall “lp”) to access the port.</li>
+   correct group (usually “lp”) to access the port.</li>
       <li>microHam : The microHam series of SO2R switches.</li>
     </ol>
   </li>
@@ -441,7 +453,7 @@ in a microHam box can also be used.</p>
 <p><img src="../images/winkey_dialog.png" alt="Winkey Dialog" title="Winkey Dialog" /></p>
 
 <ul>
-  <li>CW Output : if unchecked, no CW will be outputed.</li>
+  <li>CW Output : if unchecked, no CW will be outputted.</li>
   <li>Paddle sidetone : enables winkey sidetone only
 when sending with the paddle.</li>
   <li>Swap : swaps dit/dah paddle connections.</li>
@@ -500,9 +512,11 @@ and exchange entry lines from losing keyboard focus.</p>
 
 <hr />
 
-<h4 id="contest-settings">Contest Settings</h4>
+<h4 id="new-contest">New Contest</h4>
 
-<p>Starting a new contest: see File menu.</p>
+<p>Starting a new contest: see File menu. If a contest is already open,
+you will need to close and restart the program before starting a new
+contest.</p>
 
 <p><img src="../images/new_contest_dialog.png" alt="New Contest Dialog" title="New Contest Dialog" /></p>
 
@@ -513,8 +527,7 @@ If you have already operated this contest before, just make
 a copy of the “.cfg” file. This way you will not need to
 reconfigure CW macros and other settings again.</li>
   <li>The list of contests known by so2sdr is in the “contest_list.dat”
-file (in /usr/local/share/so2sdr/ under Linux, and in the
-same directory as the executable under Windows). Each line of 
+file in /usr/local/share/so2sdr/. Each line of 
 this file is of the format Displayed name, config file.</li>
   <li>Note that in some cases new contests can be easily added added to
 this list if they have rules that are similar to existing
@@ -554,14 +567,32 @@ to adjust the exchange. Some special considerations:</p>
 
 <hr />
 
+<h4 id="voice-macros">Voice Macros</h4>
+
+<p><img src="../images/voice_messages.png" alt="Voice Messages" title="Voice Messages" /></p>
+
+<ul>
+  <li>These are similar to CW macros, but are used when a radio
+is in a voice mode (SSB, FM, etc).</li>
+  <li>The first two tabs (CQ and EXC) do not normally need to be changed.
+These set up each key so that pressing the function key plays a
+recorded message, and pressing Control + Shift + function key
+starts/stops recording a message. Special macros used in CW
+mode can also be used here.</li>
+  <li>Play Scripts and Record Scripts : these are external commands
+that play and record WAV files. By default they are set up
+to use Pulseaudio and gstreamer.</li>
+</ul>
+
 <h4 id="contest-options">Contest options</h4>
 
 <p><img src="../images/contest_options.png" alt="Contest Options" title="Contest Options" /></p>
 
-<p>Most of these settings are set by default by the rules
-of the contest  chosen. Be careful changing them.</p>
+<p>These are settings specific to each contest.</p>
 
 <ul>
+  <li>Sent exchange : the number of boxes here depends on the contest</li>
+  <li>Mults by mode : if checked, mults count separately on different modes</li>
   <li>Mults by band: if checked, mults count on each band.</li>
   <li>Multimode : enable working multiple modes (not fully 
 implemented)</li>
@@ -578,7 +609,8 @@ Linux).</li>
   <li>Call history : if this is enabled, so2sdr will display
 contest exchanges saved in a history database file. This file
 is a SQLITE database file and can be edited/examined using a
-number of programs (I use sqlitebrowser).</li>
+number of programs (I use sqlitebrowser). The default location
+for these files is ~/.so2sdr</li>
   <li>Append Call history : append exchange history information
 to the database file as qso’s are logged. You can also import
 them after a contest using the option under the File menu.</li>

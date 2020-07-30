@@ -31,9 +31,9 @@ The program is  developed in Linux.
 
 * Two-radio (SO2R) support. Headphone and radio switching via parallel port 
 or [OTRSP](http://www.k1xm.org/OTRSP/) (Open two-radio switching protocol)
-USB devices
+USB devices. Support for using two keyboards.
 
-* Uses [hamlib](http://sourceforge.net/projects/hamlib/)  to control radios via serial port
+* Uses [hamlib](http://sourceforge.net/projects/hamlib/)  to control radios via serial port.
 
 * Supports soundcard based I/Q SDRs and some ethernet interface SDRs.
 This include the [Softrock](http://fivedash.com/) series,
@@ -41,7 +41,9 @@ This include the [Softrock](http://fivedash.com/) series,
 the [Afedri](http://www.afedri-sdr.com/) SDR, including the dual-receiver Afedri
 AFE822x SDR-Net.
 
-* Uses [Winkey](http://k1el.tripod.com/WhatisWK.html) for CW generation
+* Uses [Winkey](http://k1el.tripod.com/WhatisWK.html) for CW generation.
+
+* Interfaces with WSJT-X UDP server.
 
 ### Limitations
 
