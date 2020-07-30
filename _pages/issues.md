@@ -1,1 +1,1 @@
-/home/tclay/misc/radio/so2sdr/gh-pages/_posts/2015-08-27-issues.md
+../_posts/2015-08-27-issues.md
