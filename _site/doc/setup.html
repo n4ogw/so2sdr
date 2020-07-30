@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
+                    <h4><a class="brand" href="/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
+    <li><a href="/">Home</a></li>
     
         
         
@@ -43,10 +43,7 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
+            <li data-order="1"><a href="/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -56,10 +53,7 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -69,13 +63,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
         
     
         
@@ -85,7 +79,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -102,22 +96,20 @@
 </div>
 
 <ul>
-<li><a href="#overview">Overview</a></li>
-<li><a href="#bandmap_setup">So2sdr-bandmap setup</a></li>
-<li><a href="#so2sdr_setup">So2sdr setup</a></li>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#bandmap_setup">So2sdr-bandmap setup</a></li>
+  <li><a href="#so2sdr_setup">So2sdr setup</a></li>
 </ul>
 
-<hr>
-
+<hr />
 <p><a name="overview"></a></p>
-
-<h3 id="toc_0">Overview</h3>
+<h3 id="overview">Overview</h3>
 
 <p>So2sdr  consists of two separate executables:</p>
 
 <ol>
-<li>so2sdr: this is the executable for the logging program</li>
-<li>so2sdr-bandmap: this is the executable for the SDR bandmap</li>
+  <li>so2sdr: this is the executable for the logging program</li>
+  <li>so2sdr-bandmap: this is the executable for the SDR bandmap</li>
 </ol>
 
 <p>The two can be used separately from each other. For example, so2sdr
@@ -143,19 +135,18 @@ so2sdr-bandmap is so2sdr-bandmap.ini. If you are using two copies
 of the bandmap for SO2R, you will need to make two separate
 copies of so2sdr-bandmap.ini (see below).</p>
 
-<hr>
+<hr />
 
 <p><a name="bandmap_setup"></a></p>
+<h3 id="so2sdr-bandmap-setup">So2sdr-bandmap setup</h3>
 
-<h3 id="toc_1">So2sdr-bandmap setup</h3>
+<h4 id="typical-hardware-setup">Typical hardware setup</h4>
 
-<h4 id="toc_2">Typical hardware setup</h4>
-
-<p>So2sdr-bandmap provides a &quot;visual bandmap&quot; that shows the activity on
+<p>So2sdr-bandmap provides a “visual bandmap” that shows the activity on
 the band for nearby frequencies. To use it you will need a SDR
 receiver connected to the IF of your contesting radio. With this type
 of setup, the SDR front end is automatically protected from
-transmitted RF and gains the benefit of the main radio&#39;s front end
+transmitted RF and gains the benefit of the main radio’s front end
 tuned circuits. There is also no need to tune the SDR frequency as the
 radio is tuned; the SDR stays tuned at the IF frequency of the host
 radio.</p>
@@ -163,291 +154,307 @@ radio.</p>
 <p>So2sdr-bandmap has been tested with the following SDR hardware:</p>
 
 <ul>
-<li>Softrock SDR receiver</li>
-<li>LP-PAN</li>
-<li>Afedri SDR, interfaced both via USB as a sound card, and via
+  <li>Softrock SDR receiver</li>
+  <li>LP-PAN</li>
+  <li>Afedri SDR, interfaced both via USB as a sound card, and via
 ethernet.</li>
 </ul>
 
-<p>Other SDR&#39;s may work if they supply an I/Q stream over the sound card interface
+<p>Other SDR’s may work if they supply an I/Q stream over the sound card interface
 or via ethernet with the SDR-IP protocol. The program has been tested most with the
 Elecraft K3.</p>
 
 <p><strong>Important for SO2R:</strong> For SO2R usage, you need to provide two different
 configurations for so2sdr-bandmap, with different bandmap ID numbers (see below).
-Test each radio&#39;s bandmap separately, and then copy the .ini file so2sdr-bandmap.ini
+Test each radio’s bandmap separately, and then copy the .ini file so2sdr-bandmap.ini
 to a separate copy for that bandmap, such as so2sdr-bandmap1.ini and so2sdr-bandmap2.ini.
 So2sdr has a setting to use different so2sdr-bandmap.ini files for each radio.
 You can also make a separate desktop shortcut to start the bandmap for each
 radio, and so2sdr will detect when each has been started.</p>
 
-<h4 id="toc_3">Bandmap controls</h4>
+<h4 id="bandmap-controls">Bandmap controls</h4>
 
-<p><img src="../images/bandmap-controls.png" alt="Bandmap controls"></p>
+<p><img src="../images/bandmap-controls.png" alt="Bandmap controls" /></p>
 
 <p>Controls from left to right:</p>
 
 <ul>
-<li>start button</li>
-<li>stop button</li>
-<li>setup button</li>
-<li>quit buton</li>
-<li>Mark signals: if checked, so2sdr-bandmap will peak-detect signals,
+  <li>start button</li>
+  <li>stop button</li>
+  <li>setup button</li>
+  <li>quit buton</li>
+  <li>Mark signals: if checked, so2sdr-bandmap will peak-detect signals,
 placing a dot by each detected signal. This can be used to automatically
 tune the radio to the next signal or find the largest open space
 between signals.</li>
-<li>Gain slider: this controls the gain of the peak-detect algorithm.
+  <li>Gain slider: this controls the gain of the peak-detect algorithm.
 Typically it does not need to be adjusted often, although sometimes
 with heavy QRN you may want to decrease the gain.  Moving the slider
 to the right makes the algorithm #less# sensitive (like a
 squelch control).</li>
-<li>Help</li>
+  <li>Help</li>
 </ul>
 
 <p>Other controls:</p>
 
 <ul>
-<li>Mouse:
-
-<ul>
-<li>Left clicking on the bandmap signals will tune the radio to
-this frequency.</li>
-<li>In the frequency scale: holding down the left mouse button and
-drag to  move
-the center marker.</li>
-<li>Right click brings up several options: an option to hide the
-upper toolbar; zoom (scale) setting; call delete function (if
-near a callsign); and IQ balance status dialog.</li>
-</ul></li>
+  <li>Mouse:
+    <ul>
+      <li>Left clicking on the bandmap signals will tune the radio to
+  this frequency.</li>
+      <li>In the frequency scale: holding down the left mouse button and
+  drag to  move
+   the center marker.</li>
+      <li>Right click brings up several options: an option to hide the
+  upper toolbar; zoom (scale) setting; call delete function (if
+  near a callsign); and IQ balance status dialog.</li>
+    </ul>
+  </li>
 </ul>
 
-<h4 id="toc_4">Setting up So2sdr-bandmap</h4>
+<h4 id="setting-up-so2sdr-bandmap">Setting up So2sdr-bandmap</h4>
 
-<p>When the program starts, click the &quot;wrench&quot; icon. The main setup dialog opens:</p>
+<p>When the program starts, click the “wrench” icon. The main setup dialog opens:</p>
 
-<p><img src="../images/so2sdr-bandmap-setup.png" alt="so2sdr-bandmap setup"></p>
+<p><img src="../images/so2sdr-bandmap-setup.png" alt="so2sdr-bandmap setup" /></p>
 
 <ul>
-<li>Bandmap ID number corresponds to the radio number in so2sdr; 1 or 2.</li>
-<li>TCP port: this is the TCP port number used to control the bandmap. If running SO2R,
+  <li>Bandmap ID number corresponds to the radio number in so2sdr; 1 or 2.</li>
+  <li>TCP port: this is the TCP port number used to control the bandmap. If running SO2R,
 each needs a different port number.</li>
-<li>UDP broadcast port: So2sdr-bandmap sends broadcast messages to this UDP port
+  <li>UDP broadcast port: So2sdr-bandmap sends broadcast messages to this UDP port
 after mouse clicks and other evens. Two copies of the program can share the same UDP port.</li>
-<li>N1MM+ : if this option is selected, So2sdr-bandmap will listen for UDP broadcasts
+  <li>N1MM+ : if this option is selected, So2sdr-bandmap will listen for UDP broadcasts
 from N1MM+ logger and use them to set the center frequency. Fill in the port number
 below.</li>
-<li>SDR type: the type of SDR receiver. Click configure for further details.</li>
-<li>CQ Finder time (in seconds): the length of time the program waits to determine if
-a frequency is &quot;empty.&quot;  This should be set to roughly the length of a typical
+  <li>SDR type: the type of SDR receiver. Click configure for further details.</li>
+  <li>CQ Finder time (in seconds): the length of time the program waits to determine if
+a frequency is “empty.”  This should be set to roughly the length of a typical
 qso in the contest being operated. With longer exchanges (like in the
 ARRL Sweepstakes) a longer time should be used here. Typically you should use a
-value less than 30 seconds.</li>
+value less than 30 seconds. See Help menu item in program for more hints on
+usage.</li>
+  <li>CQ Finder use calls: if checked, spotted call frequencies are avoided in
+the CQ Finder.</li>
+  <li>Scroll right: reverses the direction. Some might prefer this if two bandmaps
+are placed on either side of the main window.</li>
 </ul>
 
-<h4 id="toc_5">Soundcard SDR setup</h4>
+<h4 id="soundcard-sdr-setup">Soundcard SDR setup</h4>
 
-<p><img src="../images/soundcard-setup.png" alt="Soundcard setup"></p>
+<p><img src="../images/soundcard-setup.png" alt="Soundcard setup" /></p>
 
 <ul>
-<li>Type: for Linux there is only one option, ALSA. In Windows there are several
-different sound API&#39;s.</li>
-<li>Device: So2sdr-bandmap tries to test which available sound devices
+  <li>Type: for Linux there is only one option, ALSA. In Windows there are several
+different sound API’s.</li>
+  <li>Device: So2sdr-bandmap tries to test which available sound devices
 will work with the program, and puts a checkmark next to these. This
 check is not 100% effective however. Normally you want to use the line
 input.</li>
-<li>Speed: controls the scroll speed of the bandmap.</li>
-<li>Sample Rate: for sound cards, 48, 96, and 192 KHz are supported.</li>
-<li>Bits: most sound cards support 24 bit sampling; very few will
+  <li>Speed: controls the scroll speed of the bandmap.</li>
+  <li>Sample Rate: for sound cards, 48, 96, and 192 KHz are supported.</li>
+  <li>Bits: most sound cards support 24 bit sampling; very few will
 support 32 bits.</li>
-<li>IF offset: this must be adjusted so that signals when zero beat
+  <li>IF offset: this must be adjusted so that signals when zero beat
 on the receiver appear centered on the red line (center of bandmap).</li>
-<li>Swap IQ: reverse I and Q channels. Try this if the spectrum is
+  <li>Swap IQ: reverse I and Q channels. Try this if the spectrum is
 inverted.</li>
-<li>IQ Correction: corrects for imbalance in the I and Q channels.
+  <li>IQ Correction: corrects for imbalance in the I and Q channels.
 If I and Q are imbalanced, image signals will be present on the
 display.</li>
-<li>Collect IQ correction data: so2sdr-bandmap will use strong signals
+  <li>Collect IQ correction data: so2sdr-bandmap will use strong signals
 to measure and correct IQ balance.</li>
 </ul>
 
-<h4 id="toc_6">SDR-IP (Network) SDR</h4>
+<h4 id="sdr-ip-network-sdr">SDR-IP (Network) SDR</h4>
 
-<p>This is a generic interface for network-based SDR&#39;s using the
+<p>This is a generic interface for network-based SDR’s using the
 SDR-IP <a href="http://rfspace.com/RFSPACE/SDR-IP.html">protocol</a>.</p>
 
-<p><img src="../images/network-setup.png" alt="Network setup"></p>
+<p><img src="../images/network-setup.png" alt="Network setup" /></p>
 
-<h4 id="toc_7">Afedri Net SDR</h4>
+<h4 id="afedri-net-sdr">Afedri Net SDR</h4>
 
 <p>This is an interface for the <a href="http://www.afedri-sdr.com/">Afedri</a> SDR
 using the network interface. Note that it can also be used via the
 USB/Soundcard interface.</p>
 
-<p><img src="../images/afedri-setup.png" alt="Afedri setup"></p>
+<p><img src="../images/afedri-setup.png" alt="Afedri setup" /></p>
 
 <ol>
-<li><p>For single-receiver Afedri SDR: fill in IP address, TCP
-and UDP ports. Set Multichannel to &quot;Single&quot;, Channel to 1,
+  <li>
+    <p>For single-receiver Afedri SDR: fill in IP address, TCP
+and UDP ports. Set Multichannel to “Single”, Channel to 1,
 and fill in Freq. 1. Make sure that Broadcast is set to off.
-In my testing, &quot;swap IQ&quot; needed to be checked. Note that
+In my testing, “swap IQ” needed to be checked. Note that
 not all sample rates are supported by the Afedri hardware
 (check documentation). If a sample rate is entered that is
 not supported, the SDR will use the nearest available sample
 rate, which will cause frequency inaccuracies in the bandmap
-display.</p></li>
-<li><p>Multi-channel Afedri SDR: so2sdr-bandmap also supports the
-multi-channel Afedri SDR&#39;s. In this mode, a single unit can be used to
+display.</p>
+  </li>
+  <li>
+    <p>Multi-channel Afedri SDR: so2sdr-bandmap also supports the
+multi-channel Afedri SDR’s. In this mode, a single unit can be used to
 provide bandmaps for two radios. The broadcast option of the Afedri is
 set so that two copies of so2sdr-bandmap can receive the SDR data.
-One copy of so2sdr-bandmap should run as &quot;Master&quot; and one as &quot;Slave&quot;.
+One copy of so2sdr-bandmap should run as “Master” and one as “Slave”.
 The Master bandmap controls the frequency for both SDR receivers.
 Start the Master bandmap first followed by the Slave.</p>
 
-<p>This mode is somewhat experimental. Sometimes the 2nd SDR receiver
-does not start; a workaround seems to be to stop the Master
-bandmap (square &quot;stop&quot; button) and then restart it again.</p></li>
+    <p>This mode is somewhat experimental. Sometimes the 2nd SDR receiver
+ does not start; a workaround seems to be to stop the Master
+ bandmap (square “stop” button) and then restart it again.</p>
+  </li>
 </ol>
 
-<hr>
+<hr />
 
 <p><a name="so2sdr_setup"></a></p>
-
-<h3 id="toc_8">So2sdr setup</h3>
+<h3 id="so2sdr-setup">So2sdr setup</h3>
 
 <p>In so2sdr there are two types of configuration:</p>
 
 <ol>
-<li><p>Station settings : These are settings that
+  <li>
+    <p>Station settings : These are settings that
 do not generally change between different contests. These
 include station hardware,
-location, etc. Under &quot;Config&quot;, this includes
+location, etc. Under “Config”, this includes
 Station, General Settings, Radios/SO2R, Winkey, and Bandmap.
 Station settings are loaded as soon
 as the program is run. These settings are stored 
 in the so2sdr.ini file in the main configuration
-directory for so2sdr.</p></li>
-<li><p>Contest settings : These are settings specific to each
+directory for so2sdr.</p>
+  </li>
+  <li>
+    <p>Contest settings : These are settings specific to each
 contest. They are only loaded once a contest has been loaded from the
 File menu. They are stored in .cfg files specific to each
 contest. Most people would keep these in a different directory that
 ~/.so2sr, for example organized by year.  Note that in order to load a
-different contest you must exit and restart so2sdr.</p></li>
+different contest you must exit and restart so2sdr.</p>
+  </li>
 </ol>
 
-<hr>
+<hr />
 
-<h4 id="toc_9">Station data</h4>
+<h4 id="station-data">Station data</h4>
 
-<p><img src="../images/station_dialog.png" alt="Station Dialog" title="Station Dialog"></p>
+<p><img src="../images/station_dialog.png" alt="Station Dialog" title="Station Dialog" /></p>
 
 <p>The station dialog should be filled out the first time the
 program is started. It contains information
 that usually does not change for different contests; this is
-stored in the &quot;so2sdr.ini&quot; file in the user&#39;s directory. The
+stored in the “so2sdr.ini” file in the user’s directory. The
 ini file is ASCII and can be edited by hand; be careful
 making changes this way however.</p>
 
 <ul>
-<li>The grid square should be 4 characters and
+  <li>The grid square should be 4 characters and
 is used to determine beam headings from your qth and the sunrise/sunset
 times for your qth. These will be updated once you have loaded
 a contest. Hint: if you enter your own call in the callsign
 entry window, the precise sunrise and sunset for your
 QTH will be shown.</li>
-<li>Name, zones, state, and ARRL section are used
+  <li>Name, zones, state, and ARRL section are used
 to fill out default exchanges in various contests.</li>
 </ul>
 
-<hr>
+<hr />
 
-<h4 id="toc_10">Settings Dialog</h4>
+<h4 id="settings-dialog">Settings Dialog</h4>
 
 <p>This dialog contains various settings that affect program
 behavior.</p>
 
-<p><img src="../images/settings_dialog.png" alt="Settings Dialog" title="Settings Dialog"></p>
+<p><img src="../images/settings_dialog.png" alt="Settings Dialog" title="Settings Dialog" /></p>
 
 <ul>
-<li>Focus QSY Radio : switch audio focus to the second
+  <li>Focus QSY Radio : switch audio focus to the second
 radio while the other radio is sending.</li>
-<li>Audio and Transmit Focus Indicators : small &quot;LED&quot;
+  <li>Audio and Transmit Focus Indicators : small “LED”
 indicators that show the state of RX and TX focus.</li>
-<li>Send exchange and log (S/P) : In Search and Pounce
+  <li>Send exchange and log (S/P) : In Search and Pounce
 mode, if this setting is checked, the QSO will be immediately
 logged after sending the exchange with the second Enter press.
 If unchecked, an extra Enter is required after sending
 the exchange to log the qso.</li>
-<li>Auto Send Mode : When running stations, if set to 
-&quot;Auto&quot;, the program will automatically begin sending
-the callsign entered and exchange once a certain number
+  <li>Auto Send Mode : When running stations, if set to 
+“Auto”, the program will automatically begin sending
+ the callsign entered and exchange once a certain number
 of characters have been entered.</li>
-<li>Auto Send &quot;Auto&quot; Character Count : if using
+  <li>Auto Send “Auto” Character Count : if using
 Auto mode above, start sending when this number of
 characters have been entered.</li>
-<li>Dueling CQ Delay : Dueling CQ between the two
+  <li>Dueling CQ Delay : Dueling CQ between the two
 radios is activated with Crtl- (Control Minus). This setting
 adds an extra delay before switching radios.</li>
 </ul>
 
-<hr>
+<hr />
 
-<h4 id="toc_11">Radio and SO2R switching setup</h4>
+<h4 id="radio-and-so2r-switching-setup">Radio and SO2R switching setup</h4>
 
-<p><img src="../images/radio_dialog.png" alt="Radio/SO2R Dialog" title="Radio/SO2R Dialog"></p>
+<p><img src="../images/radio_dialog.png" alt="Radio/SO2R Dialog" title="Radio/SO2R Dialog" /></p>
 
 <ul>
-<li>Radio control uses the Hamlib library. The current version
-being used is shown at the top. </li>
-<li><p>Tabs 1 and 2 are for the two radios. The &quot;Dummy&quot; model
+  <li>Radio control uses the Hamlib library. The current version
+being used is shown at the top.</li>
+  <li>
+    <p>Tabs 1 and 2 are for the two radios. The “Dummy” model
 can be used for testing when no radio is attached. Note that
-the PTT method setting is not currently used.</p></li>
-<li><p>Under Linux
+the PTT method setting is not currently used.</p>
+  </li>
+  <li>Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
 You may have to add your username to a particular group to access
-these ports. Under Windows ports are COM1, COM2, ...</p></li>
-<li><p>When the radios are configured correctly, after
-clicking &quot;OK&quot; in the radio dialog the &quot;R1&quot; and &quot;R2&quot;
+these ports. Under Windows ports are COM1, COM2, …</li>
+  <li>
+    <p>When the radios are configured correctly, after
+clicking “OK” in the radio dialog the “R1” and “R2”
 indicators at the bottom of the main window
-should say &quot;ON&quot; and turn black. Red here indicates a problem.</p></li>
-<li><p>Three different methods are supported for switch audio
-and keying between the two radios:</p>
-
-<ol>
-<li>OTRSP : Open Two Radio Switching Protocol. This supports
-USB-connected two-radio switches like the SO2RDuino box.</li>
-<li>Parallel port : This option toggles pins on the
-parallel port. To use this in Linux, you need the PPDEV
-kernel option, and your user name must be in the
-correct group (usuall &quot;lp&quot;) to access the port.</li>
-<li>microHam : The microHam series of SO2R switches.</li>
-</ol></li>
+should say “ON” and turn black. Red here indicates a problem.</p>
+  </li>
+  <li>Three different methods are supported for switch audio
+and keying between the two radios:
+    <ol>
+      <li>OTRSP : Open Two Radio Switching Protocol. This supports
+   USB-connected two-radio switches like the SO2RDuino box.</li>
+      <li>Parallel port : This option toggles pins on the
+   parallel port. To use this in Linux, you need the PPDEV
+   kernel option, and your user name must be in the
+   correct group (usuall “lp”) to access the port.</li>
+      <li>microHam : The microHam series of SO2R switches.</li>
+    </ol>
+  </li>
 </ul>
 
-<hr>
+<hr />
 
-<h4 id="toc_12">Winkey</h4>
+<h4 id="winkey">Winkey</h4>
 
 <p>The only method supported to send CW currently
 is via the Winkey chip. Winkey emulation
 in a microHam box can also be used.</p>
 
-<p><img src="../images/winkey_dialog.png" alt="Winkey Dialog" title="Winkey Dialog"></p>
+<p><img src="../images/winkey_dialog.png" alt="Winkey Dialog" title="Winkey Dialog" /></p>
 
 <ul>
-<li>CW Output : if unchecked, no CW will be outputed.</li>
-<li>Paddle sidetone : enables winkey sidetone only
+  <li>CW Output : if unchecked, no CW will be outputed.</li>
+  <li>Paddle sidetone : enables winkey sidetone only
 when sending with the paddle.</li>
-<li>Swap : swaps dit/dah paddle connections.</li>
-<li>CT space : uses slightly reduced spaces between words.</li>
-<li>After clicking OK, the &quot;WK&quot; indicator at the bottom
-of the main window should say &quot;ON&quot; and turn black. Red 
+  <li>Swap : swaps dit/dah paddle connections.</li>
+  <li>CT space : uses slightly reduced spaces between words.</li>
+  <li>After clicking OK, the “WK” indicator at the bottom
+of the main window should say “ON” and turn black. Red 
 here indicates a problem.</li>
-<li>Iambic A/Iambic B/Ultimatic/Bug : choose paddle mode.</li>
+  <li>Iambic A/Iambic B/Ultimatic/Bug : choose paddle mode.</li>
 </ul>
 
-<hr>
+<hr />
 
-<h4 id="toc_13">Bandscope settings</h4>
+<h4 id="bandscope-settings">Bandscope settings</h4>
 
 <p>A unique feature of SO2SDR is the SDR bandmap integrated with the
 logging program. The Bandscope setup dialog is
@@ -455,135 +462,138 @@ described below. Note that version 2 introduced significant changes,
 as the bandmap is run as a separate process, communicating with
 so2sdr via TCP and UDP.</p>
 
-<p><img src="../images/bandscope_dialog.png" alt="Bandscope Dialog" title="Bandscope Dialog"></p>
+<p><img src="../images/bandscope_dialog.png" alt="Bandscope Dialog" title="Bandscope Dialog" /></p>
 
 <ul>
-<li>UDP port: this must match the UDP broadcast port defined in so2sdr-bandmap</li>
-<li>Spot timeout : the length of time callsigns are displayed
+  <li>UDP port: this must match the UDP broadcast port defined in so2sdr-bandmap</li>
+  <li>Spot timeout : the length of time callsigns are displayed
 on the bandmap. Callsigns are either entered by the 
 operator or can be read from the telnet interface to
 a dx spotting network.</li>
-<li>Change radios on click : if this setting is
+  <li>Change radios on click : if this setting is
 enabled, clicking on a signal in either bandmap
 will change the active radio and QSY to this frequency.
 This can be used to search and pounce visually
 across two separate bands.</li>
-<li>CQ Finder: one function of the bandscope is to 
+  <li>CQ Finder: one function of the bandscope is to 
 find unused frequencies in order to call CQ. The program
 records the location of all signals within a certain
 time (integration time) and looks for the largest
 open space between signals. This frequency
 can be set using the BEST_CQ macro (see CW macros in Reference).
 Settings controlling the CQ finder:
-
-<ol>
-<li>Frequency limits : the program searches for 
-open frequencies on each band between these limits.
-Note that the bandscope itself only covers 96 KHz
-and therefore may not cover the entire band in
-question. In this case, the limit will be change to
-reflect the frequency range actually 
-covered by the bandscope.</li>
-</ol></li>
+    <ol>
+      <li>Frequency limits : the program searches for 
+   open frequencies on each band between these limits.
+   Note that the bandscope itself only covers 96 KHz
+    and therefore may not cover the entire band in
+    question. In this case, the limit will be change to
+   reflect the frequency range actually 
+   covered by the bandscope.</li>
+    </ol>
+  </li>
 </ul>
 
-<p>When  operating with the bandmap, you should enable &quot;Grab
-keyboard&quot; from the &quot;Windows&quot; menu, which will prevent the call
+<p>When  operating with the bandmap, you should enable “Grab
+keyboard” from the “Windows” menu, which will prevent the call
 and exchange entry lines from losing keyboard focus.</p>
 
-<hr>
+<hr />
 
-<h4 id="toc_14">Contest Settings</h4>
+<h4 id="contest-settings">Contest Settings</h4>
 
 <p>Starting a new contest: see File menu.</p>
 
-<p><img src="../images/new_contest_dialog.png" alt="New Contest Dialog" title="New Contest Dialog"></p>
+<p><img src="../images/new_contest_dialog.png" alt="New Contest Dialog" title="New Contest Dialog" /></p>
 
 <ul>
-<li>Start a new contest from the file menu. After choosing where to
+  <li>Start a new contest from the file menu. After choosing where to
 save it, you can customize CW Messages and Contest Options.
 If you have already operated this contest before, just make 
-a copy of the &quot;.cfg&quot; file. This way you will not need to
+a copy of the “.cfg” file. This way you will not need to
 reconfigure CW macros and other settings again.</li>
-<li>The list of contests known by so2sdr is in the &quot;contest_list.dat&quot;
+  <li>The list of contests known by so2sdr is in the “contest_list.dat”
 file (in /usr/local/share/so2sdr/ under Linux, and in the
 same directory as the executable under Windows). Each line of 
 this file is of the format Displayed name, config file.</li>
-<li>Note that in some cases new contests can be easily added added to
+  <li>Note that in some cases new contests can be easily added added to
 this list if they have rules that are similar to existing
 contests. You can create new contest by modifying an already existing
 base config file. For example, both the NCCC Sprint and North American
-Sprint use the built-in &quot;SPRINT&quot; rules, the only difference is in the
+Sprint use the built-in “SPRINT” rules, the only difference is in the
 base config file (ns.cfg versus nasprint.cfg). The base config
 file can for example then link to a different multiplier file.</li>
 </ul>
 
-<hr>
+<hr />
 
-<h4 id="toc_15">CW Macros</h4>
+<h4 id="cw-macros">CW Macros</h4>
 
-<p><img src="../images/cw_messages.png" alt="CW Messages" title="CW Messages"></p>
+<p><img src="../images/cw_messages.png" alt="CW Messages" title="CW Messages" /></p>
 
 <ul>
-<li>Separate messages can be programmed
+  <li>Separate messages can be programmed
 for the F1-F12 keys in CQ and S&amp;P modes, as well as Ctrl and Shift modified
-function keys. </li>
-<li><p>There are a number of special macros available, all of the form
+function keys.</li>
+  <li>
+    <p>There are a number of special macros available, all of the form
 {COMMAND}. In most cases I have set up a set of function
 keys that works for my operating, although you might need
 to adjust the exchange. Some special considerations:</p>
 
-<ul>
-<li>CQ Func F1: this will be sent in CQ mode when pressing enter</li>
-<li>Exc Func F1: this should be your callsign ({CALL})</li>
-<li>Exc Func F2: this should be the contest exchange</li>
-<li>Other: several special messages for exchange sent while CQing,
-etc.</li>
-</ul></li>
-<li><p>See full list of available <a href="#cw">CW/SSB macros</a>.</p></li>
+    <ul>
+      <li>CQ Func F1: this will be sent in CQ mode when pressing enter</li>
+      <li>Exc Func F1: this should be your callsign ({CALL})</li>
+      <li>Exc Func F2: this should be the contest exchange</li>
+      <li>Other: several special messages for exchange sent while CQing,
+  etc.</li>
+    </ul>
+  </li>
+  <li>See full list of available <a href="#cw">CW/SSB macros</a>.</li>
 </ul>
 
-<hr>
+<hr />
 
-<h4 id="toc_16">Contest options</h4>
+<h4 id="contest-options">Contest options</h4>
 
-<p><img src="../images/contest_options.png" alt="Contest Options" title="Contest Options"></p>
+<p><img src="../images/contest_options.png" alt="Contest Options" title="Contest Options" /></p>
 
 <p>Most of these settings are set by default by the rules
 of the contest  chosen. Be careful changing them.</p>
 
 <ul>
-<li>Mults by band: if checked, mults count on each band. </li>
-<li>Multimode : enable working multiple modes (not fully 
+  <li>Mults by band: if checked, mults count on each band.</li>
+  <li>Multimode : enable working multiple modes (not fully 
 implemented)</li>
-<li>Show mode : show the mode of each qso in the onscreen log.</li>
-<li>Show mults: show multipliers in the large &quot;Mults&quot; box. In some
+  <li>Show mode : show the mode of each qso in the onscreen log.</li>
+  <li>Show mults: show multipliers in the large “Mults” box. In some
 case this is not wanted, for example when there are a large number
 of multipliers (CQ WPX for example).</li>
-<li>Sprint mode: special program logic for the NA Sprint.</li>
-<li>Supercheck partial: checking enables the
+  <li>Sprint mode: special program logic for the NA Sprint.</li>
+  <li>Supercheck partial: checking enables the
 display of possible callsigns from the supercheck partial
-database (<a href="http://ww.supercheckpartial.com">http://ww.supercheckpartial.com</a>). These files should
+database (http://ww.supercheckpartial.com). These files should
 be placed in the program data directory (/usr/local/share/so2sdr under
 Linux).</li>
-<li>Call history : if this is enabled, so2sdr will display
+  <li>Call history : if this is enabled, so2sdr will display
 contest exchanges saved in a history database file. This file
 is a SQLITE database file and can be edited/examined using a
 number of programs (I use sqlitebrowser).</li>
-<li>Append Call history : append exchange history information
-to the database file as qso&#39;s are logged. You can also import
+  <li>Append Call history : append exchange history information
+to the database file as qso’s are logged. You can also import
 them after a contest using the option under the File menu.</li>
-<li>Dupe behavior: three possible settings depending on
+  <li>Dupe behavior: three possible settings depending on
 how strict you want to be with allowing dupes.</li>
-<li>Sent exchange: this will go in the Cabrillo file as the
+  <li>Sent exchange: this will go in the Cabrillo file as the
 send exchange columns. Note that
 these entry boxes do not currently use the same macro system
 used by the CW Messages, so entering {STATE} for example will
-not work. Use &quot;#&quot; for a sent serial number.</li>
-<li>Off times : check this to enable automatic calculation 
+not work. Use “#” for a sent serial number.</li>
+  <li>Off times : check this to enable automatic calculation 
 of off time. You must fill in the start and end time/date
 of the contest for this to work correctly.</li>
 </ul>
+
 
 
                     </div>

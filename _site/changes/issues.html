@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
+                    <h4><a class="brand" href="/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
+    <li><a href="/">Home</a></li>
     
         
         
@@ -43,10 +43,7 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
+            <li data-order="1"><a href="/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -56,10 +53,7 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -69,13 +63,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
         
     
         
@@ -85,7 +79,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -102,28 +96,22 @@
 </div>
 
 <ul>
-<li><p>Windows: the program may not run on Windows XP. In my testing, so2sdr ran
-on one XP system but not another. So2sdr-bandmap ran on both systems. This
-is related to differences in Microsoft DLL&#39;s which are not handled by
-the mingw compiler.</p></li>
-<li><p>Windows: radio serial communications does not work with the virtual
-serial ports of LP-Bridge (tested with LP-Bridge_09985 and hamlib-git
-08/2015). This is because LP-Bridge does not fully reproduce the
-serial commands of the K3. While initializing the K3 interface, hamlib
-sends several requests to the K3 requesting information on what
-version of the Elecraft serial protocol the radio supports. These
-commands are ignored by LP-Bridge and hamlib assumes the serial
-connection is broken.</p></li>
-<li><p>Linux: soundcard SDR&#39;s may not start on certain systems with an
-error &quot;Audio device does not support stereo.&quot; A workaround is to use
+  <li>
+    <p>Linux: soundcard SDR’s may not start on certain systems with an
+error “Audio device does not support stereo.” A workaround is to use
 the pasuspender utility to stop Pulseaudio. If starting the bandmap
 from so2sdr, do this</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">    pasuspender -- so2sdr
-</code></pre></div>
-<p>or if running so2sdr-bandmap separately,</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">    pasuspender -- so2sdr-bandmap
-</code></pre></div></li>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      pasuspender -- so2sdr
+</code></pre></div>    </div>
+
+    <p>or if running so2sdr-bandmap separately,</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      pasuspender -- so2sdr-bandmap
+</code></pre></div>    </div>
+  </li>
 </ul>
+
 
 
                     </div>

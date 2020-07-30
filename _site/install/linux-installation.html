@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
+                    <h4><a class="brand" href="/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
+    <li><a href="/">Home</a></li>
     
         
         
@@ -43,10 +43,7 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
+            <li data-order="1"><a href="/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -56,10 +53,7 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -69,13 +63,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
         
     
         
@@ -85,7 +79,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -101,26 +95,77 @@
     </h2>
 </div>
 
-<p>You will need the following development libraries installed: Qt4, FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. </p>
+<p>You will need the following development libraries installed: Qt5,
+FFTW, Hamlib, and PortAudio. Other various development packages
+include g++  and pkg-config.</p>
+
+<h3 id="from-released-packages">From released packages</h3>
+
+<p>Download one of the Github release packages:</p>
+
+<ul>
+  <li><a href="https://github.com/n4ogw/so2sdr/releases">Github releases</a></li>
+</ul>
 
 <ol>
-<li><p>Clone the git repository to your local machine:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">git clone git://github.com/n4ogw/so2sdr.git
-</code></pre></div></li>
-<li><p>By default, so2sdr will be installed in /usr/local/bin, and associated
-data files will be placed in /usr/local/share/so2sdr. If you want to
-change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri</p></li>
-<li><p>In the directory so2sdr, </p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">qmake
-make
-</code></pre></div>
-<p><code>make -j 2</code>  will use 2 cores and go faster.
-Subdirectory Makefiles are created from the top level Makefile.</p></li>
-<li><p>(as superuser) </p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">make install
-</code></pre></div></li>
-<li><p>Test and contribute!</p></li>
+  <li>
+    <p>Unpack the archive:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> tar xzvof sosdr-X.X.X.tgz
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Build it</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> cd so2sdr-X.X.X
+ qmake
+ make
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>The default install location is in /usr/local. You can change this in common.pri
+Then, as root:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> make install
+</code></pre></div>    </div>
+  </li>
 </ol>
+
+<h3 id="from-git-source">From git source</h3>
+
+<ol>
+  <li>
+    <p>Clone the git repository to your local machine:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> git clone git://github.com/n4ogw/so2sdr.git
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>By default, so2sdr will be installed in /usr/local/bin, and associated
+  data files will be placed in /usr/local/share/so2sdr. If you want to
+  change the location of the program, edit SO2SDR_INSTALL_DIR in common.pri</p>
+  </li>
+  <li>
+    <p>In the directory so2sdr,</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> qmake
+ make
+</code></pre></div>    </div>
+
+    <p><code class="highlighter-rouge">make -j 2</code>  will use 2 cores and go faster.
+ Subdirectory Makefiles are created from the top level Makefile.</p>
+  </li>
+  <li>
+    <p>(as superuser)</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> make install
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Test and contribute!</p>
+  </li>
+</ol>
+
 
 
                     </div>

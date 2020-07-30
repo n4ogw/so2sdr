@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
+                    <h4><a class="brand" href="/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
+    <li><a href="/">Home</a></li>
     
         
         
@@ -43,10 +43,7 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
+            <li data-order="1"><a href="/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -56,10 +53,7 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -69,13 +63,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
         
     
         
@@ -85,7 +79,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -113,44 +107,64 @@ protocol. Commands are sent to so2sdr-bandmap as a string of bytes
 
 <p>following bytes: data (optional), format depends on command</p>
 
-<h3 id="toc_0">General commands</h3>
-
-<hr>
+<h3 id="general-commands">General commands</h3>
+<hr />
 
 <ul>
-<li><p>Set Center Frequency: &#39;f&#39; 0x66 dec 102
-followed by ascii characters giving frequency in Hz</p></li>
-<li><p>Exit program: &#39;q&#39; 0x71 dec 113
+  <li>
+    <p>Set Center Frequency: ‘f’ 0x66 dec 102
+followed by ascii characters giving frequency in Hz</p>
+  </li>
+  <li>
+    <p>Exit program: ‘q’ 0x71 dec 113
 No data follows (length=0). Using this command before terminating
 the  bandmap process allows the bandmap to shut down properly and
-update its config files.</p></li>
-<li><p>Set TX state: &#39;t&#39; 0x74 dec 116
-No data follows (length=0). If transmit state is set, the bandmap will stop   peak detecting signals and display the red &quot;TX&quot; icon.</p></li>
-<li><p>Set RX state: &#39;r&#39; 0x72 dec 114 Cancels transmit state (see 0x74)</p></li>
-<li><p>Find open frequency: &#39;g&#39; 0x67 dec 103 Finds an open frequency on the bandmap. This will only function after the center frequency has been set. The found frequency will be returned via UDP (see below).</p></li>
-<li><p>Set freq finder lower limit: &#39;l&#39; 0x6C dec 108
-Set lower limit frequency for &quot;Find open freq&quot;
-followed by ascii characters giving frequency in Hz</p></li>
-<li><p>Set freq finder upper limit: &#39;u&#39; 0x75 dec 117
-Set upper limit frequency for &quot;Find open freq&quot;
-followed by ascii characters giving frequency in Hz</p></li>
-<li><p>Set bandmap offset: &#39;o&#39; 0x6f dec 111
-Set offset in Hz between frequency displayed and actual center freq.
-Followed by ascii characters giving offset in Hz.</p></li>
-<li><p>Set bandmap invert: &#39;i&#39;  0x69 dec 105
-If turned on, spectrum will be inverted. Useful for CW-reverse mode
-and some radios that have inverted IF on certain bands.
-Followed by single byte- if 0x00, sets invert off, any other byte
-sets invert on.</p></li>
-<li><p>Qsy to next higher signal:  &#39;U&#39; 0x55 dec 85
-Length zero. Qsy&#39;s to next higher marked signal (black dot) on band. The new frequency is returned to the controlling program via UDP.</p></li>
-<li><p>Qsy to next lower signal:  &#39;D&#39; 0x44 dec 68
-Length zero. Qsy&#39;s to next lower marked signal (black dot) on band. The new frequency  is returned to the controlling program via UDP.</p></li>
+ update its config files.</p>
+  </li>
+  <li>
+    <p>Set TX state: ‘t’ 0x74 dec 116
+No data follows (length=0). If transmit state is set, the bandmap will stop   peak detecting signals and display the red “TX” icon.</p>
+  </li>
+  <li>
+    <p>Set RX state: ‘r’ 0x72 dec 114 Cancels transmit state (see 0x74)</p>
+  </li>
+  <li>
+    <p>Find open frequency: ‘g’ 0x67 dec 103 Finds an open frequency on the bandmap. This will only function after the center frequency has been set. The found frequency will be returned via UDP (see below).</p>
+  </li>
+  <li>
+    <p>Set freq finder lower limit: ‘l’ 0x6C dec 108
+  Set lower limit frequency for “Find open freq”
+  followed by ascii characters giving frequency in Hz</p>
+  </li>
+  <li>
+    <p>Set freq finder upper limit: ‘u’ 0x75 dec 117
+  Set upper limit frequency for “Find open freq”
+  followed by ascii characters giving frequency in Hz</p>
+  </li>
+  <li>
+    <p>Set bandmap offset: ‘o’ 0x6f dec 111
+ Set offset in Hz between frequency displayed and actual center freq.
+ Followed by ascii characters giving offset in Hz.</p>
+  </li>
+  <li>
+    <p>Set bandmap invert: ‘i’  0x69 dec 105
+ If turned on, spectrum will be inverted. Useful for CW-reverse mode
+ and some radios that have inverted IF on certain bands.
+ Followed by single byte- if 0x00, sets invert off, any other byte
+ sets invert on.</p>
+  </li>
+  <li>
+    <p>Qsy to next higher signal:  ‘U’ 0x55 dec 85
+ Length zero. Qsy’s to next higher marked signal (black dot) on band. The new frequency is returned to the controlling program via UDP.</p>
+  </li>
+  <li>
+    <p>Qsy to next lower signal:  ‘D’ 0x44 dec 68
+ Length zero. Qsy’s to next lower marked signal (black dot) on band. The new frequency  is returned to the controlling program via UDP.</p>
+  </li>
 </ul>
 
-<h3 id="toc_1">Call marking</h3>
-
-<hr>
+<h3 id="call-marking">Call marking</h3>
+<hr />
 
 <p>So2sdr-bandmap can display callsigns and optionally highlight the
 actual CW signal of a station with a specific color. The program
@@ -161,60 +175,66 @@ dupes or removing calls after a set time), this is left up to the
 managing TCP connection.</p>
 
 <ol>
-<li><p>Add callsign: &#39;a&#39; 0x61 dec 97
-followed by</p>
+  <li>Add callsign: ‘a’ 0x61 dec 97
+ followed by
+    <ul>
+      <li>command string length byte</li>
+      <li>
+        <p>command string:</p>
 
-<ul>
-<li>command string length byte</li>
-<li><p>command string:</p>
+        <p>callsign,frequency,R1G1B1R2G2B2flag</p>
 
-<p>callsign,frequency,R1G1B1R2G2B2flag</p>
-
-<ul>
-<li>callsign = ASCII callsign data</li>
-<li>frequency = frequency in Hz</li>
-<li>R1 = byte giving red color value (0:255) for call</li>
-<li>G1 = byte giving green color value (0:255) for call</li>
-<li>B1 = byte giving blue color value (0:255) for call</li>
-<li>R2 = byte giving red color byte for signal: 0 or 1</li>
-<li>G2 = byte giving green color byte for signal: 0 or 1</li>
-<li>B2 = byte giving blue color byte for signal: 0 or 1</li>
-<li>flag = 0x00 means no highlight, any other value means highlight</li>
-</ul></li>
-</ul>
+        <ul>
+          <li>callsign = ASCII callsign data</li>
+          <li>frequency = frequency in Hz</li>
+          <li>R1 = byte giving red color value (0:255) for call</li>
+          <li>G1 = byte giving green color value (0:255) for call</li>
+          <li>B1 = byte giving blue color value (0:255) for call</li>
+          <li>R2 = byte giving red color byte for signal: 0 or 1</li>
+          <li>G2 = byte giving green color byte for signal: 0 or 1</li>
+          <li>B2 = byte giving blue color byte for signal: 0 or 1</li>
+          <li>flag = 0x00 means no highlight, any other value means highlight</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
 
 <p>example: puts N4OGW on bandmap at 14035100 Hz, callsign in magenta
-and signal higlighted in magenta:</p></li>
-</ol>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
-</code></pre></div>
+and signal higlighted in magenta:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    0x61 0x16 N4OGW,14035100,0xff 0x00 0xff 0x01 0x00 0x01 1
+</code></pre></div></div>
+
 <ol>
-<li><p>Delete callsign: &#39;d&#39;  0x64 dec 100
-followed by</p>
-
-<ul>
-<li>length byte</li>
-<li>callsign</li>
-</ul></li>
-<li><p>Clear all calls: &#39;x&#39; 0x78 dec 120
-command length 0</p></li>
+  <li>Delete callsign: ‘d’  0x64 dec 100
+  followed by
+    <ul>
+      <li>length byte</li>
+      <li>callsign</li>
+    </ul>
+  </li>
+  <li>Clear all calls: ‘x’ 0x78 dec 120
+command length 0</li>
 </ol>
 
-<h3 id="toc_2">UDP broadcasts</h3>
-
-<hr>
+<h3 id="udp-broadcasts">UDP broadcasts</h3>
+<hr />
 
 <p>So2sdr-bandmap sends out UDP packets in response to several types
 of events:</p>
 
 <ul>
-<li><p>clicking on the bandmap or a marked signal. The UDP packet contains
+  <li>
+    <p>clicking on the bandmap or a marked signal. The UDP packet contains
 the new frequency:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;So2sdr&gt;
-&lt;bandmap RadioNr=&quot;1&quot; freq=&quot;14037726&quot;/&gt;
-&lt;/So2sdr&gt;
-</code></pre></div></li>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+  &lt;So2sdr&gt;
+  &lt;bandmap RadioNr="1" freq="14037726"/&gt;
+  &lt;/So2sdr&gt;
+</code></pre></div>    </div>
+  </li>
 </ul>
 
 <p>RadioNr is the bandmap ID number. A similar packet is broadcast in
@@ -222,15 +242,18 @@ response to a request to find an open frequency. Note that the frequency
 is given in Hz.</p>
 
 <ul>
-<li><p>deleting a call with the mouse. The right-click menu gives the option
+  <li>
+    <p>deleting a call with the mouse. The right-click menu gives the option
 to delete a call. The bandmap itself does not delete the call from its
 list, this should be done by the controlling program in response to
 the UDP packet.</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;So2sdr&gt;
-&lt;bandmap RadioNr=&quot;1&quot; freq=&quot;14022977&quot; call=&quot;N4OGW&quot; operation=&quot;delete&quot;/&gt;
-&lt;/So2sdr&gt;
-</code></pre></div></li>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+  &lt;So2sdr&gt;
+  &lt;bandmap RadioNr="1" freq="14022977" call="N4OGW" operation="delete"/&gt;
+  &lt;/So2sdr&gt;
+</code></pre></div>    </div>
+  </li>
 </ul>
 
 

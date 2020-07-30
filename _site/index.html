@@ -9,15 +9,15 @@
         <meta name="description" content="Amateur Radio contest logging with software-defined radio features">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/syntax.css">
-        <link rel="stylesheet" href="http://n4ogw.github.io/so2sdr/css/main.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class="row">
                 <div id="header" class="col-sm-12">
-                    <h4><a class="brand" href="http://n4ogw.github.io/so2sdr/">So2sdr</a>
+                    <h4><a class="brand" href="/">So2sdr</a>
     <small>Amateur Radio contest logging with software-defined radio features</small>
 </h4>
 
@@ -29,7 +29,7 @@
                 
                     <div id="navigation" class="col-sm-2">
                         <ul class="nav nav-list">
-    <li><a href="http://n4ogw.github.io/so2sdr/">Home</a></li>
+    <li><a href="/">Home</a></li>
     
         
         
@@ -43,10 +43,7 @@
             
                 <li class="nav-header">Changes</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/changes/issues.html">Issues</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/changes/changelog.html">Changelog</a></li>
+            <li data-order="1"><a href="/changes/changelog.html">Changelog</a></li>
         
     
         
@@ -56,10 +53,7 @@
             
                 <li class="nav-header">Install</li>
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/install/windows.html">Windows</a></li>
-        
-            
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/install/linux-installation.html">Linux</a></li>
+            <li data-order="1"><a href="/install/linux-installation.html">Linux</a></li>
         
     
         
@@ -69,13 +63,13 @@
             
                 <li class="nav-header">Documentation</li>
             
-            <li data-order="3"><a href="http://n4ogw.github.io/so2sdr/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
+            <li data-order="3"><a href="/doc/bandmap-tech-info.html">Bandmap tech info</a></li>
         
             
-            <li data-order="2"><a href="http://n4ogw.github.io/so2sdr/doc/reference.html">Reference</a></li>
+            <li data-order="2"><a href="/doc/reference.html">Reference</a></li>
         
             
-            <li data-order="1"><a href="http://n4ogw.github.io/so2sdr/doc/setup.html">Setup</a></li>
+            <li data-order="1"><a href="/doc/setup.html">Setup</a></li>
         
     
         
@@ -85,7 +79,7 @@
             
                 <li class="nav-header">Support</li>
             
-            <li data-order=""><a href="http://n4ogw.github.io/so2sdr/support/support.html">Contacts</a></li>
+            <li data-order=""><a href="/support/support.html">Contacts</a></li>
         
     
 <!-- List additional links. It is recommended to add a divider
@@ -95,79 +89,116 @@
                     </div>
 
                     <div id="content" class="col-sm-10">
-                        <h2 id="toc_0">So2sdr</h2>
-
-<hr>
+                        <h2 id="so2sdr">So2sdr</h2>
+<hr />
 
 <p>A ham radio contest log program that features a software-defined radio (SDR) 
 bandscope.  The main ideas behind the program are described in an article
 in May/June 2013 National Contest Journal <a href="http://ncjweb.com">NCJ</a>.
-The program is primarily developed for Linux use, but can also
-be compiled for Windows. </p>
+The program is  developed in Linux.</p>
 
-<h3 id="toc_1">Features</h3>
+<h3 id="news">News</h3>
 
 <ul>
-<li><p>Two-radio (SO2R) support. Headphone and radio switching via parallel port 
+  <li>
+    <p>09/14/2019 new feature version 2.5.0: two keyboard support (experimental)</p>
+  </li>
+  <li>
+    <p>06/08/2018 support ARRL June VHF contest</p>
+  </li>
+  <li>
+    <p>04/05/2018 support Mississippi qso party</p>
+  </li>
+  <li>
+    <p>02/18/2018 lots of code updates; Qt4 support dropped- you must now use Qt5</p>
+  </li>
+  <li>
+    <p>10/21/2017 update SCP and CTY files; winkey bug fix</p>
+  </li>
+  <li>
+    <p>05/31/2017 2.1.4 fix bugs for WPX contest</p>
+  </li>
+  <li>
+    <p>12/02/2016 2.1.0 new support for voice keyer using the sound card</p>
+  </li>
+</ul>
+
+<h3 id="features">Features</h3>
+
+<ul>
+  <li>
+    <p>Two-radio (SO2R) support. Headphone and radio switching via parallel port 
 or <a href="http://www.k1xm.org/OTRSP/">OTRSP</a> (Open two-radio switching protocol)
-USB devices</p></li>
-<li><p>Uses <a href="http://sourceforge.net/projects/hamlib/">hamlib</a>  to control radios via serial port</p></li>
-<li><p>Supports soundcard based I/Q SDRs and some ethernet interface SDRs.
+USB devices</p>
+  </li>
+  <li>
+    <p>Uses <a href="http://sourceforge.net/projects/hamlib/">hamlib</a>  to control radios via serial port</p>
+  </li>
+  <li>
+    <p>Supports soundcard based I/Q SDRs and some ethernet interface SDRs.
 This include the <a href="http://fivedash.com/">Softrock</a> series,
 <a href="http://www.telepostinc.com/LP-PAN.html">LP-PAN</a>, and
 the <a href="http://www.afedri-sdr.com/">Afedri</a> SDR, including the dual-receiver Afedri
-AFE822x SDR-Net.</p></li>
-<li><p>Uses <a href="http://k1el.tripod.com/WhatisWK.html">Winkey</a> for CW generation</p></li>
+AFE822x SDR-Net.</p>
+  </li>
+  <li>
+    <p>Uses <a href="http://k1el.tripod.com/WhatisWK.html">Winkey</a> for CW generation</p>
+  </li>
 </ul>
 
-<h3 id="toc_2">Limitations</h3>
+<h3 id="limitations">Limitations</h3>
 
 <ul>
-<li><p>So2sdr is primarily designed for unassisted operating (it
-can connect to telnet dxclusters however).</p></li>
-<li><p>SSB support is quite limited at the moment and there is
-currently no support for digital modes.</p></li>
-<li><p>The number of different contests supported is small so far.</p></li>
+  <li>
+    <p>So2sdr is primarily designed for unassisted operating (it
+can connect to telnet dxclusters however).</p>
+  </li>
+  <li>
+    <p>There is currently no support for digital modes, with the exception
+of WSJTX modes in VHF contests.</p>
+  </li>
+  <li>
+    <p>The number of different contests supported is small so far.</p>
+  </li>
 </ul>
 
-<h3 id="toc_3">Screenshots</h3>
+<h3 id="screenshots">Screenshots</h3>
 
-<h4 id="toc_4">Main Window</h4>
+<h4 id="main-window">Main Window</h4>
 
 <ul>
-<li>Sosdr tries to present all basic information you need
-in one window so the user doesn&#39;t have to search multiple
+  <li>Sosdr tries to present all basic information you need
+in one window so the user doesn’t have to search multiple
 open windows: two radio interfaces, multiplier information, previous
 call information, etc.</li>
 </ul>
 
-<p><img src="images/main_window.png" alt="2015 NAQP CW" title="Main window"></p>
+<p><img src="images/main_window.png" alt="2015 NAQP CW" title="Main window" /></p>
 
-<h4 id="toc_5">SDR bandmap</h4>
+<h4 id="sdr-bandmap">SDR bandmap</h4>
 
 <ul>
-<li><p>A unique feature of So2sdr is color highlighting of actual signals
+  <li>
+    <p>A unique feature of So2sdr is color highlighting of actual signals
 on the bandmap. This can be used to rapidly identify new stations to
 work without tuning through the entire band. 
 Below dupes are highlighted in pink and unknown signals in white.
-White signals are much more likely to be stations you haven&#39;t
-worked before. Clicking on the bandmap tunes the radio.</p></li>
-<li><p>Note that despite some similarity to the display of CW Skimmer,
-So2sdr does not decode CW. That is up to the operator.</p></li>
-<li><p>So2sdr can also search the bandmap for the frequencies with no
+White signals are much more likely to be stations you haven’t
+worked before. Clicking on the bandmap tunes the radio.</p>
+  </li>
+  <li>
+    <p>Note that despite some similarity to the display of CW Skimmer,
+So2sdr does not decode CW. That is up to the operator.</p>
+  </li>
+  <li>
+    <p>So2sdr can also search the bandmap for the frequencies with no
 signals. This is a fast way to find a run frequency on a crowded
-band.</p></li>
+band.</p>
+  </li>
 </ul>
 
-<p><img src="images/bandmap.png" alt="bandmap"></p>
+<p><img src="images/bandmap.png" alt="bandmap" title="Bandmap" /></p>
 
-<h4 id="toc_6">So2sdr-bandmap with N1MM+</h4>
-
-<p>As of version 2.0.0, the bandmap part of so2sdr can be used as a stand-alone
-executable. It can read the frequency from N1MM+ logger, but more advanced
-functions are not yet supported.</p>
-
-<p><img src="images/n1mm-so2sdr.png" alt="N1MM-so2sdr"></p>
 
                     </div>
                 
