@@ -714,6 +714,8 @@ the "Call Updated QSL" message from being sent when not needed.
 * {PTTON1} {PTTOFF1} : turn radio 1 PTT on/off
 * {PTTON2} {PTTOFF2} : turn radio 2 PTT on/off
 * {PTTONR2} {PTTOFFR2} : turn inactive radio PTT on/off
+* {PLAY} : play a voice message. Followed by a string which is the filename
+that will be played. {PLAY}call will play the file call.wav
 * {RECORD} : record a voice message. Followed by a string which is the filename
 that will be recorded. {RECORD}call will record call.wav
 * {2KBD} : toggle two keyboard mode
@@ -724,9 +726,11 @@ that will be recorded. {RECORD}call will record call.wav
 <a name="ssb"></a>
 ### Voice keyer setup
 
+![Voice Messages](./voice_messages.png "Voice Messages")
+
 So2sdr can record and play voice messages through external scripts or
 devices (OTRSP or similar). The default scripts are set up to use the
-Pulseaudio sound system. Here is how to set it up:
+Pulseaudio sound system and gstreamer. Here is how to set it up:
 
 * The microphone should be connected to the sound card mic input.
 The sound card line out should be connected to the radio mic or line in. For so2r
@@ -772,10 +776,27 @@ pushbutton in the "SSB Messages" dialog.
 
         {RECORD}1
 
-* As of version 2.3.0, basic CQ and S&P operation with voice messages works,
-but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.
+* Here are alternate settings that use only ALSA without Pulseaudio. In this version, the
+ALSA loopback utility "alsaloop" is used to loop the mic input to the sound card output. The loopback
+is stopped when a message is played or recorded. Note that the snd-aloop kernel module must
+be loaded to use alsaloop:
 
-![Voice Messages](./voice_messages.png "Voice Messages")
+
+    * before play script: "killall alsaloop" Here -C and -P set the capture (i.e. mic input) and play (connected to radio) devices
+
+    * play message script: "gst-launch-1.0 -q filesrc location=$.wav ! wavparse ! audioconvert ! audioresample ! alsasink device=hw:0"
+
+    * after message played script: "alsaloop -C hw:0 -P hw:0 -t 50000 -d"
+
+    * before record script: "killall alsaloop"
+
+    * record script: "gst-launch-1.0 -q alsasrc device=hw:0 ! wavenc ! filesink location=$.wav"
+
+    * after record script: "alsaloop -C hw:0 -P hw:0 -t 50000 -d"
+
+
+* As of version 2.5.x, basic CQ and S&P operation with voice messages works,
+but features like auto-CQ, toggle-CQ, etc do not support voice messages yet.
 
 
 [Return to top](#top)
