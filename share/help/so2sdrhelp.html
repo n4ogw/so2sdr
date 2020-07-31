@@ -450,7 +450,7 @@ contest exchanges saved in a history database file. This file
 is a SQLITE database file and can be edited/examined using a
 number of programs (I use sqlitebrowser).</li>
 <li>Append Call history : append exchange history information
-to the database file as qso's are logged. You can also import
+to the database file as qsos are logged. You can also import
 them after a contest using the option under the File menu.</li>
 <li>Dupe behavior: three possible settings depending on
 how strict you want to be with allowing dupes.</li>
@@ -852,11 +852,23 @@ In most cases, you do not need to backspace to correct
 an exchange mistake- the program will take the last valid exchange
 on the line.</p>
 
-<p>That the exchange must be "validated", or enter will not log
+<p>In contests where there is a signal report in the exchange, this is by
+default assumed to be 599 or 59. If the other part of the exchange can
+be distinguished from a signal report, a non-599/59 report can be
+entered and will be logged.  Contests where the other part of the
+exchange is a number (CQWW, ARRL DX, IARU, CQ 160) are trickier. In
+some cases such as CQWW CW, the zone and signal report can always be
+distinguished because the RST is three digits while the zone is two
+digits. In other contests such as SSB CQWW this is not possible; in
+these cases the program will just assume the standard 599/59 signal
+report. If you need to log a non-standard report in these cases,
+just edit the log after the qso.</p>
+
+<p>That exchange must be "validated" or enter will not log
 the qso. In case there is a problem, it is possible to "force log"
 the qso- press ctrl-Enter instead of just enter. Be careful with
 these cases, the number and position of exchange elements has to
-match exactly in this case. These qso's may also be scored
+match exactly in this case. These qsos may also be scored
 incorrectly</p>
 
 <p>Shift-Enter instead of Enter will also log the qso without sending any CW.</p>
@@ -922,7 +934,7 @@ setting is also critical here.</p>
 
 <h4>Editing log information</h4>
 
-<p>Previous qso's can be edited in the log window by clicking on 
+<p>Previous qsos can be edited in the log window by clicking on 
 a field, editing the information, and pressing enter. Pressing escape
 instead cancels the changes. The following fields
 are editable: time, callsign, sent exchange, and received exchange. The
@@ -933,7 +945,7 @@ automatically. </p>
 fragment in the callsign window and press ctrl-F. ESC clears the 
 search results.</p>
 
-<p>Marking qso's as invalid: there is no way to delete qso's from the
+<p>Marking qsos as invalid: there is no way to delete qsos from the
 log. However, for each qso there is a checkbox. If this is unchecked, the
 qso is marked as invalid and 
 completely removed from dupe checking and scoring, and will not

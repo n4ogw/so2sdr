@@ -1599,11 +1599,11 @@ void So2sdr::prefillExch(int nr)
             if (log->contestType()==Sweepstakes_t) {
                 lineEditExchange[nr]->setCursorPosition(0);
             }
-        } else if (log->hasPrefill()) { // && !log->prefillExchange(qso[nr]).isEmpty()) {
+        } else if (log->hasPrefill()) {
             lineEditExchange[nr]->setText(log->prefillExchange(qso[nr]));
         }
+        exchCheck(nr,lineEditExchange[nr]->text());
     }
-    exchCheck(nr,lineEditExchange[nr]->text());
 }
 
 /*!

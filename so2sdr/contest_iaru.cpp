@@ -28,7 +28,7 @@ IARU::IARU(QSettings &cs, QSettings &ss) : Contest(cs,ss)
     dupeCheckingEveryBand = true;
     nExch                 = 2;
     logFieldPrefill       = new bool[nExch];
-    logFieldPrefill[0]    = true;
+    logFieldPrefill[0]    = false;
     logFieldPrefill[1]    = true;
     prefill               = true;
     finalExch             = new QByteArray[nExch];
@@ -135,15 +135,14 @@ bool IARU::validateExchange(Qso *qso)
     determineMultType(qso);
 
     // auto-fill rst
-    if (qso->mode == RIG_MODE_CW || qso->mode == RIG_MODE_CWR ||
-        qso->mode == RIG_MODE_RTTY || qso->mode == RIG_MODE_RTTYR) {
+    if (qso->modeType == CWType || qso->modeType == DigiType) {
         finalExch[0] = "599";
     } else {
         finalExch[0] = "59";
     }
-
     // is it a HQ or official?
     qso->isamult[1] = valExch_rst_state(1, qso->mult[1], qso);
+
     if (qso->isamult[1]) {
         // HQ's don't count for zone mult
         qso->isamult[0] = false;
@@ -151,13 +150,23 @@ bool IARU::validateExchange(Qso *qso)
         qso->zone       = 0;
     } else {
         // not a HQ : (RST) + zone
-        if (exchElement.size() == 2) {
-            finalExch[0] = exchElement[0]; // rst
-            finalExch[1] = exchElement[1]; // zone
-        } else {
-            finalExch[1] = exchElement[0]; // zone
+        // CW : look for non-default RST- will have three digits
+        // Phone is trickier : no way to find a non-default RST. Just assume 59
+        if (qso->modeType == CWType || qso->modeType == DigiType) {
+            for (int i=exchElement.size()-1;i>=0;i--) {
+                if (exchElement.at(i).size()==3) {
+                    finalExch[0] = exchElement.at(i);
+                    break;
+                }
+            }
         }
-
+        // take last non-three digit number as zone
+        for (int i=exchElement.size()-1;i>=0;i--) {
+            if (exchElement.at(i).size()!=3) {
+                finalExch[1] = exchElement.at(i);
+                break;
+            }
+        }
         // parse zone. ok is true if conversion to integer succeeds
         qso->zone = finalExch[1].toInt(&ok, 10);
         if (ok && qso->zone > 0 && qso->zone <= zoneMax()) {
@@ -196,5 +205,6 @@ bool IARU::validateExchange(Qso *qso)
     } else {
         qso->pts = 5;
     }
+    for (int i=0;i<nExch;i++) finalExch[i].clear();
     return ok;
 }

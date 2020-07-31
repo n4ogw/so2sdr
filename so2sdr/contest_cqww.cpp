@@ -28,7 +28,7 @@ CQWW::CQWW(QSettings &cs, QSettings &ss) : Contest(cs,ss)
     dupeCheckingEveryBand = true;
     nExch                 = 2;
     logFieldPrefill       = new bool[nExch];
-    logFieldPrefill[0]    = true;
+    logFieldPrefill[0]    = false;
     logFieldPrefill[1]    = true;
     prefill               = true;
     finalExch             = new QByteArray[nExch];
@@ -129,13 +129,26 @@ bool CQWW::validateExchange(Qso *qso)
     for (int ii = 0; ii < MMAX; ii++) qso->mult[ii] = -1;
 
     bool ok = false;
-    if (exchElement.size() == 2) {
-        finalExch[0] = exchElement[0];
-        finalExch[1] = exchElement[1];
-    } else if (exchElement.size() == 1) {
-        fillDefaultRST(qso);
-        finalExch[1] = exchElement[0];
+
+    fillDefaultRST(qso);
+    // CW : look for non-default RST- will have three digits
+    // Phone is trickier : no way to find a non-default RST. Just assume 59
+    if (qso->modeType == CWType || qso->modeType == DigiType) {
+        for (int i=exchElement.size()-1;i>=0;i--) {
+            if (exchElement.at(i).size()==3) {
+                finalExch[0] = exchElement.at(i);
+                break;
+            }
+        }
     }
+    // take last non-three digit number as zone
+    for (int i=exchElement.size()-1;i>=0;i--) {
+        if (exchElement.at(i).size()!=3) {
+            finalExch[1] = exchElement.at(i);
+            break;
+        }
+    }
+
     int zone=finalExch[1].toInt(&ok);
     if (ok) {
         if (zone>0 && zone<41) {
@@ -152,5 +165,6 @@ bool CQWW::validateExchange(Qso *qso)
             ok=false;
         }
     }
+    for (int i=0;i<nExch;i++) finalExch[i].clear();
     return(ok);
 }

@@ -2030,8 +2030,8 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
             statusBarDupe = false;
         }
         setDupeColor(nrig,qso[nrig]->dupe);
-        // if exchange isn't empty, should recheck it now
-        if (!lineEditExchange[nrig]->text().isEmpty()) {
+        // if exchange has been edited, should recheck it now
+        if (lineEditExchange[nrig]->isModified()) {
             exchCheck(nrig,lineEditExchange[nrig]->text());
         }
     } else {

@@ -1176,23 +1176,38 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
             // for contests with RS(T) (always assumed to be first exchange element), make sure
             // filled RS(T) is appropriate for the mode
             if (contest->exchType(0)==RST) {
-                switch (qso->modeType) {
-                case CWType:case DigiType:
-                    qso->prefill="599 ";
-                    break;
-                case PhoneType:
-                    qso->prefill="59 ";
-                    break;
+                if (contest->logPrefill(0)) {
+                    switch (qso->modeType) {
+                    case CWType:case DigiType:
+                        qso->prefill="599 ";
+                        break;
+                    case PhoneType:
+                        qso->prefill="59 ";
+                        break;
+                    }
                 }
-                qso->prefill = qso->prefill +
-                        m.record(i).value(SQL_COL_RCV2).toString().toLatin1() + " " +
-                        m.record(i).value(SQL_COL_RCV3).toString().toLatin1() + " " +
-                        m.record(i).value(SQL_COL_RCV4).toString().toLatin1();
+                if (contest->logPrefill(1)) {
+                    qso->prefill = qso->prefill + m.record(i).value(SQL_COL_RCV2).toString().toLatin1();
+                }
+                if (contest->logPrefill(2)) {
+                    qso->prefill = qso->prefill + " " + m.record(i).value(SQL_COL_RCV3).toString().toLatin1();
+                }
+                if (contest->logPrefill(3)) {
+                    qso->prefill = qso->prefill + " " + m.record(i).value(SQL_COL_RCV4).toString().toLatin1();
+                }
             } else {
-                qso->prefill = m.record(i).value(SQL_COL_RCV1).toString().toLatin1() + " " +
-                        m.record(i).value(SQL_COL_RCV2).toString().toLatin1() + " " +
-                        m.record(i).value(SQL_COL_RCV3).toString().toLatin1() + " " +
-                        m.record(i).value(SQL_COL_RCV4).toString().toLatin1();
+                if (contest->logPrefill(0)) {
+                    qso->prefill = qso->prefill + m.record(i).value(SQL_COL_RCV1).toString().toLatin1();
+                }
+                if (contest->logPrefill(1)) {
+                    qso->prefill = qso->prefill + " " + m.record(i).value(SQL_COL_RCV2).toString().toLatin1();
+                }
+                if (contest->logPrefill(2)) {
+                    qso->prefill = qso->prefill + " " + m.record(i).value(SQL_COL_RCV3).toString().toLatin1();
+                }
+                if (contest->logPrefill(3)) {
+                    qso->prefill = qso->prefill + " " + m.record(i).value(SQL_COL_RCV4).toString().toLatin1();
+                }
             }
             break;
         }

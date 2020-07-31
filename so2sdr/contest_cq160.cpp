@@ -28,7 +28,7 @@ CQ160::CQ160(QSettings &cs, QSettings &ss) : Contest(cs,ss)
     dupeCheckingEveryBand = true;
     nExch                 = 2;
     logFieldPrefill       = new bool[nExch];
-    logFieldPrefill[0]    = true;
+    logFieldPrefill[0]    = false;
     logFieldPrefill[1]    = true;
     prefill               = true;
     finalExch             = new QByteArray[nExch];
@@ -168,7 +168,7 @@ bool CQ160::validateExchange(Qso *qso)
 
     // get the exchange
     determineMultType(qso);
-
+    fillDefaultRST(qso);
     if (qso->isMM) {
         // /MM stations 5 points, not a multipler
         ok              = true;
@@ -189,15 +189,26 @@ bool CQ160::validateExchange(Qso *qso)
         ok = valExch_rst_state(0, qso->mult[0], qso);
     } else if (qso->isamult[1]) {
         // DX: sends zone, but mult is country
-        if (exchElement.size() == 2) {
-            finalExch[0] = exchElement[0]; // rst
-            finalExch[1] = exchElement[1]; // zone
-        } else {
-            fillDefaultRST(qso);
-            finalExch[1] = exchElement[0]; // zone
+        // CW : look for non-default RST- will have three digits
+        // Phone is trickier : no way to find a non-default RST. Just assume 59
+        if (qso->modeType == CWType || qso->modeType == DigiType) {
+            for (int i=exchElement.size()-1;i>=0;i--) {
+                if (exchElement.at(i).size()==3) {
+                    finalExch[0] = exchElement.at(i);
+                    break;
+                }
+            }
+        }
+        // take last non-three digit number as zone
+        for (int i=exchElement.size()-1;i>=0;i--) {
+            if (exchElement.at(i).size()!=3) {
+                finalExch[1] = exchElement.at(i);
+                break;
+            }
         }
         ok = true;
     }
     copyFinalExch(ok, qso);
+    for (int i=0;i<nExch;i++) finalExch[i].clear();
     return(ok);
 }
