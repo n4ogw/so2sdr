@@ -165,6 +165,7 @@ private:
     void addCall(QByteArray);
     bool checkUserDirectory();
     void deleteCall(QByteArray);
+    void deleteCallFreq(double f);
     void makeCall();
     void makeFreqScaleAbsolute();
     void qsyToNearest();

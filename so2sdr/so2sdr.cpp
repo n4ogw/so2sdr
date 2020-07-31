@@ -2091,7 +2091,7 @@ void So2sdr::updateWorkedMult(int nr)
 {
     if (lineEditCall[nr]->text().isEmpty()) return;
 
-    unsigned int worked[2]={0,0};
+    unsigned int worked[NRIG]={0,0};
     log->workedMults(qso[nr], worked);
     for (int ii = 0; ii < MMAX; ii++) {
         QString tmp = multNameLabel[ii]->text();
@@ -2349,9 +2349,9 @@ void So2sdr::updateMults(int ir,int bandOverride)
  */
 void So2sdr::updateRadioFreq()
 {
-    static ModeTypes oldModeType[2]={CWType,CWType};
+    static ModeTypes oldModeType[NRIG]={CWType,CWType};
     static bool init=false;
-    static int previousBand[2]={BAND_NONE,BAND_NONE};
+    static int previousBand[NRIG]={BAND_NONE,BAND_NONE};
 
     if (!init) {
         oldModeType[0]=cat[0]->modeType();
@@ -2385,7 +2385,6 @@ void So2sdr::updateRadioFreq()
             }
             previousBand[i]=cat[i]->band();
         }
-
         double f = rigFreq[i] / 1000.0;
         wsjtx[i]->setFreq(rigFreq[i]);
         if (cat[i]->radioOpen()) {

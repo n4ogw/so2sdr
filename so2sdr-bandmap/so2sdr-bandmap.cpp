@@ -1103,6 +1103,10 @@ void So2sdrBandmap::readData()
         case BANDMAP_CMD_DELETE_CALL: // delete callsign
             deleteCall(data);
             break;
+        case BANDMAP_CMD_DELETE_CALL_FREQ: // delete call at a specific frequency
+            f=data.toDouble(&ok);
+            deleteCallFreq(f);
+            break;
         case BANDMAP_CMD_QSY_UP:  // qsy to next higher signal
             qsyNext(true);
             break;
@@ -1166,6 +1170,23 @@ void So2sdrBandmap::deleteCall(QByteArray data)
     QList<Call>::iterator iter = callList.begin();
     while (iter != callList.end()) {
       if ((*iter).call == data)
+        iter = callList.erase(iter);
+      else
+        ++iter;
+    }
+}
+
+/*! delete call from callsign list at freq f
+ *
+ * finds all calls within SIG_MIN_FREQ_DIFF of f and deletes them
+ *   (this could delete more than one call)
+ *
+ */
+void So2sdrBandmap::deleteCallFreq(double f)
+{
+    QList<Call>::iterator iter = callList.begin();
+    while (iter != callList.end()) {
+      if (qAbs((*iter).freq - f) < SIG_MIN_FREQ_DIFF)
         iter = callList.erase(iter);
       else
         ++iter;

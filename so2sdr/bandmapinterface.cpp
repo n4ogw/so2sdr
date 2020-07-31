@@ -178,7 +178,7 @@ void BandmapInterface::addSpot(int nr,const BandmapEntry &spot)
 
 /*!
  * \brief BandmapInterface::removeSpot
- *  adds a call to the bandmap nr
+ *  removes a call to the bandmap nr
  * \param nr  : bandmap number (0,NRIG-1)
  * \param spot
  *
@@ -198,6 +198,33 @@ void BandmapInterface::removeSpot(int nr,const BandmapEntry &spot)
         }
         if (socket[nr].write(spot.call.data(),len)==-1) {
             qDebug("bandmapinterface removeSpot write error 3");
+        }
+    }
+}
+
+/*!
+ * \brief BandmapInterface::removeSpot
+ *  removes calls at frequency spot.f on bandmap nr
+ * \param nr  : bandmap number (0,NRIG-1)
+ * \param spot
+ *
+ *
+ */
+void BandmapInterface::removeSpotFreq(int nr,const BandmapEntry &spot)
+{
+    if (bandmapOn[nr] && socket[nr].state()==QAbstractSocket::ConnectedState)
+    {
+        const char cmd=BANDMAP_CMD_DELETE_CALL_FREQ;
+        QByteArray str=QByteArray::number(spot.f,'f',0);
+        char len=str.length();
+        if (socket[nr].write(&cmd,1)==-1) {
+            qDebug("bandmapinterface %d removeSpotFreq write error 1!",nr);
+        }
+        if (socket[nr].write(&len,1)==-1) {
+            qDebug("bandmapinterface %d removeSpotFreq write error 2!",nr);
+        }
+        if (socket[nr].write(str.data(),str.length())==-1) {
+            qDebug("bandmapinterface %d removeSpotFreq write error 3!",nr);
         }
     }
 }

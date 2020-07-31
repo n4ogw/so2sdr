@@ -38,6 +38,7 @@ public:
     explicit BandmapInterface(QSettings &s,QObject *parent = nullptr);
     ~BandmapInterface();
     void removeSpot(int nr,const BandmapEntry &spot);
+    void removeSpotFreq(int nr,const BandmapEntry &spot);
     void addSpot(int nr,const BandmapEntry &spot);
     void connectTcp();
     int currentBand(int nr) const;

@@ -151,19 +151,19 @@ void So2sdr::addSpot(QByteArray call, double f)
 
 
 /*!
-   add a callsign spot
+   add a callsign spot. d is dupe status
  */
 void So2sdr::addSpot(QByteArray call, double f, bool d)
 {
     if (call.isEmpty()) return;
+    int b = getBand(f);
+    if (b==BAND_NONE) return;
     BandmapEntry spot;
     spot.call = call;
     spot.f    = f;
     qint64 t = QDateTime::currentMSecsSinceEpoch();
     spot.createdTime = t;
     spot.dupe = d;
-    int b = getBand(f);
-    if (b==BAND_NONE) return;
     if (b >= 0 && b < N_BANDS) {
         bool dupe  = false;
         int  idupe = spotList[b].size();
@@ -184,7 +184,7 @@ void So2sdr::addSpot(QByteArray call, double f, bool d)
             // check to see if there is a spot close to the same frequency
             if (idupe==spotList[b].size()) {
                 for (int i = 0; i < spotList[b].size(); i++) {
-                    if (abs(spotList[b].at(i).f - f) < SIG_MIN_SPOT_DIFF) {
+                    if (qAbs(spotList[b].at(i).f - f) < SIG_MIN_SPOT_DIFF) {
                         dupe  = true;
                         idupe = i;
                         break;
@@ -194,7 +194,7 @@ void So2sdr::addSpot(QByteArray call, double f, bool d)
         } else {
             // for non-call spots, just check frequency
             for (int i = 0; i < spotList[b].size(); i++) {
-                if (abs(spotList[b].at(i).f - f) < SIG_MIN_SPOT_DIFF) {
+                if (qAbs(spotList[b].at(i).f - f) < SIG_MIN_SPOT_DIFF) {
                     dupe  = true;
                     idupe = i;
                     break;
@@ -239,12 +239,12 @@ void So2sdr::addSpot(QByteArray call, double f, bool d)
  */
 void So2sdr::checkSpot(int nr)
 {
-    static double lastFreq[2] = { 0, 0 };
+    static double lastFreq[NRIG] = { 0, 0 };
     // initialize last freq
-    if (qAbs(lastFreq[nr]) < 1.0) {
-        lastFreq[nr] = cat[nr]->getRigFreq();
-        return;
-    }
+   // if (qAbs(lastFreq[nr]) < 1.0) {
+   //     lastFreq[nr] = cat[nr]->getRigFreq();
+   //    return;
+   // }
     double f = cat[nr]->getRigFreq();
     if (cat[nr]->band()==BAND_NONE) return;
 
@@ -259,7 +259,7 @@ void So2sdr::checkSpot(int nr)
     // search list of spots for one matching current freq
     bool found = false;
     for (int i = 0; i < spotList[cat[nr]->band()].size(); i++) {
-        if (abs(f - spotList[cat[nr]->band()].at(i).f) < SIG_MIN_FREQ_DIFF) {
+        if (qAbs(f - spotList[cat[nr]->band()].at(i).f) < SIG_MIN_FREQ_DIFF) {
             if (spotList[cat[nr]->band()].at(i).call != "*") {
                 lineEditCall[nr]->setText(spotList[cat[nr]->band()].at(i).call);
             } else {
@@ -277,7 +277,7 @@ void So2sdr::checkSpot(int nr)
     if (found) {
         prefixCheck(nr, lineEditCall[nr]->text());
         spotListPopUp[nr] = true;
-    } else if (abs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && log) {
+    } else if (qAbs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && log) {
         if (cat[nr]->modeType()==CWType && winkey->isSending() && nr == activeTxRadio)
         {
             winkey->cancelcw();
@@ -372,7 +372,7 @@ void So2sdr::checkSpot(int nr)
     lastFreq[nr] = f;
 }
 
-/*! remove a spot
+/*! remove a spot by callsign
  */
 void So2sdr::removeSpot(QByteArray call, int band)
 {
@@ -395,7 +395,7 @@ void So2sdr::removeSpot(QByteArray call, int band)
     }
 }
 
-/*! remove a spot at freq f
+/*! remove all spots within SIG_MIN_FREQ_DIFF of freq f
  */
 void So2sdr::removeSpotFreq(double f, int band)
 {
@@ -403,7 +403,7 @@ void So2sdr::removeSpotFreq(double f, int band)
 
     int indx = -1;
     for (int i = 0; i < spotList[band].size(); i++) {
-        if (abs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
+        if (qAbs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
             indx = i;
             break;
         }
@@ -411,7 +411,7 @@ void So2sdr::removeSpotFreq(double f, int band)
     if (indx != -1) {
         for (int i=0;i<NRIG;i++) {
             if (bandmap->bandmapon(i) && bandmap->currentBand(i)==band) {
-                bandmap->removeSpot(i,spotList[band].at(indx));
+                bandmap->removeSpotFreq(i,spotList[band].at(indx));
             }
         }
         spotList[band].removeAt(indx);
@@ -425,7 +425,7 @@ bool So2sdr::isaSpot(double f, int band)
     if (band==BAND_NONE) return false;
 
     for (int i = 0; i < spotList[band].size(); i++) {
-        if (abs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
+        if (qAbs(spotList[band][i].f - f) < SIG_MIN_FREQ_DIFF) {
             return(true);
         }
     }
