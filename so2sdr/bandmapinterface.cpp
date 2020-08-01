@@ -339,7 +339,7 @@ void BandmapInterface::xmlParse()
     }
     xmlReader.clear();
     if (deleteCall && !call.isEmpty() && f>0) {
-        emit(removeCall(call,getBand(f)));
+        emit(removeCall(f,getBand(f)));
     } else if (f>0 && (nr!=-1)) {
         if (nr==0) {
             emit(qsy1(f));

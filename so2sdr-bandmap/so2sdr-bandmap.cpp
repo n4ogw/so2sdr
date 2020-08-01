@@ -1247,31 +1247,31 @@ int So2sdrBandmap::getBand(double f)
     int g=qRound(f / 1000000.0);
     switch (g) {
     case 1: case 2: return(BAND160);
-        break; // 160
+         // 160
     case 3: case 4: return(BAND80);
-        break; // 80
+         // 80
     case 5: return(BAND60);
-        break; // 60
+         // 60
     case 6: case 7: return(BAND40);
-        break; // 40
+         // 40
     case 9: case 10: return(BAND30);
-        break; // 30
+         // 30
     case 13: case 14: return(BAND20);
-        break; // 20
+         // 20
     case 18: return(BAND17);
-        break; // 17
+         // 17
     case 20: case 21: return(BAND15);
-        break; // 15
+         // 15
     case 24: case 25: return(BAND12);
-        break; // 12
+         // 12
     case 27: case 28: case 29: case 30: case 31: return(BAND10);
-        break; // 10
+        // 10
     case 49: case 50:case 51:case 52:case 53:case 54: case 55: case 56: return(BAND6);
-        break; // 6
+         // 6
     case 143: case 144:case 145:case 146:case 147:case 148: case 149: return(BAND2);
-        break; // 2
+         // 2
     case 219:case 220:case 221:case 222:case 223:case 224:case 225: return(BAND222);
-        break; // 220 MHz
+        // 220 MHz
     }
     // handle UHF
     double fmhz=f/1000000;
@@ -1297,7 +1297,7 @@ void So2sdrBandmap::setBandName(int b)
 {
     const QString bands[N_BANDS] = { "160", "80", "40", "20", "15", "10", "60", "30", "17", "12", "6", "2","1.25m",
                                         "70cm","33cm","1.2G","2.3G","3.3G","5.6G","10G","24G","47G","76G","122G","134G","241G","630m","2200m"};
-    if (b<0 || b>N_BANDS) {
+    if (b<0 || b>=N_BANDS) {
         bandName.clear();
     } else {
         bandName=bands[b];

@@ -222,7 +222,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
     sdr->hide();
     bandmap=new BandmapInterface(*settings,this);
-    connect(bandmap,SIGNAL(removeCall(QByteArray,int)),this,SLOT(removeSpot(QByteArray,int)));
+    connect(bandmap,SIGNAL(removeCall(double,int)),this,SLOT(removeSpotFreq(double,int)));
     connect(bandmap,SIGNAL(qsy1(double)),cat[0],SLOT(qsyExact(double)));
     connect(bandmap,SIGNAL(qsy2(double)),cat[1],SLOT(qsyExact(double)));
     connect(bandmap,SIGNAL(sendMsg(QString)),So2sdrStatusBar,SLOT(showMessage(QString)));

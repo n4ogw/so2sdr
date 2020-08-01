@@ -240,11 +240,7 @@ void So2sdr::addSpot(QByteArray call, double f, bool d)
 void So2sdr::checkSpot(int nr)
 {
     static double lastFreq[NRIG] = { 0, 0 };
-    // initialize last freq
-   // if (qAbs(lastFreq[nr]) < 1.0) {
-   //     lastFreq[nr] = cat[nr]->getRigFreq();
-   //    return;
-   // }
+
     double f = cat[nr]->getRigFreq();
     if (cat[nr]->band()==BAND_NONE) return;
 

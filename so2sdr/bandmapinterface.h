@@ -55,7 +55,7 @@ signals:
     void bandmap2state(bool);
     void qsy1(double);
     void qsy2(double);
-    void removeCall(QByteArray,int);
+    void removeCall(double,int);
     void sendMsg(const QString &msg);
 
 public slots:

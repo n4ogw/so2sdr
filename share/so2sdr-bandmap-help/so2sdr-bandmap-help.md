@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.4
+## So2sdr-bandmap Help Version 2.5.5
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.5 (07/31/2020)
+
+* change how entry of zones is handled in RST+zone contests. Now can update zone by simply typing a space and the new zone. In some cases (SSB mode) this will no longer recognize a non-standard RST/RS. Non-standard signal reports can be entered in this case after logging the qso using the edit function.
+
+* fix bug with bandmap dupe marking ("*" call and -/= keys). All dupe marks were being  deleted at once.
 
 ## version 2.5.4 (06/20/2020)
 
