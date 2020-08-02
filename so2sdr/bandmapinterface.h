@@ -49,6 +49,7 @@ public:
     void setFreqLimits(int nr, double flow, double fhigh);
     void setAddOffset(double f, int nr);
     void syncCalls(int nr,QList<BandmapEntry> &spotList);
+    unsigned long winId(int nr) const {return winid[nr];}
 
 signals:
     void bandmap1state(bool);
@@ -86,6 +87,7 @@ private:
     int                  cmdLen[NRIG];
     int                  port[NRIG];
     int                  band[NRIG];
+    unsigned long        winid[NRIG];
     QProcess             bandmapProcess[NRIG];
     QTcpSocket           socket[NRIG];
     QUdpSocket           socketUdp;

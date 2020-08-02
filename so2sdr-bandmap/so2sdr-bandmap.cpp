@@ -1343,6 +1343,7 @@ void So2sdrBandmap::writeUdpXML(double freq,QByteArray call,bool del)
     stream.writeStartElement("So2sdr");
     stream.writeStartElement("bandmap");
     stream.writeAttribute("RadioNr",QString::number(settings->value(s_sdr_nrig,s_sdr_nrig).toInt()+1));
+    stream.writeAttribute("winid",QString::number(winId()));
     if (!call.isEmpty()) {
         stream.writeAttribute("call",call);
     }

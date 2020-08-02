@@ -3746,7 +3746,7 @@ void So2sdr::initVariables()
 
 /*!
  * \brief So2sdr::screenShot
- * Take a screenshot of the bandmap windows
+ * Take a screenshot of main and bandmap windows
  *
  */
 void So2sdr::screenShot()
@@ -3761,6 +3761,18 @@ void So2sdr::screenShot()
     QString filename="screenshot-main-"+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
     p.save(filename,format.toLatin1());
     QCoreApplication::processEvents();
+    So2sdrStatusBar->showMessage("Saved screenshot", 3000);
+
+    // bandmaps
+    for (int i=0;i<NRIG;i++) {
+        if (bandmap->bandmapon(i) && bandmap->winId(i)!=0) {
+            p=screen->grabWindow(bandmap->winId(i));
+            QCoreApplication::processEvents();
+            filename="screenshot-bandmap-"+QString::number(i+1)+"-"+QDateTime::currentDateTimeUtc().toString(Qt::ISODate)+".png";
+            p.save(filename,format.toLatin1());
+            QCoreApplication::processEvents();
+        }
+    }
     So2sdrStatusBar->showMessage("Saved screenshot", 3000);
 }
 

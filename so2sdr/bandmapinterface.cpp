@@ -39,6 +39,7 @@ BandmapInterface::BandmapInterface(QSettings &s, QObject *parent) :
         cmd[i]=0;
         bandmapOn[i]=false;
         bandmapAvailable[i]=false;
+        winid[i]=0;
         switch (i) {
         case 0:
             connect(&bandmapProcess[0],SIGNAL(stateChanged(QProcess::ProcessState)),this,SLOT(launchBandmap1State(QProcess::ProcessState)));
@@ -321,6 +322,13 @@ void BandmapInterface::xmlParse()
                     nr=attr.value("RadioNr").toString().toInt(&ok)-1;
                     if (ok && (nr==0 || nr==1)) {
                         bandmapAvailable[nr]=true;
+                    }
+                }
+                if (attr.hasAttribute("winid")) {
+                    if (nr==0 || nr ==1) {
+                        bool ok;
+                        winid[nr] = attr.value("winid").toULong(&ok);
+                        if (!ok) winid[nr] = 0;
                     }
                 }
                 if (attr.hasAttribute("call")) {
