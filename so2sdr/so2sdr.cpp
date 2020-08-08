@@ -113,7 +113,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     rLabelPtr[0]      = new QLabel("<font color=#FF0000>R1:OFF /font>");
     rLabelPtr[1]      = new QLabel("<font color=#FF0000>R2:OFF </font>");
     winkeyLabel       = new QLabel("<font color=#FF0000>WK:OFF </font>");
-    grabLabel         = new QLabel("Grab");
+    grabLabel         = new QLabel("<font color=#0000FF>Grab");
     offPtr            = new QLabel("");
     autoCQStatus      = new QLabel("");
     duelingCQStatus   = new QLabel("");
@@ -359,7 +359,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     switchAudio(activeRadio);
     switchTransmit(activeRadio);
     callFocus[activeRadio]=true;
-    setEntryFocus();
+    setEntryFocus(activeRadio);
     for (int i = 0; i < NRIG; i++) {
         lineEditExchange[i]->hide();
         lineEditCall[i]->setEnabled(false);
@@ -561,26 +561,34 @@ void So2sdr::ungrab()
  * \brief So2sdr::setEntryFocus
  * Sets focus and grab status to current line edit
  */
-void So2sdr::setEntryFocus()
+void So2sdr::setEntryFocus(int nr)
 {
-    if (callFocus[activeRadio]) {
-        lineEditCall[activeRadio]->setFocus();
-        lineEditCall[activeRadio]->deselect();
+    if (callFocus[nr]) {
+        lineEditCall[nr]->setFocus();
+        lineEditCall[nr]->deselect();
         if (grabbing) {
-            lineEditCall[activeRadio]->grabKeyboard();
-            lineEditCall[activeRadio]->activateWindow();
+            lineEditCall[nr]->grabKeyboard();
+            lineEditCall[nr]->activateWindow();
             raise();
         }
-        grabWidget = lineEditCall[activeRadio];
+        grabWidget = lineEditCall[nr];
+        if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+            lineEditCall[nr]->setMyFocus(true);
+            lineEditExchange[nr]->setMyFocus(false);
+        }
     } else {
-        lineEditExchange[activeRadio]->setFocus();
-        lineEditExchange[activeRadio]->deselect();
+        lineEditExchange[nr]->setFocus();
+        lineEditExchange[nr]->deselect();
         if (grabbing) {
-            lineEditExchange[activeRadio]->grabKeyboard();
-            lineEditExchange[activeRadio]->activateWindow();
+            lineEditExchange[nr]->grabKeyboard();
+            lineEditExchange[nr]->activateWindow();
             raise();
         }
-        grabWidget = lineEditExchange[activeRadio];
+        grabWidget = lineEditExchange[nr];
+        if (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool()) {
+            lineEditCall[nr]->setMyFocus(false);
+            lineEditExchange[nr]->setMyFocus(true);
+        }
     }
 }
 
@@ -692,7 +700,7 @@ void So2sdr::enableUI()
     wsjtxAction2->setEnabled(true);
     uiEnabled = true;
     callFocus[activeRadio]=true;
-    setEntryFocus();
+    setEntryFocus(activeRadio);
 }
 
 
@@ -779,7 +787,7 @@ void So2sdr::updateOptions()
     }
     updateBreakdown();
     updateMults(activeRadio);
-    setEntryFocus();
+    setEntryFocus(activeRadio);
     startMaster();
     if (csettings->value(c_historymode,c_historymode_def).toBool()) {
         history->startHistory();
@@ -950,7 +958,7 @@ bool So2sdr::setupContest()
         lineEditExchange[i]->setEnabled(true);
     }
     callFocus[activeRadio]=true;
-    setEntryFocus();
+    setEntryFocus(activeRadio);
     initLogView();
     loadSpots();
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
@@ -1767,7 +1775,7 @@ void So2sdr::switchRadios(bool switchcw)
     if (switchcw) {
         switchTransmit(activeRadio);
     }
-    setEntryFocus();
+    setEntryFocus(activeRadio);
     if (callFocus[activeRadio]) {
         if (qso[activeRadio]->call.isEmpty()) {
             lineEditCall[activeRadio]->setCursorPosition(0);

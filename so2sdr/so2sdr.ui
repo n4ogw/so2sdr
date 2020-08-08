@@ -1646,7 +1646,7 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLineEdit" name="lineEditExchange1">
+         <widget class="LineEdit" name="lineEditExchange1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -1969,7 +1969,7 @@
          </widget>
         </item>
         <item row="4" column="5">
-         <widget class="QLineEdit" name="lineEditExchange2">
+         <widget class="LineEdit" name="lineEditExchange2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -2252,7 +2252,7 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEditCall1">
+         <widget class="LineEdit" name="lineEditCall1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -2423,7 +2423,7 @@
          </widget>
         </item>
         <item row="3" column="5">
-         <widget class="QLineEdit" name="lineEditCall2">
+         <widget class="LineEdit" name="lineEditCall2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>

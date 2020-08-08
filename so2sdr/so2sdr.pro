@@ -80,7 +80,9 @@ HEADERS += cwmessagedialog.h \
     keyboardhandler.h \
     wsjtxcalldialog.h \
     wsjtxdelegate.h \
-    wsjtxmessage.h
+    wsjtxmessage.h \
+    lineedit.h \
+    menustyle.h
 
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
@@ -167,7 +169,8 @@ SOURCES += cwmessagedialog.cpp \
     keyboardhandler.cpp \
     wsjtxcalldialog.cpp \
     wsjtxdelegate.cpp \
-    wsjtxmessage.cpp
+    wsjtxmessage.cpp \
+    lineedit.cpp
 
  unix { 
     include (../common.pri)

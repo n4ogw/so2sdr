@@ -18,6 +18,7 @@
   */
 #include <QApplication>
 #include "so2sdr.h"
+#include "menustyle.h"
 #include <QCoreApplication>
 #include <QStringList>
 
@@ -25,6 +26,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QStringList args=app.arguments();
+
+    // set style that prevents menubar from grabbing focus when Alt pressed
+    app.setStyle(new MenuStyle());
 
     So2sdr *main = new So2sdr(args);
     QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));

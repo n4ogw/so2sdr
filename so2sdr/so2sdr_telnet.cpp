@@ -127,7 +127,7 @@ void So2sdr::showTelnet(bool checkboxState)
         }
         telnet->show();
         telnetOn = true;
-        setEntryFocus();
+        setEntryFocus(activeRadio);
     }
 }
 
@@ -135,6 +135,7 @@ void So2sdr::showTelnet(bool checkboxState)
  */
 void So2sdr::addSpot(QByteArray call, double f)
 {
+    qDebug("addSpot <%s>",call.data());
     // * is a special case, used to mark freq without callsign
     bool d = true;
     if (call != "*") {
@@ -323,7 +324,7 @@ void So2sdr::checkSpot(int nr)
             qso[nr]->mult[ii]=-1;
         }
         callFocus[nr] = true;
-        setEntryFocus();
+        setEntryFocus(activeRadio);
         MasterTextEdit->clear();
         statusBarDupe = false;
         lineEditCall[nr]->clear();

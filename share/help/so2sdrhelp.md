@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.5
+## SO2SDR Help file version 2.5.6
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1008,6 +1008,14 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.6 (08/08/2020)
+
+* Make cursor visible in two keyboard mode
+* Correct Sprint behavior in two keyboard mode
+* Fix behavior of 2KBD macro. Required adding a slight delay when this macro is triggered
+* add status bar message when starting/stopping two keyboard mode
+* Starting two keyboard mode now disables Grab mode- the two keyboard handler automatically grabs the keyboard
 
 ## version 2.5.5 (07/31/2020)
 

@@ -79,7 +79,7 @@ void So2sdr::showDupesheet(int nr, bool checkboxState)
     } else {
         dupesheet[nr]->show();
         populateDupesheet();
-        setEntryFocus();
+        setEntryFocus(nr);
     }
 }
 

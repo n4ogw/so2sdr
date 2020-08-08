@@ -34,6 +34,7 @@
 #include "ui_so2sdr.h"
 #include "bandmapentry.h"
 #include "utils.h"
+#include "lineedit.h"
 
 class BandmapInterface;
 class CabrilloDialog;
@@ -87,7 +88,7 @@ public slots:
     void removeSpot(QByteArray call, int band);
     void removeSpotFreq(double f, int band);
     void rescore();
-    void setEntryFocus();
+    void setEntryFocus(int nr);
     void settingsUpdate();
     void showMessage(QString);
     void stationUpdate();
@@ -251,8 +252,8 @@ private:
     QLabel               *twoKeyboardStatus;
     QLabel               *validLabel[NRIG];
     QLabel               *winkeyLabel;
-    QLineEdit            *lineEditCall[NRIG];
-    QLineEdit            *lineEditExchange[NRIG];
+    LineEdit            *lineEditCall[NRIG];
+    LineEdit            *lineEditExchange[NRIG];
     QLineEdit            *wpmLineEditPtr[NRIG];
     QList<BandmapEntry>  spotList[N_BANDS];
     QList<QByteArray>    excludeMults[MMAX];
@@ -288,8 +289,8 @@ private:
     void altd();
     void altDEnter(int level, Qt::KeyboardModifiers mod);
     void backSlash(int kbdNr);
-    void keyCtrlDn();
-    void keyCtrlUp();
+    void keyCtrlDn(int nr);
+    void keyCtrlUp(int nr);
     bool checkLogFileVersion(QString fname);
     void checkSpot(int nr);
     bool checkUserDirectory();
@@ -301,13 +302,14 @@ private:
     void setCqMode(int i);
     void decaySpots();
     void disableUI();
-    void down();
+    void down(int nr);
     void enableUI();
     void enter(Qt::KeyboardModifiers, int kbdNr=0);
     bool enterFreqOrMode();
     void esc(Qt::KeyboardModifiers, int kbdNr=0);
     void exchCheck(int nr,const QString &exch);
     void fillSentExch(Qso *qso,int nr);
+    void handleKeys(int nr,int code, bool shift, bool ctrl, bool alt);
     void initDupeSheet();
     void initLogView();
     void initPointers();
@@ -319,7 +321,7 @@ private:
     void loadSpots();
     bool logPartial(int nrig, QByteArray partial, bool external=false, Qso *externalQso=nullptr);
     void logSearch(int nr);
-    void markDupe(int nrig);
+    void markDupe(int nr);
     int nDupesheet() const;
     void populateDupesheet();
     void prefixCheck(int nrig, const QString &call);
@@ -339,9 +341,9 @@ private:
     bool setupContest();
     void showDupesheet(int nr, bool checkboxState);
     void spaceAltD();
-    void spaceBar();
-    void spaceSP(int nrig);
-    void spaceSprint();
+    void spaceBar(int nr);
+    void spaceSP(int nr);
+    void spaceSprint(int nr);
     void spMode(int i);
     void sprintMode();
     void startTimers();
@@ -349,9 +351,9 @@ private:
     void stopTwokeyboard();
     void superPartial(QByteArray partial);
     void swapRadios();
-    void tab(int kbdNr);
+    void tab(int nr);
     void twoKeyboard();
-    void up();
+    void up(int nr);
     void updateBandmapDupes(const Qso *qso);
     void updateBreakdown();
     void updateDupesheet(QByteArray call,int nr);
