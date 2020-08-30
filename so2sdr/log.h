@@ -43,6 +43,7 @@
 #include "contest_stew.h"
 #include "contest_sweepstakes.h"
 #include "contest_wpx.h"
+#include "contest_wwdigi.h"
 #include "contest_paqp.h"
 #include "cty.h"
 #include "defines.h"

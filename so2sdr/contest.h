@@ -83,6 +83,7 @@ public:
     bool newCall(QByteArray &) const;
     int mult(int row, int ii) const;
     void multIndx(Qso *qso) const;
+    MultTypeDef contestMultType(int ii) { return multType[ii]; }
     int newMult(int row, int ii) const;
     int nExchange() const;
     ModeTypes nextModeType(ModeTypes m) const;

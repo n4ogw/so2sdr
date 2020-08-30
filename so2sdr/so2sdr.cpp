@@ -909,8 +909,8 @@ bool So2sdr::setupContest()
         bandLabel[i]->setText(log->bandLabel(i));
         if (!log->bandLabelEnable(i)) {
             bandQsoLabel[i]->hide();
-            bandMult1Label[i]->hide();
-            bandMult2Label[i]->hide();
+            multLabel[0][i]->hide();
+            multLabel[1][i]->hide();
         }
     }
     history = new History(*csettings,this);
@@ -3630,18 +3630,6 @@ void So2sdr::initPointers()
     bandQsoLabel[3]=qso20Label;
     bandQsoLabel[4]=qso15Label;
     bandQsoLabel[5]=qso10Label;
-    bandMult1Label[0]=mult160Label;
-    bandMult1Label[1]=mult80Label;
-    bandMult1Label[2]=mult40Label;
-    bandMult1Label[3]=mult20Label;
-    bandMult1Label[4]=mult15Label;
-    bandMult1Label[5]=mult10Label;
-    bandMult2Label[0]=mult160Label2;
-    bandMult2Label[1]=mult80Label2;
-    bandMult2Label[2]=mult40Label2;
-    bandMult2Label[3]=mult20Label2;
-    bandMult2Label[4]=mult15Label2;
-    bandMult2Label[5]=mult10Label2;
     multNameLabel[0] = multName;
     multNameLabel[1] = multName2;
     multLabel[0][0] = mult160Label;

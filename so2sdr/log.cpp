@@ -508,7 +508,8 @@ void Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const
     qso->dupe=dupe;
     // if not dupe, check if qso is a new mult; this is used by the wsjtx call list
     // in contests using grids for mults. @todo update this for all mult types
-    if (!dupe && csettings.value(c_multfile1,c_multfile1_def).toString()=="grid" && !qso->mult_name.isEmpty()) {
+    if (!dupe && (contest->contestMultType(0)==Grids || contest->contestMultType(0)==GridFields) && !qso->mult_name.isEmpty()) {
+        if (contest->contestMultType(0)==GridFields) qso->mult_name=qso->mult_name.left(2);
         contest->multIndx(qso);
     } else {
         qso->isnewmult[0]=false;
@@ -1410,6 +1411,10 @@ int Log::idPfx(Qso *qso, bool &qsy) const
          static_cast<PAQP*>(contest)->setWithinState(false);
          snt_exch[0]="#";
          snt_exch[1]=settings.value(s_state,s_state_def).toString();
+     }
+     if (name == "WWDIGI") {
+         contest = new WWDigi(csettings,settings);
+         snt_exch[0] = settings.value(s_grid,s_grid_def).toString();
      }
      if (contest) {
          int sz=csettings.beginReadArray(c_qso_type1);

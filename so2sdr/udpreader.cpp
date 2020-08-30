@@ -156,7 +156,7 @@ void UDPReader::clearCalls()
  * UDPReader::decayCalls
  *
  *  updates age of calls, removes those with age > decayTime
- *  also update dupe status and multiplier status for VHF contest
+ *  also update dupe status and multiplier status for VHF contest or WW Digi
  */
 void UDPReader::decayCalls()
 {
@@ -187,9 +187,6 @@ void UDPReader::decayCalls()
         bool oldDupe=query.value(WSJTX_SQL_COL_DUPE).toBool();
         bool oldMult=query.value(WSJTX_SQL_COL_MULT).toBool();
         emit(dupeCheck(&qso));
-        if ( (_band < BAND6) || (_band==BAND630) || (_band==BAND2200)) {
-            qso.isnewmult[0]=false;
-        }
         if (qso.dupe!=oldDupe || qso.isnewmult[0]!=oldMult) {
             if (qso.dupe) {
                 highlightCall(qso.call,Qt::white,DUPE_COLOR);
@@ -241,9 +238,6 @@ void UDPReader::redupe()
         qso.mult_name=query.value(WSJTX_SQL_COL_GRID).toByteArray();
         qso.isamult[0]=true;
         emit(dupeCheck(&qso));
-        if ( (_band < BAND6) || (_band==BAND630) || (_band==BAND2200)) {
-            qso.isnewmult[0]=false;
-        }
         if (qso.dupe!=oldDupe || qso.isnewmult[0]!=oldMult) {
             if (qso.dupe) {
                 highlightCall(qso.call,Qt::white,DUPE_COLOR);
@@ -407,10 +401,6 @@ void UDPReader::processDatagram(QNetworkDatagram datagram)
                 }
                 qso.mult_name=grid;
                 emit(dupeCheck(&qso));
-                // only highlight mults on VHF+ @todo make this more general
-                if ( (_band < BAND6) || (_band==BAND630) || (_band==BAND2200)) {
-                    qso.isnewmult[0]=false;
-                }
                 if (qso.dupe) {
                     highlightCall(qso.call,Qt::white,DUPE_COLOR);
                 } else if (qso.isnewmult[0]) {

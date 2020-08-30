@@ -216,7 +216,9 @@ Contest::~Contest()
 }
 
 /*!
-  Determine mult index. Currently only implemented for Uniques, Special, Grids, and Prefix mults
+  Determine mult index. Currently only implemented for Uniques, Special, Grids, GridFields, and Prefix mults
+
+  also checks to see if this is a new mult
   */
 void Contest::multIndx(Qso *qso) const
 {
@@ -224,7 +226,7 @@ void Contest::multIndx(Qso *qso) const
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists
         if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix ||
-                                 multType[ii] == Grids)) {
+                                 multType[ii] == Grids || multType[ii] == GridFields)) {
             QByteArray tmp;
             if (multType[ii] == Uniques) {
                 tmp = qso->call;
@@ -250,6 +252,17 @@ void Contest::multIndx(Qso *qso) const
                 qso->isnewmult[ii]=false;
                 qso->mult[ii]=j;
             }
+        }
+    }
+    /* recheck newmult status for contests where mults count per-band
+       if mults do not count per-mode, store them all in the CW slot */
+    if (settings.value(c_multsband,c_multsband_def).toBool()) {
+        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
+            if (qso->isnewmult[ii]) continue;
+
+            mode_t mode=CWType;
+            if (settings.value(c_multsmode,c_multsmode_def).toBool()) mode=qso->modeType;
+            qso->isnewmult[ii]=!multWorked[ii][mode][qso->band][qso->mult[ii]];
         }
     }
 }
@@ -296,7 +309,7 @@ void Contest::addQsoMult(Qso *qso)
         // unique callsigns, special mults. Check to see if this is
         // a completely new mult, and if so add it to the lists
         if (qso->isamult[ii] && (multType[ii] == Uniques || multType[ii] == Special || multType[ii] == Prefix ||
-                                 multType[ii] == Grids)) {
+                                 multType[ii] == Grids || multType[ii] == GridFields)) {
             QByteArray tmp;
             if (multType[ii] == Uniques) {
                 tmp = qso->call;
@@ -688,6 +701,9 @@ void Contest::readMultFile(QByteArray filename[MMAX], const Cty *cty)
         } else if (multFile[ii].toLower() == "grid") {
             _nMults[ii] = 0;
             multType[ii] = Grids;
+        } else if (multFile[ii].toLower() == "gridfield") {
+            _nMults[ii] = 0;
+            multType[ii] = GridFields;
         } else if (multFile[ii].toLower() == "cq_zone") {
             multType[ii] = CQZone;
             _nMults[ii]  = _zoneMax;
@@ -810,8 +826,8 @@ void Contest::determineMultType(Qso *qso)
                 }
             }
             break;
-        case Uniques: case Grids:
-            // unique callsigns, grids. Anything is ok
+        case Uniques: case Grids: case GridFields:
+            // unique callsigns, grids, grid fields. Anything is ok
             qso->isamult[ii] = true;
             break;
         case ARRLCountry: case CQCountry:

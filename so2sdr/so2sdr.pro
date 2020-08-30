@@ -82,7 +82,8 @@ HEADERS += cwmessagedialog.h \
     wsjtxdelegate.h \
     wsjtxmessage.h \
     lineedit.h \
-    menustyle.h
+    menustyle.h \
+    contest_wwdigi.h
 
 FORMS += cwmessagedialog.ui \
     so2sdr.ui \
@@ -170,7 +171,8 @@ SOURCES += cwmessagedialog.cpp \
     wsjtxcalldialog.cpp \
     wsjtxdelegate.cpp \
     wsjtxmessage.cpp \
-    lineedit.cpp
+    lineedit.cpp \
+    contest_wwdigi.cpp
 
  unix { 
     include (../common.pri)

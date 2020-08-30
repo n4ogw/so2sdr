@@ -112,7 +112,7 @@ bool BandOffsetSetup::invert(int band) const
 
 void BandOffsetSetup::updateFromSettings()
 {
-    int sz;
+    int sz=0;
     switch (sdr) {
     case (afedri_t):
         sz=settings.beginReadArray("custom_offset_afedri");
@@ -124,6 +124,7 @@ void BandOffsetSetup::updateFromSettings()
         sz=settings.beginReadArray("custom_offset_netsdr");
         break;
     }
+    if (!sz) return;
     for (int i=0;i<sz;i++) {
         settings.setArrayIndex(i);
         QList<QStandardItem*> itemList;

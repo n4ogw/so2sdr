@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.5.6";
+const QByteArray Version = "2.5.7";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -103,7 +103,8 @@ typedef enum ContestType {
     Arrldx_t  = 16,
     Paqp_t    = 17,
     Msqp_t    = 18,
-    JuneVHF_t = 19
+    JuneVHF_t = 19,
+    WWDigi_t  = 20
 } ContestType;
 
 // ////////////// Contest/Log/country database
@@ -126,7 +127,8 @@ typedef enum MultTypeDef {
     ITUZone     = 12,
     Special     = 13,
     Uniques     = 14,
-    Grids       = 15
+    Grids       = 15,
+    GridFields  = 16
 } MultTypeDef;
 
 /*!

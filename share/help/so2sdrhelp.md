@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.6
+## SO2SDR Help file version 2.5.7
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1008,6 +1008,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.7 (08/29/2020)
+
+* Add WW Digi contest
 
 ## version 2.5.6 (08/08/2020)
 
