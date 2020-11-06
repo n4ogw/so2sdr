@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.7
+## SO2SDR Help file version 2.5.8
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1008,6 +1008,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.8 (11/06/2020)
+
+* Add PE as mult in ARRL Sweepstakes and other ARRL contests
 
 ## version 2.5.7 (08/29/2020)
 

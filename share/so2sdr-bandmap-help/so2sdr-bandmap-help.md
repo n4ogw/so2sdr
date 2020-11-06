@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.7
+## So2sdr-bandmap Help Version 2.5.8
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.8 (11/06/2020)
+
+* Add PE as mult in ARRL Sweepstakes and other ARRL contests
 
 ## version 2.5.7 (08/29/2020)
 
