@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.8
+## SO2SDR Help file version 2.5.9
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -708,8 +708,8 @@ will switch the RX antenna on the Elecraft K3.
 * {CALL_OK} : This will reset the check if the original call has been
 corrected. Used when repeating the exchange to a station, it will prevent
 the "Call Updated QSL" message from being sent when not needed.
-* {SCRIPT}{/SCRIPT} : run a script in the /share/so2sdr/scripts directory
-* {SCRIPTNR}{/SCRIPTNR} : run a script in the /share/so2sdr/scripts directory, where '#' is replaced with the active radio number (0 or 1)
+* {SCRIPT}{/SCRIPT} : run a script in the /home/username/.so2sdr/scripts directory
+* {SCRIPTNR}{/SCRIPTNR} : run a script in the /home/username/.so2sdr/scripts directory, where '#' is replaced with the active radio number (0 or 1)
 * {PTTON} {PTTOFF} : turn active radio PTT on/off
 * {PTTON1} {PTTOFF1} : turn radio 1 PTT on/off
 * {PTTON2} {PTTOFF2} : turn radio 2 PTT on/off
@@ -1008,6 +1008,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.9 (11/23/2020)
+
+* Fix bug in call/exchange entry in Sweepstakes; if call edited after exchange accepted, qso would not log
+* Code changes for depreciated Qt features
+* macro SCRIPT now reads script from user directory (/home/username/.so2sdr/scripts)
 
 ## version 2.5.8 (11/06/2020)
 

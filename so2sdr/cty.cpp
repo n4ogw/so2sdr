@@ -427,7 +427,7 @@ void Cty::initialize(double la, double lo, int ZoneType)
             if (buffer.contains('#')) continue; // #=comment line
 
             buffer=buffer.trimmed();
-            QStringList field = buffer.split(" ", QString::SkipEmptyParts);
+            QStringList field = buffer.split(" ", Qt::SkipEmptyParts);
             double lat=field.at(1).toDouble();
             double lon=field.at(2).toDouble();
             QString sunTime;

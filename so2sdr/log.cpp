@@ -805,7 +805,7 @@ void Log::importCabrillo(QString cabFile)
         if (!buffer.contains("QSO:") && !buffer.contains("qso:")) {
             continue;  // ignore header data
         }
-        field = buffer.split(" ", QString::SkipEmptyParts);
+        field = buffer.split(" ", Qt::SkipEmptyParts);
         int         nf    = field.size();
 
         query.prepare("INSERT INTO log (nr,time,freq,call,band,date,mode,adifmode,modetype,snt1,snt2,snt3,snt4,rcv1,rcv2,rcv3,rcv4,pts,valid)"

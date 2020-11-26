@@ -1967,7 +1967,9 @@ bool So2sdr::logPartial(int nrig, QByteArray partial, bool external, Qso *extern
  */
 void So2sdr::prefixCheck(int nrig, const QString &call)
 {
-    qso[nrig]->clear();
+    if (lineEditExchange[nrig]->text().isEmpty()) {
+        qso[nrig]->clear();
+    }
     qso[nrig]->call = call.toLatin1();
     qso[nrig]->call = qso[nrig]->call.toUpper();
 
@@ -2040,6 +2042,10 @@ void So2sdr::prefixCheck(int nrig, const QString &call)
         setDupeColor(nrig,qso[nrig]->dupe);
         // if exchange has been edited, should recheck it now
         if (lineEditExchange[nrig]->isModified()) {
+            exchCheck(nrig,lineEditExchange[nrig]->text());
+        }
+        // there is exchange present but qso is marked invalid, recheck it
+        if (!qso[nrig]->valid && !lineEditExchange[nrig]->text().isEmpty()) {
             exchCheck(nrig,lineEditExchange[nrig]->text());
         }
     } else {
@@ -2873,9 +2879,9 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
                         break;
                     case 1:  // #
                         if (nrReserved[activeTxRadio]) {
-                            out.append(QString::number(nrReserved[activeTxRadio]));
+                            out.append(QByteArray::number(nrReserved[activeTxRadio]));
                         } else {
-                            out.append(QString::number(nrSent));
+                            out.append(QByteArray::number(nrSent));
                         }
                         break;
                     case 2:  // SPEED UP
@@ -2965,7 +2971,7 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
                             }
                         }
                         if (nr != 0) {
-                            out.append(QString::number(nr));
+                            out.append(QByteArray::number(nr));
                         }
                         break;
                     case 19: // clear RIT
@@ -3547,7 +3553,7 @@ void So2sdr::readExcludeMults()
         while (!file.atEnd()) {
             QString     buffer;
             buffer = file.readLine();
-            QStringList list = buffer.split(" ", QString::SkipEmptyParts);
+            QStringList list = buffer.split(" ", Qt::SkipEmptyParts);
             for (int i = 0; i < list.size(); i++) {
                 excludeMults[ii].append(list[i].toLatin1());
             }
@@ -3807,7 +3813,7 @@ void So2sdr::showBandmap2(bool state)
 void So2sdr::runScript(QByteArray cmd)
 {
     So2sdrStatusBar->showMessage("Script:"+cmd,3000);
-    QString program = dataDirectory()+"/scripts/"+cmd;
+    QString program = userDirectory()+"/scripts/"+cmd;
     scriptProcess->close();
     scriptProcess->start(program);
 }

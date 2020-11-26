@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.8
+## So2sdr-bandmap Help Version 2.5.9
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.9 (11/23/2020)
+
+* Fix bug in call/exchange entry in Sweepstakes; if call edited after exchange accepted, qso would not log
+* Code changes for depreciated Qt features
+* macro SCRIPT now reads script from user directory (/home/username/.so2sdr/scripts)
 
 ## version 2.5.8 (11/06/2020)
 
