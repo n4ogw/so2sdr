@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.9
+## SO2SDR Help file version 2.5.10
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1008,6 +1008,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.10 (01/04/2021)
+
+* Fix bug with saving bandmap settings
 
 ## version 2.5.9 (11/23/2020)
 

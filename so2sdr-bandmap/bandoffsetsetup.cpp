@@ -124,7 +124,10 @@ void BandOffsetSetup::updateFromSettings()
         sz=settings.beginReadArray("custom_offset_netsdr");
         break;
     }
-    if (!sz) return;
+    if (!sz) {
+        settings.endArray();
+        return;
+    }
     for (int i=0;i<sz;i++) {
         settings.setArrayIndex(i);
         QList<QStandardItem*> itemList;
