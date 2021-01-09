@@ -1,4 +1,4 @@
-/*! Copyright 2010-2020 R. Torsten Clay N4OGW
+/*! Copyright 2010-2021 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -878,7 +878,7 @@ bool Spectrum::readError()
 {
     QDir       directory;
     directory.setCurrent(userDirectory);
-    QByteArray fname = "iq.dat";
+    QByteArray fname = "iq"+QByteArray::number(settings.value(s_sdr_nrig,s_sdr_nrig_def).toInt())+".dat";
     QFile      file(fname);
     if (!file.open(QIODevice::ReadOnly)) {
         return(false);
@@ -914,7 +914,7 @@ bool Spectrum::saveError()
 {
     QDir       directory;
     directory.setCurrent(userDirectory);
-    QByteArray fname = "iq.dat";
+    QByteArray fname = "iq"+QByteArray::number(settings.value(s_sdr_nrig,s_sdr_nrig_def).toInt())+".dat";
     QFile      file(fname);
     if (!file.open(QIODevice::WriteOnly)) {
         return(false);
