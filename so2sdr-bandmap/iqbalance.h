@@ -34,7 +34,7 @@ class IQBalance : public QWidget, public Ui::IQBalance
 Q_OBJECT
 
 public:
-    IQBalance(QWidget *parent = nullptr, Qt::WindowFlags f = 0);
+    IQBalance(QWidget *parent = nullptr);
     ~IQBalance();
     friend class So2sdrBandmap;
 

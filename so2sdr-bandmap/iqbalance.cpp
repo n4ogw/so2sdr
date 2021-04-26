@@ -21,9 +21,10 @@
 /*!
    note that the pixmap in the plot has dimensions IQ_PLOT_WIDTH x IQ_PLOT_HEIGHT
  */
-IQBalance::IQBalance(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f)
+IQBalance::IQBalance(QWidget *parent) : QWidget(parent)
 {
     setupUi(this);
+    setWindowFlags(Qt::Window);
     connect(pushButtonRestart, SIGNAL(clicked()), this, SLOT(restartIQ()));
     connect(pushButtonClose,SIGNAL(clicked()),this,SLOT(close()));
     gainPixmap  = QPixmap(IQ_PLOT_WIDTH, IQ_PLOT_HEIGHT);

@@ -156,7 +156,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     toolBar->addWidget(spacer2);
     toolBar->addAction("&Help",this,SLOT(showHelp()));
 
-    iqDialog  = new IQBalance(this, Qt::Window);
+    iqDialog  = new IQBalance(this);
     iqDialog->clearPlots();
     showToolBar = new QAction("&toolbar",this);
     scaleX1   = new QAction("Zoom x&1", this);

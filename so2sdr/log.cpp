@@ -716,7 +716,7 @@ void Log::addQso(Qso *qso)
     query.bindValue(":call",qso->call);
     query.bindValue(":band",qso->band);
     query.bindValue(":date",qso->time.toUTC().toString("MMddyyyy"));
-    query.bindValue(":mode",qso->mode);
+    query.bindValue(":mode",QVariant::fromValue((unsigned long int)qso->mode));
     query.bindValue(":modetype",qso->modeType);
     query.bindValue(":adifmode",qso->adifMode);
     if (contest->nExchange()>0) {
@@ -843,7 +843,7 @@ void Log::importCabrillo(QString cabFile)
                 qso.mode=RIG_MODE_LSB;
             }
         }
-        query.bindValue(":mode",qso.mode);
+        query.bindValue(":mode",QVariant::fromValue((unsigned long int)qso.mode));
         query.bindValue(":modetype",qso.modeType);
         query.bindValue(":adifmode",qso.adifMode);
         cnt++;
