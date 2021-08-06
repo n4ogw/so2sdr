@@ -62,6 +62,7 @@ private:
     QComboBox  *radioPttComboBox[NRIG];
     QLineEdit  *radioDevEdit[NRIG];
     QLineEdit  *radioPollTimeEdit[NRIG];
+    QLineEdit  *radioIFEdit[NRIG];
     QSettings&  settings;
     RigSerial&  catptr;
 };

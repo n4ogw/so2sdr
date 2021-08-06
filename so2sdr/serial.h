@@ -121,14 +121,15 @@ private:
     bool                    pttOnFlag;
     bool                    pttOffFlag;
     const struct confparams *confParamsIF;
+    bool                    hasIFext;
     const struct confparams *confParamsRIT;
     double                     qsyFreq;
     rmode_t                 chgMode;
     pbwidth_t               passBW;
     bool                    radioOK;
-    double                     rigFreq;
+    double                  rigFreq;
     int                     model;
-    int                     ifFreq_;
+    int                     ifOffset;
     int                     nrig;
     rmode_t                 Mode;
     QMutex                  pttMutex;

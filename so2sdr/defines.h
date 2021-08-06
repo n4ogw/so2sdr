@@ -616,6 +616,9 @@ const int s_radios_baud_def[NRIG]={4800,4800};
 const QString s_radios_poll[NRIG]={"radios/poll1","radios/poll2"};
 const int s_radios_poll_def[NRIG]={500,500};
 
+const QString s_radios_if[NRIG]={"radios/if1","radios/if2"};
+const double s_radios_if_def[NRIG]={8215000,8215000}; // default for Elecraft K3
+
 const QString s_radios_pport_enabled="radios/pport_enabled";
 const bool s_radios_pport_enabled_def=false;
 

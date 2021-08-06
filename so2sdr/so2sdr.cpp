@@ -3814,8 +3814,9 @@ void So2sdr::runScript(QByteArray cmd)
 {
     So2sdrStatusBar->showMessage("Script:"+cmd,3000);
     QString program = userDirectory()+"/scripts/"+cmd;
+    QStringList args;
     scriptProcess->close();
-    scriptProcess->start(program);
+    scriptProcess->start(program,args);
 }
 
 void So2sdr::showRecordingStatus(bool b)

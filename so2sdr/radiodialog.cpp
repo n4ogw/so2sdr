@@ -49,6 +49,8 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, uiSize sizes, QWidget *pa
     radioDevEdit[1]       = Radio2DeviceLineEdit;
     radioPttComboBox[0]   = Radio1PttComboBox;
     radioPttComboBox[1]   = Radio2PttComboBox;
+    radioIFEdit[0]        = Rig1IFEdit;
+    radioIFEdit[1]        = Rig2IFEdit;
     connect(checkBoxRigctld1,SIGNAL(toggled(bool)),this,SLOT(rigctld1Checked(bool)));
     connect(checkBoxRigctld2,SIGNAL(toggled(bool)),this,SLOT(rigctld2Checked(bool)));
 
@@ -128,6 +130,7 @@ void RadioDialog::updateRadio()
         settings.setValue(s_radios_rig[i],catptr.hamlibModelIndex(radioMfgComboBox[i]->currentIndex(),
                                                                    radioModelComboBox[i]->currentIndex()));
         settings.setValue(s_radios_ptt_type[i],radioPttComboBox[i]->currentIndex());
+        settings.setValue(s_radios_if[i],radioIFEdit[i]->text().toDouble());
     }
     settings.setValue(s_radios_rigctld_enable[0],checkBoxRigctld1->isChecked());
     settings.setValue(s_radios_rigctld_enable[1],checkBoxRigctld2->isChecked());
@@ -135,7 +138,6 @@ void RadioDialog::updateRadio()
     settings.setValue(s_radios_rigctld_ip[1],lineEditIp2->text());
     settings.setValue(s_radios_rigctld_port[0],lineEditPort1->text());
     settings.setValue(s_radios_rigctld_port[1],lineEditPort2->text());
-
     // this restarts the radio comms
     emit(startRadios());
     accept();
@@ -163,6 +165,7 @@ void RadioDialog::updateFromSettings()
 
         radioDevEdit[i]->setText(settings.value(s_radios_port[i],s_radios_port_def[i]).toString());
         radioPollTimeEdit[i]->setText(settings.value(s_radios_poll[i],s_radios_poll_def[i]).toString());
+        radioIFEdit[i]->setText(settings.value(s_radios_if[i],s_radios_if_def[i]).toString());
         switch (settings.value(s_radios_baud[i],4800).toInt()) {
         case 1200:
             radioBaudComboBox[i]->setCurrentIndex(4);

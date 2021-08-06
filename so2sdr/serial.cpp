@@ -85,7 +85,7 @@ RigSerial::RigSerial(int nr,QString s)
     qsyFreq      = 0;
     chgMode      = RIG_MODE_NONE;
     radioOK      = false;
-    ifFreq_      = 0;
+    ifOffset          = 0;
     passBW      = 0;
     Mode=RIG_MODE_NONE;
     rigFreq=0;
@@ -259,7 +259,7 @@ void RigSerial::timerEvent(QTimerEvent *event)
         if (event->timerId() == timerId[0]) {
             socket->write(";\\get_freq\n");
             socket->write(";\\get_mode\n");
-            if (model==229) {
+            if (confParamsIF) {
                 socket->write(";\\get_level ifctr\n");
             }
         }
@@ -434,13 +434,13 @@ void RigSerial::timerEvent(QTimerEvent *event)
                 Mode = m;
             }
 
-            // if using K3, get IF center frequency
-            if (model == 229) {
+            // get IF center frequency
+            if (confParamsIF) {
                 value_t val;
                 int     status = rig_get_ext_level(rig, RIG_VFO_CURR, confParamsIF->token, &val);
                 if (status == RIG_OK) {
                     // no mutex protection since ifFreq is read-only from outside class
-                    ifFreq_ = qRound(val.f - 8210000.0);
+                    ifOffset = qRound(val.f - settings->value(s_radios_if[nrig]).toDouble());
                 }
             }
         }
@@ -477,12 +477,12 @@ double RigSerial::getRigFreq()
     return(f);
 }
 
-/*! returns current radio IF frequency (K3 only, others return 0)
+/*! returns current radio IF frequency
  */
 int RigSerial::ifFreq()
 {
     lock.lockForRead();
-    int f=ifFreq_;
+    int f=ifOffset;
     lock.unlock();
     return f;
 }
@@ -582,7 +582,8 @@ void RigSerial::openRig()
     qsyFreq      = 0;
     chgMode      = RIG_MODE_NONE;
     radioOK      = false;
-    ifFreq_      = 0;
+    ifOffset      = 0;
+    hasIFext     = false;
     model=settings->value(s_radios_rig[nrig],RIG_MODEL_DUMMY).toInt();
     if (rig) {
         rig_close(rig);
@@ -623,10 +624,8 @@ void RigSerial::openRig()
     }
     if (r == RIG_OK) {
         radioOK = true;
-        // get ext params struct for K3 in order to get IF center freq
-        if (model == 229) {
-            confParamsIF = rig_ext_lookup(rig, "ifctr");
-        }
+        // get ext params struct for getting IF center freq
+        confParamsIF = rig_ext_lookup(rig, "ifctr");
 
         // ext param for RIT clear
         confParamsRIT = rig_ext_lookup(rig, "ritclr");
@@ -769,11 +768,11 @@ void RigSerial::rxSocket()
                         }
                     }
                     break;
-                case 2: // get IF center (K3). Response looks like "get_level: ifctr;8212940.000000\nRPRT 0"
+                case 2: // get IF center. Response looks like "get_level: ifctr;8212940.000000\nRPRT 0"
                     cmdList[1].truncate(14);
                     iff=cmdList.at(1).toDouble(&ok);
                     if (ok) {
-                        ifFreq_ = qRound(iff - 8210000.0);
+                        ifOffset = qRound(iff - settings->value(s_radios_if[nrig]).toDouble());
                     }
                     break;
                 }

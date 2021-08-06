@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.10
+## SO2SDR Help file version 2.5.12
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1008,6 +1008,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.12 (08/06/2021)
+
+* updates for depreciated Qt features
+* changes to code that reads radio IF offset; now should read from any
+radio that hamlib can read IF offset
 
 ## version 2.5.10 (01/04/2021)
 

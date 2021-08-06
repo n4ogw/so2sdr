@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>499</width>
-    <height>520</height>
+    <width>500</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>350</width>
-    <height>397</height>
+    <height>420</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>500</width>
-    <height>520</height>
+    <height>540</height>
    </size>
   </property>
   <property name="font">
@@ -75,6 +75,13 @@
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="checkBoxRigctld1">
+           <property name="text">
+            <string>Rigctld</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
@@ -222,10 +229,13 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="checkBoxRigctld1">
+         <item row="10" column="1">
+          <widget class="QLineEdit" name="Rig1IFEdit"/>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>Rigctld</string>
+            <string>IF (Hz)</string>
            </property>
           </widget>
          </item>
@@ -243,6 +253,41 @@
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxRigctld2">
+           <property name="text">
+            <string>Rigctld</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>IP</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEditIp2"/>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Port</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEditPort2"/>
+           </item>
+          </layout>
+         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_4">
            <property name="font">
@@ -340,13 +385,6 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
-          <widget class="QComboBox" name="Radio2PttComboBox">
-           <property name="toolTip">
-            <string>This is only used for the voice keyer</string>
-           </property>
-          </widget>
-         </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_19">
            <property name="font">
@@ -359,38 +397,20 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Port</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEditPort2"/>
-           </item>
-          </layout>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="Radio2PttComboBox">
+           <property name="toolTip">
+            <string>This is only used for the voice keyer</string>
+           </property>
+          </widget>
          </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>IP</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEditIp2"/>
-           </item>
-          </layout>
+         <item row="8" column="1">
+          <widget class="QLineEdit" name="Rig2IFEdit"/>
          </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxRigctld2">
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_16">
            <property name="text">
-            <string>Rigctld</string>
+            <string>IF (Hz)</string>
            </property>
           </widget>
          </item>
