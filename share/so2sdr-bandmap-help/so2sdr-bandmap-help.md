@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.12
+## So2sdr-bandmap Help Version 2.5.13
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.13 (10/30/2021)
+
+* fix voice recording/playback
 
 ## version 2.5.12 (08/06/2021)
 

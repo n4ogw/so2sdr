@@ -605,7 +605,8 @@ void SSBMessageDialog::playMessage(int nrig,QString m)
     disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
     scriptProcess->close();
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage2(int)));
-    QStringList args=csettings->value(s_before_play[nrig],s_before_play_def).toStringList();
+    QString temp=csettings->value(s_before_play[nrig],s_before_play_def).toString();
+    QStringList args=QProcess::splitCommand(temp);
     QString cmd=args.takeFirst();
     scriptProcess->start(cmd,args);
 }
@@ -615,7 +616,6 @@ void SSBMessageDialog::playMessage2(int signal)
     Q_UNUSED(signal)
     disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
     connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(playMessage3(int)));
-
     emit(setPtt(playMessageRig,1));
     cmd=csettings->value(s_play_command[playMessageRig],s_play_command_def).toString();
     cmd=cmd.replace("$",message);
@@ -628,11 +628,11 @@ void SSBMessageDialog::playMessage2(int signal)
 void SSBMessageDialog::playMessage3(int signal)
 {
     Q_UNUSED(signal)
-
     playing=false;
     emit(setPtt(playMessageRig,0));
     disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
-    QStringList args=csettings->value(s_after_play[playMessageRig],s_after_play_def).toStringList();
+    QString temp=csettings->value(s_after_play[playMessageRig],s_after_play_def).toString();
+    QStringList args=QProcess::splitCommand(temp);
     QString cmd=args.takeFirst();
     scriptProcess->start(cmd,args);
     emit(finished());
@@ -647,7 +647,8 @@ void SSBMessageDialog::recMessage(QString m)
         disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
         scriptProcess->close();
         connect(scriptProcess,SIGNAL(finished(int)),this,SLOT(recMessage2(int)));
-        QStringList args=csettings->value(s_before_rec,s_before_rec_def).toStringList();
+        QString temp=csettings->value(s_before_rec,s_before_rec_def).toString();
+        QStringList args=QProcess::splitCommand(temp);
         QString cmd=args.takeFirst();
         scriptProcess->start(cmd,args);
     } else {
@@ -673,7 +674,8 @@ void SSBMessageDialog::recMessage3(int signal)
 {
     Q_UNUSED(signal)
     disconnect(scriptProcess,SIGNAL(finished(int)),nullptr,nullptr);
-    QStringList args=csettings->value(s_after_rec,s_after_rec_def).toStringList();
+    QString temp=csettings->value(s_after_rec,s_after_rec_def).toString();
+    QStringList args=QProcess::splitCommand(temp);
     QString cmd=args.takeFirst();
     scriptProcess->start(cmd,args);
     emit(recordingStatus(false));

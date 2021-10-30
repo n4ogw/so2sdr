@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.12
+## SO2SDR Help file version 2.5.13
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1008,6 +1008,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.13 (10/30/2021)
+
+* fix voice recording/playback
 
 ## version 2.5.12 (08/06/2021)
 
