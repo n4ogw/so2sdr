@@ -18,7 +18,6 @@
  */
 #ifndef LINUX_PP_H
 #define LINUX_PP_H
-#include <sys/io.h>
 #include <unistd.h>
 #include <stdio.h>
 #include "defines.h"
