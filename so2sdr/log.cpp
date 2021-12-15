@@ -1137,13 +1137,7 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
         }
         QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
 
-        // special case: ARRL 10M contest: use band slots 4 and 5 for CW/SSB
-        // @todo a better way to handle this?
         int ib=m.record(i).value(SQL_COL_BAND).toInt();
-        if (contest->contestType()==Arrl10_t) {
-            if (m.record(i).value(SQL_COL_MODE_TYPE).toInt()==CWType) ib=4;
-            else ib=5;
-        }
         // see if this call is already in list
         int j=calls.indexOf(tmp);
         if (j != -1) {
