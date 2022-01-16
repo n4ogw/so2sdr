@@ -1,4 +1,4 @@
- /*! Copyright 2010-2021 R. Torsten Clay N4OGW
+ /*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -25,6 +25,7 @@
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
 #include "contestoptdialog.h"
+#include "cwmanager.h"
 #include "cwmessagedialog.h"
 #include "dupesheet.h"
 #include "helpdialog.h"
@@ -38,7 +39,7 @@
 #include "so2r.h"
 #include "ssbmessagedialog.h"
 #include "stationdialog.h"
-#include "winkeydialog.h"
+#include "cwdialog.h"
 #include "wsjtxcalldialog.h"
 
 /*! event filter handling key presses. This gets installed in
@@ -148,9 +149,9 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     return(r);
                 }
             }
-            if (winkeyDialog) {
-                if (winkeyDialog->isActiveWindow()) {
-                    winkeyDialog->rejectChanges();
+            if (cwDialog) {
+                if (cwDialog->isActiveWindow()) {
+                    cwDialog->rejectChanges();
                     return(r);
                 }
             }
@@ -346,9 +347,9 @@ bool So2sdr::eventFilter(QObject* o, QEvent* e)
                     return(r);
                 }
             }
-            if (winkeyDialog) {
-                if (winkeyDialog->isActiveWindow()) {
-                    winkeyDialog->updateWinkey();
+            if (cwDialog) {
+                if (cwDialog->isActiveWindow()) {
+                    cwDialog->updateCW();
                     return(r);
                 }
             }
@@ -1619,7 +1620,7 @@ void So2sdr::prefillExch(int nr)
    <li> return focus to exch field      4=16
    <li> exit Exc mode                   5=32
    <li> set ExchangeSent false          6=64
-   <li> reset winkeyDialog output port        7=128
+   <li> reset cwDialog output port        7=128
    <li> clear alt-D calls               8=256
    <li> clear radio2 cq status          9=512
    <li> reset alt-D without deleting call 10=1024
@@ -1650,7 +1651,6 @@ void So2sdr::esc(Qt::KeyboardModifiers mod,int kbdNr)
 
     // define states
     if (first) {
-        // RTC: 128 not needed here (?), leads to multiple cancelCw being called
         escState[0][0][0][0] = 1 + 2 + 8 + 32 + 64 + 256 + 512 + 2048;
         escState[1][0][0][0] = 1 + 2 + 8 + 32 + 64 + 1024 + 2048;
         escState[0][1][0][0] = 1 + 2 + 8 + 32 + 64 + 1024;
@@ -1678,10 +1678,11 @@ void So2sdr::esc(Qt::KeyboardModifiers mod,int kbdNr)
         switch (mode) {
         case CWType:
         {
-            if ((!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && winkey->isSending()) ||
-                    (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && winkey->isSending() && activeRadio==activeRadioNr))
+            if ((!settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && cw->isSending()) ||
+                    (settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool() && cw->isSending()
+                     && activeRadio==activeRadioNr))
             {
-                winkey->cancelcw();
+                cw->cancelcw();
                 // de-activate dueling-CQ
                 if (duelingCQMode) duelingCQModePause = true;
                 // de-activate auto-CQ if call field empty on auto-CQ radio
@@ -1844,7 +1845,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod,int kbdNr)
         exchangeSent[activeRadioNr] = false;
     }
 
-    // reset winkey output port // transmit focus
+    // reset cw output port // transmit focus
     //rtc this needs updating for two keyboard. But it is currently not used.
     if (x & 128) {
         switchTransmit(activeRadioNr);
@@ -2155,7 +2156,7 @@ void So2sdr::handleKeys(int nr,int code,bool shift,bool ctrl,bool alt)
         }
         QKeyEvent *ev = new QKeyEvent (QEvent::KeyPress,qtkeys[code],mod,key);
         if (errorBox->isVisible() || cabrillo->isVisible() || options->isVisible() || cwMessage->isVisible() || ssbMessage->isVisible()
-                || winkeyDialog->isVisible() || sdr->isVisible() || radios->isVisible() || progsettings->isVisible() || station->isVisible()
+                || cwDialog->isVisible() || sdr->isVisible() || radios->isVisible() || progsettings->isVisible() || station->isVisible()
                 || so2r->isVisible() || aboutOn || help->isVisible()) {
             qApp->postEvent (QApplication::focusWidget(),ev);
             return;

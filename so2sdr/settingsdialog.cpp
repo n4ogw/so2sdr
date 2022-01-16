@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -33,9 +33,6 @@ SettingsDialog::SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent)  : Q
     CQRepeatLineEdit->setFixedWidth(qRound(sizes.width*5));
     DuelingCQLineEdit->setFixedWidth(qRound(sizes.width*5));
     label_5->setFixedWidth(qRound(sizes.width*8));
-    ctyLineEdit->setFixedWidth(qRound(sizes.width*20));
-    kbd1LineEdit->setFixedWidth(qRound(sizes.width*20));
-    kbd2LineEdit->setFixedWidth(qRound(sizes.width*20));
     AutoSendComboBox->insertItem(0, "Semi");
     AutoSendComboBox->insertItem(1, "Auto");
     adjustSize();

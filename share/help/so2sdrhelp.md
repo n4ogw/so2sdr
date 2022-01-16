@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.13
+## SO2SDR Help file version 2.5.14
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -258,7 +258,15 @@ default), and the other 4534.
 * Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
 You may have to add your username to a particular group to access
-these ports. 
+these ports.
+
+* IF : This is the intermediate frequency of the radio. This
+is needed if using the SDR bandmap. The value set here is only
+used for the Elecraft K3; for the K3, the IF offset varies
+depending on the filter selected. SO2SDR reads the IF offset
+correction via the serial port, so the bandmap display will remain
+correctly centered when chaing filter width on the K3.
+
 * When the radios are configured correctly, after
 clicking "OK" in the radio dialog the "R1" and "R2"
 indicators at the bottom of the main window
@@ -284,21 +292,33 @@ and keying between the two radios:
 
 #### Winkey
 
-The only method supported to send CW currently
-is via the Winkey chip. Winkey emulation
+SO2SDR supports sending CW with either winkey or CWDaemon.
+Winkey emulation
 in a microHam box can also be used.
 
-![Winkey Dialog](./winkey_dialog.png "Winkey Dialog")
+![CW devices dialog](./cwdevices.png "CW Devices Dialog")
 
-* CW Output : if unchecked, no CW will be outputed.
-* Paddle sidetone : enables winkey sidetone only
-when sending with the paddle.
-* Swap : swaps dit/dah paddle connections.
-* CT space : uses slightly reduced spaces between words.
-* After clicking OK, the "WK" indicator at the bottom
+![CW devices dialog](./cwdaemon.png "CW Devices Dialog")
+
+* You must choose either winkey or cwdaemon. For winkey:
+    1. Paddle sidetone : enable winkey sidetone only
+    when sending with the paddle.
+    2. Swap : swaps dit/dah paddle connections.
+    3. CT space : uses slightly reduced spaces between words.
+    4. Iambic A/Iambic B/Ultimatic/Bug : choose paddle mode.
+
+* For CWDaemon:
+    1. UDP port number for CWDaemon. Separate cwdaemon processes
+    on different UDP ports are used for each
+    radio. 6789 is the default port number. CWDaemon can send CW on
+    the same serial port that so2sdr uses to communicate with
+    the radio. If using a serial port for cwdaemon, the DTR line
+    will be keyed.
+
+* After clicking OK, the "WK" or "CW" indicator at the bottom
 of the main window should say "ON" and turn black. Red 
 here indicates a problem.
-* Iambic A/Iambic B/Ultimatic/Bug : choose paddle mode.
+
 
 ---
 
@@ -1008,6 +1028,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.14 (01/10/2022)
+
+* add support for CWDdaemon
 
 ## version 2.5.13 (10/30/2021)
 

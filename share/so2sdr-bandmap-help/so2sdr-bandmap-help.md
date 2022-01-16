@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.13
+## So2sdr-bandmap Help Version 2.5.14
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -337,6 +337,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.14 (01/10/2022)
+
+* add support for CWDdaemon
 
 ## version 2.5.13 (10/30/2021)
 

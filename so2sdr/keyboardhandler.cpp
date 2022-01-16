@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -62,10 +62,7 @@ void KeyboardHandler::run()
     if (fd == -1) {
         qDebug("KeyboardHandler: error opening %s",device.toStdString().data());
         return;
-    } else {
-        //qDebug("KeyboardHandler: opening %s",device.toStdString().data());
     }
-
     if (fd >= 0) {
         ioctl(fd, EVIOCGRAB, 1);
         while (!quitFlag) {

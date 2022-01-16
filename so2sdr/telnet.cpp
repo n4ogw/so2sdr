@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,9 +23,12 @@
 #include "defines.h"
 #include "telnet.h"
 
-Telnet::Telnet(QSettings &s, QWidget *parent) : QWidget(parent),settings(s)
+Telnet::Telnet(QSettings &s, uiSize sizes, QWidget *parent) : QWidget(parent),settings(s)
 {
+    setMinimumWidth(qRound(sizes.width*60));
     setupUi(this);
+    TelnetDisconnectButton->setFixedWidth(sizes.width*12);
+    adjustSize();
     telnet = nullptr;
     telnet = new QtTelnet();
     connect(TelnetConnectButton, SIGNAL(clicked()), this, SLOT(connectTelnet()));

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -1116,10 +1116,16 @@ void Log::updateHistory()
     emit(progressCnt(log.rowCount()));
 }
 
+/* search log for partial callsign fragment
+ *
+ * also checks if this call is a dupe
+ *
+ */
 void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QList<unsigned int>& worked,
                         QList<int>& mult1, QList<int>& mult2)
 {
     logSearchClear();
+    qso->dupe=false;
 
     // query for partial fragment
     QSqlQueryModel m;
@@ -1129,20 +1135,44 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
         m.fetchMore();
     }
     for (int i = 0; i < m.rowCount(); i++) {
-        // if multi-mode contest, check for matching mode
-        if (csettings.value(c_multimode,c_multimode_def).toBool()) {
-            if (m.record(i).value(SQL_COL_MODE_TYPE).toInt()!=qso->modeType) {
-                continue;
-            }
-        }
         QByteArray tmp = m.record(i).value(SQL_COL_CALL).toString().toLatin1();
 
-        int ib=m.record(i).value(SQL_COL_BAND).toInt();
+        // calls match: set dupe status
+        if (tmp==qso->call) {
+            // multi-band contest : bands must match
+            if (csettings.value(c_multiband,c_multiband_def).toBool()) {
+                if (m.record(i).value(SQL_COL_BAND).toInt()==qso->band) {
+                    // multi-mode and multi-band: mode types must match
+                    if (csettings.value(c_multimode,c_multimode_def).toBool()) {
+                        if (m.record(i).value(SQL_COL_MODE_TYPE).toInt()==qso->modeType) {
+                            qso->dupe=true;
+                        }
+                    } else {
+                        qso->dupe=true;
+                    }
+                }
+            } else {
+                // multi-mode and single-band: mode types must match
+                if (csettings.value(c_multimode,c_multimode_def).toBool()) {
+                    if (m.record(i).value(SQL_COL_MODE_TYPE).toInt()==qso->modeType) {
+                        qso->dupe=true;
+                    }
+                } else {
+                    qso->dupe=true;
+                }
+            }
+        }
+
         // see if this call is already in list
         int j=calls.indexOf(tmp);
         if (j != -1) {
             // add this band
-            worked[j] = worked[j] | bits[ib];
+            if (contest->hasWorked()) {
+                contest->workedQso(static_cast<ModeTypes>(m.record(i).value(SQL_COL_MODE_TYPE).toInt()),
+                                   m.record(i).value(SQL_COL_BAND).toInt(),worked[j]);
+            } else {
+                worked[j] = worked[j] | bits[m.record(i).value(SQL_COL_BAND).toInt()];
+            }
         } else {
             // new call fragment, or same call and different mode
             // insert call so list is sorted
@@ -1152,7 +1182,13 @@ void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QLi
                 isrt++;
             }
             calls.insert(isrt, tmp);
-            unsigned int w = bits[ib];
+            unsigned int w=0;
+            if (contest->hasWorked()) {
+                contest->workedQso(static_cast<ModeTypes>(m.record(i).value(SQL_COL_MODE_TYPE).toInt()),
+                                   m.record(i).value(SQL_COL_BAND).toInt(),w);
+            } else {
+                w = bits[m.record(i).value(SQL_COL_BAND).toInt()];
+            }
             worked.insert(isrt, w);
             int row = m.record(i).value(SQL_COL_NR).toInt() - 1;
             mult1.insert(isrt, contest->mult(row, 0));

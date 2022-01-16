@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -35,6 +35,7 @@ public:
     QString bandLabel(int i) const override;
     bool bandLabelEnable(int i) const override;
     int fieldWidth(int col) const override;
+    bool hasWorked() const override { return true; }
     int highlightBand(int b, ModeTypes modeType=CWType) const override;
     int nMultsColumn(int col,int ii) const override;
     int numberField() const override;
@@ -43,6 +44,8 @@ public:
     int Score() const override;
     bool showQsoPtsField() const override { return true;}
     int rstField() const override { return 0;}
+    void workedMults(Qso * qso, unsigned int worked[MMAX]) const override;
+    void workedQso(ModeTypes m, int band, unsigned int &worked) const override;
 };
 
 #endif

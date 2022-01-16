@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -245,4 +245,45 @@ bool ARRL10::validateExchange(Qso *qso)
     }
     copyFinalExch(ok, qso);
     return(ok);
+}
+
+/*!
+   Returns unsigned integer worked  with bits set to indicate what bands mult1 and mult2
+   are worked on
+
+   ARRL 10M contest: CW mult status in 5th band slot ([4]); SSB mult
+   status in 6th band slot ([5])
+ */
+void ARRL10::workedMults(Qso *qso, unsigned int worked[MMAX]) const
+{
+    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
+        worked[ii] = 0;
+        if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
+            worked[ii] += multWorked[ii][CWType][5][qso->mult[ii]] * bits[4];
+            worked[ii] += multWorked[ii][PhoneType][5][qso->mult[ii]] * bits[5];
+        }
+    }
+}
+
+/*!
+   Returns unsigned integer worked  with bits set to indicate what bands qso is
+   are worked on
+
+   ARRL 10M contest: CW status in 5th band slot ([4]); SSB
+   status in 6th band slot ([5])
+ */
+void ARRL10::workedQso(ModeTypes m, int band, unsigned int &worked) const
+{
+    Q_UNUSED(band)
+
+    switch (m) {
+    case CWType:
+        worked |= bits[4];
+        break;
+    case PhoneType:
+        worked |= bits[5];
+        break;
+    default:
+        break;
+    }
 }

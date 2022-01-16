@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.5.13";
+const QByteArray Version = "2.5.14";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -497,8 +497,8 @@ const QString s_microham_device_def="";
 const QString s_winkey_device="winkey/device";
 const QString s_winkey_device_def="";
 
-const QString s_winkey_cwon="winkey/cwon";
-const bool s_winkey_cwon_def=true;
+const QString s_cw_device="cw/device";
+const int s_cw_device_def=0;
 
 const QString s_winkey_ctspace="winkey/ctspace";
 const bool s_winkey_ctspace_def=true;
@@ -526,6 +526,9 @@ const bool s_winkey_sidetonepaddle_def=true;
 
 const QString s_wpm[NRIG]={"winkey/wpm1","winkey/wpm2"};
 const int s_wpm_def[NRIG]={35,35};
+
+const QString s_cwdaemon_udp[NRIG]={"cwdaemon/udp1","cwdaemon/udp2"};
+const int s_cwdaemon_udp_def[NRIG]={6789, 6790};
 
 const QString s_cty_url="main/ctyurl";
 const QString s_cty_url_def="http://www.country-files.com/cty/wl_cty.dat";
@@ -663,6 +666,9 @@ const int s_settings_autosend_mode_def=0;
 
 const QString s_settings_autosend="main/autosend";
 const int s_settings_autosend_def=3;
+
+const QString c_multiband="contest/multiband";
+const bool c_multiband_def=true;
 
 const QString c_multsband="contest/multsband";
 const bool c_multsband_def=true;

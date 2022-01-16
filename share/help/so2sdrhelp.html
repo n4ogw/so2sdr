@@ -1,6 +1,6 @@
 <p><a name="top"></a></p>
 
-<h2>SO2SDR Help file version 2.5.13</h2>
+<h2>SO2SDR Help file version 2.5.14</h2>
 
 <ul>
 <li><a href="#overview">Overview</a></li>
@@ -260,14 +260,20 @@ started like this:</p>
 default), and the other 4534.</p>
 
 <ul>
-<li>Under Linux
+<li><p>Under Linux
 serial ports are typically /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, etc.
 You may have to add your username to a particular group to access
-these ports. </li>
-<li>When the radios are configured correctly, after
+these ports.</p></li>
+<li><p>IF : This is the intermediate frequency of the radio. This
+is needed if using the SDR bandmap. The value set here is only
+used for the Elecraft K3; for the K3, the IF offset varies
+depending on the filter selected. SO2SDR reads the IF offset
+correction via the serial port, so the bandmap display will remain
+correctly centered when chaing filter width on the K3.</p></li>
+<li><p>When the radios are configured correctly, after
 clicking "OK" in the radio dialog the "R1" and "R2"
 indicators at the bottom of the main window
-should say "ON" and turn black. Red here indicates a problem.</li>
+should say "ON" and turn black. Red here indicates a problem.</p></li>
 </ul>
 
 <p><img src="./so2r_dialog.png" alt="SO2R Dialog" title="SO2R Dialog" /></p>
@@ -293,22 +299,37 @@ correct group (usuall "lp") to access the port.</li>
 
 <h4>Winkey</h4>
 
-<p>The only method supported to send CW currently
-is via the Winkey chip. Winkey emulation
+<p>SO2SDR supports sending CW with either winkey or CWDaemon.
+Winkey emulation
 in a microHam box can also be used.</p>
 
-<p><img src="./winkey_dialog.png" alt="Winkey Dialog" title="Winkey Dialog" /></p>
+<p><img src="./cwdevices.png" alt="CW devices dialog" title="CW Devices Dialog" /></p>
+
+<p><img src="./cwdaemon.png" alt="CW devices dialog" title="CW Devices Dialog" /></p>
 
 <ul>
-<li>CW Output : if unchecked, no CW will be outputed.</li>
-<li>Paddle sidetone : enables winkey sidetone only
+<li><p>You must choose either winkey or cwdaemon. For winkey:</p>
+
+<ol>
+<li>Paddle sidetone : enable winkey sidetone only
 when sending with the paddle.</li>
 <li>Swap : swaps dit/dah paddle connections.</li>
 <li>CT space : uses slightly reduced spaces between words.</li>
-<li>After clicking OK, the "WK" indicator at the bottom
-of the main window should say "ON" and turn black. Red 
-here indicates a problem.</li>
 <li>Iambic A/Iambic B/Ultimatic/Bug : choose paddle mode.</li>
+</ol></li>
+<li><p>For CWDaemon:</p>
+
+<ol>
+<li>UDP port number for CWDaemon. Separate cwdaemon processes
+on different UDP ports are used for each
+radio. 6789 is the default port number. CWDaemon can send CW on
+the same serial port that so2sdr uses to communicate with
+the radio. If using a serial port for cwdaemon, the DTR line
+will be keyed.</li>
+</ol></li>
+<li><p>After clicking OK, the "WK" or "CW" indicator at the bottom
+of the main window should say "ON" and turn black. Red 
+here indicates a problem.</p></li>
 </ul>
 
 <hr />
@@ -1045,6 +1066,12 @@ from so2sdr, do this</p>
 <hr />
 
 <p><a name="changes"></a></p>
+
+<h2>version 2.5.14 (01/10/2022)</h2>
+
+<ul>
+<li>add support for CWDdaemon</li>
+</ul>
 
 <h2>version 2.5.13 (10/30/2021)</h2>
 

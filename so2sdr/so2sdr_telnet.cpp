@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -25,7 +25,7 @@
 #include "so2sdr.h"
 #include "ssbmessagedialog.h"
 #include "telnet.h"
-#include "winkey.h"
+#include "cwmanager.h"
 
 // Telnet/spot database stuff
 
@@ -115,13 +115,12 @@ void So2sdr::showTelnet(bool checkboxState)
 {
     if (!checkboxState) {
         if (telnetOn) {
-           // disconnect(telnet, SIGNAL(done()), telnetAction, SLOT(toggle()));
             telnet->hide();
             telnetOn = false;
         }
     } else {
         if (!telnet) {
-            telnet = new Telnet(*settings);
+            telnet = new Telnet(*settings,sizes);
             connect(telnet, SIGNAL(done(bool)), telnetAction, SLOT(setChecked(bool)));
             connect(telnet, SIGNAL(dxSpot(QByteArray, double)), this, SLOT(addSpot(QByteArray, double)));
         }
@@ -135,7 +134,6 @@ void So2sdr::showTelnet(bool checkboxState)
  */
 void So2sdr::addSpot(QByteArray call, double f)
 {
-    qDebug("addSpot <%s>",call.data());
     // * is a special case, used to mark freq without callsign
     bool d = true;
     if (call != "*") {
@@ -275,9 +273,9 @@ void So2sdr::checkSpot(int nr)
         prefixCheck(nr, lineEditCall[nr]->text());
         spotListPopUp[nr] = true;
     } else if (qAbs(lastFreq[nr] - f) > SIG_MIN_FREQ_DIFF && log) {
-        if (cat[nr]->modeType()==CWType && winkey->isSending() && nr == activeTxRadio)
+        if (cat[nr]->modeType()==CWType && cw->isSending() && nr == activeTxRadio)
         {
-            winkey->cancelcw();
+            cw->cancelcw();
         }
         if (cat[nr]->modeType()==PhoneType && ssbMessage->isPlaying() && nr == activeTxRadio)
         {
@@ -345,7 +343,7 @@ void So2sdr::checkSpot(int nr)
         setDupeColor(nr,false);
         if (settings->value(s_settings_qsyfocus,s_settings_qsyfocus_def).toBool()) {
             if ( lineEditCall[nr ^ 1]->text().simplified().isEmpty() && lineEditExchange[nr ^ 1]->text().simplified().isEmpty()
-                 && nr != activeRadio && !activeR2CQ && !winkey->isSending() && !ssbMessage->isPlaying()) {
+                 && nr != activeRadio && !activeR2CQ && !cw->isSending() && !ssbMessage->isPlaying()) {
                 if (csettings->value(c_sprintmode,c_sprintmode_def).toBool()) {
                     if (cqMode[nr ^ 1]) {
                         switchRadios();

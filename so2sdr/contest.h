@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -73,6 +73,7 @@ public:
     void guessMult(Qso *qso) const;
     bool gridMults() const;
     bool hasPrefill() const;
+    virtual bool hasWorked() const;
     virtual int highlightBand(int b, ModeTypes modeType=CWType) const;
     void initialize(const Cty *cty);
     int isAMult(QByteArray exch, int ii) const;
@@ -113,7 +114,8 @@ public:
     bool valid(int row) const;
     virtual bool validateExchange(Qso *qso)    = 0;
     bool vExch() const;
-    void workedMults(Qso * qso, unsigned int worked[MMAX]) const;
+    virtual void workedMults(Qso * qso, unsigned int worked[MMAX]) const;
+    virtual void workedQso(ModeTypes m, int band, unsigned int &worked) const;
     void zeroScore();
     int zoneMax() const;
     int zoneType() const;

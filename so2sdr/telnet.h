@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,6 +21,7 @@
 
 #include <QSettings>
 #include "ui_telnet.h"
+#include "defines.h"
 
 class QtTelnet;
 
@@ -32,7 +33,7 @@ class Telnet : public QWidget, public Ui::TelnetDialog
 Q_OBJECT
 
 public:
-    Telnet(QSettings& s,QWidget *parent = nullptr);
+    Telnet(QSettings& s,uiSize sizes, QWidget *parent = nullptr);
     ~Telnet();
 
 signals:

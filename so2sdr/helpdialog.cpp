@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -26,8 +26,9 @@
 #include "helpdialog.h"
 #include "utils.h"
 
-HelpDialog::HelpDialog(QString fileName, QWidget *parent) : QDialog(parent)
+HelpDialog::HelpDialog(uiSize sizes, QString fileName, QWidget *parent) : QDialog(parent)
 {
+    setMinimumWidth(qRound(sizes.width*80));
     setupUi(this);
     QCommonStyle style;
     connect(pushButton, SIGNAL(clicked()), this, SLOT(accept()));

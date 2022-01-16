@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -52,6 +52,8 @@
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
 #include "contestoptdialog.h"
+#include "cwdaemon.h"
+#include "cwmanager.h"
 #include "cwmessagedialog.h"
 #include "defines.h"
 #include "dupesheet.h"
@@ -74,7 +76,7 @@
 #include "stationdialog.h"
 #include "telnet.h"
 #include "winkey.h"
-#include "winkeydialog.h"
+#include "cwdialog.h"
 #include "wsjtxcalldialog.h"
 
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
@@ -211,11 +213,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     wsjtx[1]->resize(settings->value("size",QSize(900,400)).toSize());
     wsjtx[1]->move(settings->value("pos",QPoint(400,400)).toPoint());
     settings->endGroup();
-    winkeyDialog = new WinkeyDialog(*settings,this);
-    winkeyDialog->setWinkeyVersionLabel(0);
-    connect(winkeyDialog, SIGNAL(accepted()), this, SLOT(regrab()));
-    connect(winkeyDialog, SIGNAL(rejected()), this, SLOT(regrab()));
-    winkeyDialog->hide();
+    cwDialog = new CWDialog(*settings,this);
+    connect(cwDialog, SIGNAL(accepted()), this, SLOT(regrab()));
+    connect(cwDialog, SIGNAL(rejected()), this, SLOT(regrab()));
+    cwDialog->hide();
     QDir::setCurrent(dataDirectory());
     sdr = new SDRDialog(*settings,sizes,this);
     connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
@@ -242,10 +243,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     connect(wpmLineEditPtr[1], SIGNAL(textEdited(QString)), this, SLOT(launch_enterCWSpeed1(QString)));
     connect(actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     connect(actionNewContest, SIGNAL(triggered()), newContest, SLOT(show()));
-    connect(actionWinkey, SIGNAL(triggered()), winkeyDialog, SLOT(show()));
+    connect(actionWinkey, SIGNAL(triggered()), cwDialog, SLOT(show()));
     connect(actionWinkey, SIGNAL(triggered()), this, SLOT(ungrab()));
-    connect(winkeyDialog,SIGNAL(accepted()),this,SLOT(regrab()));
-    connect(winkeyDialog,SIGNAL(rejected()),this,SLOT(regrab()));
+    connect(cwDialog,SIGNAL(accepted()),this,SLOT(regrab()));
+    connect(cwDialog,SIGNAL(rejected()),this,SLOT(regrab()));
     connect(actionStation, SIGNAL(triggered()), station, SLOT(show()));
     connect(actionStation, SIGNAL(triggered()), this, SLOT(ungrab()));
     connect(station,SIGNAL(accepted()),this,SLOT(regrab()));
@@ -333,28 +334,31 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
     WPMLineEdit->setReadOnly(true);
     // set background of WPM speed edit box to grey
     QPalette palette(wpmLineEditPtr[0]->palette());
-    palette.setColor(QPalette::Base, this->palette().color(QPalette::Background));
+    palette.setColor(QPalette::Base, this->palette().color(QPalette::Window));
     for (int i = 0; i < NRIG; i++) {
         wpmLineEditPtr[i]->setText(QString::number(wpm[i]));
         wpmLineEditPtr[i]->setPalette(palette);
     }
     // help dialog
     QDir::setCurrent(dataDirectory()+"/help");
-    help = new HelpDialog("so2sdrhelp.html", this);
+    help = new HelpDialog(sizes,"so2sdrhelp.html", this);
     connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
     connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
 
-    // start serial comm
-    winkey = new Winkey(*settings,this);
-    connect(winkey,SIGNAL(version(int)), winkeyDialog, SLOT(setWinkeyVersionLabel(int)));
-    connect(winkey,SIGNAL(winkeyTx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
-    connect(winkeyDialog,SIGNAL(startWinkey()), this, SLOT(startWinkey()));
+    // start CW manager
+    cw = new CWManager(*settings,this);
+    connect(cwDialog,SIGNAL(setType(cwtype)),cw,SLOT(setType(cwtype)));
+    connect(cwDialog,SIGNAL(startCw()),this,SLOT(startCw()));
+    connect(cw,SIGNAL(winkeyVersion(int)), cwDialog, SLOT(setWinkeyVersionLabel(int)));
+    connect(cw,SIGNAL(tx(bool, int)), bandmap, SLOT(setBandmapTxStatus(bool, int)));
+    connect(cwDialog,SIGNAL(startCw()), cw, SLOT(open()));
     connect(radios,SIGNAL(startRadios()), this, SLOT(openRadios()));
-    connect(winkey,SIGNAL(textSent(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
-    connect(winkey,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
-    connect(winkey,SIGNAL(winkeyError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
-    connect(winkey,SIGNAL(finished()),this,SLOT(messageFinished()));
-    startWinkey();
+    connect(cw,SIGNAL(textSent(const QString&,int)),So2sdrStatusBar,SLOT(showMessage(const QString&,int)));
+    connect(cw,SIGNAL(cwCanceled()),So2sdrStatusBar,SLOT(clearMessage()));
+    connect(cw,SIGNAL(CWError(const QString &)), errorBox, SLOT(showMessage(const QString &)));
+    connect(cw,SIGNAL(finished()),this,SLOT(messageFinished()));
+    startCw();
+
     openRadios();
     switchAudio(activeRadio);
     switchTransmit(activeRadio);
@@ -400,10 +404,11 @@ So2sdr::~So2sdr()
     if (kbdHandler[1]) kbdHandler[1]->deleteLater();
     delete cabrillo;
     delete radios;
+    delete cw;
     delete cwMessage;
     delete ssbMessage;
     delete errorBox;
-    delete winkeyDialog;
+    delete cwDialog;
     delete station;
     delete sdr;
     delete options;
@@ -419,7 +424,6 @@ So2sdr::~So2sdr()
     delete dupesheet[0];
     delete dupesheet[1];
     if (telnet) delete telnet;
-    delete winkey;
     delete bandmap;
     scriptProcess->close();
     delete scriptProcess;
@@ -508,11 +512,11 @@ void So2sdr::cleanup()
 /*!
    called when Winkey started or restarted
  */
-void So2sdr::startWinkey()
+void So2sdr::startCw()
 {
-    winkey->openWinkey();
-    winkey->setSpeed(wpm[activeRadio]);
-    winkey->switchTransmit(activeRadio);
+    cw->open();
+    cw->setSpeed(wpm[activeRadio]);
+    cw->switchTransmit(activeRadio);
 }
 
 
@@ -1308,7 +1312,7 @@ void So2sdr::about()
 {
     ungrab();
     aboutOn=true;
-    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2021 R.T. Clay N4OGW</p>"
+    QMessageBox::about(this, "SO2SDR", "<p>SO2SDR " + Version + " Copyright 2010-2022 R.T. Clay N4OGW</p>"
                        +"  Qt library version: "+qVersion()+
                        + "<li>hamlib http://www.hamlib.org " + hamlib_version
                        + "<li>QtSolutions_Telnet 2.1"
@@ -1422,7 +1426,7 @@ void So2sdr::autoCQActivate (bool state) {
         autoCQModePause = false;
         autoCQModeWait = true;
         sendLongCQ = true;
-        if (lineEditCall[autoCQRadio]->text().isEmpty() && !winkey->isSending() && !ssbMessage->isPlaying()) {
+        if (lineEditCall[autoCQRadio]->text().isEmpty() && !cw->isSending() && !ssbMessage->isPlaying()) {
             switchTransmit(autoCQRadio);
             sendFunc(0, Qt::NoModifier); // send F1 immediately
         }
@@ -1480,7 +1484,7 @@ void So2sdr::duelingCQActivate (bool state) {
         duelingCQWait = true;
         if (lineEditCall[activeRadio]->text().isEmpty()) {
             duelingCQModePause = false;
-            if (!winkey->isSending() && !ssbMessage->isPlaying()) {
+            if (!cw->isSending() && !ssbMessage->isPlaying()) {
                 enter(Qt::NoModifier); // start CQ immediately
             } else {
                 switchRadios(false); // focus other radio to begin dueling or toggle sequence
@@ -1519,20 +1523,20 @@ void So2sdr::autoSendExch() {
 
                 int comp = QString::compare(autoSendCall, lineEditCall[activeRadio]->text(), Qt::CaseInsensitive);
                 if ( comp < 0) {
-                    winkey->setEchoMode(false);
+                    cw->setEchoMode(false);
                     int cindx = lineEditCall[activeRadio]->text().length() - autoSendCall.length();
                     autoSendCall = lineEditCall[activeRadio]->text();
                     QString callDiff = lineEditCall[activeRadio]->text().right(cindx);
                     send(callDiff.toLatin1(), false);
                 } else if (comp > 0) {
-                    winkey->setEchoMode(true);
-                    winkey->cancelcw();
+                    cw->setEchoMode(true);
+                    cw->cancelcw();
                     autoSendPause = true;
                     autoSendCall.clear();
                 } else { // calls equal
                     autoSendExch_exch();
                     So2sdrStatusBar->showMessage(QString::number(activeRadio+1)+":"+autoSendCall,1700);
-                    winkey->setEchoMode(true);
+                    cw->setEchoMode(true);
                 }
 
             } else if (activeTxRadio != activeRadio && !exchangeSent[activeTxRadio] && cqMode[activeTxRadio]
@@ -1564,7 +1568,7 @@ void So2sdr::autoSendExch() {
  AutoSend exchange handler
  */
 void So2sdr::autoSendExch_exch() {
-    if (!winkey->isSending() && !ssbMessage->isPlaying()) { // wait until complete call is sent, then start exchange
+    if (!cw->isSending() && !ssbMessage->isPlaying()) { // wait until complete call is sent, then start exchange
         autoSendTrigger = false;
         autoSendPause = false;
         // duplicated from pieces of So2sdr::enter, {CALL_ENTERED} removed in Exch message macro
@@ -1619,14 +1623,14 @@ void So2sdr::autoCQ () {
 
     int delay = settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt();
     if (autoCQModeWait) {
-        if (winkey->isSending() || ssbMessage->isPlaying()) { // prevent switching hysteresis
+        if (cw->isSending() || ssbMessage->isPlaying()) { // prevent switching hysteresis
             autoCQModeWait = false;
         }
     } else if (autoCQModePause) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ (SLEEP)</font>");
     } else if (!lineEditCall[autoCQRadio]->text().isEmpty() || altDActive > 2) {
         autoCQModePause = true;
-    } else if (winkey->isSending() || ssbMessage->isPlaying()) {
+    } else if (cw->isSending() || ssbMessage->isPlaying()) {
         cqTimer.start();
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
@@ -1659,7 +1663,7 @@ void So2sdr::autoCQdelay (bool incr) {
     }
     progsettings->CQRepeatLineEdit->setText(QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1));
     settings->sync();
-    if (autoCQMode && (winkey->isSending() || ssbMessage->isPlaying())) {
+    if (autoCQMode && (cw->isSending() || ssbMessage->isPlaying())) {
         autoCQStatus->setText("<font color=#5200CC>AutoCQ ("
            + QString::number(settings->value(s_settings_cqrepeat,s_settings_cqrepeat_def).toInt()/1000.0,'f',1) + "s)</font>");
     } else {
@@ -1679,14 +1683,14 @@ void So2sdr::duelingCQ () {
     if (!cqMode[activeRadio ^ 1]) setCqMode(activeRadio ^ 1);
 
     if (duelingCQWait) {
-        if (winkey->isSending() || ssbMessage->isPlaying()) { // prevent switching hysteresis
+        if (cw->isSending() || ssbMessage->isPlaying()) { // prevent switching hysteresis
             duelingCQWait = false;
         }
     } else if (duelingCQModePause) {
         // prevent further processing if paused
     } else if (!lineEditCall[activeRadio]->text().isEmpty() || !lineEditCall[activeRadio ^ 1]->text().isEmpty()) {
         duelingCQModePause = true;
-    } else if (winkey->isSending() || ssbMessage->isPlaying()) {
+    } else if (cw->isSending() || ssbMessage->isPlaying()) {
         cqTimer.start();
     } else if (cqTimer.elapsed() > delay) {
         duelingCQWait = true;
@@ -1735,21 +1739,21 @@ void So2sdr::switchAudio(int r)
  */
 void So2sdr::switchTransmit(int r, int CWspeed)
 {
-    if (cat[r]->modeType()==CWType && winkey->isSending()) {
-        winkey->cancelcw();
+    if (cat[r]->modeType()==CWType) {
+        cw->cancelcw();
     }
     if (cat[r]->modeType()==PhoneType && ssbMessage->isPlaying()) {
         ssbMessage->cancelMessage();
     }
     if (CWspeed) {
-        winkey->setSpeed(CWspeed);
+        cw->setSpeed(CWspeed);
     } else {
-        winkey->setSpeed(wpm[r]);
+        cw->setSpeed(wpm[r]);
     }
     if (r != activeTxRadio) {
         autoSendTrigger=false;
         autoSendPause=false;
-        winkey->switchTransmit(r);
+        cw->switchTransmit(r);
         so2r->switchTransmit(r);
         if (cat[r]->modeType()==PhoneType) {
             ssbMessage->switchRadio(r);
@@ -1908,7 +1912,6 @@ bool So2sdr::logPartial(int nrig, QByteArray partial, bool external, Qso *extern
     } else {
         partialQso=qso[nrig];
     }
-    bool                dupe = false;
     QList<QByteArray>   calls;
     QList<unsigned int> worked;
     QString             txt("<font color=#0000FF>");
@@ -1916,15 +1919,12 @@ bool So2sdr::logPartial(int nrig, QByteArray partial, bool external, Qso *extern
     QList<int>          mults2;
     partialQso->worked = 0;
     searchPartial(partialQso, partial, calls, worked, mults1, mults2);
-    dupeCheckDone = false; // flag to indicate when a dupe check has been done
     const int nc = calls.size();
     for (int i = 0; i < nc; i++) {
         // for contests where stations can be worked only once on any band
         if (!log->dupeCheckingByBand()) {
             // all are dupes; show in red
             if (calls.at(i) == partial) {
-                dupe               = true;
-                dupeCheckDone      = true;
                 partialQso->mult[0] = mults1.at(i);
                 partialQso->mult[1] = mults2.at(i);
                 partialQso->worked  = worked[i];
@@ -1934,10 +1934,6 @@ bool So2sdr::logPartial(int nrig, QByteArray partial, bool external, Qso *extern
             // show dupe with current band in grey, available calls from other bands in blue
             if (bits[partialQso->band] & worked.at(i)) {
                 txt.append("<font color=#AAAAAA>" + calls.at(i) + " <font color=#000000>");
-                if (calls.at(i) == partial) {
-                    dupe          = true;
-                    dupeCheckDone = true;
-                }
             } else {
                 txt.append("<font color=#0000FF>" + calls.at(i) + " <font color=#000000>");
             }
@@ -1959,7 +1955,7 @@ bool So2sdr::logPartial(int nrig, QByteArray partial, bool external, Qso *extern
         updateWorkedMult(0);
         updateWorkedMult(1);
     }
-    return(dupe);
+    return(qso[nrig]->dupe);
 }
 
 /*!
@@ -2425,12 +2421,7 @@ void So2sdr::updateRadioFreq()
             modeDisplayPtr[i]->setText(cat[i]->modeStr());
         }
     }
-    if (winkey->winkeyIsOpen()) {
-        winkeyLabel->setText("WK:ON");
-    } else {
-        winkeyLabel->setText("<font color=#FF0000>WK:OFF </font>");
-    }
-
+    winkeyLabel->setText(cw->textStatus());
 }
 
 /*!
@@ -2483,7 +2474,7 @@ void So2sdr::speedUp(int nrig)
     {
         return;
     }
-    winkey->setSpeed(wpm[nrig]);
+    cw->setSpeed(wpm[nrig]);
 }
 
 /*!
@@ -2502,7 +2493,7 @@ void So2sdr::speedDn(int nrig)
     {
         return;
     }
-    winkey->setSpeed(wpm[nrig]);
+    cw->setSpeed(wpm[nrig]);
 }
 
 /*!
@@ -2569,7 +2560,7 @@ void So2sdr::enterCWSpeed(int nrig, const QString & text)
             wpm[nrig] = w;
             // don't actually change speed if we are sending on other radio
             if (nrig == activeTxRadio) {
-                winkey->setSpeed(wpm[nrig]);
+                cw->setSpeed(wpm[nrig]);
             }
         }
     }
@@ -2659,13 +2650,12 @@ void So2sdr::setCqMode(int i)
 void So2sdr::send(QByteArray text, bool stopcw)
 {
     if (cat[activeTxRadio]->modeType()!=CWType) return;
-    if (!settings->value(s_winkey_cwon,s_winkey_cwon_def).toBool()) return;
 
-    if (winkey->isSending() && stopcw) {
-        winkey->cancelcw();       // cancel any cw in progress
+    if (cw->isSending() && stopcw) {
+            cw->cancelcw();       // cancel any cw in progress
     }
-    winkey->loadbuff(text);
-    winkey->sendcw();
+    cw->loadbuff(text);
+    cw->sendcw();
 }
 
 /*!
@@ -2702,7 +2692,7 @@ void So2sdr::messageFinished()
  * load messages into outgoing queue. If two keyboard mode is
  * not active, simply call expandMacro2
  *
- * this can be called as a slot when winkey finishes sending a message;
+ * this can be called as a slot when cw manager finishes sending a message;
  * for this case restart is set to true
  */
 void So2sdr::expandMacro(QByteArray msg, bool stopcw, bool restart)
@@ -2722,7 +2712,7 @@ void So2sdr::expandMacro(QByteArray msg, bool stopcw, bool restart)
     } else {
         queue.enqueue(msg);
         rqueue.enqueue(activeRadio);
-        if (!winkey->isSending() && !ssbMessage->isPlaying()) {
+        if (!cw->isSending() && !ssbMessage->isPlaying()) {
             activeRadio=rqueue.dequeue();
             msg=queue.dequeue();
             expandMacro2(msg);
@@ -2865,7 +2855,6 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
             val = val.trimmed();
             val = val.toUpper();
             for (int i = 0; i < n_token_names; i++) {
-              //  if (val == token_names[i]) {
                 // macros not marked "instant" will clear the message queue if
                 // they are called with instant option ("@" at beginning of macro, see So2sdr::expandMacro)
                 if (val == names[i].token_name) {
@@ -3064,7 +3053,6 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
                         switchradio=false;
                         break;
                     case 36: // PTTON
-                        //@todo add winkey option
                         so2r->setPtt(activeRadio,1);
                         switchradio=false;
                         break;
@@ -3583,8 +3571,8 @@ void So2sdr::initPointers()
     radios        = nullptr;
     station       = nullptr;
     sdr           = nullptr;
-    winkey        = nullptr;
-    winkeyDialog  = nullptr;
+    cw            = nullptr;
+    cwDialog  = nullptr;
     master        = nullptr;
     history       = nullptr;
     dupesheet[0] = nullptr;

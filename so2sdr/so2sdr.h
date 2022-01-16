@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -39,6 +39,7 @@
 class BandmapInterface;
 class CabrilloDialog;
 class ContestOptionsDialog;
+class CWManager;
 class CWMessageDialog;
 class DupeSheet;
 class FileDownloader;
@@ -64,8 +65,7 @@ class SSBMessageDialog;
 class StationDialog;
 class Telnet;
 class WsjtxCallDialog;
-class Winkey;
-class WinkeyDialog;
+class CWDialog;
 
 /*!
    Main window
@@ -92,7 +92,7 @@ public slots:
     void settingsUpdate();
     void showMessage(QString);
     void stationUpdate();
-    void startWinkey();
+    void startCw();
     void updateOffTime();
     void updateSpotlistEdit(QSqlRecord origRecord, QSqlRecord r);
 
@@ -235,8 +235,8 @@ private:
     QLabel               *freqDisplayPtr[NRIG];
     QLabel               *grabLabel;
     QLabel               *labelBearing[NRIG];
-    QLabel               *labelLPBearing[NRIG];
     QLabel               *labelCountry[NRIG];
+    QLabel               *labelLPBearing[NRIG];
     QLabel               *modeDisplayPtr[NRIG];
     QLabel               *multLabel[2][N_BANDS];
     QLabel               *multNameLabel[MMAX];
@@ -281,8 +281,8 @@ private:
     Telnet               *telnet;
     uiSize               sizes;
     WsjtxCallDialog      *wsjtx[NRIG];
-    WinkeyDialog         *winkeyDialog;
-    Winkey               *winkey;
+    CWDialog             *cwDialog;
+    CWManager            *cw;
 
     void bandmapSetFreq(double f,int nr);
     void addQso(Qso *qso);

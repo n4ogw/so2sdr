@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -588,23 +588,10 @@ void Contest::guessMult(Qso *qso) const
  */
 void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
 {
-    for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) worked[ii] = 0;
-
-    // option 1: per-mode mults
-    // this currently only applies to the ARRL 10M contest; the code below is only for this
-    // special case. @todo fix for general case
-    if (settings.value(c_multsmode,c_multsmode_def).toBool()) {
-        for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
-            if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
-                worked[ii] += multWorked[ii][CWType][5][qso->mult[ii]] * bits[4];
-                worked[ii] += multWorked[ii][PhoneType][5][qso->mult[ii]] * bits[5];
-            }
-        }
-        return;
-    }
-    // option 2: mults count per-band but not per-mode. Here the mult status is stored internally in the CW modetype slot
+    // option 1: mults count per-band but not per-mode. Here the mult status is stored internally in the CW modetype slot
     if (settings.value(c_multsband,c_multsband_def).toBool()) {
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
+            worked[ii] = 0;
             for (int i = 0; i < N_BANDS; i++) {
                 if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
                     worked[ii] += multWorked[ii][CWType][i][qso->mult[ii]] * bits[i];
@@ -612,9 +599,10 @@ void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
             }
         }
     } else {
-        // option 3: mults count once on all bands (Sweepstakes, qso parties, etc) on any mode. Here
+        // option 2: mults count once on all bands (Sweepstakes, qso parties, etc) on any mode. Here
         // the mult status is stored in the N_BANDS slot. Note that this is only set up for HF contests.
         for (int ii = 0; ii < settings.value(c_nmulttypes,c_nmulttypes_def).toInt(); ii++) {
+            worked[ii] = 0;
             if (qso->mult[ii] != -1 && qso->mult[ii] < _nMults[ii]) {
                 if (multWorked[ii][CWType][N_BANDS][qso->mult[ii]] ||
                         multWorked[ii][PhoneType][N_BANDS][qso->mult[ii]] ||
@@ -622,6 +610,14 @@ void Contest::workedMults(Qso *qso, unsigned int worked[MMAX]) const
             }
         }
     }
+}
+
+void Contest::workedQso(ModeTypes m, int band, unsigned int &worked) const
+{
+    Q_UNUSED(m)
+    Q_UNUSED(band)
+    Q_UNUSED(worked)
+
 }
 
 /*!
@@ -1047,6 +1043,12 @@ void Contest::selectCountries(int ii, const Cty *cty, Cont cont)
 bool Contest::hasPrefill() const
 {
     return(prefill);
+}
+
+/*! returns true if this contest has custom worked bits */
+bool Contest::hasWorked() const
+{
+    return false;
 }
 
 /*! returns true if this log field get filled in for later

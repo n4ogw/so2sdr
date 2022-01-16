@@ -1,4 +1,4 @@
-/*! Copyright 2010-2021 R. Torsten Clay N4OGW
+/*! Copyright 2010-2022 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,14 +21,14 @@
 #include <QSettings>
 #include <QString>
 #include "defines.h"
-#include "winkeydialog.h"
+#include "cwdialog.h"
 
 /*!
-  WinkeyDialog is a dialog for entering winkey parameters
+  CWDialog is a dialog for entering winkey and cwdaemon parameters
 
   s is station config file (so2sdr.ini) in QSettings .ini format
  */
-WinkeyDialog::WinkeyDialog(QSettings& s, QWidget *parent) : QDialog(parent),settings(s)
+CWDialog::CWDialog(QSettings& s, QWidget *parent) : QDialog(parent),settings(s)
 {
     setupUi(this);
     adjustSize();
@@ -37,15 +37,9 @@ WinkeyDialog::WinkeyDialog(QSettings& s, QWidget *parent) : QDialog(parent),sett
     // load from settings file
     DeviceLineEdit->setText(settings.value(s_winkey_device,s_winkey_device_def).toString());
     DeviceLineEdit->setToolTip("serial port /dev/ttyS0, /dev/ttyS1, /dev/ttyUSB0, ...");
-
-    CWCheckBox->setChecked(settings.value(s_winkey_cwon,s_winkey_cwon_def).toBool());
     CTCheckBox->setChecked(settings.value(s_winkey_ctspace,s_winkey_ctspace_def).toBool());
     PaddleSwapCheckBox->setChecked(settings.value(s_winkey_paddle_swap,s_winkey_paddle_swap_def).toBool());
     PaddleSidetoneCheckBox->setChecked(settings.value(s_winkey_sidetonepaddle,s_winkey_sidetonepaddle_def).toBool());
-    PaddleModeComboBox->insertItem(0, "Iambic B");
-    PaddleModeComboBox->insertItem(1, "Iambic A");
-    PaddleModeComboBox->insertItem(2, "Ultimatic");
-    PaddleModeComboBox->insertItem(3, "Bug");
     PaddleModeComboBox->setCurrentIndex(settings.value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt());
     SidetoneFreqComboBox->insertItem(0, "4000 Hz");
     SidetoneFreqComboBox->insertItem(1, "2000 Hz");
@@ -58,27 +52,35 @@ WinkeyDialog::WinkeyDialog(QSettings& s, QWidget *parent) : QDialog(parent),sett
     SidetoneFreqComboBox->insertItem(8, "444 Hz");
     SidetoneFreqComboBox->insertItem(9, "400 Hz");
     SidetoneFreqComboBox->setCurrentIndex(settings.value(s_winkey_sidetone,s_winkey_sidetone_def).toInt());
-    connect(winkey_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
-    connect(winkey_buttons, SIGNAL(accepted()), this, SLOT(updateWinkey()));
+    UDP1LineEdit->setText(settings.value(s_cwdaemon_udp[0],s_cwdaemon_udp_def[0]).toString());
+    UDP1LineEdit->setToolTip("UDP port number for rig 1");
+    UDP2LineEdit->setText(settings.value(s_cwdaemon_udp[1],s_cwdaemon_udp_def[1]).toString());
+    UDP2LineEdit->setToolTip("UDP port number for rig 2");
+
+    comboBox->setCurrentIndex(settings.value(s_cw_device,s_cw_device_def).toInt());
+
+    connect(cwdialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
+    connect(cwdialog_buttons, SIGNAL(accepted()), this, SLOT(updateCW()));
+    setWinkeyVersionLabel(0);
 }
 
-WinkeyDialog::~WinkeyDialog()
+CWDialog::~CWDialog()
 {
 }
 
 /*!
    sets text showing Winkey version
  */
-void WinkeyDialog::setWinkeyVersionLabel(int version)
+void CWDialog::setWinkeyVersionLabel(int version)
 {
     QString label = QString::number(version);
     VersionLabel->setText(label);
 }
 
 /*!
-   update Winkey parameters from form input
+   update CW device parameters from form input
  */
-void WinkeyDialog::updateWinkey()
+void CWDialog::updateCW()
 {
     settings.setValue(s_winkey_device,DeviceLineEdit->text());
     settings.setValue(s_winkey_sidetonepaddle,PaddleSidetoneCheckBox->isChecked());
@@ -86,16 +88,18 @@ void WinkeyDialog::updateWinkey()
     settings.setValue(s_winkey_paddle_swap,PaddleSwapCheckBox->isChecked());
     settings.setValue(s_winkey_ctspace,CTCheckBox->isChecked());
     settings.setValue(s_winkey_paddle_mode,PaddleModeComboBox->currentIndex());
+    settings.setValue(s_cw_device,comboBox->currentIndex());
+    settings.setValue(s_cwdaemon_udp[0],UDP1LineEdit->text().toInt());
+    settings.setValue(s_cwdaemon_udp[1],UDP2LineEdit->text().toInt());
     settings.sync();
 
-    // emit signal to start/restart winkey
-    emit(startWinkey());
-
+    emit(setType((cwtype)comboBox->currentIndex()));
+    emit(startCw());
     setResult(1);
 }
 
 /*! called if dialog rejected */
-void WinkeyDialog::rejectChanges()
+void CWDialog::rejectChanges()
 {
     DeviceLineEdit->setText(settings.value(s_winkey_device,s_winkey_device_def).toString());
     PaddleSidetoneCheckBox->setChecked(settings.value(s_winkey_sidetonepaddle,s_winkey_sidetonepaddle_def).toBool());
@@ -103,5 +107,10 @@ void WinkeyDialog::rejectChanges()
     PaddleSwapCheckBox->setChecked(settings.value(s_winkey_paddle_swap,s_winkey_paddle_swap_def).toBool());
     CTCheckBox->setChecked(settings.value(s_winkey_ctspace,s_winkey_ctspace_def).toBool());
     PaddleModeComboBox->setCurrentIndex(settings.value(s_winkey_paddle_mode,s_winkey_paddle_mode_def).toInt());
+    UDP1LineEdit->setText(settings.value(s_cwdaemon_udp[0],s_cwdaemon_udp_def[0]).toString());
+    UDP2LineEdit->setText(settings.value(s_cwdaemon_udp[1],s_cwdaemon_udp_def[1]).toString());
+
+    comboBox->setCurrentIndex(settings.value(s_cw_device,s_cw_device_def).toInt());
+
     reject();
 }

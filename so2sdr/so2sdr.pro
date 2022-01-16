@@ -18,9 +18,11 @@ QT += network sql widgets serialport x11extras
 
 
 HEADERS += cwmessagedialog.h \
+    cwdaemon.h \
+    cwdialog.h \
+    cwmanager.h \
     serial.h \
     so2sdr.h \
-    winkeydialog.h \
     stationdialog.h \
     log.h \
     radiodialog.h \
@@ -86,8 +88,8 @@ HEADERS += cwmessagedialog.h \
     contest_wwdigi.h
 
 FORMS += cwmessagedialog.ui \
+    cwdialog.ui \
     so2sdr.ui \
-    winkeydialog.ui \
     stationdialog.ui \
     radiodialog.ui \
     sdrdialog.ui \
@@ -105,10 +107,12 @@ FORMS += cwmessagedialog.ui \
     centergrid.ui \
     wsjtxcalldialog.ui
 SOURCES += cwmessagedialog.cpp \
+    cwdaemon.cpp \
+    cwdialog.cpp \
+    cwmanager.cpp \
     main.cpp \
     serial.cpp \
     so2sdr.cpp \
-    winkeydialog.cpp \
     stationdialog.cpp \
     log.cpp \
     radiodialog.cpp \
