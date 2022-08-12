@@ -1384,6 +1384,19 @@ void So2sdr::enter(Qt::KeyboardModifiers mod,int kbdNr)
         exchangeSent[activeRadio] = true;
     }
 
+    // send QSL msg
+    if (enterState[i1][i2][i3][i4] & 512) {
+        // see if call was corrected
+        // if control+Enter, do not send any CW here.
+        int m=cat[activeTxRadio]->modeType();
+        if (qso[activeRadio]->call != origCallEntered[activeRadio]) {
+            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray());
+        } else {
+            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toByteArray());
+        }
+        exchangeSent[activeRadio] = false;
+    }
+
     // log qso
     if (enterState[i1][i2][i3][i4] & 8) {
         clearLogSearch();
@@ -1498,19 +1511,6 @@ void So2sdr::enter(Qt::KeyboardModifiers mod,int kbdNr)
                 duelingCQWait = true;
             }
         }
-    }
-
-    // send QSL msg
-    if (enterState[i1][i2][i3][i4] & 512) {
-        // see if call was corrected
-        // if control+Enter, do not send any CW here.
-        int m=cat[activeTxRadio]->modeType();
-        if (qso[activeRadio]->call != origCallEntered[activeRadio]) {
-            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg_updated[m],c_qsl_msg_updated_def[m]).toByteArray());
-        } else {
-            if (mod != Qt::ShiftModifier) expandMacro(csettings->value(c_qsl_msg[m],c_qsl_msg_def[m]).toByteArray());
-        }
-        exchangeSent[activeRadio] = false;
     }
 
     // clear call field

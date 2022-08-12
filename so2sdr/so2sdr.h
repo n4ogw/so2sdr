@@ -329,7 +329,7 @@ private:
     void qsy(int nrig, double &freq, bool exact);
     void readStationSettings();
     void readExcludeMults();
-    void runScript(QByteArray cmd);
+    void runScript(QString cmd, QString args);
     void saveSpots();
     void searchPartial(Qso *qso, QByteArray part, QList<QByteArray>& calls, QList<unsigned int>& worked, QList<int>& mult1, QList<int>& mult2);
     void selectContest(QByteArray name);

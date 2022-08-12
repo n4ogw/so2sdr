@@ -1001,17 +1001,25 @@ bool So2sdr::setupContest()
 /*!
    initialize supercheck partial
    slot called when master checkbox clicked
+
+   if file exists in user directory, use that first; otherwise use data directory file
  */
 void So2sdr::startMaster()
 {
     if (csettings->value(c_mastermode,c_mastermode_def).toBool()) {
-        QDir::setCurrent(dataDirectory());
+        QDir::setCurrent(userDirectory());
         QString filename=csettings->value(c_masterfile,c_masterfile_def).toString();
         QFile file(filename);
         if (file.open(QIODevice::ReadOnly)) {
             master->initialize(file);
         } else {
-            errorBox->showMessage("ERROR: can't open file " + filename);
+            QDir::setCurrent(dataDirectory());
+            QFile file(filename);
+            if (file.open(QIODevice::ReadOnly)) {
+                master->initialize(file);
+            } else {
+                errorBox->showMessage("ERROR: can't open file " + filename);
+            }
         }
     }
 }
@@ -2789,8 +2797,11 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
                                {"PTTOFF2",false},
                                {"PTTOFFR2",false},
                                {"RECORD",false},
-                               {"2KBD",true}};
-    const int        n_token_names = 46;
+                               {"2KBD",true},
+                               {"/SCRIPT",true},
+                               {"/SCRIPTNR",true},
+                               {"EXCH_ENTERED",false}};
+    const int        n_token_names = 49;
 
     /*!
        cw/ssb message macros
@@ -2838,6 +2849,7 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
        - {PTTONR2} {PTTOFFR2} turn inactive radio PTT on/off
        - {RECORD} file  record audio to file "file.wav"
        - {2KBD} toggle two keyboard mode
+       - {EXCH_ENTERED} exchange from exchange window
     */
     bool switchradio=true;
     bool first=true;
@@ -2851,6 +2863,7 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
         while (i1 != -1) {
             out.append(msg.mid(i0, i1 - i0));
             i2  = msg.indexOf("}", i1);
+
             QByteArray val = msg.mid(i1 + 1, i2 - i1 - 1);
             val = val.trimmed();
             val = val.toUpper();
@@ -3036,20 +3049,28 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
                         origCallEntered[activeRadio]=qso[activeRadio]->call;
                         break;
                     case 34: // SCRIPT
-                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
-                        runScript(command);
-                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
+                        // text up to first space is script name
+                        command = msg.mid(i2 + 1, msg.indexOf(" ", i2) - (i2 + 1));
+                        i2 = msg.indexOf(" ",i2);
+                        // out will hold command line arguments
+                        out.append(msg.mid(i2+1,msg.indexOf("{",i2) - (i2 + 1)));
+                        i2 = msg.indexOf("{",i2) - 1;
                         switchradio=false;
                         break;
                     case 35: // SCRIPTNR
-                        command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
+                        // text up to first space is script name
+                        command = msg.mid(i2 + 1, msg.indexOf(" ", i2) - (i2 + 1));
+                        i2 = msg.indexOf(" ",i2);
+                        // out will hold command line arguments
+                        out.append(msg.mid(i2+1,msg.indexOf("{",i2) - (i2 + 1)));
+                        i2 = msg.indexOf("{",i2) - 1;
+                        switchradio=false;
+                        // replace # with radio number
                         if (activeRadio==0) {
-                            command.replace('#','0');
+                            out.replace('#','0');
                         } else {
-                            command.replace('#','1');
+                            out.replace('#','1');
                         }
-                        runScript(command);
-                        i2 = msg.indexOf("}", msg.indexOf("{", i2));
                         switchradio=false;
                         break;
                     case 36: // PTTON
@@ -3093,6 +3114,21 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant)
                         twoKeyboard();
                         progsettings->kbdCheckBox->setChecked(settings->value(s_twokeyboard_enable,s_twokeyboard_enable_def).toBool());
                         return;
+                    case 46: case 47: // /SCRIPT, /SCRIPTNR
+                        if (!command.isEmpty()) {
+                            runScript(command,out.simplified());
+                            command.clear();
+                            out.clear();
+                        }
+                        switchradio=false;
+                        break;
+                    case 48:  // EXCH_ENTERED
+                        if (!toggleMode) {
+                            out.append(lineEditExchange[activeRadio]->text().toLatin1());
+                        } else {
+                            out.append(lineEditExchange[activeTxRadio]->text().toLatin1());
+                        }
+                        break;
                     }
                     break;
                 }
@@ -3798,13 +3834,12 @@ void So2sdr::showBandmap2(bool state)
     bandmap->showBandmap(1,state);
 }
 
-void So2sdr::runScript(QByteArray cmd)
+void So2sdr::runScript(QString cmd,QString args)
 {
     So2sdrStatusBar->showMessage("Script:"+cmd,3000);
     QString program = userDirectory()+"/scripts/"+cmd;
-    QStringList args;
-    scriptProcess->close();
-    scriptProcess->start(program,args);
+    QStringList arglist=args.simplified().split(" ");
+    QProcess::execute(program,arglist);
 }
 
 void So2sdr::showRecordingStatus(bool b)
