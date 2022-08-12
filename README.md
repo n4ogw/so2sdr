@@ -9,6 +9,7 @@ can be used separately from so2sdr.
 Copyright 2010-2022 R. Torsten Clay N4OGW
 
 # News
+* 08/12/2022 version 2.5.15; improvements to scripts called from message macros
 * 01/10/2022 version 2.5.14; add CWDaemon support
 * 09/14/2019 new feature in version 2.5.0: two keyboard support (experimental)
 * 06/08/2018 support ARRL June VHF contest
