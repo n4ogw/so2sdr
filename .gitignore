@@ -42,3 +42,4 @@ so2sdr/doc/*
 #others
 *.bak
 .qmake.stash
+.qtc_clangd

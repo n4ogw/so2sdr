@@ -297,6 +297,8 @@ void RigSerial::timerEvent(QTimerEvent *event)
                 lock.unlock();
                 QByteArray cmd=";\\set_freq "+QByteArray::number(rigFreq)+"\n";
                 socket->write(cmd);
+            } else {
+                lock.unlock();
             }
             lock.lockForWrite();
             if ((chgMode > RIG_MODE_NONE) && (chgMode < RIG_MODE_TESTS_MAX)) {
