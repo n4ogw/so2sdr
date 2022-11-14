@@ -203,7 +203,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     }
     setSdrType();
     sdrSource->moveToThread(&sdrThread);
-    connect(actionSetup,SIGNAL(triggered()),sdrSource,SLOT(stop()),Qt::DirectConnection);
+    connect(actionSetup,SIGNAL(triggered()),sdrSource,SLOT(stop()));
     connect(&sdrThread,SIGNAL(started()),sdrSource,SLOT(initialize()));
     connect(sdrSource,SIGNAL(stopped()),&sdrThread,SLOT(quit()));
     connect(sdrSource,SIGNAL(stopped()),this,SLOT(disconnectSignals()));

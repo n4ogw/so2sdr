@@ -23,7 +23,6 @@
 #include <QPixmap>
 #include "bandmapdisplay.h"
 #include "defines.h"
-#include "spectrum.h"
 
 BandmapDisplay::BandmapDisplay(QWidget *parent) : QWidget(parent)
 {

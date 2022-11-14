@@ -116,7 +116,7 @@ SoundCardSetup::~SoundCardSetup()
 
 double SoundCardSetup::offset(int band) const
 {
-    if (band==BAND_NONE) return 0;
+    if (band==BAND_NONE) return settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toDouble();
 
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
@@ -127,7 +127,7 @@ double SoundCardSetup::offset(int band) const
 
 bool SoundCardSetup::invert(int band) const
 {
-    if (band==BAND_NONE) return false;
+    if (band==BAND_NONE) return settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool();
 
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->invert(band);

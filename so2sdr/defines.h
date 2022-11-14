@@ -30,7 +30,7 @@
 #include "hamlib/rig.h"
 
 // ///////// version ///////////////
-const QByteArray Version = "2.5.16";
+const QByteArray Version = "2.5.17";
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -49,9 +49,7 @@ const int MAX_TELNET_CHARS=4096;
 const int defaultParallelPortStereoPin=5;
 const int defaultParallelPortAudioPin=4;
 const int defaultParallelPortTxPin=3;
-#ifdef Q_OS_LINUX
 const QString defaultParallelPort = "/dev/parport0";
-#endif
 
 // /////////////// winkey //////////////////
 
@@ -76,9 +74,7 @@ Q_DECLARE_TYPEINFO(WinkeyParam, Q_PRIMITIVE_TYPE);
 
 // /////////// Radio serial communications ///////////////
 
-#ifdef Q_OS_LINUX
 const QString defaultSerialPort[3] = {"/dev/ttyS0","/dev/ttyS1","/dev/ttyS2"};
-#endif
 
 const int NRIG=2;
 
@@ -562,9 +558,7 @@ const QString s_wsjtx_hide_dupes[NRIG]={"wsjtx/dupes1","wsjtx/dupes2"};
 const bool s_wsjtx_hide_dupes_def=true;
 
 const QString s_sdr_config[NRIG]={"sdr/config1","sdr/config2"};
-#ifdef Q_OS_LINUX
 const QString s_sdr_config_def[NRIG]={QDir::homePath()+"/.so2sdr/so2sdr-bandmap1.ini",QDir::homePath()+"/.so2sdr/so2sdr-bandmap2.ini"};
-#endif
 
 const QString s_sdr_ip[NRIG]={"sdr/ip1","sdr/ip2"};
 const QString s_sdr_ip_def[NRIG]={"localhost","localhost"};

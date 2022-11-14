@@ -21,7 +21,6 @@
 #include <QSettings>
 #include <QString>
 #include "sdrdialog.h"
-#include "utils.h"
 
 /*!
  * \brief SDRDialog::SDRDialog
@@ -61,13 +60,13 @@ SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(pare
 double SDRDialog::offset(int band) const
 {
     switch (settings.value(s_sdr_type,s_sdr_type).toInt()) {
-    case 0:
+    case soundcard_t:
         return soundcard->offset(band);
         break;
-    case 1:
+    case network_t:
         return network->offset(band);
         break;
-    case 2:
+    case afedri_t:
         return afedri->offset(band);
         break;
     default:
@@ -78,13 +77,13 @@ double SDRDialog::offset(int band) const
 bool SDRDialog::invert(int band) const
 {
     switch (settings.value(s_sdr_type,s_sdr_type).toInt()) {
-    case 0:
+    case soundcard_t:
         return soundcard->invert(band);
         break;
-    case 1:
+    case network_t:
         return network->invert(band);
         break;
-    case 2:
+    case afedri_t:
         return afedri->invert(band);
         break;
     default:
@@ -105,13 +104,13 @@ int SDRDialog::invertSign(int band) const
 void SDRDialog::launchConfigure()
 {
     switch (comboBoxSdrType->currentIndex()) {
-    case 0:
+    case soundcard_t:
         soundcard->show();
         break;
-    case 1:
+    case network_t:
         network->show();
         break;
-    case 2:
+    case afedri_t:
         afedri->show();
         break;
     }

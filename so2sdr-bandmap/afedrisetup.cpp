@@ -126,7 +126,7 @@ void AfedriSetup::updateFromSettings()
 
 double AfedriSetup::offset(int band) const
 {
-    if (band==BAND_NONE) return 0;
+    if (band==BAND_NONE) return settings.value(s_sdr_offset_afedri,s_sdr_offset_afedri_def).toDouble();
 
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->offset(band);
@@ -137,7 +137,7 @@ double AfedriSetup::offset(int band) const
 
 bool AfedriSetup::invert(int band) const
 {
-    if (band==BAND_NONE) return false;
+    if (band==BAND_NONE) return settings.value(s_sdr_swap_afedri,s_sdr_swap_afedri_def).toBool();
 
     if (offsetSetup->hasOffset(band)) {
         return offsetSetup->invert(band);
