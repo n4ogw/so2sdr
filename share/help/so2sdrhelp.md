@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.16
+## SO2SDR Help file version 2.5.17
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -707,7 +707,7 @@ For notes on voice keyer setup, see  [voice keyer setup](#ssb).
 * {CQMODE} :   switch to CQ mode
 * {SPMODE} :   switch to SP mode
 * {SWAP\_RADIOS} :  swap frequencies between radios
-  <li> {SWITCH\_RADIOS} : same as alt-R
+* {SWITCH\_RADIOS} : same as alt-R
 * {REPEAT_LAST} :  repeats previously sent message
 * {REPEAT_NR} :  if the call entry line is not empty, send current qso #. If call entry line is empty, sends number sent for last logged qso.
 *   {CLEAR_RIT} : clear the RIT
@@ -1030,6 +1030,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.5.17 (11/17/2022)
+
+* remove dependency on qtx11extras
+* so2sdr-bandmap bug fix: when running without standalone (without so2sdr attached), swap iq and offset were ignored because band wasn't being set.
 
 ## version 2.5.16 (11/13/2022)
 
