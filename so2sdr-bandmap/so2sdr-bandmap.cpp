@@ -31,7 +31,6 @@
 #include <QtMath>
 #include <QHostAddress>
 #include <QUdpSocket>
-#include <QX11Info>
 #include <QXmlStreamWriter>
 #include "so2sdr-bandmap.h"
 #include "bandmap-tcp.h"
@@ -1448,11 +1447,12 @@ void So2sdrBandmap::resetTuningTimer()
  */
 void So2sdrBandmap::setUiSize()
 {
-    if (QX11Info::appDpiX()>100) {
-        setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
-    } else {
-        setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
-    }
+    // x11extras depreciated, need to update to new way of icon scaling
+    //if (QX11Info::appDpiX()>100) {
+    setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
+    //} else {
+    //setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+    //}
     QFont font10("sans", BANDMAP_FONT_POINT_SIZE);
     QFontMetricsF fm10(font10);
     uiSizes.height=fm10.height();

@@ -14,7 +14,7 @@
 TEMPLATE = app
 TARGET = so2sdr
 
-QT += network sql widgets serialport x11extras
+QT += network sql widgets serialport
 
 
 HEADERS += cwmessagedialog.h \

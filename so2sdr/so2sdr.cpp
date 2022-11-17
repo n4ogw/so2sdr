@@ -47,7 +47,6 @@
 #include <QTimer>
 #include <QUrl>
 #include <QHeaderView>
-#include <QX11Info>
 
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
@@ -4017,11 +4016,12 @@ void So2sdr::logWsjtx(Qso *qso)
  */
 void So2sdr::setUiSize()
 {
-    if (QX11Info::appDpiX()>100) {
-        setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
-    } else {
-        setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
-    }
+    // x11extras depreciated, need to update to new way of icon scaling
+    //if (QX11Info::appDpiX()>100) {
+    setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
+    //} else {
+    //    setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
+    //}
     QFont font10("sans", 10);
     QFontMetricsF fm10(font10);
     sizes.height=fm10.height();
