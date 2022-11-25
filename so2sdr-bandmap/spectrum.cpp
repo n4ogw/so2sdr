@@ -379,6 +379,8 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
 {
     unsigned int  j    = bptr * sizes.advance_size;
     unsigned char *ptr = &data[j];
+    double avgr=0.;
+    double avgi=0.;
     for (int i = 0; i < fftSize; i++) {
         double tmpr;
         double tmpi;
@@ -444,17 +446,26 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             break;
         }
         if (!swapIq) {
-            in[i][0] = tmpr * window[i];
-            in[i][1] = tmpi * window[i];
+            in[i][0] = tmpr;
+            in[i][1] = tmpi;
         } else {
-            in[i][0] = tmpi * window[i];
-            in[i][1] = tmpr * window[i];
+            in[i][0] = tmpi;
+            in[i][1] = tmpr;
         }
         if (j == sizes.chunk_size) {
             // make buffer circular
             j   = 0;
             ptr = &data[0];
         }
+        avgr += in[1][0];
+        avgi += in[1][1];
+    }
+    // remove DC component and apply window
+    avgr /= fftSize;
+    avgi /= fftSize;
+    for (int i=0; i < fftSize; i++) {
+        in[i][0] = (in[i][0]-avgr) * window[i];
+        in[i][1] = (in[i][1]-avgi) * window[i];
     }
     fftw_execute(plan);
     if (iqCorrect) {
@@ -470,11 +481,10 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             spec_tmp[i] = (out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         }
     }
-    // remove zero frequency bin
-    spec_tmp[0]=1.0e-8;
 
     double bga, sigma;
     measureBackground(bga, sigma, spec_tmp);
+
     if (iqData) {
         if (calibCnt == (SIG_CALIB_FREQ - 1)) {
             measureIQError(bga, spec_tmp);
