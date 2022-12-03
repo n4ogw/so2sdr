@@ -24,7 +24,7 @@ So2sdr-bandmap has been tested with the following SDR hardware:
 * LP-PAN
 * Afedri SDR, interfaced both via USB as a sound card, and via
 ethernet.
-# RTL-sdr (Nooelect v5 tested)
+* RTL-sdr (Nooelec v5 tested)
 
 Other SDR's may work if they supply an I/Q stream over the sound card interface
 or via ethernet with the SDR-IP protocol. The program has been tested most with the
