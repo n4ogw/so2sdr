@@ -36,6 +36,7 @@ RtlSetup::RtlSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDialog(parent),
     sampleRateComboBox->setFixedWidth(qRound(sizes.width*15));
     bandOffsetPushButton->setFixedWidth(qRound(sizes.width*15));
     sampleRateComboBox->addItem("262144");
+    sampleRateComboBox->addItem("100000 (x16 avg)");
     sampleRateComboBox->addItem("128000 (x16 avg)");
 
     adjustSize();
@@ -103,8 +104,11 @@ void RtlSetup::updateFromSettings()
     if (settings.value(s_sdr_rtl_sample_freq,s_sdr_rtl_sample_freq_def).toInt()==262144) {
         sampleRateComboBox->setCurrentIndex(0);
         settings.setValue(s_sdr_rtl_bits,3);
-    } else {
+    } else if (settings.value(s_sdr_rtl_sample_freq,s_sdr_rtl_sample_freq_def).toInt()==100000) {
         sampleRateComboBox->setCurrentIndex(1);
+        settings.setValue(s_sdr_rtl_bits,0);
+    } else {
+        sampleRateComboBox->setCurrentIndex(2);
         settings.setValue(s_sdr_rtl_bits,0);
     }
 }
@@ -138,6 +142,10 @@ void RtlSetup::updateRtl()
         settings.setValue(s_sdr_rtl_bits,3);
         break;
     case 1:
+        settings.setValue(s_sdr_rtl_sample_freq,100000);
+        settings.setValue(s_sdr_rtl_bits,0);
+        break;
+    case 2:
         settings.setValue(s_sdr_rtl_sample_freq,128000);
         settings.setValue(s_sdr_rtl_bits,0);
         break;

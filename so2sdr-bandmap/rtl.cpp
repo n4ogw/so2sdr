@@ -63,6 +63,9 @@ void RtlSDR::initialize()
     if (settings->value(s_sdr_rtl_sample_freq,s_sdr_rtl_sample_freq_def).toInt()==262144) {
         rtlsdr_set_sample_rate(dev, 262144);
         qDebug("RTL-SDR: set sample rate 262144");
+    } else if (settings->value(s_sdr_rtl_sample_freq,s_sdr_rtl_sample_freq_def).toInt()==100000) {
+        rtlsdr_set_sample_rate(dev, 1600000);
+        qDebug("RTL-SDR: set sample rate 1600000");
     } else {
         rtlsdr_set_sample_rate(dev, 2048000);
         qDebug("RTL-SDR: set sample rate 2048000");
