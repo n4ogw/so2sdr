@@ -16,40 +16,35 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#ifndef SDRDATASOURCE_H
-#define SDRDATASOURCE_H
 
-#include <QMutex>
-#include <QObject>
-#include <QString>
-#include <QSettings>
-#include "defines.h"
+#ifndef RTL_H
+#define RTL_H
+#include "sdrdatasource.h"
+#include <rtl-sdr.h>
 
-class SdrDataSource : public QObject
+class RtlSDR : public SdrDataSource
 {
     Q_OBJECT
-public:
-    explicit SdrDataSource(QString settingsFile,QObject *parent = nullptr);
-    ~SdrDataSource();
-    void setSampleSizes(sampleSizes s);
-    bool isRunning();
 
-signals:
-    void error(const QString &);
-    void ready(unsigned char *, unsigned int);
-    void stopped();
+public:
+    RtlSDR(QString settingsFile,QObject *parent = nullptr);
+    ~RtlSDR();
 
 public slots:
-    virtual void stop() = 0;
-    virtual void initialize() = 0;
+    void stop();
+    void initialize();
 
-protected:
-    QMutex      mutex;
-    sampleSizes sizes;
-    QSettings   *settings;
-    bool        stopFlag;
-    bool        running;
-    bool        initialized;
+private:
+    void stream();
+    void streamx16();
+
+    rtlsdr_dev_t       *dev;
+    unsigned char      *buff;
+    unsigned char      *rawBuff;
+    unsigned char      *ptr;
+    unsigned int       bpmax;
+    unsigned int       bptr;
+    unsigned int       iptr;
 };
 
-#endif // SDRDATASOURCE_H
+#endif

@@ -85,16 +85,16 @@ void AfedriSetup::updateFromSettings()
 {
     switch (settings.value(s_sdr_afedri_speed,s_sdr_afedri_speed_def).toInt()) {
     case 1:
-        fftComboBox->setCurrentIndex(0);
+        speedComboBox->setCurrentIndex(0);
         break;
     case 2:
-        fftComboBox->setCurrentIndex(1);
+        speedComboBox->setCurrentIndex(1);
         break;
     case 4:
-        fftComboBox->setCurrentIndex(2);
+        speedComboBox->setCurrentIndex(2);
         break;
     default:
-        fftComboBox->setCurrentIndex(0);
+        speedComboBox->setCurrentIndex(0);
 
     }
     sampleFreqLineEdit->setText(settings.value(s_sdr_afedri_sample_freq,s_sdr_afedri_sample_freq_def).toString());
@@ -152,7 +152,7 @@ bool AfedriSetup::invert(int band) const
  */
 void AfedriSetup::updateAfedri()
 {
-    switch (fftComboBox->currentIndex()) {
+    switch (speedComboBox->currentIndex()) {
     case 0:
         settings.setValue(s_sdr_afedri_speed,1);
         break;

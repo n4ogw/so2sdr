@@ -25,12 +25,13 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = "2.5.17";
+const QByteArray Version = "2.6.0";
 
 typedef enum SdrType {
     soundcard_t=0,
     network_t=1,
-    afedri_t=2
+    afedri_t=2,
+    rtl_t=3
 } SdrType;
 
 typedef struct uiSize {
@@ -208,38 +209,14 @@ const int s_sdr_fft_def=4096;
 const QString s_sdr_speed="speed";
 const int s_sdr_speed_def=1;
 
-const QString s_sdr_sound_speed="soundcard_speed";
-const int s_sdr_sound_speed_def=1;
-
-const QString s_sdr_net_speed="net_speed";
-const int s_sdr_net_speed_def=1;
-
-const QString s_sdr_afedri_speed="afedri_speed";
-const int s_sdr_afedri_speed_def=1;
-
 const QString s_sdr_sample_freq="sample_freq";
 const int s_sdr_sample_freq_def=96000;
 
-const QString s_sdr_net_sample_freq="net_sample_freq";
-const int s_sdr_net_sample_freq_def=96000;
 
-const QString s_sdr_sound_sample_freq="soundcard_sample_freq";
-const int s_sdr_sound_sample_freq_def=96000;
+// sdr-ip SDR
 
-const QString s_sdr_afedri_sample_freq="afedri_sample_freq";
-const int s_sdr_afedri_sample_freq_def=100000;
-
-const QString s_sdr_tcp_ip="ipaddress";
-const QString s_sdr_tcp_ip_def="127.0.0.1";
-
-const QString s_sdr_udp_ip="udp_ipaddress";
-const QString s_sdr_udp_ip_def="127.0.0.1";
-
-const QString s_sdr_tcp_port="tcp_port";
-const int s_sdr_tcp_port_def=50000;
-
-const QString s_sdr_udp_port="udp_port";
-const int s_sdr_udp_port_def=50000;
+const QString s_sdr_net_speed="net_speed";
+const int s_sdr_net_speed_def=1;
 
 const QString s_sdr_net_tcp_ip="net_ipaddress";
 const QString s_sdr_net_tcp_ip_def="127.0.0.1";
@@ -250,14 +227,36 @@ const int s_sdr_net_tcp_port_def=50000;
 const QString s_sdr_net_udp_port="net_udp_port";
 const int s_sdr_net_udp_port_def=50000;
 
-const QString s_sdr_device="device";
-const int s_sdr_device_def=0;
+const QString s_sdr_offset_network="offset_network";
+const int s_sdr_offset_network_def=15000;
 
-const QString s_sdr_deviceindx="deviceindx";
-const int s_sdr_deviceindx_def=0;
+const QString s_sdr_swap_network="swapiq_network";
+const bool s_sdr_swap_network_def=false;
+
+const QString s_sdr_net_sample_freq="net_sample_freq";
+const int s_sdr_net_sample_freq_def=100000;
+
+// soundcard SDR
+
+const QString s_sdr_sound_speed="soundcard_speed";
+const int s_sdr_sound_speed_def=1;
+
+const QString s_sdr_sound_sample_freq="soundcard_sample_freq";
+const int s_sdr_sound_sample_freq_def=96000;
 
 const QString s_sdr_offset_soundcard="offset_soundcard";
 const int s_sdr_offset_soundcard_def=0;
+
+const QString s_sdr_swap_soundcard="swapiq_soundcard";
+const bool s_sdr_swap_soundcard_def=false;
+
+// afedri SDR
+
+const QString s_sdr_afedri_speed="afedri_speed";
+const int s_sdr_afedri_speed_def=1;
+
+const QString s_sdr_afedri_sample_freq="afedri_sample_freq";
+const int s_sdr_afedri_sample_freq_def=100000;
 
 const QString s_sdr_offset_afedri="offset_afedri";
 const int s_sdr_offset_afedri_def=15000;
@@ -270,9 +269,6 @@ const int s_sdr_afedri_tcp_port_def=50000;
 
 const QString s_sdr_afedri_udp_port="udp_port_afedri";
 const int s_sdr_afedri_udp_port_def=50000;
-
-const QString s_sdr_offset_network="offset_network";
-const int s_sdr_offset_network_def=15000;
 
 const QString s_sdr_afedri_channel="afedri_channel";
 const int s_sdr_afedri_channel_def=0;
@@ -296,20 +292,69 @@ const int s_sdr_afedri_freq3_def=0;
 const QString s_sdr_afedri_freq4="afedri_freq4";
 const int s_sdr_afedri_freq4_def=0;
 
+const QString s_sdr_swap_afedri="swapiq_afedri";
+const bool s_sdr_swap_afedri_def=false;
+
+// RTL-SDR
+
+const QString s_sdr_rtl_bits="rtl_bits";
+const int s_sdr_rtl_bits_def=3;
+
+const QString s_sdr_rtl_speed="rtl_speed";
+const int s_sdr_rtl_speed_def=1;
+
+const QString s_sdr_rtl_sample_freq="rtl_sample_freq";
+const int s_sdr_rtl_sample_freq_def=262144;
+
+const QString s_sdr_offset_rtl="offset_rtl";
+const int s_sdr_offset_rtl_def=15000;
+
+const QString s_sdr_swap_rtl="swapiq_rtl";
+const bool s_sdr_swap_rtl_def=false;
+
+const QString s_sdr_rtl_tcp_ip="tcp_address_rtl";
+const QString s_sdr_rtl_tcp_ip_def="127.0.0.1";
+
+const QString s_sdr_rtl_tcp_port="tcp_port_rtl";
+const int s_sdr_rtl_tcp_port_def=1234;
+
+const QString s_sdr_rtl_dev_index="dev_index_rtl";
+const int s_sdr_rtl_dev_index_def=0;
+
+const QString s_sdr_rtl_if_freq="if_freq_rtl";
+const int s_sdr_rtl_if_freq_def=8225000;
+
+const QString s_sdr_rtl_tuner_gain="tuner_gain_rtl";
+const int s_sdr_rtl_tuner_gain_def=0;
+
+const QString s_sdr_rtl_direct="direct_rtl";
+const bool s_sdr_rtl_direct_def=false;
+
+
+
+const QString s_sdr_tcp_ip="ipaddress";
+const QString s_sdr_tcp_ip_def="127.0.0.1";
+
+const QString s_sdr_udp_ip="udp_ipaddress";
+const QString s_sdr_udp_ip_def="127.0.0.1";
+
+const QString s_sdr_tcp_port="tcp_port";
+const int s_sdr_tcp_port_def=50000;
+
+const QString s_sdr_udp_port="udp_port";
+const int s_sdr_udp_port_def=50000;
+
+const QString s_sdr_device="device";
+const int s_sdr_device_def=0;
+
+const QString s_sdr_deviceindx="deviceindx";
+const int s_sdr_deviceindx_def=0;
+
 const QString s_sdr_offset="offset";
 const int s_sdr_offset_def=0;
 
 const QString s_sdr_swapiq="swapiq";
 const bool s_sdr_swapiq_def=false;
-
-const QString s_sdr_swap_afedri="swapiq_afedri";
-const bool s_sdr_swap_afedri_def=false;
-
-const QString s_sdr_swap_network="swapiq_network";
-const bool s_sdr_swap_network_def=false;
-
-const QString s_sdr_swap_soundcard="swapiq_soundcard";
-const bool s_sdr_swap_soundcard_def=false;
 
 const QString s_sdr_scale="scale";
 const int s_sdr_scale_def=1;
@@ -318,16 +363,16 @@ const QString s_sdr_peakdetect="peakdetect";
 const bool s_sdr_peakdetect_def=true;
 
 const QString s_sdr_iqdata="iqdata";
-const bool s_sdr_iqdata_def=true;
+const bool s_sdr_iqdata_def=false;
 
 const QString s_sdr_iqcorrect="iqcorrect";
-const bool s_sdr_iqcorrect_def=true;
+const bool s_sdr_iqcorrect_def=false;
 
 const QString s_sdr_cqtime="cqtime";
 const int s_sdr_cqtime_def=15;
 
 const QString s_sdr_cq_finder_calls="cq_finder_calls";
-const bool s_sdr_cq_finder_calls_def=false;
+const bool s_sdr_cq_finder_calls_def=true;
 
 const QString s_sdr_level="level";
 const int s_sdr_level_def=100;

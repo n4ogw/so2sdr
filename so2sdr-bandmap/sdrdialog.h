@@ -27,6 +27,7 @@
 #include "soundcardsetup.h"
 #include "afedrisetup.h"
 #include "networksetup.h"
+#include "rtlsetup.h"
 #include "ui_sdrdialog.h"
 
 class SDRDialog : public QDialog, public Ui::SDRDialog
@@ -57,6 +58,7 @@ private:
     QSettings          &settings;
     AfedriSetup        *afedri;
     NetworkSetup       *network;
+    RtlSetup           *rtl;
     void updateFromSettings();
 };
 #endif

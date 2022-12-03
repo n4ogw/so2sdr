@@ -42,6 +42,8 @@ SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(pare
     comboBoxSdrType->addItem("Soundcard");
     comboBoxSdrType->addItem("SDR-IP SDR");
     comboBoxSdrType->addItem("Afedri Net SDR");
+    comboBoxSdrType->addItem("RTL SDR");
+
     connect(configureButton,SIGNAL(clicked()),this,SLOT(launchConfigure()));
     soundcard=new SoundCardSetup(settings,sizes,this);
     connect(soundcard,SIGNAL(PortAudioError(QString)),this,SIGNAL(setupErrors(QString)));
@@ -52,6 +54,9 @@ SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent) : QDialog(pare
     network=new NetworkSetup(settings,sizes,this);
     connect(network,SIGNAL(networkError(QString)),this,SIGNAL(setupErrors(QString)));
     network->hide();
+    rtl=new RtlSetup(settings,sizes,this);
+    connect(rtl,SIGNAL(rtlError(QString)),this,SIGNAL(setupErrors(QString)));
+    rtl->hide();
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSDR()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     updateFromSettings();
@@ -69,6 +74,9 @@ double SDRDialog::offset(int band) const
     case afedri_t:
         return afedri->offset(band);
         break;
+    case rtl_t:
+        return rtl->offset(band);
+        break;
     default:
         return 0;
     }
@@ -85,6 +93,9 @@ bool SDRDialog::invert(int band) const
         break;
     case afedri_t:
         return afedri->invert(band);
+        break;
+    case rtl_t:
+        return rtl->invert(band);
         break;
     default:
         return false;
@@ -112,6 +123,9 @@ void SDRDialog::launchConfigure()
         break;
     case afedri_t:
         afedri->show();
+        break;
+    case rtl_t:
+        rtl->show();
         break;
     }
 }
@@ -143,6 +157,10 @@ void SDRDialog::updateFromSettings()
     case network_t:
         settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_network,s_sdr_offset_network_def).toInt());
         settings.setValue(s_sdr_swapiq,settings.value(s_sdr_swap_network,s_sdr_swap_network_def).toBool());
+        break;
+    case rtl_t:
+        settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_rtl,s_sdr_offset_rtl_def).toInt());
+        settings.setValue(s_sdr_swapiq,settings.value(s_sdr_swap_rtl,s_sdr_swap_rtl_def).toBool());
         break;
     }
 }
@@ -182,6 +200,10 @@ void SDRDialog::updateSDR()
     case network_t:
         settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_network,s_sdr_offset_network_def).toInt());
         settings.setValue(s_sdr_swapiq,settings.value(s_sdr_swap_network,s_sdr_swap_network_def).toBool());
+        break;
+    case rtl_t:
+        settings.setValue(s_sdr_offset,settings.value(s_sdr_offset_rtl,s_sdr_offset_rtl_def).toInt());
+        settings.setValue(s_sdr_swapiq,settings.value(s_sdr_swap_rtl,s_sdr_swap_rtl_def).toBool());
         break;
     }
     emit(update());

@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.5.17
+## SO2SDR Help file version 2.6.0
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1030,6 +1030,13 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.0 (12/03/2022)
+
+* initial support for RTL-sdr sdr's. librtl-sdr is now needed to compile so2sdr-bandmap.
+To be used for HF, the device (and librtl-sdr) needs to support "direct sampling." Not
+all rtl-sdr devices are capable of this. Two modes are available: direct (x1) and
+x16 oversampled. The x16 improves the SNR slightly.
 
 ## version 2.5.17 (11/17/2022)
 

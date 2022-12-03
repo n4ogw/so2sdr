@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>networkSetup</class>
- <widget class="QDialog" name="networkSetup">
+ <class>rtlSetup</class>
+ <widget class="QDialog" name="rtlSetup">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>287</width>
-    <height>379</height>
+    <width>324</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>262</width>
-    <height>250</height>
+    <width>230</width>
+    <height>230</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>512</width>
-    <height>500</height>
+    <width>324</width>
+    <height>406</height>
    </size>
   </property>
   <property name="font">
@@ -34,7 +34,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Network SDR</string>
+   <string>RTL SDR</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -45,74 +45,14 @@
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>IP Address</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="tcpipaddressLineEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>IP address of SDR</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>TCP port</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="tcpportLineEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>TCP port number</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>UDP Port</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="udpportLineEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>UDP port number</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Speed</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="2" column="1">
       <widget class="QComboBox" name="speedComboBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -137,14 +77,14 @@
        </item>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>IF Offset (Hz)</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="4" column="1">
       <widget class="QLineEdit" name="lineEditOffset">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -157,7 +97,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -173,7 +113,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -198,13 +138,65 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="sampleRateLineEdit"/>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>IF Freq (Hz)</string>
+       </property>
+      </widget>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="IFFreqLineEdit">
+       <property name="toolTip">
+        <string>IF frequency in Hz</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="directCheckBox">
+       <property name="toolTip">
+        <string>Enable direct sampling. Needed for HF frequencies but not supported by all rtl-sdr devices.</string>
+       </property>
+       <property name="text">
+        <string>direct sampling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Device Index</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="deviceIndexLineEdit">
+       <property name="toolTip">
+        <string>rtl-sdr device index. Zero is default.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="tunerGainLineEdit">
+       <property name="toolTip">
+        <string>rtl-sdr tuner gain in tenths of a dB (115 means 11.5 dB). Use rtl_test to find possible values.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Tuner Gain</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="sampleRateComboBox"/>
+     </item>
+     <item row="1" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Sample Rate (Hz)</string>
+        <string>Sample Rate</string>
        </property>
       </widget>
      </item>
@@ -218,6 +210,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>250</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -229,9 +227,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>tcpipaddressLineEdit</tabstop>
-  <tabstop>tcpportLineEdit</tabstop>
-  <tabstop>udpportLineEdit</tabstop>
   <tabstop>speedComboBox</tabstop>
   <tabstop>lineEditOffset</tabstop>
   <tabstop>checkBoxSwap</tabstop>
@@ -242,7 +237,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>networkSetup</receiver>
+   <receiver>rtlSetup</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -258,7 +253,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>networkSetup</receiver>
+   <receiver>rtlSetup</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

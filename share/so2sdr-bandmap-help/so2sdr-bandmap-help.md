@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.5.17
+## So2sdr-bandmap Help Version 2.6.0
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -24,6 +24,7 @@ So2sdr-bandmap has been tested with the following SDR hardware:
 * LP-PAN
 * Afedri SDR, interfaced both via USB as a sound card, and via
 ethernet.
+# RTL-sdr (Nooelect v5 tested)
 
 Other SDR's may work if they supply an I/Q stream over the sound card interface
 or via ethernet with the SDR-IP protocol. The program has been tested most with the
@@ -127,7 +128,8 @@ inverted.
 If I and Q are imbalanced, image signals will be present on the
 display.
 * Collect IQ correction data: so2sdr-bandmap will use strong signals
-to measure and correct IQ balance.
+to measure and correct IQ balance. This only applies to soundcard
+based SDRs.
 
 Setup hints:
 
@@ -144,6 +146,23 @@ This is a generic interface for network-based SDR's using the
 SDR-IP protocol.
 
 ![Network setup](./network-setup.png)
+
+#### RTL-SDR SDR
+
+This supports rtl-sdr devices using the librtl-sdr library.
+
+![RTL setup](./rtl-setup.png)
+
+* Device index: this is normally 0 (zero) if only one rtl-sdr device
+is present. Several devices can be supported with different device indices.
+
+* Sample rate: currently two rates are available: 262144 Hz, and 128000 Hz.
+128000 Hz actually runs the rtl-sdr at 16 times this frequency, or 2040000 Hz.
+16 samples are averaged together in this case, which helps to improve the
+signal to noise ratio.
+
+* Direct sampling: this is a special feature of some rtl-sdr devices that
+allows covering HF (below 24 MHz).
 
 #### Afedri Net SDR
 
@@ -337,6 +356,13 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.0 (12/03/2022)
+
+* initial support for RTL-sdr sdr's. librtl-sdr is now needed to compile so2sdr-bandmap.
+To be used for HF, the device (and librtl-sdr) needs to support "direct sampling." Not
+all rtl-sdr devices are capable of this. Two modes are available: direct (x1) and
+x16 oversampled. The x16 improves the SNR slightly.
 
 ## version 2.5.17 (11/17/2022)
 

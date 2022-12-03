@@ -31,6 +31,7 @@ HEADERS += \
     utils.h \
     sdrdatasource.h \
     afedrisetup.h \
+    rtl.h \
     soundcardsetup.h \
     sdr-ip.h \
     afedri-cmd.h \
@@ -38,7 +39,8 @@ HEADERS += \
     bandmap-tcp.h \
     bandmapdisplay.h \
     helpdialog.h \
-    bandoffsetsetup.h
+    bandoffsetsetup.h \
+    rtlsetup.h
 FORMS += \
     iqbalance.ui \
     bandmap.ui \
@@ -47,7 +49,8 @@ FORMS += \
     afedrisetup.ui \
     networksetup.ui \
     helpdialog.ui \
-    bandoffsetsetup.ui
+    bandoffsetsetup.ui \
+    rtlsetup.ui
 SOURCES += \
     network.cpp \
     networksetup.cpp \
@@ -67,7 +70,9 @@ SOURCES += \
     call.cpp \
     bandmapdisplay.cpp \
     helpdialog.cpp \
-    bandoffsetsetup.cpp
+    bandoffsetsetup.cpp \
+    rtl.cpp \
+    rtlsetup.cpp
 
 
  RESOURCES +=  so2sdr-bandmap.qrc
@@ -76,7 +81,7 @@ SOURCES += \
   unix {
     include (../common.pri)
     CONFIG += link_pkgconfig
-    PKGCONFIG += fftw3 portaudio-2.0
+    PKGCONFIG += fftw3 portaudio-2.0 librtlsdr
 
     QMAKE_CXXFLAGS += -O2 -Wall \
         -DINSTALL_DIR=\\\"$$SO2SDR_INSTALL_DIR\\\"

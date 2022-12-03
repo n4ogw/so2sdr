@@ -17,15 +17,15 @@
 
  */
 
-#include "afedri.h"
-#include "afedri-cmd.h"
-#include "utils.h"
 #include <QDebug>
 #include <QHostAddress>
-#ifdef Q_OS_LINUX
 #include <unistd.h>
 #include <sys/socket.h>
-#endif
+#include "sdr-ip.h"
+#include "afedri.h"
+#include "afedri-cmd.h"
+#include "defines.h"
+#include "utils.h"
 
 Afedri::Afedri(QString settingsFile, QObject *parent) : NetworkSDR(settingsFile,parent)
 {
@@ -36,6 +36,7 @@ Afedri::Afedri(QString settingsFile, QObject *parent) : NetworkSDR(settingsFile,
  */
 void Afedri::initialize()
 {
+    stopFlag=false;
     bpmax           = sizes.chunk_size / sizes.advance_size;
     if (buff) {
         delete [] buff;
@@ -294,10 +295,6 @@ void Afedri::set_multichannel_mode(int channel)
  *    Set the Afedri sampling rate
  * \param rate  sample rate in Hz
  *
- * Note 08/23/16: this does not seem to actually change the sample rate!
- * have to change it manually with ./sdr_commander -SD100000; ./sdr_commander -S100000
- * for i.e. 100000 Hz.
- *
  */
 void Afedri::set_sample_rate(unsigned long sample_rate)
 {
@@ -358,19 +355,30 @@ void Afedri::set_broadcast_flag(bool b)
 
 Afedri::~Afedri()
 {
+    if (buff) {
+        delete [] buff;
+    }
 }
 
 void Afedri::readTcp()
 {
-    // this was just for testing
+    // just for testing, normally nothing interesting
+    // comes back via TCP
+
     //QByteArray dat=tsocket.readAll();
     //qDebug("Afedri: tcp rx <%s>",dat.data());
 }
 
+/*
+ * process udp data from sdr
+ */
 void Afedri::readDatagram()
 {
+    if (stopFlag) {
+        stopAfedri();
+        return;
+    }
     if (usocket.pendingDatagramSize()==-1) return;
-
     // actual number of IQ samples per UDP read for different channel modes
     const int read_size1=1024;
     const int read_size2=512;
@@ -381,14 +389,12 @@ void Afedri::readDatagram()
     if (settings->value(s_sdr_afedri_bcast,s_sdr_afedri_bcast_def).toInt()>0) {
         udp_size+=16;
     }
-
     char data[MAX_UDP_SIZE];
 
     if (usocket.readDatagram((char*)data,udp_size)==-1) {
         emit(error("Afedri: UDP read failed"));
         return;
     }
-
     if (settings->value(s_sdr_afedri_multi,s_sdr_afedri_multi_def).toInt()==0) {
         // single receiver
         for (int i = 0; i < read_size1; i++) {
@@ -480,7 +486,10 @@ void Afedri::readDatagram()
     }
 }
 
-void Afedri::stop()
+/*
+ * Sends cmd via TCP to stop stream; closes sockets
+ */
+void Afedri::stopAfedri()
 {
     if (settings->value(s_sdr_afedri_bcast,s_sdr_afedri_bcast_def).toInt()!=2)
     {
@@ -501,7 +510,16 @@ void Afedri::stop()
 
     mutex.lock();
     running=false;
+    stopFlag=false;
     mutex.unlock();
     emit(stopped());
+}
+
+/*
+ * set flag to stop sdr
+ */
+void Afedri::stop()
+{
+    stopFlag = true;
 }
 

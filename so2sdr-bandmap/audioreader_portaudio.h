@@ -21,8 +21,6 @@
 
 #include <portaudio.h>
 #include <QSettings>
-#include "defines.h"
-#include "spectrum.h"
 #include "sdrdatasource.h"
 
 /*!
@@ -49,12 +47,16 @@ private:
     PaError            err;
     PaStream           *stream;
     unsigned char      *buff;
+    unsigned char      *ptr;
     unsigned int       bpmax;
     unsigned int       bptr;
+    unsigned int       iptr;
     unsigned long      periodSize;
+    int                frameSize;
 
     void emitAudioReady();
     bool checkError(PaError err);
+    void stopAudioreader();
 };
 
 #endif // AUDIOREADER_PORT_AUDIO_H

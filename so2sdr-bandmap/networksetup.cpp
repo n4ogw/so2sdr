@@ -32,6 +32,7 @@ NetworkSetup::NetworkSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDialog(
     tcpportLineEdit->setFixedWidth(qRound(sizes.width*15));
     udpportLineEdit->setFixedWidth(qRound(sizes.width*15));
     lineEditOffset->setFixedWidth(qRound(sizes.width*15));
+    sampleRateLineEdit->setFixedWidth(qRound(sizes.width*15));
     adjustSize();
     setFixedSize(size());
 
@@ -77,22 +78,23 @@ void NetworkSetup::updateFromSettings()
 {
     switch (settings.value(s_sdr_net_speed,s_sdr_net_speed_def).toInt()) {
     case 1:
-        fftComboBox->setCurrentIndex(0);
+        speedComboBox->setCurrentIndex(0);
         break;
     case 2:
-        fftComboBox->setCurrentIndex(1);
+        speedComboBox->setCurrentIndex(1);
         break;
     case 4:
-        fftComboBox->setCurrentIndex(2);
+        speedComboBox->setCurrentIndex(2);
         break;
     default:
-        fftComboBox->setCurrentIndex(0);
+        speedComboBox->setCurrentIndex(0);
     }
     tcpipaddressLineEdit->setText(settings.value(s_sdr_net_tcp_ip,s_sdr_net_tcp_ip_def).toString());
     tcpportLineEdit->setText(settings.value(s_sdr_net_tcp_port,s_sdr_net_tcp_port_def).toString());
     udpportLineEdit->setText(settings.value(s_sdr_net_udp_port,s_sdr_net_udp_port_def).toString());
     lineEditOffset->setText(settings.value(s_sdr_offset_network,s_sdr_offset_network_def).toString());
     checkBoxSwap->setChecked(settings.value(s_sdr_swap_network,s_sdr_swap_network_def).toBool());
+    sampleRateLineEdit->setText(settings.value(s_sdr_net_sample_freq,s_sdr_net_sample_freq_def).toString());
 }
 
 /*!
@@ -101,7 +103,7 @@ void NetworkSetup::updateFromSettings()
  */
 void NetworkSetup::updateNetwork()
 {
-    switch (fftComboBox->currentIndex()) {
+    switch (speedComboBox->currentIndex()) {
     case 0:
         settings.setValue(s_sdr_net_speed,1);
         break;
@@ -117,6 +119,7 @@ void NetworkSetup::updateNetwork()
     settings.setValue(s_sdr_net_tcp_ip,tcpipaddressLineEdit->text());
     settings.setValue(s_sdr_swap_network,checkBoxSwap->isChecked());
     settings.setValue(s_sdr_offset_network,lineEditOffset->text().toInt());
+    settings.setValue(s_sdr_net_sample_freq,sampleRateLineEdit->text().toInt());
 }
 
 /*!

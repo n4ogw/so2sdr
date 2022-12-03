@@ -71,7 +71,7 @@ signals:
     void plotPhaseFunc(double, double, double, double);
 
 public slots:
-    void processData(unsigned char *, unsigned char);
+    void processData(unsigned char *, unsigned int);
     void clearIQ();
     void setPlotPoints(bool);
     void startFindCQ(double low, double high, QList<Call> &callList);

@@ -16,40 +16,36 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#ifndef SDRDATASOURCE_H
-#define SDRDATASOURCE_H
+#ifndef RTLSETUP_H
+#define RTLSETUP_H
 
-#include <QMutex>
-#include <QObject>
-#include <QString>
-#include <QSettings>
 #include "defines.h"
+#include <QDialog>
+#include <QSettings>
+#include "bandoffsetsetup.h"
+#include "ui_rtlsetup.h"
 
-class SdrDataSource : public QObject
+
+class RtlSetup : public QDialog, public Ui::rtlSetup
 {
     Q_OBJECT
 public:
-    explicit SdrDataSource(QString settingsFile,QObject *parent = nullptr);
-    ~SdrDataSource();
-    void setSampleSizes(sampleSizes s);
-    bool isRunning();
+    explicit RtlSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+    ~RtlSetup();
+    double offset(int band) const;
+    bool invert(int band) const;
 
 signals:
-    void error(const QString &);
-    void ready(unsigned char *, unsigned int);
-    void stopped();
+    void rtlError(const QString &);
 
-public slots:
-    virtual void stop() = 0;
-    virtual void initialize() = 0;
+private slots:
+    void updateRtl();
+    void rejectChanges();
 
-protected:
-    QMutex      mutex;
-    sampleSizes sizes;
-    QSettings   *settings;
-    bool        stopFlag;
-    bool        running;
-    bool        initialized;
+private:
+    QSettings &settings;
+    void updateFromSettings();
+    BandOffsetSetup *offsetSetup;
 };
 
-#endif // SDRDATASOURCE_H
+#endif // RTLSETUP_H

@@ -18,6 +18,7 @@
  */
 
 #include "network.h"
+#include "sdr-ip.h"
 #include <QDebug>
 #include <QHostAddress>
 
@@ -32,6 +33,7 @@ NetworkSDR::NetworkSDR(QString settingsFile, QObject *parent) : SdrDataSource(se
 
 void NetworkSDR::initialize()
 {
+    stopFlag=false;
     bpmax           = sizes.chunk_size / sizes.advance_size;
     if (buff) {
         delete [] buff;
@@ -55,6 +57,7 @@ void NetworkSDR::initialize()
             return;
         }
         connect(&usocket, SIGNAL(readyRead()),this, SLOT(readDatagram()));
+        set_sample_rate(settings->value(s_sdr_net_sample_freq,s_sdr_net_sample_freq_def).toInt());
         send_rx_command(RCV_START);
         running=true;
         initialized=true;
@@ -125,6 +128,11 @@ void NetworkSDR::readDatagram()
     const qint64 udp_size=1028;
     static unsigned char data[udp_size];
 
+    if (stopFlag==true) {
+        stopNetwork();
+        return;
+    }
+
     if (usocket.readDatagram((char*)data,udp_size)==-1) {
         emit(error("NetworkSDR: UDP read failed"));
         return;
@@ -159,6 +167,11 @@ void NetworkSDR::close_udp()
 
 void NetworkSDR::stop()
 {
+    stopFlag=true;
+}
+
+void NetworkSDR::stopNetwork()
+{
     send_rx_command(RCV_STOP);
     tsocket.flush();
 
@@ -173,6 +186,7 @@ void NetworkSDR::stop()
     }
     running=false;
     initialized=false;
+    stopFlag=false;
     emit(stopped());
 }
 
@@ -185,3 +199,33 @@ void NetworkSDR::readTcp()
         qDebug("<%s>",data.data());
     }
 }
+
+/*!
+ * \brief NetworkSDR::set_sample_rate
+ *    Set the sampling rate
+ * \param rate  sample rate in Hz
+ *
+ */
+void NetworkSDR::set_sample_rate(unsigned long sample_rate)
+{
+    unsigned short control_code = CI_DDC_SAMPLE_RATE;
+    const int size = 9;
+    char block[size];
+
+    if (tsocket.state()!=QAbstractSocket::ConnectedState || tsocket.state()==QAbstractSocket::ClosingState) return;
+
+    block[0] = size;
+    block[1] = (SET_CONTROL_ITEM << 5);
+    block[2] = control_code & 0xFF;
+    block[3] = (control_code >> 8) & 0xFF;
+    block[4] = 0;
+    for (int i = 0; i <4; i++)
+    {
+        block[5+i] = (sample_rate >> (i*8)) & 0xFF;
+    }
+    if (tsocket.write(block,size)==-1) {
+        emit(error("NetworkSDR: TCP write error, set_sample_rate"));
+    }
+    tsocket.flush();
+}
+

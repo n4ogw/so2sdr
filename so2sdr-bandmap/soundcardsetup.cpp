@@ -41,65 +41,74 @@ SoundCardSetup::SoundCardSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDia
     BitsComboBox->insertItem(0,"16",Qt::DisplayRole);
 
     // find audio devices; start Portaudio to get the device list
-    Pa_Initialize();
-    nAPI            = Pa_GetHostApiCount();
-    nApiDevices     = new int[nAPI+1];
-    nApiDeviceNames = new QList<QString>[nAPI+1];
-    deviceOK        = new QList<bool>[nAPI+1];
-    for (int i = 0; i < nAPI; i++) {
-        deviceOK[i].clear();
-        nApiDevices[i] = 0;
-        nApiDeviceNames[i].clear();
-        APIComboBox->insertItem(i, Pa_GetHostApiInfo(i)->name,Qt::DisplayRole);
-    }
-
-    connect(APIComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDeviceList(int)));
-
-    audioDevices.clear();
-    int numDevices = Pa_GetDeviceCount();
-    if (numDevices < 0) {
-        numDevices = 0;
-    }
-    PaStreamParameters testFormat;
-    testFormat.channelCount              = 2;
-    testFormat.sampleFormat              = paInt16;
-    testFormat.suggestedLatency          = 0;
-    testFormat.hostApiSpecificStreamInfo = nullptr;
-    for (int i = 0; i < numDevices; i++) {
-        const PaDeviceInfo *deviceInfo;
-        deviceInfo = Pa_GetDeviceInfo(i);
-        int api = deviceInfo->hostApi;
-        nApiDevices[api]++;
-        audioDevices.append(deviceInfo->name);
-        nApiDeviceNames[api].append(deviceInfo->name);
-
-        // check to see if this device will work
-        bool ok = true;
-        testFormat.device           = i;
-        testFormat.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency;
-
-        // check for stereo support
-        if (Pa_GetDeviceInfo(i)->maxInputChannels != 2) {
-            ok = false;
-        }
-
-        // test for support of chosen sample rate
-        PaError err = Pa_IsFormatSupported(&testFormat, nullptr, settings.value(s_sdr_sound_sample_freq,
-                                                                             s_sdr_sound_sample_freq_def).toInt());
-        if (err != paNoError) ok = false;
-        if (ok) {
-            SoundCardComboBox->insertItem(i, iconOK, audioDevices[i],Qt::DisplayRole);
-        } else {
-            SoundCardComboBox->insertItem(i, iconNOK, audioDevices[i],Qt::DisplayRole);
-        }
-        deviceOK[api].append(ok);
-    }
-    // terminate once we have the list
-    PaError err=Pa_Terminate();
+    PaError err = Pa_Initialize();
     if (err != paNoError) {
-        emit(PortAudioError("ERROR: couldn't terminate test portaudio"));
+        qDebug("Soundcardsetup Pa_Initialize error");
+        emit(PortAudioError("ERROR: couldn't start portaudio to enumerate devices"));
+        nAPI=0;
+        nApiDevices     = new int[nAPI+1];
+        nApiDeviceNames = new QList<QString>[nAPI+1];
+        deviceOK        = new QList<bool>[nAPI+1];
+    } else {
+        nAPI            = Pa_GetHostApiCount();
+        nApiDevices     = new int[nAPI+1];
+        nApiDeviceNames = new QList<QString>[nAPI+1];
+        deviceOK        = new QList<bool>[nAPI+1];
+        for (int i = 0; i < nAPI; i++) {
+            deviceOK[i].clear();
+            nApiDevices[i] = 0;
+            nApiDeviceNames[i].clear();
+            APIComboBox->insertItem(i, Pa_GetHostApiInfo(i)->name,Qt::DisplayRole);
+        }
+        connect(APIComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDeviceList(int)));
+
+        audioDevices.clear();
+        int numDevices = Pa_GetDeviceCount();
+        if (numDevices < 0) {
+            numDevices = 0;
+        }
+        PaStreamParameters testFormat;
+        testFormat.channelCount              = 2;
+        testFormat.sampleFormat              = paInt16;
+        testFormat.suggestedLatency          = 0;
+        testFormat.hostApiSpecificStreamInfo = nullptr;
+        for (int i = 0; i < numDevices; i++) {
+            const PaDeviceInfo *deviceInfo;
+            deviceInfo = Pa_GetDeviceInfo(i);
+            int api = deviceInfo->hostApi;
+            nApiDevices[api]++;
+            audioDevices.append(deviceInfo->name);
+            nApiDeviceNames[api].append(deviceInfo->name);
+
+            // check to see if this device will work
+            bool ok = true;
+            testFormat.device           = i;
+            testFormat.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency;
+
+            // check for stereo support
+            if (Pa_GetDeviceInfo(i)->maxInputChannels != 2) {
+                ok = false;
+            }
+
+            // test for support of chosen sample rate
+            PaError err = Pa_IsFormatSupported(&testFormat, nullptr, settings.value(s_sdr_sound_sample_freq,
+                                                                                    s_sdr_sound_sample_freq_def).toInt());
+            if (err != paNoError) ok = false;
+            if (ok) {
+                SoundCardComboBox->insertItem(i, iconOK, audioDevices[i],Qt::DisplayRole);
+            } else {
+                SoundCardComboBox->insertItem(i, iconNOK, audioDevices[i],Qt::DisplayRole);
+            }
+            deviceOK[api].append(ok);
+        }
+        // terminate once we have the list
+        PaError err=Pa_Terminate();
+        if (err != paNoError) {
+            qDebug("Soundcardsetup Pa_Terminate error");
+            emit(PortAudioError("ERROR: couldn't terminate test portaudio"));
+        }
+        updateDeviceList(0);
     }
-    updateDeviceList(0);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSoundCard()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
     updateFromSettings();
@@ -163,7 +172,7 @@ void SoundCardSetup::updateSoundCard()
         settings.setValue(s_sdr_sound_sample_freq,192000);
         break;
     }
-    switch (fftComboBox->currentIndex()) {
+    switch (speedComboBox->currentIndex()) {
     case 0:
         settings.setValue(s_sdr_sound_speed,1);
         break;
@@ -198,16 +207,16 @@ void SoundCardSetup::updateFromSettings()
 {
     switch (settings.value(s_sdr_sound_speed,s_sdr_sound_speed_def).toInt()) {
     case 1:
-        fftComboBox->setCurrentIndex(0);
+        speedComboBox->setCurrentIndex(0);
         break;
     case 2:
-        fftComboBox->setCurrentIndex(1);
+        speedComboBox->setCurrentIndex(1);
         break;
     case 4:
-        fftComboBox->setCurrentIndex(2);
+        speedComboBox->setCurrentIndex(2);
         break;
     default:
-        fftComboBox->setCurrentIndex(0);
+        speedComboBox->setCurrentIndex(0);
 
     }
     switch (settings.value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt()) {

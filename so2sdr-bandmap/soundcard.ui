@@ -93,7 +93,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="fftComboBox">
+      <widget class="QComboBox" name="speedComboBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
@@ -288,7 +288,7 @@
  <tabstops>
   <tabstop>APIComboBox</tabstop>
   <tabstop>SoundCardComboBox</tabstop>
-  <tabstop>fftComboBox</tabstop>
+  <tabstop>speedComboBox</tabstop>
   <tabstop>SampleRateComboBox</tabstop>
   <tabstop>BitsComboBox</tabstop>
   <tabstop>OffsetLineEdit</tabstop>

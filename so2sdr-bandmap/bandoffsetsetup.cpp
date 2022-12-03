@@ -114,14 +114,17 @@ void BandOffsetSetup::updateFromSettings()
 {
     int sz=0;
     switch (sdr) {
-    case (afedri_t):
+    case afedri_t:
         sz=settings.beginReadArray("custom_offset_afedri");
         break;
-    case (soundcard_t):
+    case soundcard_t:
         sz=settings.beginReadArray("custom_offset_soundcard");
         break;
-    case (network_t):
+    case network_t:
         sz=settings.beginReadArray("custom_offset_netsdr");
+        break;
+    case rtl_t:
+        sz=settings.beginReadArray("custom_offset_rtl");
         break;
     }
     if (!sz) {
@@ -153,14 +156,17 @@ void BandOffsetSetup::updateSettings()
 {
     if (!model->rowCount()) return;
     switch (sdr) {
-    case (afedri_t):
+    case afedri_t:
         settings.beginWriteArray("custom_offset_afedri");
         break;
-    case (soundcard_t):
+    case soundcard_t:
         settings.beginWriteArray("custom_offset_soundcard");
         break;
-    case (network_t):
+    case network_t:
         settings.beginWriteArray("custom_offset_netsdr");
+        break;
+    case rtl_t:
+        settings.beginWriteArray("custom_offset_rtl");
         break;
     }
     for (int i=0;i<model->rowCount();i++) {

@@ -375,7 +375,7 @@ void Spectrum::stopSpectrum()
    Get data buffer, perform fft and scaling,
    write to spectrum buffer.
  */
-void Spectrum::processData(unsigned char *data, unsigned char bptr)
+void Spectrum::processData(unsigned char *data, unsigned int bptr)
 {
     unsigned int  j    = bptr * sizes.advance_size;
     unsigned char *ptr = &data[j];
@@ -440,6 +440,18 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             j   += 8;
         }
         break;
+        case 3: // 8 bit
+        {
+            // convert 8 bit
+            unsigned char ii = *ptr;
+            tmpr = ii / 256.0;
+            ptr++;
+            ii = *ptr;
+            tmpi = ii / 256.0;
+            ptr++;
+            j+=2;
+        }
+        break;
         default:
             tmpr = 0.;
             tmpi = 0.;
@@ -457,8 +469,8 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
             j   = 0;
             ptr = &data[0];
         }
-        avgr += in[1][0];
-        avgi += in[1][1];
+        avgr += in[i][0];
+        avgi += in[i][1];
     }
     // remove DC component and apply window
     avgr /= fftSize;
@@ -498,7 +510,6 @@ void Spectrum::processData(unsigned char *data, unsigned char bptr)
         spec_tmp[i] = log(spec_tmp[i]);
         if (qIsInf(spec_tmp[i])) spec_tmp[i] = -1.0e-16;
     }
-
     measureBackgroundLog(bga, sigma, spec_tmp);
     // put upper limit on background. Prevents display "blacking out"
     // from static crashes

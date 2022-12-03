@@ -24,7 +24,6 @@
 #include <QUdpSocket>
 #include <QAbstractSocket>
 #include <sdrdatasource.h>
-#include "sdr-ip.h"
 
 class NetworkSDR : public SdrDataSource
 {
@@ -46,6 +45,7 @@ protected:
     void send_rx_command(int);
     void close_udp();
     void get_name();
+    void stopNetwork();
 
     QTcpSocket tsocket;
     QUdpSocket usocket;
@@ -53,6 +53,9 @@ protected:
     unsigned int       bpmax;
     unsigned int       bptr;
     unsigned int       iptr;
+
+private:
+    void set_sample_rate(unsigned long sample_rate);
 };
 
 #endif

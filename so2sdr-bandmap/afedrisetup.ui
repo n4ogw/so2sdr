@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>292</width>
-    <height>510</height>
+    <width>368</width>
+    <height>730</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,8 +27,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>600</width>
-    <height>1000</height>
+    <width>370</width>
+    <height>730</height>
    </size>
   </property>
   <property name="font">
@@ -186,7 +186,7 @@
      <item row="5" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Freq. 1 (Hz)</string>
+        <string>IF Freq1 (Hz)</string>
        </property>
       </widget>
      </item>
@@ -206,7 +206,7 @@
      <item row="6" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Freq. 2 (Hz)</string>
+        <string>IF Freq2 (Hz)</string>
        </property>
       </widget>
      </item>
@@ -229,7 +229,7 @@
      <item row="7" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Freq. 3 (Hz)</string>
+        <string>IF Freq3 (Hz)</string>
        </property>
       </widget>
      </item>
@@ -249,7 +249,7 @@
      <item row="8" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>Freq. 4 (Hz)</string>
+        <string>IF Freq4 (Hz)</string>
        </property>
       </widget>
      </item>
@@ -381,7 +381,7 @@
       </widget>
      </item>
      <item row="12" column="1">
-      <widget class="QComboBox" name="fftComboBox">
+      <widget class="QComboBox" name="speedComboBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
@@ -471,7 +471,7 @@
   <tabstop>lineEditFreq3</tabstop>
   <tabstop>lineEditFreq4</tabstop>
   <tabstop>lineEditOffset</tabstop>
-  <tabstop>fftComboBox</tabstop>
+  <tabstop>speedComboBox</tabstop>
   <tabstop>sampleFreqLineEdit</tabstop>
   <tabstop>broadcastMasterButton</tabstop>
   <tabstop>broadcastSlaveButton</tabstop>

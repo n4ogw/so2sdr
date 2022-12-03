@@ -37,6 +37,7 @@
 #include "utils.h"
 #include "afedri.h"
 #include "network.h"
+#include "rtl.h"
 #include "audioreader_portaudio.h"
 
 /*! returns true if initialization was successful
@@ -104,7 +105,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     settings->endGroup();
 
     directory.setCurrent(dataDirectory());
-
     if (settings->value(s_sdr_reverse_scroll,s_sdr_reverse_scroll_def).toBool()) {
         horizontalLayout->removeWidget(CallLabel);
         horizontalLayout->removeWidget(FreqLabel);
@@ -129,7 +129,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     display->setFocusPolicy(Qt::NoFocus);
     CallLabel->setFocusPolicy(Qt::NoFocus);
     FreqLabel->setFocusPolicy(Qt::NoFocus);
-
     checkBoxMark.setText("Mark");
     checkBoxMark.setToolTip("Enables signal detection.");
     toolBar->setMovable(false);
@@ -154,7 +153,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     spacer2->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
     toolBar->addWidget(spacer2);
     toolBar->addAction("&Help",this,SLOT(showHelp()));
-
     iqDialog  = new IQBalance(this);
     iqDialog->clearPlots();
     showToolBar = new QAction("&toolbar",this);
@@ -199,10 +197,13 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     case network_t:
         sdrSource = new NetworkSDR(settingsFile);
         break;
+    case rtl_t:
+        sdrSource = new RtlSDR(settingsFile);
+        break;
     }
     setSdrType();
     sdrSource->moveToThread(&sdrThread);
-    connect(actionSetup,SIGNAL(triggered()),sdrSource,SLOT(stop()));
+    connect(actionSetup,SIGNAL(triggered()),sdrSource,SLOT(stop()),Qt::DirectConnection);
     connect(&sdrThread,SIGNAL(started()),sdrSource,SLOT(initialize()));
     connect(sdrSource,SIGNAL(stopped()),&sdrThread,SLOT(quit()));
     connect(sdrSource,SIGNAL(stopped()),this,SLOT(disconnectSignals()));
@@ -210,8 +211,8 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
 
     connect(spectrumProcessor, SIGNAL(spectrumReady(unsigned char*, unsigned char)), display,
             SLOT(plotSpectrum(unsigned char*, unsigned char)));
-    connect(sdrSource, SIGNAL(ready(unsigned char *, unsigned char)),spectrumProcessor,
-            SLOT(processData(unsigned char *, unsigned char)),Qt::QueuedConnection);
+    connect(sdrSource, SIGNAL(ready(unsigned char *, unsigned int)),spectrumProcessor,
+            SLOT(processData(unsigned char *, unsigned int)));
     connect(iqDialog, SIGNAL(closed(bool)), spectrumProcessor, SLOT(setPlotPoints(bool)));
     connect(iqDialog, SIGNAL(restart()), spectrumProcessor, SLOT(clearIQ()));
     connect(spectrumProcessor, SIGNAL(qsy(double)), this, SLOT(findQsy(double)));
@@ -316,16 +317,19 @@ void So2sdrBandmap::restartSdr()
     case network_t:
         sdrSource = new NetworkSDR(settingsFile);
         break;
+    case rtl_t:
+        sdrSource = new RtlSDR(settingsFile);
+        break;
     }
     setSdrType();
     sdrSource->moveToThread(&sdrThread);
-    connect(actionSetup,SIGNAL(triggered()),sdrSource,SLOT(stop()),Qt::DirectConnection);
+    connect(actionSetup,SIGNAL(triggered()),sdrSource,SLOT(stop()),Qt::QueuedConnection);
     connect(&sdrThread,SIGNAL(started()),sdrSource,SLOT(initialize()));
     connect(sdrSource,SIGNAL(stopped()),&sdrThread,SLOT(quit()));
     connect(sdrSource,SIGNAL(stopped()),this,SLOT(disconnectSignals()));
     connect(sdrSource,SIGNAL(error(QString)),&errorBox,SLOT(showMessage(QString)));
-    connect(sdrSource, SIGNAL(ready(unsigned char *, unsigned char)),spectrumProcessor,
-            SLOT(processData(unsigned char *, unsigned char)));
+    connect(sdrSource, SIGNAL(ready(unsigned char *, unsigned int)),spectrumProcessor,
+            SLOT(processData(unsigned char *, unsigned int)));
 }
 
 /*!
@@ -334,12 +338,11 @@ void So2sdrBandmap::restartSdr()
  */
 void So2sdrBandmap::setSdrType()
 {
-    unsigned int speed=1;
     switch (static_cast<SdrType>(settings->value(s_sdr_type,s_sdr_type_def).toInt())) {
     case soundcard_t:
         iqShowData->setEnabled(true);
         settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt());
-        speed=settings->value(s_sdr_sound_speed,s_sdr_sound_speed_def).toUInt();
+        settings->setValue(s_sdr_speed,settings->value(s_sdr_sound_speed,s_sdr_sound_speed_def).toInt());
         break;
     case afedri_t:
         iqShowData->setEnabled(false);
@@ -347,7 +350,7 @@ void So2sdrBandmap::setSdrType()
         settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_afedri_tcp_ip,s_sdr_afedri_tcp_ip_def).toString());
         settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_afedri_tcp_port,s_sdr_afedri_tcp_port_def).toInt());
         settings->setValue(s_sdr_udp_port,settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt());
-        speed=settings->value(s_sdr_afedri_speed,s_sdr_afedri_speed_def).toUInt();
+        settings->setValue(s_sdr_speed,settings->value(s_sdr_afedri_speed,s_sdr_afedri_speed_def).toInt());
         break;
     case network_t:
         iqShowData->setEnabled(false);
@@ -355,24 +358,33 @@ void So2sdrBandmap::setSdrType()
         settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_net_tcp_ip,s_sdr_net_tcp_ip_def).toString());
         settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_net_tcp_port,s_sdr_net_tcp_port_def).toInt());
         settings->setValue(s_sdr_udp_port,settings->value(s_sdr_net_udp_port,s_sdr_net_udp_port_def).toInt());
-        speed=settings->value(s_sdr_net_speed,s_sdr_net_speed_def).toUInt();
+        settings->setValue(s_sdr_speed,settings->value(s_sdr_net_speed,s_sdr_net_speed_def).toInt());
+        break;
+    case rtl_t:
+        iqShowData->setEnabled(false);
+        settings->setValue(s_sdr_sample_freq,settings->value(s_sdr_rtl_sample_freq,s_sdr_rtl_sample_freq_def).toInt());
+        settings->setValue(s_sdr_tcp_ip,settings->value(s_sdr_rtl_tcp_ip,s_sdr_rtl_tcp_ip_def).toString());
+        settings->setValue(s_sdr_tcp_port,settings->value(s_sdr_rtl_tcp_port,s_sdr_rtl_tcp_port_def).toInt());
+        settings->setValue(s_sdr_bits,settings->value(s_sdr_rtl_bits,s_sdr_rtl_bits_def).toInt());
+        settings->setValue(s_sdr_speed,settings->value(s_sdr_rtl_speed,s_sdr_rtl_speed_def).toInt());
         break;
     }
     settings->setValue(s_sdr_offset,sdrSetup->offset(getBand(centerFreq)));
     settings->setValue(s_sdr_swapiq,sdrSetup->invert(getBand(centerFreq)));
-    settings->setValue(s_sdr_speed,speed);
     unsigned int fft,period;
     switch (settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()) {
     case 48000:
-        fft=2048*speed;
+        fft=2048;
         break;
     case 96000:
     case 100000: // for Afedri net dual
-        fft=4096*speed;
+    case 128000: // rtl-sdr in x16 oversample mode
+        fft=4096;
         break;
     case 192000:
     case 200000: // for Afedri net dual
-        fft=8192*speed;
+    case 262144: // rtl-sdr 8 bit mode
+        fft=8192;
         break;
     default:
         fft=4096;
@@ -381,18 +393,23 @@ void So2sdrBandmap::setSdrType()
     period=fft/4;
     switch (settings->value(s_sdr_bits,s_sdr_bits_def).toInt()) {
     case 0: // 16 bit
-        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 2;
+        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 16;//2;
         sizes.advance_size = period * 2 * 2;
         break;
     case 1: // 24 bit
-        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 3;
+        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 24;//3;
         sizes.advance_size = period * 2 * 3;
         break;
     case 2: // 32 bit
-        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 4;
+        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 32;//4;
         sizes.advance_size = period * 2 * 4;
         break;
+    case 3: // 8 bit
+        sizes.chunk_size   = settings->value(s_sdr_fft,s_sdr_fft_def).toUInt() * 2 * 16;
+        sizes.advance_size = period * 2;
+        break;
     }
+    sizes.advance_size *= settings->value(s_sdr_speed,s_sdr_speed_def).toInt();
     spectrumProcessor->setFFTSize(sizes);
     spectrumProcessor->updateParams();
     sdrSource->setSampleSizes(sizes);
@@ -577,6 +594,7 @@ void So2sdrBandmap::makeCall()
                 if (sigs[i].f<freqMin || sigs[i].f>freqMax) continue;
                 int pix_offset = qRound((sigs[i].f - freqMin) * pix_per_hz + uiSizes.rad / 2);
                 int y          = settings->value(s_sdr_fft,s_sdr_fft_def).toInt() - pix_offset;
+
                 if (y < 0 || y >= settings->value(s_sdr_fft,s_sdr_fft_def).toInt()) {
                     continue;
                 }
@@ -598,13 +616,13 @@ void So2sdrBandmap::makeFreqScaleAbsolute()
     int fft=settings->value(s_sdr_fft,s_sdr_fft_def).toInt();
     int dy = (height() - toolBarHeight) / 2 - vfoPos;
     int scale= settings->value(s_sdr_scale,s_sdr_scale_def).toInt();
-    freqMin = centerFreq - (fft / 2 + dy) * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/(scale * fft);
+    freqMin = centerFreq - (fft / 2 + dy) * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/(scale * fft);
     int      bottom_start      = (qFloor(freqMin / 1000) + 1) * 1000;
     int      bottom_pix_offset = qFloor((bottom_start - freqMin) * fft * scale) /
             settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt();
     int      j                 = (bottom_start / 1000) % 1000;
     int      i, i0 = fft - bottom_pix_offset;
-    freqMax = freqMin + (fft * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toInt()/(scale * fft));
+    freqMax = freqMin + (fft * settings->value(s_sdr_sample_freq,s_sdr_sample_freq_def).toDouble()/(scale * fft));
     QPainter p(&freqPixmap);
     p.fillRect(freqPixmap.rect(), Qt::lightGray);
     p.setPen(Qt::black);
@@ -853,7 +871,7 @@ void So2sdrBandmap::start()
     {
         return;
     }
-    connect(actionStop,SIGNAL(triggered()),sdrSource,SLOT(stop()));
+    connect(actionStop,SIGNAL(triggered()),sdrSource,SLOT(stop()),Qt::DirectConnection);
     sdrThread.start();
 }
 
@@ -861,6 +879,7 @@ void So2sdrBandmap::start()
   */
 void So2sdrBandmap::stop()
 {
+    sdrSource->stop();
     if (sdrThread.isRunning()) {
         sdrThread.quit();
         sdrThread.wait();

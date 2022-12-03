@@ -23,9 +23,6 @@
 #include <QObject>
 #include <QString>
 #include "network.h"
-#include "sdr-ip.h"
-#include "defines.h"
-#include "spectrum.h"
 
 #define TARGET_NAME "AFEDRI SDR Network"
 #define SERIAL_NUMBER "AN000102"
@@ -57,6 +54,7 @@ private:
     void set_freq(unsigned long frequency, int channel);
     void set_multichannel_mode(int channel);
     void set_sample_rate(unsigned long sample_rate);
+    void stopAfedri();
 };
 
 #endif // AFEDRI_H
