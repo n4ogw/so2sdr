@@ -355,9 +355,6 @@ void Afedri::set_broadcast_flag(bool b)
 
 Afedri::~Afedri()
 {
-    if (buff) {
-        delete [] buff;
-    }
 }
 
 void Afedri::readTcp()

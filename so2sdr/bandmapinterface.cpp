@@ -396,7 +396,8 @@ void BandmapInterface::connectTcp()
     for (int i=0;i<NRIG;i++) {
         if (!bandmapOn[i]) {
             if (bandmapAvailable[i] && socket[i].state()==QAbstractSocket::UnconnectedState) {
-                socket[i].connectToHost(QHostAddress::LocalHost,settings.value(s_sdr_port[i],s_sdr_port_def[i]).toInt());
+                socket[i].connectToHost(settings.value(s_sdr_ip[i],s_sdr_ip_def[i]).toString(),
+                                        settings.value(s_sdr_port[i],s_sdr_port_def[i]).toInt());
             }
         }
     }

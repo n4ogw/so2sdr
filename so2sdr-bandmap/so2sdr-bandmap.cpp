@@ -117,9 +117,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent) : QMainWindow(pa
     freqPixmap      = QPixmap(FreqLabel->width(), settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
     callPixmap      = QPixmap(CallLabel->width(), settings->value(s_sdr_fft,s_sdr_fft_def).toInt());
 
-    ipAddress= QHostAddress(QHostAddress::LocalHost).toString();
-    if (!server.listen(QHostAddress::LocalHost,
-                        settings->value(s_sdr_bandmap_tcp_port,s_sdr_bandmap_tcp_port_def).toInt())) {
+    if (!server.listen(QHostAddress::Any,settings->value(s_sdr_bandmap_tcp_port,s_sdr_bandmap_tcp_port_def).toInt())) {
         qDebug("couldn't start tcp server");
     }
     connect(&server, SIGNAL(newConnection()), this, SLOT(startConnection()));
@@ -1374,7 +1372,7 @@ void So2sdrBandmap::writeUdpXML(double freq,QByteArray call,bool del)
     stream.writeEndElement();
     stream.writeEndElement();
     stream.writeEndDocument();
-    socketUdp.writeDatagram(msg.data(), msg.size(),QHostAddress::LocalHost,
+    socketUdp.writeDatagram(msg.data(), msg.size(),QHostAddress::Broadcast,
                             settings->value(s_sdr_bandmap_udp_port,s_sdr_bandmap_udp_port_def).toInt());
 }
 

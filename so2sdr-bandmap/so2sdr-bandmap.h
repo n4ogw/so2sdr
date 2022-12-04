@@ -151,7 +151,6 @@ private:
     QDir                 directory;
     QCheckBox            checkBoxMark;
     QSlider              slider;
-    QString              ipAddress;
     QTimer               tuningTimer;
     double               flow;
     double               fhigh;
