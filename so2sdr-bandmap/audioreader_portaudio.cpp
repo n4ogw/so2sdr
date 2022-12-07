@@ -55,10 +55,7 @@ bool AudioReaderPortAudio::checkError(PaError err)
  */
 void AudioReaderPortAudio::initialize()
 {
-    mutex.lock();
     stopFlag=false;
-    initialized     = false;
-    mutex.unlock();
     if (stream != nullptr) {
         Pa_StopStream(stream);
         Pa_Terminate();
@@ -141,10 +138,7 @@ void AudioReaderPortAudio::initialize()
         return;
     }
 
- mutex.lock();
- initialized = true;
- running = true;
- mutex.unlock();
+    running = true;
 }
 
 /*!

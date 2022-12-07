@@ -52,7 +52,6 @@ void NetworkSDR::initialize()
     if (tsocket.waitForConnected()) {
         if (!usocket.bind(settings->value(s_sdr_udp_port,s_sdr_udp_port_def).toInt(),QUdpSocket::ShareAddress)) {
             emit(error("NetworkSDR: UDP connection failed"));
-            initialized=false;
             running=false;
             return;
         }
@@ -60,7 +59,6 @@ void NetworkSDR::initialize()
         set_sample_rate(settings->value(s_sdr_net_sample_freq,s_sdr_net_sample_freq_def).toInt());
         send_rx_command(RCV_START);
         running=true;
-        initialized=true;
     }
 }
 
@@ -185,7 +183,6 @@ void NetworkSDR::stopNetwork()
         tsocket.waitForDisconnected(1000);
     }
     running=false;
-    initialized=false;
     stopFlag=false;
     emit(stopped());
 }

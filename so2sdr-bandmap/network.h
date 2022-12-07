@@ -22,8 +22,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QUdpSocket>
-#include <QAbstractSocket>
-#include <sdrdatasource.h>
+#include "sdrdatasource.h"
 
 class NetworkSDR : public SdrDataSource
 {

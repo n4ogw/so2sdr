@@ -83,10 +83,8 @@ void RtlSDR::initialize()
         qDebug("RTL-SDR: tuner gain automatic");
     }
     rtlsdr_reset_buffer(dev);
-    mutex.lock();
     running=true;
     stopFlag = false;
-    mutex.unlock();
     int n_read;
 
     if (settings->value(s_sdr_rtl_sample_freq,s_sdr_rtl_sample_freq_def).toInt()==262144) {
@@ -107,11 +105,7 @@ void RtlSDR::initialize()
 void RtlSDR::stream()
 {
     do {
-        bool flag;
-        mutex.lock();
-        flag = stopFlag;
-        mutex.unlock();
-        if (flag) break;
+        if (stopFlag) break;
 
         // should check to make sure n_read == sizes.advance_size
         int n_read;
@@ -128,9 +122,7 @@ void RtlSDR::stream()
     } while(1);
 
     rtlsdr_close(dev);
-    mutex.lock();
     running=false;
-    mutex.unlock();
 
     emit(stopped());
 }
@@ -143,11 +135,7 @@ void RtlSDR::stream()
 void RtlSDR::streamx16()
 {
     do {
-        bool flag;
-        mutex.lock();
-        flag = stopFlag;
-        mutex.unlock();
-        if (flag) break;
+        if (stopFlag) break;
 
         // should check to make sure n_read == sizes.advance_size
         int n_read;
@@ -187,10 +175,7 @@ void RtlSDR::streamx16()
     } while(1);
 
     rtlsdr_close(dev);
-    mutex.lock();
     running=false;
-    mutex.unlock();
-
     emit(stopped());
 }
 
@@ -204,7 +189,5 @@ RtlSDR::~RtlSDR()
 
 void RtlSDR::stop()
 {
-    mutex.lock();
     stopFlag=true;
-    mutex.unlock();
 }

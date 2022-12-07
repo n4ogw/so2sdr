@@ -16,13 +16,12 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QMutex>
+
 #include "sdrdatasource.h"
 
 SdrDataSource::SdrDataSource(QString settingsFile,QObject *parent) : QObject(parent)
 {
     running=false;
-    initialized=false;
     sizes.advance_size=0;
     sizes.chunk_size=0;
     settings = new  QSettings(settingsFile,QSettings::IniFormat,this);
@@ -31,15 +30,6 @@ SdrDataSource::SdrDataSource(QString settingsFile,QObject *parent) : QObject(par
 SdrDataSource::~SdrDataSource()
 {
     delete settings;
-}
-
-bool SdrDataSource::isRunning()
-{
-    bool b;
-    mutex.lock();
-    b=running;
-    mutex.unlock();
-    return b;
 }
 
 void SdrDataSource::setSampleSizes(sampleSizes s)

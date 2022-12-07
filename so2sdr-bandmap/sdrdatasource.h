@@ -19,7 +19,6 @@
 #ifndef SDRDATASOURCE_H
 #define SDRDATASOURCE_H
 
-#include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QSettings>
@@ -32,7 +31,7 @@ public:
     explicit SdrDataSource(QString settingsFile,QObject *parent = nullptr);
     ~SdrDataSource();
     void setSampleSizes(sampleSizes s);
-    bool isRunning();
+    bool isRunning() { return running; };
 
 signals:
     void error(const QString &);
@@ -44,12 +43,10 @@ public slots:
     virtual void initialize() = 0;
 
 protected:
-    QMutex      mutex;
     sampleSizes sizes;
     QSettings   *settings;
-    bool        stopFlag;
-    bool        running;
-    bool        initialized;
+    std::atomic<bool> stopFlag;
+    std::atomic<bool> running;
 };
 
 #endif // SDRDATASOURCE_H

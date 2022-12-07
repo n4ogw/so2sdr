@@ -57,10 +57,7 @@ void Afedri::initialize()
             if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt(),
                               QUdpSocket::ShareAddress)) {
                 emit(error("Afedri: UDP connection failed"));
-                mutex.lock();
-                initialized=false;
                 running=false;
-                mutex.unlock();
                 return;
             }
             connect(&usocket, SIGNAL(readyRead()),this, SLOT(readDatagram()));
@@ -72,11 +69,7 @@ void Afedri::initialize()
             // for some reason, need to send frequency again to channel 0 in order for freq
             // setting to work:
             set_freq(settings->value(s_sdr_afedri_freq1,s_sdr_afedri_freq1_def).toULongLong(),0);
-
-            mutex.lock();
             running=true;
-            initialized=true;
-            mutex.unlock();
         }
     } else if (settings->value(s_sdr_afedri_bcast,s_sdr_afedri_bcast_def).toInt()==1) {
         // broadcast connection, master
@@ -115,10 +108,7 @@ void Afedri::initialize()
 
             if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt())) {
                 emit(error("Afedri: UDP connection failed"));
-                mutex.lock();
-                initialized=false;
                 running=false;
-                mutex.unlock();
                 return;
             }
 #endif
@@ -127,10 +117,7 @@ void Afedri::initialize()
             if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt()),
                     QUdpSocket::ReuseAddressHint) {
                 emit(error("Afedri: UDP connection failed"));
-                mutex.lock();
-                initialized=false;
                 running=false;
-                mutex.unlock();
                 return;
             }
 #endif
@@ -144,10 +131,7 @@ void Afedri::initialize()
             // setting to work:
             set_freq(settings->value(s_sdr_afedri_freq1,s_sdr_afedri_freq1_def).toULongLong(),0);
 
-            mutex.lock();
             running=true;
-            initialized=true;
-            mutex.unlock();
         }
     } else {
         // broadcast connection, slave
@@ -179,10 +163,7 @@ void Afedri::initialize()
 
         if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt())) {
             emit(error("Afedri: UDP connection failed"));
-            mutex.lock();
-            initialized=false;
             running=false;
-            mutex.unlock();
             return;
         }
 #endif
@@ -191,17 +172,11 @@ void Afedri::initialize()
         if (!usocket.bind(settings->value(s_sdr_afedri_udp_port,s_sdr_afedri_udp_port_def).toInt()),
                    QUdpSocket::ReuseAddressHint) {
             emit(error("Afedri: UDP connection failed"));
-            mutex.lock();
-            initialized=false;
             running=false;
-            mutex.unlock();
             return;
         }
 #endif
-        mutex.lock();
         running=true;
-        initialized=true;
-        mutex.unlock();
     }
 }
 
@@ -505,10 +480,8 @@ void Afedri::stopAfedri()
         usocket.waitForDisconnected(1000);
     }
 
-    mutex.lock();
     running=false;
     stopFlag=false;
-    mutex.unlock();
     emit(stopped());
 }
 

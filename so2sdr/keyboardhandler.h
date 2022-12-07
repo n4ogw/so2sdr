@@ -38,7 +38,7 @@ public slots:
 
 private:
     QString device;
-    bool quitFlag;
+    std::atomic<bool> quitFlag;
     int fd;
 };
 
