@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,33 +16,28 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include "centergriddialog.h"
 #include <QFont>
 #include <QFontMetricsF>
-#include "centergriddialog.h"
 
-CenterGridDialog::CenterGridDialog(QWidget *parent) : QDialog(parent)
-{
-    setupUi(this);
-    connect(lineEdit,SIGNAL(editingFinished()),this,SLOT(emitgrid()));
+CenterGridDialog::CenterGridDialog(QWidget *parent) : QDialog(parent) {
+  setupUi(this);
+  connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(emitgrid()));
 
-    QFont font12("sans", 12);
-    QFontMetricsF fm12(font12);
-    label->setFixedHeight(qRound(fm12.height()));
-    lineEdit->setFixedWidth(qRound(fm12.width("0")*50));
-    lineEdit->setFixedHeight(qRound(fm12.height()));
-    adjustSize();
-    setFixedSize(size());
-    show();
+  QFont font12("sans", 12);
+  QFontMetricsF fm12(font12);
+  label->setFixedHeight(qRound(fm12.height()));
+  lineEdit->setFixedWidth(qRound(fm12.width("0") * 50));
+  lineEdit->setFixedHeight(qRound(fm12.height()));
+  adjustSize();
+  setFixedSize(size());
+  show();
 }
 
-void CenterGridDialog::setText(QByteArray s)
-{
-    lineEdit->setText(s);
-}
+void CenterGridDialog::setText(QByteArray s) { lineEdit->setText(s); }
 
-void CenterGridDialog::emitgrid()
-{
-    QByteArray text=lineEdit->text().toLatin1();
-    emit(grid(text));
-    close();
+void CenterGridDialog::emitgrid() {
+  QByteArray text = lineEdit->text().toLatin1();
+  emit(grid(text));
+  close();
 }

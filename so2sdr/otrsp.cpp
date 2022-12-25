@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,68 +16,61 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "defines.h"
 #include "otrsp.h"
+#include "defines.h"
 #include <QSerialPortInfo>
 
-OTRSP::OTRSP(QSettings& s, int n, QObject *parent) : QObject(parent),settings(s)
-{
-    nr            = n;
-    QSerialPortInfo info(settings.value(s_otrsp_device[nr],s_otrsp_device_def).toString());
-    OTRSPPort = new QSerialPort(info);
-    OTRSPOpen     = false;
-    stereo        = false;
-    deviceName.clear();
+OTRSP::OTRSP(QSettings &s, int n, QObject *parent)
+    : QObject(parent), settings(s) {
+  nr = n;
+  QSerialPortInfo info(
+      settings.value(s_otrsp_device[nr], s_otrsp_device_def).toString());
+  OTRSPPort = new QSerialPort(info);
+  OTRSPOpen = false;
+  stereo = false;
+  deviceName.clear();
 }
 
-OTRSP::~OTRSP()
-{
-    closeOTRSP();
-    delete OTRSPPort;
+OTRSP::~OTRSP() {
+  closeOTRSP();
+  delete OTRSPPort;
 }
 
-QByteArray OTRSP::name() const
-{
-    return deviceName;
-}
+QByteArray OTRSP::name() const { return deviceName; }
 
 /*!
    returns true if OTRSP has been opened successfully
  */
-bool OTRSP::OTRSPIsOpen() const
-{
-    return(OTRSPOpen);
-}
+bool OTRSP::OTRSPIsOpen() const { return (OTRSPOpen); }
 
-void OTRSP::sendCommand(QByteArray command)
-{
-    if (!OTRSPOpen) return;
-    OTRSPPort->write(command, command.length());
+void OTRSP::sendCommand(QByteArray command) {
+  if (!OTRSPOpen)
+    return;
+  OTRSPPort->write(command, command.length());
 }
 
 /*!
  * \brief OTRSP::switchRadios
  * switches both RX and TX focus to other radio
  */
-void OTRSP::switchAudio(int nr)
-{
-    if (!OTRSPOpen || nr<0 || nr>1) return;
+void OTRSP::switchAudio(int nr) {
+  if (!OTRSPOpen || nr < 0 || nr > 1)
+    return;
 
-    const char rxcmd[2][5]={"RX1\r","RX2\r"};
+  const char rxcmd[2][5] = {"RX1\r", "RX2\r"};
 
-    // if in stereo mode, don't switch RX
-    if (!stereo) {
-        OTRSPPort->write(rxcmd[nr],4);
-    }
-
+  // if in stereo mode, don't switch RX
+  if (!stereo) {
+    OTRSPPort->write(rxcmd[nr], 4);
+  }
 }
 
-void OTRSP::switchTransmit(int nr)
-{
-    if (!OTRSPOpen || nr<0 || nr>1) return;
-    const char txcmd[2][5]={"TX1\r","TX2\r"};
+void OTRSP::switchTransmit(int nr) {
+  if (!OTRSPOpen || nr < 0 || nr > 1)
+    return;
+  const char txcmd[2][5] = {"TX1\r", "TX2\r"};
 
-    OTRSPPort->write(txcmd[nr],4);
+  OTRSPPort->write(txcmd[nr], 4);
 }
 
 /*!
@@ -86,69 +79,64 @@ void OTRSP::switchTransmit(int nr)
  * Toggles stereo receive mode. OTRSP needs parameter nr because it
  * can't remember how to get out of stereo split mode.
  */
-void OTRSP::toggleStereo(int nr)
-{
-    if (!OTRSPOpen || nr<0 || nr>1) return;
-    if (stereo) {
-        stereo=false;
-        switchAudio(nr);
-    } else {
-        const char cmd[6]="RX1S\r";
-        OTRSPPort->write(cmd,5);
-        stereo=true;
-    }
+void OTRSP::toggleStereo(int nr) {
+  if (!OTRSPOpen || nr < 0 || nr > 1)
+    return;
+  if (stereo) {
+    stereo = false;
+    switchAudio(nr);
+  } else {
+    const char cmd[6] = "RX1S\r";
+    OTRSPPort->write(cmd, 5);
+    stereo = true;
+  }
 }
 
-bool OTRSP::stereoActive () const
-{
-    return stereo;
-}
+bool OTRSP::stereoActive() const { return stereo; }
 
 /*!
    open OTRSP device
  */
-void OTRSP::openOTRSP()
-{
-    // in case we are re-starting OTRSP
-    if (OTRSPPort->isOpen()) {
-        closeOTRSP();
-        OTRSPOpen = false;
-    }
-    OTRSPPort->setPortName(settings.value(s_otrsp_device[nr],s_otrsp_device_def).toString());
+void OTRSP::openOTRSP() {
+  // in case we are re-starting OTRSP
+  if (OTRSPPort->isOpen()) {
+    closeOTRSP();
+    OTRSPOpen = false;
+  }
+  OTRSPPort->setPortName(
+      settings.value(s_otrsp_device[nr], s_otrsp_device_def).toString());
 
-    // currently only 9600N81
-    OTRSPPort->setBaudRate(QSerialPort::Baud9600);
-    OTRSPPort->setFlowControl(QSerialPort::NoFlowControl);
-    OTRSPPort->setParity(QSerialPort::NoParity);
-    OTRSPPort->setDataBits(QSerialPort::Data8);
-    OTRSPPort->setStopBits(QSerialPort::OneStop);
+  // currently only 9600N81
+  OTRSPPort->setBaudRate(QSerialPort::Baud9600);
+  OTRSPPort->setFlowControl(QSerialPort::NoFlowControl);
+  OTRSPPort->setParity(QSerialPort::NoParity);
+  OTRSPPort->setDataBits(QSerialPort::Data8);
+  OTRSPPort->setStopBits(QSerialPort::OneStop);
 
-    OTRSPPort->open(QIODevice::ReadWrite);
+  OTRSPPort->open(QIODevice::ReadWrite);
 
-    if (!OTRSPPort->isOpen()) {
-        OTRSPOpen = false;
-        emit(otrspError("ERROR: could not open otrsp device"));
-        return;
-    }
-    OTRSPPort->setRequestToSend(false);
-    OTRSPPort->setDataTerminalReady(false);
+  if (!OTRSPPort->isOpen()) {
+    OTRSPOpen = false;
+    emit otrspError("ERROR: could not open otrsp device");
+    return;
+  }
+  OTRSPPort->setRequestToSend(false);
+  OTRSPPort->setDataTerminalReady(false);
 
-    OTRSPOpen = true;
+  OTRSPOpen = true;
 
-    // get device name
-    sendCommand("?NAME\r");
-    if (OTRSPPort->waitForReadyRead(1000)) {
-        deviceName=OTRSPPort->readAll();
-        deviceName=deviceName.simplified();
-    } else {
-        deviceName=QByteArray("Unknown");
-    }
-    emit(otrspNameSet(deviceName,nr));
+  // get device name
+  sendCommand("?NAME\r");
+  if (OTRSPPort->waitForReadyRead(1000)) {
+    deviceName = OTRSPPort->readAll();
+    deviceName = deviceName.simplified();
+  } else {
+    deviceName = QByteArray("Unknown");
+  }
+  emit otrspNameSet(deviceName, nr);
 }
 
-void OTRSP::closeOTRSP()
-{
-    if (OTRSPOpen) OTRSPPort->close();
+void OTRSP::closeOTRSP() {
+  if (OTRSPOpen)
+    OTRSPPort->close();
 }
-
-

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,33 +16,29 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QDir>
-#include <QApplication>
-#include <QTime>
-#include "defines.h"
 #include "utils.h"
+#include <QApplication>
+#include <QDir>
+#include <QTime>
 
 /*! returns directory where program data is stored
-*/
-QString dataDirectory()
-{
-    // INSTALL_DIR is usually /usr/local
-    return QString(INSTALL_DIR)+QString("/share/so2sdr/");
+ */
+QString dataDirectory() {
+  // INSTALL_DIR is usually /usr/local
+  return QString(INSTALL_DIR) + QString("/share/so2sdr/");
 }
 
-/*! returns directory where user data (station config, hamlib cache,...) are stored
-        */
-QString userDirectory()
-{
-    return QDir::homePath() + "/.so2sdr";
-}
+/*! returns directory where user data (station config, hamlib cache,...) are
+ * stored
+ */
+QString userDirectory() { return QDir::homePath() + "/.so2sdr"; }
 
-/* see http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt */
-void delay( int millisecondsToWait )
-{
-    QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );
-    while( QTime::currentTime() < dieTime )
-    {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-    }
+/* see
+ * http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
+ */
+void delay(int millisecondsToWait) {
+  QTime dieTime = QTime::currentTime().addMSecs(millisecondsToWait);
+  while (QTime::currentTime() < dieTime) {
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+  }
 }

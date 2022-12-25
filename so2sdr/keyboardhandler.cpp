@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -17,101 +17,102 @@
 
  */
 #include "keyboardhandler.h"
-#include <unistd.h>
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <dirent.h>
 #include <linux/input.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <termios.h>
-#include <signal.h>
 #include <poll.h>
+#include <signal.h>
+#include <sys/select.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <unistd.h>
 
 #include <QDebug>
 #
-KeyboardHandler::KeyboardHandler(QString deviceName,QObject *parent) : QObject(parent)
-{
-    device=deviceName;
-    quitFlag=false;
-    fd=0;
+KeyboardHandler::KeyboardHandler(QString deviceName, QObject *parent)
+    : QObject(parent) {
+  device = deviceName;
+  quitFlag = false;
+  fd = 0;
 }
 
-void KeyboardHandler::setDevice(QString d)
-{
-    device=d;
-}
+void KeyboardHandler::setDevice(QString d) { device = d; }
 
-void KeyboardHandler::run()
-{
-    struct input_event ev;
-    int size = sizeof(struct input_event);
-    int rd,ret;
-    bool shift = false;
-    bool alt = false;
-    bool ctrl = false;
-    struct pollfd pfd[1];
+void KeyboardHandler::run() {
+  struct input_event ev;
+  int size = sizeof(struct input_event);
+  int rd, ret;
+  bool shift = false;
+  bool alt = false;
+  bool ctrl = false;
+  struct pollfd pfd[1];
 
-    quitFlag=false;
-    fd = open(device.toStdString().c_str(), O_RDONLY);
-    pfd[0].fd=fd;
-    pfd[0].events=POLLIN;
+  quitFlag = false;
+  fd = open(device.toStdString().c_str(), O_RDONLY);
+  pfd[0].fd = fd;
+  pfd[0].events = POLLIN;
 
-    if (fd == -1) {
-        qDebug("KeyboardHandler: error opening %s",device.toStdString().data());
-        return;
-    }
-    if (fd >= 0) {
-        ioctl(fd, EVIOCGRAB, 1);
-        while (!quitFlag) {
-            // timeout is set to 5 ms. Does this need adjusting?
-            ret = poll(pfd, 1, 5);
-            if (ret>0) {
-                if (pfd[0].revents == POLLIN) {
-                    rd = read(fd, &ev, size);
-                    if (rd!=size) break;
-                    // value 1 catches single keypresses; value 2 catches autorepeat
-                    if (ev.type == EV_KEY && ((ev.value == 1) || ev.value==2)) {
-                        switch (ev.code) {
-                        case KEY_LEFTSHIFT:case KEY_RIGHTSHIFT:
-                            shift = true;
-                            break;
-                        case KEY_LEFTALT:case KEY_RIGHTALT:
-                            alt=true;
-                            break;
-                        case KEY_LEFTCTRL:case KEY_RIGHTCTRL:
-                            ctrl = true;
-                            break;
-                        default:
-                            emit readKey(ev.code,shift,ctrl,alt);
-                            break;
-                        }
-                    } else if (ev.type == EV_KEY && ev.value == 0) {
-                        switch (ev.code) {
-                        case KEY_LEFTSHIFT:case KEY_RIGHTSHIFT:
-                            shift = false;
-                            break;
-                        case KEY_LEFTALT:case KEY_RIGHTALT:
-                            alt=false;
-                            break;
-                        case KEY_LEFTCTRL:case KEY_RIGHTCTRL:
-                            ctrl = false;
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                }
+  if (fd == -1) {
+    qDebug("KeyboardHandler: error opening %s", device.toStdString().data());
+    return;
+  }
+  if (fd >= 0) {
+    ioctl(fd, EVIOCGRAB, 1);
+    while (!quitFlag) {
+      // timeout is set to 5 ms. Does this need adjusting?
+      ret = poll(pfd, 1, 5);
+      if (ret > 0) {
+        if (pfd[0].revents == POLLIN) {
+          rd = read(fd, &ev, size);
+          if (rd != size)
+            break;
+          // value 1 catches single keypresses; value 2 catches autorepeat
+          if (ev.type == EV_KEY && ((ev.value == 1) || ev.value == 2)) {
+            switch (ev.code) {
+            case KEY_LEFTSHIFT:
+            case KEY_RIGHTSHIFT:
+              shift = true;
+              break;
+            case KEY_LEFTALT:
+            case KEY_RIGHTALT:
+              alt = true;
+              break;
+            case KEY_LEFTCTRL:
+            case KEY_RIGHTCTRL:
+              ctrl = true;
+              break;
+            default:
+              emit readKey(ev.code, shift, ctrl, alt);
+              break;
             }
+          } else if (ev.type == EV_KEY && ev.value == 0) {
+            switch (ev.code) {
+            case KEY_LEFTSHIFT:
+            case KEY_RIGHTSHIFT:
+              shift = false;
+              break;
+            case KEY_LEFTALT:
+            case KEY_RIGHTALT:
+              alt = false;
+              break;
+            case KEY_LEFTCTRL:
+            case KEY_RIGHTCTRL:
+              ctrl = false;
+              break;
+            default:
+              break;
+            }
+          }
         }
-
+      }
     }
+  }
 }
 
-void KeyboardHandler::quitHandler()
-{
-    ioctl(fd, EVIOCGRAB, 0);
-    quitFlag=true;
+void KeyboardHandler::quitHandler() {
+  ioctl(fd, EVIOCGRAB, 0);
+  quitFlag = true;
 }

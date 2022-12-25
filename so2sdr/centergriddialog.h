@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,22 +19,21 @@
 #ifndef CENTERGRIDDIALOG_H
 #define CENTERGRIDDIALOG_H
 
+#include "ui_centergrid.h"
 #include <QByteArray>
 #include <QDialog>
 #include <QWidget>
-#include "ui_centergrid.h"
 
-class CenterGridDialog : public QDialog, public Ui::CenterGridForm
-{
-    Q_OBJECT
+class CenterGridDialog : public QDialog, public Ui::CenterGridForm {
+  Q_OBJECT
 public:
-    explicit CenterGridDialog(QWidget *parent = nullptr);
-    void setText(QByteArray s);
+  explicit CenterGridDialog(QWidget *parent = nullptr);
+  void setText(QByteArray s);
 signals:
-    void grid(QByteArray);
+  void grid(QByteArray);
 
 private slots:
-    void emitgrid();
+  void emitgrid();
 };
 
 #endif // CENTERGRIDDIALOG_H

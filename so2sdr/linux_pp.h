@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,11 +18,11 @@
  */
 #ifndef LINUX_PP_H
 #define LINUX_PP_H
-#include <unistd.h>
-#include <stdio.h>
 #include "defines.h"
 #include <QSettings>
 #include <QString>
+#include <stdio.h>
+#include <unistd.h>
 
 /*! Parallel port access under Linux
 
@@ -36,32 +36,31 @@
    Base+2 (Control port)    Pin:                ~17     16  ~14     ~1
 
  */
-class ParallelPort : public QObject
-{
-Q_OBJECT
+class ParallelPort : public QObject {
+  Q_OBJECT
 
 public:
-    ParallelPort(QSettings& s);
-    ~ParallelPort();
-    void switchAudio(int r);
-    void toggleStereoPin();   
-    void switchTransmit(int r);   
-    bool stereoActive() const;
+  ParallelPort(QSettings &s);
+  ~ParallelPort();
+  void switchAudio(int r);
+  void toggleStereoPin();
+  void switchTransmit(int r);
+  bool stereoActive() const;
 
 public slots:
-    void initialize();
+  void initialize();
 
 signals:
-    void parallelPortError(const QString &);
+  void parallelPortError(const QString &);
 
 private:
-    bool    initialized;
-    bool stereoPinStatus;
+  bool initialized;
+  bool stereoPinStatus;
 
-    int     parallelFD;
+  int parallelFD;
 
-    void PinLow(const int p);
-    void PinHigh(const int p);
-    QSettings& settings;
+  void PinLow(const int p);
+  void PinHigh(const int p);
+  QSettings &settings;
 };
 #endif

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,23 +23,23 @@
 
 // Mississippi QSO party; updated for 2019 rules
 
-class MSQP : public Contest
-{
+class MSQP : public Contest {
 public:
-    MSQP(QSettings &cs,QSettings &ss);
-    ~MSQP() override;
+  MSQP(QSettings &cs, QSettings &ss);
+  ~MSQP() override;
 
-    ContestType contestType() const override { return Msqp_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    bool showQsoPtsField() const override { return true;}
-    void setWithinState(bool);
+  ContestType contestType() const override { return Msqp_t; }
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  bool showQsoPtsField() const override { return true; }
+  void setWithinState(bool);
+
 private:
-    bool withinState;
+  bool withinState;
 };
 
 #endif

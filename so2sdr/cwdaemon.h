@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -29,49 +29,48 @@
 /*!
    cwdaemon support class
  */
-class Cwdaemon : public QObject
-{
-Q_OBJECT
+class Cwdaemon : public QObject {
+  Q_OBJECT
 
 public:
-    Cwdaemon(QSettings& s, QObject *parent = nullptr);
-    ~Cwdaemon();
-    void loadbuff(QByteArray msg);
-    bool isSending() const;
-    void sendcw();
-    void switchTransmit(int nrig);
-    void setSpeed(int speed);
-    void setUdpPort(int nrig,int p);
-    bool isOpen(int nrig) const;
+  Cwdaemon(QSettings &s, QObject *parent = nullptr);
+  ~Cwdaemon();
+  void loadbuff(QByteArray msg);
+  bool isSending() const;
+  void sendcw();
+  void switchTransmit(int nrig);
+  void setSpeed(int speed);
+  void setUdpPort(int nrig, int p);
+  bool isOpen(int nrig) const;
 
 signals:
-    void cwCanceled();
-    void finished();
-    void textSent(const QString& t,int);
-    void version(int ver);
-    void tx(bool, int);
-    void error(const QString &);
+  void cwCanceled();
+  void finished();
+  void textSent(const QString &t, int);
+  void version(int ver);
+  void tx(bool, int);
+  void error(const QString &);
 
 public slots:
-    void cancelcw();
-    void open();
+  void cancelcw();
+  void open();
 
 private slots:
-    void receive1();
-    void receive2();
+  void receive1();
+  void receive2();
 
 private:
-    bool       sending;
-    bool       open_[NRIG];
-    bool       sendingCmd;
-    int        rigNum;
-    int        txRig;
-    int        udpPort[NRIG];
-    QByteArray sendBuff;
-    QString sent;
-    QSettings& settings;
-    QUdpSocket socket[NRIG];
-    void close();
+  bool sending;
+  bool open_[NRIG];
+  bool sendingCmd;
+  int rigNum;
+  int txRig;
+  int udpPort[NRIG];
+  QByteArray sendBuff;
+  QString sent;
+  QSettings &settings;
+  QUdpSocket socket[NRIG];
+  void close();
 };
 
 #endif // CWDAEMON_H

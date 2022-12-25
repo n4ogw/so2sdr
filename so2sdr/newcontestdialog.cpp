@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,35 +16,32 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include "newcontestdialog.h"
 #include <QFile>
 #include <QFileDialog>
-#include "newcontestdialog.h"
 
-NewDialog::NewDialog(QWidget *parent) : QDialog(parent)
-{
-    setupUi(this);
-    configFiles.clear();
+NewDialog::NewDialog(QWidget *parent) : QDialog(parent) {
+  setupUi(this);
+  configFiles.clear();
 }
 
-QString NewDialog::selectedContest()
-{
-    return(configFiles.at(NewContestComboBox->currentIndex()));
+QString NewDialog::selectedContest() {
+  return (configFiles.at(NewContestComboBox->currentIndex()));
 }
 
-bool NewDialog::readContestList(QString fileName)
-{
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        emit(newContestError("Can't open contest list file at "+fileName));
-        return(false);
-    }
-    while (!file.atEnd()) {
-        QByteArray buffer = file.readLine();
-        int        i      = buffer.indexOf(",");
-        QByteArray name   = buffer.mid(0, i).trimmed();
-        NewContestComboBox->addItem(name);
-        configFiles.append(buffer.right(buffer.size() - i - 1).trimmed());
-    }
-    file.close();
-    return(true);
+bool NewDialog::readContestList(QString fileName) {
+  QFile file(fileName);
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    emit(newContestError("Can't open contest list file at " + fileName));
+    return (false);
+  }
+  while (!file.atEnd()) {
+    QByteArray buffer = file.readLine();
+    int i = buffer.indexOf(",");
+    QByteArray name = buffer.mid(0, i).trimmed();
+    NewContestComboBox->addItem(name);
+    configFiles.append(buffer.right(buffer.size() - i - 1).trimmed());
+  }
+  file.close();
+  return (true);
 }

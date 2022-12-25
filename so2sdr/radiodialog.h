@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,9 +19,9 @@
 #ifndef RADIODIALOG_H
 #define RADIODIALOG_H
 
-#include "ui_radiodialog.h"
 #include "defines.h"
 #include "serial.h"
+#include "ui_radiodialog.h"
 #include <QFile>
 #include <QSettings>
 
@@ -31,40 +31,40 @@ class QLineEdit;
 /*!
    Radio serial communication parameters
  */
-class RadioDialog : public QDialog, public Ui::RadioDialog
-{
-Q_OBJECT
+class RadioDialog : public QDialog, public Ui::RadioDialog {
+  Q_OBJECT
 
 public:
-    RadioDialog(QSettings& s,RigSerial& cat, uiSize sizes,QWidget *parent = nullptr);
-    ~RadioDialog();
+  RadioDialog(QSettings &s, RigSerial &cat, uiSize sizes,
+              QWidget *parent = nullptr);
+  ~RadioDialog();
 
 signals:
-    void startRadios();
+  void startRadios();
 
 public slots:
-    void rejectChanges();
-    void updateRadio();
+  void rejectChanges();
+  void updateRadio();
 
 private slots:
-    void populateModels1(int);
-    void populateModels2(int);
-    void rigctld1Checked(bool);
-    void rigctld2Checked(bool);
+  void populateModels1(int);
+  void populateModels2(int);
+  void rigctld1Checked(bool);
+  void rigctld2Checked(bool);
 
 private:
-    void populateModelCombo(int, int);
-    void updateFromSettings();
+  void populateModelCombo(int, int);
+  void updateFromSettings();
 
-    QComboBox  *radioBaudComboBox[NRIG];
-    QComboBox  *radioMfgComboBox[NRIG];
-    QComboBox  *radioModelComboBox[NRIG];
-    QComboBox  *radioPttComboBox[NRIG];
-    QLineEdit  *radioDevEdit[NRIG];
-    QLineEdit  *radioPollTimeEdit[NRIG];
-    QLineEdit  *radioIFEdit[NRIG];
-    QSettings&  settings;
-    RigSerial&  catptr;
+  QComboBox *radioBaudComboBox[NRIG];
+  QComboBox *radioMfgComboBox[NRIG];
+  QComboBox *radioModelComboBox[NRIG];
+  QComboBox *radioPttComboBox[NRIG];
+  QLineEdit *radioDevEdit[NRIG];
+  QLineEdit *radioPollTimeEdit[NRIG];
+  QLineEdit *radioIFEdit[NRIG];
+  QSettings &settings;
+  RigSerial &catptr;
 };
 
 #endif

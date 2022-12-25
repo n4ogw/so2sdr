@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,33 +19,31 @@
 #ifndef NETWORKSETUP_H
 #define NETWORKSETUP_H
 
+#include "bandoffsetsetup.h"
 #include "defines.h"
+#include "ui_networksetup.h"
 #include <QDialog>
 #include <QSettings>
-#include "bandoffsetsetup.h"
-#include "ui_networksetup.h"
 
-
-class NetworkSetup : public QDialog, public Ui::networkSetup
-{
-    Q_OBJECT
+class NetworkSetup : public QDialog, public Ui::networkSetup {
+  Q_OBJECT
 public:
-    explicit NetworkSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
-    ~NetworkSetup();
-    double offset(int band) const;
-    bool invert(int band) const;
+  explicit NetworkSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~NetworkSetup();
+  double offset(int band) const;
+  bool invert(int band) const;
 
 signals:
-    void networkError(const QString &);
+  void networkError(const QString &);
 
 private slots:
-    void updateNetwork();
-    void rejectChanges();
+  void updateNetwork();
+  void rejectChanges();
 
 private:
-    QSettings &settings;
-    void updateFromSettings();
-    BandOffsetSetup *offsetSetup;
+  QSettings &settings;
+  void updateFromSettings();
+  BandOffsetSetup *offsetSetup;
 };
 
 #endif // NETWORKSETUP_H

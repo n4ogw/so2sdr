@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,26 +23,26 @@
 #include <QList>
 #include <QString>
 
-class PAQP : public Contest
-{
+class PAQP : public Contest {
 public:
-    PAQP(QSettings &cs,QSettings &ss);
-    ~PAQP() override;
+  PAQP(QSettings &cs, QSettings &ss);
+  ~PAQP() override;
 
-    QVariant columnName(int c) const override;
-    ContestType contestType() const override { return Paqp_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    unsigned int sntFieldShown() const override;
-    void setWithinState(bool);
-    bool showQsoPtsField() const override { return true;}
+  QVariant columnName(int c) const override;
+  ContestType contestType() const override { return Paqp_t; }
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  unsigned int sntFieldShown() const override;
+  void setWithinState(bool);
+  bool showQsoPtsField() const override { return true; }
+
 private:
-    bool withinState;
-    static QList<QString> EPA_counties;
+  bool withinState;
+  static QList<QString> EPA_counties;
 };
 
 #endif

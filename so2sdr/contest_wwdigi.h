@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -22,21 +22,20 @@
 #include "contest.h"
 #include "defines.h"
 
-class WWDigi : public Contest
-{
+class WWDigi : public Contest {
 public:
-    WWDigi(QSettings &cs,QSettings &ss);
-    ~WWDigi() override;
+  WWDigi(QSettings &cs, QSettings &ss);
+  ~WWDigi() override;
 
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    QVariant columnName(int c) const override;
-    ContestType contestType() const  override{ return WWDigi_t;}
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override { return -1; }
-    unsigned int rcvFieldShown() const override { return 1; }
-    bool showQsoPtsField() const override { return true;}
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  QVariant columnName(int c) const override;
+  ContestType contestType() const override { return WWDigi_t; }
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override { return -1; }
+  unsigned int rcvFieldShown() const override { return 1; }
+  bool showQsoPtsField() const override { return true; }
 };
 
 #endif // CONTEST_WWDIGI_H

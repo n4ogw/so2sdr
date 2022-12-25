@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,26 +19,25 @@
 #ifndef CONTEST_DXPED_H
 #define CONTEST_DXPED_H
 
-#include "cty.h"
 #include "contest.h"
+#include "cty.h"
 
-class Dxped : public Contest
-{
+class Dxped : public Contest {
 public:
-    Dxped(QSettings &cs,QSettings &ss);
-    ~Dxped() override;
+  Dxped(QSettings &cs, QSettings &ss);
+  ~Dxped() override;
 
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    ContestType contestType() const override { return Dxped_t;}
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    int Score() const override;
-    QByteArray prefillExchange(Qso *qso) override;
-    bool showQsoPtsField() const override { return false;}
-    int rstField() const override { return 0;}
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  ContestType contestType() const override { return Dxped_t; }
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  int Score() const override;
+  QByteArray prefillExchange(Qso *qso) override;
+  bool showQsoPtsField() const override { return false; }
+  int rstField() const override { return 0; }
 };
 
 #endif

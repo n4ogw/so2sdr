@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,42 +19,55 @@
 #ifndef AFEDRI_H
 #define AFEDRI_H
 
+#include "network.h"
 #include <QAbstractSocket>
 #include <QObject>
 #include <QString>
-#include "network.h"
 
 #define TARGET_NAME "AFEDRI SDR Network"
 #define SERIAL_NUMBER "AN000102"
-#define IF_VERSION      0x101
-#define BOOT_CODE_VER   0x000
-#define APP_FW_VER      0x112
-#define HW_VER          0x000
+#define IF_VERSION 0x101
+#define BOOT_CODE_VER 0x000
+#define APP_FW_VER 0x112
+#define HW_VER 0x000
 #define PRODUCT_ID 0x03524453L
 
 #define MAX_UDP_SIZE 1044
 
-class Afedri : public NetworkSDR
-{
-    Q_OBJECT
+const QString afedriNames[4] = { QStringLiteral("AFEDRI SDR-Net"),
+                               QStringLiteral("SDR-IP"),
+                               QStringLiteral("AFE822x SDR-Net"),
+                               QStringLiteral("Unknown")};
+
+class Afedri : public NetworkSDR {
+  Q_OBJECT
 public:
-    Afedri(QString settingsFile,QObject *parent = nullptr);
-    ~Afedri();
+  Afedri(QString settingsFile, QObject *parent = nullptr);
+  ~Afedri();
+  unsigned int sampleRate() const;
 
 public slots:
-    void stop();
-    void initialize();
+  void stop();
+  void initialize();
+  void setRfFreq(double f);
 
 private slots:
-    void readDatagram();
-    void readTcp();
+  void readDatagram();
+  void readTcp();
 
 private:
-    void set_broadcast_flag(bool);
-    void set_freq(unsigned long frequency, int channel);
-    void set_multichannel_mode(int channel);
-    void set_sample_rate(unsigned long sample_rate);
-    void stopAfedri();
+  void get_clock_freq();
+  void get_real_sample_rate();
+  void get_sdr_name();
+  void set_broadcast_flag(bool);
+  void set_freq(unsigned long frequency, int channel);
+  void set_multichannel_mode(int channel);
+  void set_sample_rate(unsigned long sample_rate);
+  void stopAfedri();
+
+  unsigned int clockFreq;
+  unsigned int realSampleRate;
+  QString name;
 };
 
 #endif // AFEDRI_H

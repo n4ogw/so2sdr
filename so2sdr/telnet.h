@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,40 +19,39 @@
 #ifndef TELNET_H
 #define TELNET_H
 
-#include <QSettings>
-#include "ui_telnet.h"
 #include "defines.h"
+#include "ui_telnet.h"
+#include <QSettings>
 
 class QtTelnet;
 
 /*!
    DX Cluster Telnet window
  */
-class Telnet : public QWidget, public Ui::TelnetDialog
-{
-Q_OBJECT
+class Telnet : public QWidget, public Ui::TelnetDialog {
+  Q_OBJECT
 
 public:
-    Telnet(QSettings& s,uiSize sizes, QWidget *parent = nullptr);
-    ~Telnet();
+  Telnet(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~Telnet();
 
 signals:
-    void done(bool);
-    void dxSpot(QByteArray, double);
+  void done(bool);
+  void dxSpot(QByteArray, double);
 
 protected:
-    void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent *event);
 
 private slots:
-    void connectTelnet();
-    void disconnectTelnet();
-    void sendText();
-    void showText(QString txt);
+  void connectTelnet();
+  void disconnectTelnet();
+  void sendText();
+  void showText(QString txt);
 
 private:
-    QList<QString> hosts;
-    QString        buffer;
-    QSettings&     settings;
-    QtTelnet       *telnet;
+  QList<QString> hosts;
+  QString buffer;
+  QSettings &settings;
+  QtTelnet *telnet;
 };
 #endif // TELNET_H

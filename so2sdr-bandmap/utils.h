@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -22,6 +22,6 @@
 
 QString dataDirectory();
 QString userDirectory();
-void delay( int millisecondsToWait );
+void delay(int millisecondsToWait);
 
 #endif // UTILS_H

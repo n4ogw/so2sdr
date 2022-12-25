@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,6 +19,8 @@
 #ifndef BANDOFFSETSETUP_H
 #define BANDOFFSETSETUP_H
 
+#include "defines.h"
+#include "ui_bandoffsetsetup.h"
 #include <QAction>
 #include <QDialog>
 #include <QMenu>
@@ -27,50 +29,46 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
-#include "defines.h"
-#include "ui_bandoffsetsetup.h"
 
-
-class ComboBoxItemDelegate : public QStyledItemDelegate
-{
-    Q_OBJECT
+class ComboBoxItemDelegate : public QStyledItemDelegate {
+  Q_OBJECT
 public:
-    ComboBoxItemDelegate(QObject* parent=nullptr);
-    ~ComboBoxItemDelegate();
-    int bandNameToIndex(QString name);
+  ComboBoxItemDelegate(QObject *parent = nullptr);
+  ~ComboBoxItemDelegate();
+  int bandNameToIndex(QString name);
 
 protected:
-    virtual QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
-    virtual void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const;
-
+  virtual QWidget *createEditor(QWidget *parent,
+                                const QStyleOptionViewItem &option,
+                                const QModelIndex &index) const;
+  virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
+  virtual void setModelData(QWidget *editor, QAbstractItemModel *model,
+                            const QModelIndex &index) const;
 };
 
-class BandOffsetSetup : public QDialog, public Ui::bandOffsetSetup
-{
-    Q_OBJECT
+class BandOffsetSetup : public QDialog, public Ui::bandOffsetSetup {
+  Q_OBJECT
 
 public:
-    BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes, QWidget *parent=nullptr);
-    ~BandOffsetSetup();
-    bool hasOffset(int band) const;
-    bool invert(int band) const;
-    int offset(int band) const;
+  BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes,
+                  QWidget *parent = nullptr);
+  ~BandOffsetSetup();
+  bool hasOffset(int band) const;
+  bool invert(int band) const;
+  int offset(int band) const;
 
 private slots:
-    void addRow();
-    void removeRow();
-    void updateSettings();
+  void addRow();
+  void removeRow();
+  void updateSettings();
 
 private:
-    SdrType sdr;
-    QSettings &settings;
-    QStandardItemModel *model;
-    ComboBoxItemDelegate* delegate;
+  SdrType sdr;
+  QSettings &settings;
+  QStandardItemModel *model;
+  ComboBoxItemDelegate *delegate;
 
-    void updateFromSettings();
-
+  void updateFromSettings();
 };
-
 
 #endif // BANDOFFSETSETUP_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,10 +18,9 @@
  */
 #include "bandmapentry.h"
 
-BandmapEntry::BandmapEntry()
-{
-    call.clear();
-    f    = 0;
-    createdTime = 0;
-    dupe = false;
+BandmapEntry::BandmapEntry() {
+  call.clear();
+  f = 0;
+  createdTime = 0;
+  dupe = false;
 }

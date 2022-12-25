@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,10 +19,10 @@
 #ifndef MENUSTYLE_H
 #define MENUSTYLE_H
 #include <QProxyStyle>
+#include <QStyle>
+#include <QStyleHintReturn>
 #include <QStyleOption>
 #include <QWidget>
-#include <QStyleHintReturn>
-#include <QStyle>
 
 // used to prevent menubar from grabbing focus when Alt pressed. See
 //
@@ -32,17 +32,15 @@
 //
 // https://stackoverflow.com/questions/37020992/qt-prevent-menubar-from-grabbing-focus-after-alt-pressed-on-windows
 
-class MenuStyle : public QProxyStyle
-{
+class MenuStyle : public QProxyStyle {
 public:
-    int styleHint(StyleHint stylehint, const QStyleOption *opt, const QWidget *widget, QStyleHintReturn *returnData) const
-    {
-        if (stylehint == QStyle::SH_MenuBar_AltKeyNavigation)
-            return 0;
+  int styleHint(StyleHint stylehint, const QStyleOption *opt,
+                const QWidget *widget, QStyleHintReturn *returnData) const {
+    if (stylehint == QStyle::SH_MenuBar_AltKeyNavigation)
+      return 0;
 
-        return QProxyStyle::styleHint(stylehint, opt, widget, returnData);
-    }
+    return QProxyStyle::styleHint(stylehint, opt, widget, returnData);
+  }
 };
-
 
 #endif // MENUSTYLE_H

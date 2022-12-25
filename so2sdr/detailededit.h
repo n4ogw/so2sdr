@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,28 +20,27 @@
 #ifndef DETAILEDEDIT_H
 #define DETAILEDEDIT_H
 
-#include <QString>
-#include <QSqlRecord>
 #include "serial.h"
 #include "ui_detailededit.h"
+#include <QSqlRecord>
+#include <QString>
 
 /*!
    Dialog for detailed qso editing
  */
-class DetailedEdit : public QDialog, public Ui::DetailedQSOEdit
-{
-Q_OBJECT
+class DetailedEdit : public QDialog, public Ui::DetailedQSOEdit {
+  Q_OBJECT
 
 public:
-    DetailedEdit(uiSize sizes, QWidget *parent = nullptr);
-    void loadRecord(const QSqlRecord &r,int nexchange);
+  DetailedEdit(uiSize sizes, QWidget *parent = nullptr);
+  void loadRecord(const QSqlRecord &r, int nexchange);
 private slots:
-    void updateRecord();
+  void updateRecord();
 signals:
-    void editedRecord(QSqlRecord &) ;
+  void editedRecord(QSqlRecord &);
+
 private:
-    QSqlRecord rec;
+  QSqlRecord rec;
 };
 
 #endif
-

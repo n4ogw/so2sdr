@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,10 +16,10 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QSettings>
-#include "defines.h"
 #include "microham.h"
+#include "defines.h"
 #include <QSerialPortInfo>
+#include <QSettings>
 
 /*!
  *  MicroHam Control Protocol (MCP)
@@ -29,102 +29,92 @@
  *
  */
 
-MicroHam::MicroHam(QSettings& s, QObject *parent) : QObject(parent),settings(s)
-{
-    QSerialPortInfo info(settings.value(s_microham_device,s_microham_device_def).toString());
-    MicroHamPort = new QSerialPort(info);
-    MicroHamOpen = false;
-    stereo       = false;
+MicroHam::MicroHam(QSettings &s, QObject *parent)
+    : QObject(parent), settings(s) {
+  QSerialPortInfo info(
+      settings.value(s_microham_device, s_microham_device_def).toString());
+  MicroHamPort = new QSerialPort(info);
+  MicroHamOpen = false;
+  stereo = false;
 }
 
-MicroHam::~MicroHam()
-{
-    closeMicroHam();
-    delete MicroHamPort;
+MicroHam::~MicroHam() {
+  closeMicroHam();
+  delete MicroHamPort;
 }
 
-bool MicroHam::MicroHamIsOpen() const
-{
-    return(MicroHamOpen);
+bool MicroHam::MicroHamIsOpen() const { return (MicroHamOpen); }
+
+void MicroHam::sendCommand(QByteArray command) {
+  if (!MicroHamOpen)
+    return;
+  MicroHamPort->write(command, command.length());
 }
 
-void MicroHam::sendCommand(QByteArray command)
-{
-    if (!MicroHamOpen) return;
-    MicroHamPort->write(command, command.length());
+void MicroHam::switchAudio(int nr) {
+  if (!MicroHamOpen || nr < 0 || nr > 1)
+    return;
+
+  const char rxcmd[2][5] = {"FR1\r", "FR2\r"};
+
+  // if in stereo mode, don't switch RX
+  if (!stereo) {
+    MicroHamPort->write(rxcmd[nr], 4);
+  }
 }
 
-void MicroHam::switchAudio(int nr)
-{
-    if (!MicroHamOpen || nr<0 || nr>1) return;
+void MicroHam::switchTransmit(int nr) {
+  if (!MicroHamOpen || nr < 0 || nr > 1)
+    return;
+  const char txcmd[2][5] = {"FT1\r", "FT2\r"};
 
-    const char rxcmd[2][5]={"FR1\r","FR2\r"};
-
-    // if in stereo mode, don't switch RX
-    if (!stereo) {
-        MicroHamPort->write(rxcmd[nr],4);
-    }
-
+  MicroHamPort->write(txcmd[nr], 4);
 }
 
-void MicroHam::switchTransmit(int nr)
-{
-    if (!MicroHamOpen || nr<0 || nr>1) return;
-    const char txcmd[2][5]={"FT1\r","FT2\r"};
-
-    MicroHamPort->write(txcmd[nr],4);
+void MicroHam::toggleStereo(int nr) {
+  if (!MicroHamOpen || nr < 0 || nr > 1)
+    return;
+  if (stereo) {
+    stereo = false;
+    switchAudio(nr);
+  } else {
+    const char cmd[5] = "FRS\r";
+    MicroHamPort->write(cmd, 4);
+    stereo = true;
+  }
 }
 
-void MicroHam::toggleStereo(int nr)
-{
-    if (!MicroHamOpen || nr<0 || nr>1) return;
-    if (stereo) {
-        stereo=false;
-        switchAudio(nr);
-    } else {
-        const char cmd[5]="FRS\r";
-        MicroHamPort->write(cmd,4);
-        stereo=true;
-    }
-}
-
-bool MicroHam::stereoActive () const
-{
-    return stereo;
-}
+bool MicroHam::stereoActive() const { return stereo; }
 
 /*!
    open MicroHam device
  */
-void MicroHam::openMicroHam()
-{
-    // in case we are re-starting MicroHam
-    if (MicroHamPort->isOpen()) {
-        closeMicroHam();
-        MicroHamOpen = false;
-    }
-    MicroHamPort->setPortName(settings.value(s_microham_device,s_microham_device_def).toString());
+void MicroHam::openMicroHam() {
+  // in case we are re-starting MicroHam
+  if (MicroHamPort->isOpen()) {
+    closeMicroHam();
+    MicroHamOpen = false;
+  }
+  MicroHamPort->setPortName(
+      settings.value(s_microham_device, s_microham_device_def).toString());
 
-    // currently only 9600N81
-    MicroHamPort->setBaudRate(QSerialPort::Baud9600);
-    MicroHamPort->setFlowControl(QSerialPort::NoFlowControl);
-    MicroHamPort->setParity(QSerialPort::NoParity);
-    MicroHamPort->setDataBits(QSerialPort::Data8);
-    MicroHamPort->setStopBits(QSerialPort::OneStop);
+  // currently only 9600N81
+  MicroHamPort->setBaudRate(QSerialPort::Baud9600);
+  MicroHamPort->setFlowControl(QSerialPort::NoFlowControl);
+  MicroHamPort->setParity(QSerialPort::NoParity);
+  MicroHamPort->setDataBits(QSerialPort::Data8);
+  MicroHamPort->setStopBits(QSerialPort::OneStop);
 
-    MicroHamPort->open(QIODevice::ReadWrite);
+  MicroHamPort->open(QIODevice::ReadWrite);
 
-    if (!MicroHamPort->isOpen()) {
-        MicroHamOpen = false;
-        emit(microhamError("ERROR: could not open MicroHam device"));
-        return;
-    }
-    MicroHamPort->setRequestToSend(false);
-    MicroHamPort->setDataTerminalReady(false);
-    MicroHamOpen = true;
+  if (!MicroHamPort->isOpen()) {
+    MicroHamOpen = false;
+    emit microhamError("ERROR: could not open MicroHam device");
+    return;
+  }
+  MicroHamPort->setRequestToSend(false);
+  MicroHamPort->setDataTerminalReady(false);
+  MicroHamOpen = true;
 }
 
-void MicroHam::closeMicroHam()
-{
-    MicroHamPort->close();
-}
+void MicroHam::closeMicroHam() { MicroHamPort->close(); }

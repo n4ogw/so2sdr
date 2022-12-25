@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,22 +21,21 @@
 
 #include "contest.h"
 
-class Stew : public Contest
-{
+class Stew : public Contest {
 public:
-    Stew(QSettings &cs,QSettings &ss);
-    ~Stew() override;
+  Stew(QSettings &cs, QSettings &ss);
+  ~Stew() override;
 
-    void addQso(Qso *qso) override;
-    ContestType contestType() const override { return Stew_t;}
-    QByteArray prefillExchange(Qso *qso) override;
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    unsigned int rcvFieldShown() const override;
-    int Score() const override;
-    bool showQsoPtsField() const override { return true;}
-    int numberField() const override;
+  void addQso(Qso *qso) override;
+  ContestType contestType() const override { return Stew_t; }
+  QByteArray prefillExchange(Qso *qso) override;
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  unsigned int rcvFieldShown() const override;
+  int Score() const override;
+  bool showQsoPtsField() const override { return true; }
+  int numberField() const override;
 };
 
 #endif // CONTEST_STEW_H

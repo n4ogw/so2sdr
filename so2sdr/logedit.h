@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,57 +18,55 @@
  */
 #ifndef LOGEDIT_H
 #define LOGEDIT_H
+#include "contest.h"
+#include "defines.h"
+#include "utils.h"
 #include <QApplication>
 #include <QEvent>
 #include <QLineEdit>
 #include <QObject>
 #include <QPainter>
-#include <QWidget>
 #include <QSqlDatabase>
+#include <QSqlTableModel>
 #include <QStyle>
 #include <QStyledItemDelegate>
-#include <QSqlTableModel>
 #include <QTableView>
-#include "contest.h"
-#include "defines.h"
-#include "utils.h"
+#include <QWidget>
 
 /*!
   subclass of QSqlTableModel needed to specify flags separately for
   each column, and specify checkbox for qso valid column
   */
-class tableModel : public QSqlTableModel
-{
-    Q_OBJECT
+class tableModel : public QSqlTableModel {
+  Q_OBJECT
 
 public:
-    tableModel(QObject * parent = nullptr, QSqlDatabase db = QSqlDatabase());
+  tableModel(QObject *parent = nullptr, QSqlDatabase db = QSqlDatabase());
 
 protected:
-    virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
-    virtual QVariant data( const QModelIndex& index, int role ) const;
-    virtual bool setData( const QModelIndex& index, const QVariant&value, int role );
+  virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+  virtual QVariant data(const QModelIndex &index, int role) const;
+  virtual bool setData(const QModelIndex &index, const QVariant &value,
+                       int role);
 };
-
 
 /*!
  derived line editor class for editing log cells
  */
-class LogQLineEdit : public QLineEdit
-{
-    Q_OBJECT
+class LogQLineEdit : public QLineEdit {
+  Q_OBJECT
 
 public:
-    LogQLineEdit(QWidget *w);
+  LogQLineEdit(QWidget *w);
 
 private slots:
-    void fixSelect();
+  void fixSelect();
+
 protected:
-    bool eventFilter(QObject *, QEvent *);
+  bool eventFilter(QObject *, QEvent *);
+
 private:
-    QString undoText;
+  QString undoText;
 };
-
-
 
 #endif // LOGEDIT_H

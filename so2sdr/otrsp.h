@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,10 +18,10 @@
  */
 #ifndef OTRSP_H
 #define OTRSP_H
-#include <QSettings>
-#include <QByteArray>
 #include "defines.h"
+#include <QByteArray>
 #include <QSerialPort>
+#include <QSettings>
 
 /*
  * Support for OTRSP (Open Two Radio Switching Protocol) devices
@@ -32,35 +32,34 @@
  * -tested on SO2RDUINO device (N4OGW)
  */
 
-class OTRSP : public QObject
-{
-Q_OBJECT
+class OTRSP : public QObject {
+  Q_OBJECT
 
 public:
-    OTRSP(QSettings& s, int n, QObject *parent = nullptr);
-    ~OTRSP();
-    QByteArray name() const;
-    bool OTRSPIsOpen() const;
-    void switchAudio(int nr);
-    void toggleStereo(int nr); 
-    void switchTransmit(int nr);
-    bool stereoActive() const;
-    void sendCommand(QByteArray command);
+  OTRSP(QSettings &s, int n, QObject *parent = nullptr);
+  ~OTRSP();
+  QByteArray name() const;
+  bool OTRSPIsOpen() const;
+  void switchAudio(int nr);
+  void toggleStereo(int nr);
+  void switchTransmit(int nr);
+  bool stereoActive() const;
+  void sendCommand(QByteArray command);
 signals:
-    void otrspError(const QString &);
-    void otrspNameSet(QByteArray,int);
+  void otrspError(const QString &);
+  void otrspNameSet(QByteArray, int);
 
 public slots:
-    void openOTRSP();
+  void openOTRSP();
 
 private:
-    int        nr;
-    bool       OTRSPOpen;
-    bool       stereo;
-    QSerialPort *OTRSPPort;
-    QSettings&  settings;
-    QByteArray deviceName;
-    void closeOTRSP();
+  int nr;
+  bool OTRSPOpen;
+  bool stereo;
+  QSerialPort *OTRSPPort;
+  QSettings &settings;
+  QByteArray deviceName;
+  void closeOTRSP();
 };
 
 #endif // OTRSP_H

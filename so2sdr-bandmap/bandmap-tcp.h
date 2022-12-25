@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,21 +20,22 @@
 #define BANDMAPTCP_H
 
 // bandmap TCP commands
-#define BANDMAP_CMD_SET_FREQ  0x66
-#define BANDMAP_CMD_QUIT      0x71
-#define BANDMAP_CMD_RX        0x72
-#define BANDMAP_CMD_TX        0x74
+#define BANDMAP_CMD_SET_FREQ 0x66
+#define BANDMAP_CMD_SET_SDR_FREQ 0x68
+#define BANDMAP_CMD_QUIT 0x71
+#define BANDMAP_CMD_RX 0x72
+#define BANDMAP_CMD_TX 0x74
 #define BANDMAP_CMD_TERMINATE 0x0a
 #define BANDMAP_CMD_FIND_FREQ 0x67
 #define BANDMAP_CMD_SET_LOWER_FREQ 0x6C
 #define BANDMAP_CMD_SET_UPPER_FREQ 0x75
 #define BANDMAP_CMD_SET_ADD_OFFSET 0x6f
-#define BANDMAP_CMD_ADD_CALL   0x61
+#define BANDMAP_CMD_ADD_CALL 0x61
 #define BANDMAP_CMD_DELETE_CALL 0x64
 #define BANDMAP_CMD_DELETE_CALL_FREQ 0x65
 #define BANDMAP_CMD_SET_INVERT 0x69
-#define BANDMAP_CMD_CLEAR      0x78
-#define BANDMAP_CMD_QSY_UP     0x55
-#define BANDMAP_CMD_QSY_DOWN   0x44
+#define BANDMAP_CMD_CLEAR 0x78
+#define BANDMAP_CMD_QSY_UP 0x55
+#define BANDMAP_CMD_QSY_DOWN 0x44
 
 #endif // BANDMAPTCP_H

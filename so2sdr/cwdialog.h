@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,35 +19,33 @@
 #ifndef CWDIALOG_H
 #define CWDIALOG_H
 
-#include <QSettings>
-#include "ui_cwdialog.h"
 #include "cwmanager.h"
+#include "ui_cwdialog.h"
 #include "winkey.h"
+#include <QSettings>
 
 class QString;
 
 /*!
    Dialog for winkey parameters
  */
-class CWDialog : public QDialog, public Ui::CwDialog
-{
-Q_OBJECT
+class CWDialog : public QDialog, public Ui::CwDialog {
+  Q_OBJECT
 
 public:
-    CWDialog(QSettings& s,QWidget *parent = nullptr);
-    ~CWDialog();
+  CWDialog(QSettings &s, QWidget *parent = nullptr);
+  ~CWDialog();
 signals:
-    void setType(cwtype);
-    void startCw();
+  void setType(cwtype);
+  void startCw();
 
 public slots:
-    void setWinkeyVersionLabel(int version);
-    void rejectChanges();
-    void updateCW();
+  void setWinkeyVersionLabel(int version);
+  void rejectChanges();
+  void updateCW();
 
 private:
-    QSettings& settings;
+  QSettings &settings;
 };
-
 
 #endif

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -17,28 +17,25 @@
 
  */
 #include "master.h"
-#include <QString>
 #include <QIODevice>
+#include <QString>
 
 /*!
    Must call initialize after constructor before using class
  */
-Master::Master()
-{
-    initialized = false;
-    index       = nullptr;
-    CallData    = nullptr;
-    chars       = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/";
-    nchars      = chars.size();
-    indexSize   = nchars * nchars + 1;
-    indexBytes  = indexSize * sizeof(int);
+Master::Master() {
+  initialized = false;
+  index = nullptr;
+  CallData = nullptr;
+  chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/";
+  nchars = chars.size();
+  indexSize = nchars * nchars + 1;
+  indexBytes = indexSize * sizeof(int);
 }
 
-
-Master::~Master()
-{
-    delete[] index;
-    delete[] CallData;
+Master::~Master() {
+  delete[] index;
+  delete[] CallData;
 }
 
 /*!
@@ -46,31 +43,30 @@ Master::~Master()
 
    Can be called again if file is changed
  */
-void Master::initialize(QFile &file)
-{
-    delete[] index;     // in case re-initialized
-    delete[] CallData;
-    index    = new int[indexSize];
-    fileSize = file.size();
-    if (file.read((char *) (&index[0]), indexBytes) != indexBytes) {
-        emit(masterError("ERROR: master file has incorrect size"));
-        return;
-    }
+void Master::initialize(QFile &file) {
+  delete[] index; // in case re-initialized
+  delete[] CallData;
+  index = new int[indexSize];
+  fileSize = file.size();
+  if (file.read((char *)(&index[0]), indexBytes) != indexBytes) {
+    emit masterError("ERROR: master file has incorrect size");
+    return;
+  }
 
-    // some basic checks on the master.dta file index
-    if (index[0] != indexBytes || index[indexSize - 1] != fileSize) {
-        emit(masterError("ERROR: Invalid master data file: index"));
-        return;
-    }
+  // some basic checks on the master.dta file index
+  if (index[0] != indexBytes || index[indexSize - 1] != fileSize) {
+    emit masterError("ERROR: Invalid master data file: index");
+    return;
+  }
 
-    // read callsign data
-    CallData = new char[fileSize - indexBytes];
-    if (file.read(CallData, fileSize - indexBytes) != (fileSize - indexBytes)) {
-        emit(masterError("ERROR: Invalid master data file: calls"));
-        return;
-    }
-    file.close();
-    initialized = true;
+  // read callsign data
+  CallData = new char[fileSize - indexBytes];
+  if (file.read(CallData, fileSize - indexBytes) != (fileSize - indexBytes)) {
+    emit masterError("ERROR: Invalid master data file: calls");
+    return;
+  }
+  file.close();
+  initialized = true;
 }
 
 /*!
@@ -79,30 +75,29 @@ void Master::initialize(QFile &file)
    -  partial : callsign fragment
    -  CallList : returned bytearray containing possible callsigns
  */
-void Master::search(QByteArray partial, QByteArray &CallList)
-{
-    QByteArray mask = partial;
-    CallList = "";
-    for (int i = 0; i < partial.size(); i++) {
-        if (chars.contains(partial.at(i))) {
-            mask[i] = 'A';
-        } else if (partial[i] != '?') {
-            return;
-        }
+void Master::search(QByteArray partial, QByteArray &CallList) {
+  QByteArray mask = partial;
+  CallList = "";
+  for (int i = 0; i < partial.size(); i++) {
+    if (chars.contains(partial.at(i))) {
+      mask[i] = 'A';
+    } else if (partial[i] != '?') {
+      return;
     }
-    int idxpos = mask.indexOf("AA");
-    if (idxpos == -1) {
-        return;
+  }
+  int idxpos = mask.indexOf("AA");
+  if (idxpos == -1) {
+    return;
+  }
+  int chr1n = chars.indexOf(partial[idxpos]);
+  int chr2n = chars.indexOf(partial[idxpos + 1]);
+  int CallBegin = index[chr1n * chars.size() + chr2n] - indexBytes;
+  int CallEnd = index[chr1n * chars.size() + chr2n + 1] - indexBytes;
+  while (CallBegin < CallEnd) {
+    QByteArray call(&CallData[CallBegin]);
+    if (call.contains(partial)) {
+      CallList = CallList + call + " ";
     }
-    int chr1n     = chars.indexOf(partial[idxpos]);
-    int chr2n     = chars.indexOf(partial[idxpos + 1]);
-    int CallBegin = index[chr1n * chars.size() + chr2n] - indexBytes;
-    int CallEnd   = index[chr1n * chars.size() + chr2n + 1] - indexBytes;
-    while (CallBegin < CallEnd) {
-        QByteArray call(&CallData[CallBegin]);
-        if (call.contains(partial)) {
-            CallList = CallList + call + " ";
-        }
-        CallBegin = CallBegin + call.size() + 1;
-    }
+    CallBegin = CallBegin + call.size() + 1;
+  }
 }

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,22 +21,21 @@
 
 #include "contest.h"
 
-class CQWW : public Contest
-{
+class CQWW : public Contest {
 public:
-    CQWW(QSettings &cs,QSettings &ss);
-    ~CQWW() override;
+  CQWW(QSettings &cs, QSettings &ss);
+  ~CQWW() override;
 
-    void addQso(Qso *qso) override;
-    ContestType contestType() const override { return Cqww_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    unsigned int rcvFieldShown() const override;
-    unsigned int sntFieldShown() const override;
-    int numberField() const override;
-    bool showQsoPtsField() const override { return true;}
-    int rstField() const override { return 0;}
+  void addQso(Qso *qso) override;
+  ContestType contestType() const override { return Cqww_t; }
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  unsigned int rcvFieldShown() const override;
+  unsigned int sntFieldShown() const override;
+  int numberField() const override;
+  bool showQsoPtsField() const override { return true; }
+  int rstField() const override { return 0; }
 };
 
 #endif

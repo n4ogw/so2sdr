@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 rec. Torsten Clay N4OGW
+/*! Copyright 2010-2023 rec. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -17,24 +17,22 @@
 
  */
 #include "mytableview.h"
-#include <QKeyEvent>
 #include <QDebug>
 #include <QHeaderView>
+#include <QKeyEvent>
 
-MyTableView::MyTableView(QWidget *w) : QTableView(w)
-{
-    installEventFilter(this);
+MyTableView::MyTableView(QWidget *w) : QTableView(w) {
+  installEventFilter(this);
 }
 
 /*! event filter for log display delegate
  */
-bool MyTableView::eventFilter(QObject *obj, QEvent *event)
-{
-    if(event->type()==QEvent::KeyPress) {
-        QKeyEvent* kev = static_cast<QKeyEvent*>(event);
-        if (kev->key()==Qt::Key_Escape) {
-            return false;
-        }
+bool MyTableView::eventFilter(QObject *obj, QEvent *event) {
+  if (event->type() == QEvent::KeyPress) {
+    QKeyEvent *kev = static_cast<QKeyEvent *>(event);
+    if (kev->key() == Qt::Key_Escape) {
+      return false;
     }
-    return QTableView::eventFilter(obj, event);
+  }
+  return QTableView::eventFilter(obj, event);
 }

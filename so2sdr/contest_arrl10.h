@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,33 +19,32 @@
 #ifndef CONTEST_ARRL10_H
 #define CONTEST_ARRL10_H
 
-#include "cty.h"
 #include "contest.h"
+#include "cty.h"
 
-class ARRL10 : public Contest
-{
+class ARRL10 : public Contest {
 public:
-    ARRL10(QSettings &cs,QSettings &ss);
-    ~ARRL10() override;
+  ARRL10(QSettings &cs, QSettings &ss);
+  ~ARRL10() override;
 
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    ContestType contestType() const override { return Arrl10_t;}
-    void addQso(Qso *qso) override;
-    QString bandLabel(int i) const override;
-    bool bandLabelEnable(int i) const override;
-    int fieldWidth(int col) const override;
-    bool hasWorked() const override { return true; }
-    int highlightBand(int b, ModeTypes modeType=CWType) const override;
-    int nMultsColumn(int col,int ii) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    unsigned int sntFieldShown() const override;
-    int Score() const override;
-    bool showQsoPtsField() const override { return true;}
-    int rstField() const override { return 0;}
-    void workedMults(Qso * qso, unsigned int worked[MMAX]) const override;
-    void workedQso(ModeTypes m, int band, unsigned int &worked) const override;
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  ContestType contestType() const override { return Arrl10_t; }
+  void addQso(Qso *qso) override;
+  QString bandLabel(int i) const override;
+  bool bandLabelEnable(int i) const override;
+  int fieldWidth(int col) const override;
+  bool hasWorked() const override { return true; }
+  int highlightBand(int b, ModeTypes modeType = CWType) const override;
+  int nMultsColumn(int col, int ii) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  unsigned int sntFieldShown() const override;
+  int Score() const override;
+  bool showQsoPtsField() const override { return true; }
+  int rstField() const override { return 0; }
+  void workedMults(Qso *qso, unsigned int worked[MMAX]) const override;
+  void workedQso(ModeTypes m, int band, unsigned int &worked) const override;
 };
 
 #endif

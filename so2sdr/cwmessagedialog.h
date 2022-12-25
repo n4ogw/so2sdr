@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,12 +19,12 @@
 #ifndef CWMESSAGEDIALOG_H
 #define CWMESSAGEDIALOG_H
 
-#include <QByteArray>
-#include <QSettings>
-#include <QString>
 #include "defines.h"
 #include "ui_cwmessagedialog.h"
 #include "utils.h"
+#include <QByteArray>
+#include <QSettings>
+#include <QString>
 
 class QLineEdit;
 class So2sdr;
@@ -32,32 +32,31 @@ class So2sdr;
 /*!
    Dialog for entering CW messages
  */
-class CWMessageDialog : public QDialog, public Ui::CWMessageDialog
-{
-Q_OBJECT
+class CWMessageDialog : public QDialog, public Ui::CWMessageDialog {
+  Q_OBJECT
 
 public:
-    CWMessageDialog(ModeTypes modetype,uiSize sizes,QWidget *parent = nullptr);
-    ~CWMessageDialog();
-    void initialize(QSettings *s);
-    friend class So2sdr;
+  CWMessageDialog(ModeTypes modetype, uiSize sizes, QWidget *parent = nullptr);
+  ~CWMessageDialog();
+  void initialize(QSettings *s);
+  friend class So2sdr;
 
 public slots:
-    void updateCWMsg();
-    void rejectChanges();
+  void updateCWMsg();
+  void rejectChanges();
 
 private:
-    int            m;
-    QByteArray     cqCtrlF[N_FUNC];
-    QByteArray     cqF[N_FUNC];
-    QByteArray     cqShiftF[N_FUNC];
-    QByteArray     excF[N_FUNC];
-    QLineEdit      *ctrlFuncEditPtr[N_FUNC];
-    QLineEdit      *excFuncEditPtr[N_FUNC];
-    QLineEdit      *funcEditPtr[N_FUNC];
-    QLineEdit      *shiftFuncEditPtr[N_FUNC];
-    UpperValidator *upperValidate;
-    QSettings      *settings;
+  int m;
+  QByteArray cqCtrlF[N_FUNC];
+  QByteArray cqF[N_FUNC];
+  QByteArray cqShiftF[N_FUNC];
+  QByteArray excF[N_FUNC];
+  QLineEdit *ctrlFuncEditPtr[N_FUNC];
+  QLineEdit *excFuncEditPtr[N_FUNC];
+  QLineEdit *funcEditPtr[N_FUNC];
+  QLineEdit *shiftFuncEditPtr[N_FUNC];
+  UpperValidator *upperValidate;
+  QSettings *settings;
 };
 
 #endif

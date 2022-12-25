@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,22 +21,21 @@
 
 #include "contest.h"
 
-class IARU : public Contest
-{
+class IARU : public Contest {
 public:
-    IARU(QSettings &cs,QSettings &ss);
-    ~IARU()  override;
+  IARU(QSettings &cs, QSettings &ss);
+  ~IARU() override;
 
-    void addQso(Qso *qso) override;
-    ContestType contestType() const override { return Iaru_t;}
-    int fieldWidth(int col) const override;
-    int nMultsWorked() const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    bool showQsoPtsField() const override { return true;}
-    int rstField() const override { return 0;}
+  void addQso(Qso *qso) override;
+  ContestType contestType() const override { return Iaru_t; }
+  int fieldWidth(int col) const override;
+  int nMultsWorked() const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  bool showQsoPtsField() const override { return true; }
+  int rstField() const override { return 0; }
 };
 
 #endif

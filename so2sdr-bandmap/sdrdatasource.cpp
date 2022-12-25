@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,20 +19,15 @@
 
 #include "sdrdatasource.h"
 
-SdrDataSource::SdrDataSource(QString settingsFile,QObject *parent) : QObject(parent)
-{
-    running=false;
-    sizes.advance_size=0;
-    sizes.chunk_size=0;
-    settings = new  QSettings(settingsFile,QSettings::IniFormat,this);
+SdrDataSource::SdrDataSource(QString settingsFile, QObject *parent)
+    : QObject(parent) {
+  running = false;
+  sizes.advance_size = 0;
+  sizes.chunk_size = 0;
+  rfFreq = 0.0;
+  settings = new QSettings(settingsFile, QSettings::IniFormat, this);
 }
 
-SdrDataSource::~SdrDataSource()
-{
-    delete settings;
-}
+SdrDataSource::~SdrDataSource() { delete settings; }
 
-void SdrDataSource::setSampleSizes(sampleSizes s)
-{
-    sizes=s;
-}
+void SdrDataSource::setSampleSizes(sampleSizes s) { sizes = s; }

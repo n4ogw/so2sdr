@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,33 +19,32 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
-#include <QString>
-#include <QDialog>
-#include <QCloseEvent>
-#include <QSettings>
-#include "ui_settingsdialog.h"
 #include "defines.h"
+#include "ui_settingsdialog.h"
 #include "utils.h"
+#include <QCloseEvent>
+#include <QDialog>
+#include <QSettings>
+#include <QString>
 
-class SettingsDialog : public QDialog, public Ui::SettingsDialog
-{
-Q_OBJECT
+class SettingsDialog : public QDialog, public Ui::SettingsDialog {
+  Q_OBJECT
 
 public:
-    SettingsDialog(QSettings &s, uiSize sizes,QWidget *parent = nullptr);
-    ~SettingsDialog();
-    friend class So2sdr;
+  SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~SettingsDialog();
+  friend class So2sdr;
 
 public slots:
-    void updateSettings();
-    void rejectChanges();
+  void updateSettings();
+  void rejectChanges();
 
 signals:
-    void settingsUpdate();
+  void settingsUpdate();
 
 private:
-    QSettings&      settings;
-    void loadSettings();
+  QSettings &settings;
+  void loadSettings();
 };
 
 #endif // SETTINGSDIALOG_H

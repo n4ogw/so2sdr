@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,31 +21,29 @@
 
 #include "defines.h"
 
-class Signal
-{
+class Signal {
 public:
-    Signal();
+  Signal();
 
-    void clear();
-    bool active;
-    int  cnt;
-    double f;
-    double fcq;
-    int  n;
-    int  space;
-    double fsum;
+  void clear();
+  bool active;
+  int cnt;
+  double f;
+  double fcq;
+  int n;
+  int space;
+  double fsum;
 };
 Q_DECLARE_TYPEINFO(Signal, Q_MOVABLE_TYPE);
 
-class CalibSignal
-{
+class CalibSignal {
 public:
-    CalibSignal();
+  CalibSignal();
 
-    double    gain, phase;
-    double    z[2];
-    double    zsum[2];
-    long long n;
+  double gain, phase;
+  double z[2];
+  double zsum[2];
+  long long n;
 };
 Q_DECLARE_TYPEINFO(CalibSignal, Q_MOVABLE_TYPE);
 

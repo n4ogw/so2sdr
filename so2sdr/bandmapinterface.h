@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,83 +19,82 @@
 #ifndef BANDMAPINTERFACE_H
 #define BANDMAPINTERFACE_H
 
+#include "../so2sdr-bandmap/bandmap-tcp.h"
+#include "bandmapentry.h"
+#include "defines.h"
+#include <QAbstractSocket>
 #include <QObject>
 #include <QProcess>
 #include <QSettings>
 #include <QString>
-#include <QAbstractSocket>
 #include <QTcpSocket>
 #include <QUdpSocket>
 #include <QXmlStreamReader>
-#include "defines.h"
-#include "../so2sdr-bandmap/bandmap-tcp.h"
-#include "bandmapentry.h"
 
-class BandmapInterface : public QObject
-{
-    Q_OBJECT
+class BandmapInterface : public QObject {
+  Q_OBJECT
 public:
-    explicit BandmapInterface(QSettings &s,QObject *parent = nullptr);
-    ~BandmapInterface();
-    void removeSpot(int nr,const BandmapEntry &spot);
-    void removeSpotFreq(int nr,const BandmapEntry &spot);
-    void addSpot(int nr,const BandmapEntry &spot);
-    void connectTcp();
-    int currentBand(int nr) const;
-    bool bandmapon(int nr) const;
-    void findFreq(int nr);
-    void nextFreq(int nr,bool higher);
-    void setInvert(int nr,bool b);
-    void setFreqLimits(int nr, double flow, double fhigh);
-    void setAddOffset(double f, int nr);
-    void syncCalls(int nr,QList<BandmapEntry> &spotList);
-    unsigned long winId(int nr) const {return winid[nr];}
+  explicit BandmapInterface(QSettings &s, QObject *parent = nullptr);
+  ~BandmapInterface();
+  void removeSpot(int nr, const BandmapEntry &spot);
+  void removeSpotFreq(int nr, const BandmapEntry &spot);
+  void addSpot(int nr, const BandmapEntry &spot);
+  void connectTcp();
+  int currentBand(int nr) const;
+  bool bandmapon(int nr) const;
+  void findFreq(int nr);
+  void nextFreq(int nr, bool higher);
+  void setInvert(int nr, bool b);
+  void setFreqLimits(int nr, double flow, double fhigh);
+  void setAddOffset(double f, int nr);
+  void syncCalls(int nr, QList<BandmapEntry> &spotList);
+  unsigned long winId(int nr) const { return winid[nr]; }
 
 signals:
-    void bandmap1state(bool);
-    void bandmap2state(bool);
-    void qsy1(double);
-    void qsy2(double);
-    void removeCall(double,int);
-    void sendMsg(const QString &msg);
+  void bandmap1state(bool);
+  void bandmap2state(bool);
+  void qsy1(double);
+  void qsy2(double);
+  void removeCall(double, int);
+  void sendMsg(const QString &msg);
 
 public slots:
-    void bandmapSetFreq(double f, int nr);
-    void closeBandmap(int nr);
-    void showBandmap(int nr, bool state);
-    void setBandmapTxStatus(bool b, int nr);
+  void bandmapSetFreq(double f, int nr);
+  void closeBandmap(int nr);
+  void showBandmap(int nr, bool state);
+  void setBandmapTxStatus(bool b, int nr);
 
 private slots:
-    void launchBandmap1State(QProcess::ProcessState state);
-    void launchBandmap2State(QProcess::ProcessState state);
-    void udpRead();
-    void socketError0(QAbstractSocket::SocketError);
-    void socketError1(QAbstractSocket::SocketError);
-    void showBandmapProcessError(int nr,QProcess::ProcessError);
-    void launchShowBandmapProcessError1(QProcess::ProcessError);
-    void launchShowBandmapProcessError2(QProcess::ProcessError);
-    void launchTcpSocketStateChange1(QAbstractSocket::SocketState);
-    void launchTcpSocketStateChange2(QAbstractSocket::SocketState);
-    void tcpSocketStateChange(int nr,QAbstractSocket::SocketState);
+  void launchBandmap1State(QProcess::ProcessState state);
+  void launchBandmap2State(QProcess::ProcessState state);
+  void udpRead();
+  void socketError0(QAbstractSocket::SocketError);
+  void socketError1(QAbstractSocket::SocketError);
+  void showBandmapProcessError(int nr, QProcess::ProcessError);
+  void launchShowBandmapProcessError1(QProcess::ProcessError);
+  void launchShowBandmapProcessError2(QProcess::ProcessError);
+  void launchTcpSocketStateChange1(QAbstractSocket::SocketState);
+  void launchTcpSocketStateChange2(QAbstractSocket::SocketState);
+  void tcpSocketStateChange(int nr, QAbstractSocket::SocketState);
 
 private:
-    bool                 bandmapOn[NRIG];
-    bool                 bandmapAvailable[NRIG];
-    QSettings            &settings;
-    QString              ipAddress[NRIG];
-    char                 cmd[NRIG];
-    int                  cmdLen[NRIG];
-    int                  port[NRIG];
-    int                  band[NRIG];
-    unsigned long        winid[NRIG];
-    QProcess             bandmapProcess[NRIG];
-    QTcpSocket           socket[NRIG];
-    QUdpSocket           socketUdp;
-    QXmlStreamReader     xmlReader;
+  bool bandmapOn[NRIG];
+  bool bandmapAvailable[NRIG];
+  QSettings &settings;
+  QString ipAddress[NRIG];
+  char cmd[NRIG];
+  int cmdLen[NRIG];
+  int port[NRIG];
+  int band[NRIG];
+  unsigned long winid[NRIG];
+  QProcess bandmapProcess[NRIG];
+  QTcpSocket socket[NRIG];
+  QUdpSocket socketUdp;
+  QXmlStreamReader xmlReader;
 
-    void socketError(int nr,QAbstractSocket::SocketError err);
-    void setBandmapState(int nr, QProcess::ProcessState state);
-    void xmlParse();
+  void socketError(int nr, QAbstractSocket::SocketError err);
+  void setBandmapState(int nr, QProcess::ProcessState state);
+  void xmlParse();
 };
 
 #endif // BANDMAPINTERFACE_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,8 +18,8 @@
  */
 #ifndef CABRILLODIALOG_H
 #define CABRILLODIALOG_H
-#include "ui_cabrillo.h"
 #include "defines.h"
+#include "ui_cabrillo.h"
 #include <QSettings>
 
 class QComboBox;
@@ -31,23 +31,22 @@ class So2sdr;
 /*!
    Dialog for entering cabrillo data
  */
-class CabrilloDialog : public QDialog, public Ui::CabrilloDialog
-{
-Q_OBJECT
+class CabrilloDialog : public QDialog, public Ui::CabrilloDialog {
+  Q_OBJECT
 
 public:
-    explicit CabrilloDialog(QWidget *parent = nullptr);
-    void initialize(QSettings *s1,QSettings *s2);
-    void updateExch();
-    void writeHeader(QFile *cbrFile,int score);
-    friend class So2sdr;
+  explicit CabrilloDialog(QWidget *parent = nullptr);
+  void initialize(QSettings *s1, QSettings *s2);
+  void updateExch();
+  void writeHeader(QFile *cbrFile, int score);
+  friend class So2sdr;
 
 private:
-    QLineEdit *sent[MAX_EXCH_FIELDS];
-    QLabel *cabLabel[MAX_CAB_FIELDS];
-    QComboBox *cabCombo[MAX_CAB_FIELDS];
-    QSettings  *stnSettings;
-    QSettings *settings;
+  QLineEdit *sent[MAX_EXCH_FIELDS];
+  QLabel *cabLabel[MAX_CAB_FIELDS];
+  QComboBox *cabCombo[MAX_CAB_FIELDS];
+  QSettings *stnSettings;
+  QSettings *settings;
 };
 
 #endif

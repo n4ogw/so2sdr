@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,33 +19,31 @@
 #ifndef RTLSETUP_H
 #define RTLSETUP_H
 
+#include "bandoffsetsetup.h"
 #include "defines.h"
+#include "ui_rtlsetup.h"
 #include <QDialog>
 #include <QSettings>
-#include "bandoffsetsetup.h"
-#include "ui_rtlsetup.h"
 
-
-class RtlSetup : public QDialog, public Ui::rtlSetup
-{
-    Q_OBJECT
+class RtlSetup : public QDialog, public Ui::rtlSetup {
+  Q_OBJECT
 public:
-    explicit RtlSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
-    ~RtlSetup();
-    double offset(int band) const;
-    bool invert(int band) const;
+  explicit RtlSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~RtlSetup();
+  double offset(int band) const;
+  bool invert(int band) const;
 
 signals:
-    void rtlError(const QString &);
+  void rtlError(const QString &);
 
 private slots:
-    void updateRtl();
-    void rejectChanges();
+  void updateRtl();
+  void rejectChanges();
 
 private:
-    QSettings &settings;
-    void updateFromSettings();
-    BandOffsetSetup *offsetSetup;
+  QSettings &settings;
+  void updateFromSettings();
+  BandOffsetSetup *offsetSetup;
 };
 
 #endif // RTLSETUP_H

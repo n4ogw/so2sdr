@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,6 +18,7 @@
  */
 #ifndef QSO_H
 #define QSO_H
+#include "hamlib/rig.h"
 #include "defines.h"
 #include <QByteArray>
 #include <QDateTime>
@@ -25,52 +26,51 @@
 /*!
   qso data structure
  */
-class Qso
-{
+class Qso {
 public:
-    explicit Qso(int n = 1);
-    ~Qso();
-    void clear();
-    void         setExchangeType(int, FieldTypes);
+  explicit Qso(int n = 1);
+  ~Qso();
+  void clear();
+  void setExchangeType(int, FieldTypes);
 
-    bool       dupe;
-    bool       externalQso;
-    bool       isMM;
-    bool       isMobile;
-    bool       isRover;
-    bool       valid;
-    int        band;
-    int        bandColumn;
-    double     freq;
-    int        mult[MMAX];
-    int        newmult[MMAX];
-    bool       isnewmult[MMAX];
-    int        nr;
-    int        number;
-    int        pts;
-    QByteArray call;
-    QByteArray *rcv_exch;
-    QByteArray *snt_exch;
-    QDateTime  time;
-    rmode_t    mode;
-    ModeTypes  modeType;
+  bool dupe;
+  bool externalQso;
+  bool isMM;
+  bool isMobile;
+  bool isRover;
+  bool valid;
+  int band;
+  int bandColumn;
+  double freq;
+  int mult[MMAX];
+  int newmult[MMAX];
+  bool isnewmult[MMAX];
+  int nr;
+  int number;
+  int pts;
+  QByteArray call;
+  QByteArray *rcv_exch;
+  QByteArray *snt_exch;
+  QDateTime time;
+  rmode_t mode;
+  ModeTypes modeType;
 
-    bool         isamult[MMAX];
-    Cont         continent;
-    FieldTypes   *exchange_type;
-    int          bearing;
-    int          country;
-    int          distance;
-    int          n_exchange;
-    int          zone;
-    QByteArray   adifMode;
-    QByteArray   country_name;
-    QByteArray   exch;
-    QByteArray   mult_name;
-    QByteArray   PfxName;
-    QByteArray   prefill;
-    QString      sun;
-    unsigned int worked;
+  bool isamult[MMAX];
+  Cont continent;
+  FieldTypes *exchange_type;
+  int bearing;
+  int country;
+  int distance;
+  int n_exchange;
+  int zone;
+  QByteArray adifMode;
+  QByteArray country_name;
+  QByteArray exch;
+  QByteArray mult_name;
+  QByteArray PfxName;
+  QByteArray prefill;
+  QString sun;
+  unsigned int worked;
 };
 
 #endif // QSO_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,23 +19,22 @@
 #ifndef CONTEST_NAQP_H
 #define CONTEST_NAQP_H
 
-#include "cty.h"
 #include "contest.h"
+#include "cty.h"
 
-class Naqp : public Contest
-{
+class Naqp : public Contest {
 public:
-    Naqp(QSettings &cs,QSettings &ss);
-    ~Naqp() override;
+  Naqp(QSettings &cs, QSettings &ss);
+  ~Naqp() override;
 
-    ContestType contestType() const override { return Naqp_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    bool showQsoPtsField() const override {return false;}
+  ContestType contestType() const override { return Naqp_t; }
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  bool showQsoPtsField() const override { return false; }
 };
 
 #endif

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -25,233 +25,247 @@
  *    Global QSettings object
  * \param parent
  */
-SoundCardSetup::SoundCardSetup(QSettings &s,uiSize sizes,QWidget *parent) : QDialog(parent),settings(s)
-{
-    setupUi(this);
-    OffsetLineEdit->setFixedWidth(qRound(sizes.width*15));
-    adjustSize();
-    setFixedSize(size());
+SoundCardSetup::SoundCardSetup(QSettings &s, uiSize sizes, QWidget *parent)
+    : QDialog(parent), settings(s) {
+  setupUi(this);
+  OffsetLineEdit->setFixedWidth(qRound(sizes.width * 15));
+  adjustSize();
+  setFixedSize(size());
 
-    offsetSetup=new BandOffsetSetup(s,soundcard_t,sizes,this);
-    connect(bandOffsetPushButton,SIGNAL(clicked(bool)),offsetSetup,SLOT(exec()));
-    iconOK               = QIcon("check.png");
-    iconNOK              = QIcon("x.png");
-    BitsComboBox->insertItem(0,"32",Qt::DisplayRole);
-    BitsComboBox->insertItem(0,"24",Qt::DisplayRole);
-    BitsComboBox->insertItem(0,"16",Qt::DisplayRole);
+  offsetSetup = new BandOffsetSetup(s, soundcard_t, sizes, this);
+  connect(bandOffsetPushButton, SIGNAL(clicked(bool)), offsetSetup,
+          SLOT(exec()));
+  iconOK = QIcon("check.png");
+  iconNOK = QIcon("x.png");
+  BitsComboBox->insertItem(0, "32", Qt::DisplayRole);
+  BitsComboBox->insertItem(0, "24", Qt::DisplayRole);
+  BitsComboBox->insertItem(0, "16", Qt::DisplayRole);
 
-    // find audio devices; start Portaudio to get the device list
-    PaError err = Pa_Initialize();
+  // find audio devices; start Portaudio to get the device list
+  PaError err = Pa_Initialize();
+  if (err != paNoError) {
+    qDebug("Soundcardsetup Pa_Initialize error");
+    emit PortAudioError("ERROR: couldn't start portaudio to enumerate devices");
+    nAPI = 0;
+    nApiDevices = new int[nAPI + 1];
+    nApiDeviceNames = new QList<QString>[nAPI + 1];
+    deviceOK = new QList<bool>[nAPI + 1];
+  } else {
+    nAPI = Pa_GetHostApiCount();
+    nApiDevices = new int[nAPI + 1];
+    nApiDeviceNames = new QList<QString>[nAPI + 1];
+    deviceOK = new QList<bool>[nAPI + 1];
+    for (int i = 0; i < nAPI; i++) {
+      deviceOK[i].clear();
+      nApiDevices[i] = 0;
+      nApiDeviceNames[i].clear();
+      APIComboBox->insertItem(i, Pa_GetHostApiInfo(i)->name, Qt::DisplayRole);
+    }
+    connect(APIComboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(updateDeviceList(int)));
+
+    audioDevices.clear();
+    int numDevices = Pa_GetDeviceCount();
+    if (numDevices < 0) {
+      numDevices = 0;
+    }
+    PaStreamParameters testFormat;
+    testFormat.channelCount = 2;
+    testFormat.sampleFormat = paInt16;
+    testFormat.suggestedLatency = 0;
+    testFormat.hostApiSpecificStreamInfo = nullptr;
+    for (int i = 0; i < numDevices; i++) {
+      const PaDeviceInfo *deviceInfo;
+      deviceInfo = Pa_GetDeviceInfo(i);
+      int api = deviceInfo->hostApi;
+      nApiDevices[api]++;
+      audioDevices.append(deviceInfo->name);
+      nApiDeviceNames[api].append(deviceInfo->name);
+
+      // check to see if this device will work
+      bool ok = true;
+      testFormat.device = i;
+      testFormat.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency;
+
+      // check for stereo support
+      if (Pa_GetDeviceInfo(i)->maxInputChannels != 2) {
+        ok = false;
+      }
+
+      // test for support of chosen sample rate
+      PaError err = Pa_IsFormatSupported(
+          &testFormat, nullptr,
+          settings.value(s_sdr_sound_sample_freq, s_sdr_sound_sample_freq_def)
+              .toInt());
+      if (err != paNoError)
+        ok = false;
+      if (ok) {
+        SoundCardComboBox->insertItem(i, iconOK, audioDevices[i],
+                                      Qt::DisplayRole);
+      } else {
+        SoundCardComboBox->insertItem(i, iconNOK, audioDevices[i],
+                                      Qt::DisplayRole);
+      }
+      deviceOK[api].append(ok);
+    }
+    // terminate once we have the list
+    PaError err = Pa_Terminate();
     if (err != paNoError) {
-        qDebug("Soundcardsetup Pa_Initialize error");
-        emit(PortAudioError("ERROR: couldn't start portaudio to enumerate devices"));
-        nAPI=0;
-        nApiDevices     = new int[nAPI+1];
-        nApiDeviceNames = new QList<QString>[nAPI+1];
-        deviceOK        = new QList<bool>[nAPI+1];
-    } else {
-        nAPI            = Pa_GetHostApiCount();
-        nApiDevices     = new int[nAPI+1];
-        nApiDeviceNames = new QList<QString>[nAPI+1];
-        deviceOK        = new QList<bool>[nAPI+1];
-        for (int i = 0; i < nAPI; i++) {
-            deviceOK[i].clear();
-            nApiDevices[i] = 0;
-            nApiDeviceNames[i].clear();
-            APIComboBox->insertItem(i, Pa_GetHostApiInfo(i)->name,Qt::DisplayRole);
-        }
-        connect(APIComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDeviceList(int)));
-
-        audioDevices.clear();
-        int numDevices = Pa_GetDeviceCount();
-        if (numDevices < 0) {
-            numDevices = 0;
-        }
-        PaStreamParameters testFormat;
-        testFormat.channelCount              = 2;
-        testFormat.sampleFormat              = paInt16;
-        testFormat.suggestedLatency          = 0;
-        testFormat.hostApiSpecificStreamInfo = nullptr;
-        for (int i = 0; i < numDevices; i++) {
-            const PaDeviceInfo *deviceInfo;
-            deviceInfo = Pa_GetDeviceInfo(i);
-            int api = deviceInfo->hostApi;
-            nApiDevices[api]++;
-            audioDevices.append(deviceInfo->name);
-            nApiDeviceNames[api].append(deviceInfo->name);
-
-            // check to see if this device will work
-            bool ok = true;
-            testFormat.device           = i;
-            testFormat.suggestedLatency = Pa_GetDeviceInfo(i)->defaultLowInputLatency;
-
-            // check for stereo support
-            if (Pa_GetDeviceInfo(i)->maxInputChannels != 2) {
-                ok = false;
-            }
-
-            // test for support of chosen sample rate
-            PaError err = Pa_IsFormatSupported(&testFormat, nullptr, settings.value(s_sdr_sound_sample_freq,
-                                                                                    s_sdr_sound_sample_freq_def).toInt());
-            if (err != paNoError) ok = false;
-            if (ok) {
-                SoundCardComboBox->insertItem(i, iconOK, audioDevices[i],Qt::DisplayRole);
-            } else {
-                SoundCardComboBox->insertItem(i, iconNOK, audioDevices[i],Qt::DisplayRole);
-            }
-            deviceOK[api].append(ok);
-        }
-        // terminate once we have the list
-        PaError err=Pa_Terminate();
-        if (err != paNoError) {
-            qDebug("Soundcardsetup Pa_Terminate error");
-            emit(PortAudioError("ERROR: couldn't terminate test portaudio"));
-        }
-        updateDeviceList(0);
+      qDebug("Soundcardsetup Pa_Terminate error");
+      emit PortAudioError("ERROR: couldn't terminate test portaudio");
     }
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSoundCard()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
-    updateFromSettings();
+    updateDeviceList(0);
+  }
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSoundCard()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
+  updateFromSettings();
 }
 
-SoundCardSetup::~SoundCardSetup()
-{
-    delete[] nApiDevices;
-    delete[] nApiDeviceNames;
-    delete[] deviceOK;
-    delete offsetSetup;
+SoundCardSetup::~SoundCardSetup() {
+  delete[] nApiDevices;
+  delete[] nApiDeviceNames;
+  delete[] deviceOK;
+  delete offsetSetup;
 }
 
+double SoundCardSetup::offset(int band) const {
+  if (band == BAND_NONE)
+    return settings.value(s_sdr_offset_soundcard, s_sdr_offset_soundcard_def)
+        .toDouble();
 
-double SoundCardSetup::offset(int band) const
-{
-    if (band==BAND_NONE) return settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toDouble();
-
-    if (offsetSetup->hasOffset(band)) {
-        return offsetSetup->offset(band);
-    } else {
-        return settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toDouble();
-    }
+  if (offsetSetup->hasOffset(band)) {
+    return offsetSetup->offset(band);
+  } else {
+    return settings.value(s_sdr_offset_soundcard, s_sdr_offset_soundcard_def)
+        .toDouble();
+  }
 }
 
-bool SoundCardSetup::invert(int band) const
-{
-    if (band==BAND_NONE) return settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool();
+bool SoundCardSetup::invert(int band) const {
+  if (band == BAND_NONE)
+    return settings.value(s_sdr_swap_soundcard, s_sdr_swap_soundcard_def)
+        .toBool();
 
-    if (offsetSetup->hasOffset(band)) {
-        return offsetSetup->invert(band);
-    } else {
-        return settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool();
-    }
+  if (offsetSetup->hasOffset(band)) {
+    return offsetSetup->invert(band);
+  } else {
+    return settings.value(s_sdr_swap_soundcard, s_sdr_swap_soundcard_def)
+        .toBool();
+  }
 }
 
 /*!
  * \brief SoundCardSetup::rejectChanges
  *   called when "cancel" is clicked. Resets widgets to values in settings.
  */
-void SoundCardSetup::rejectChanges()
-{
-    updateFromSettings();
-    reject();
+void SoundCardSetup::rejectChanges() {
+  updateFromSettings();
+  reject();
 }
 
 /*!
  * \brief SoundCardSetup::updateSoundCard
  *   Update settings object from widgets in dialog
  */
-void SoundCardSetup::updateSoundCard()
-{
-    switch (SampleRateComboBox->currentIndex()) {
-    case 0:
-        settings.setValue(s_sdr_sound_sample_freq,48000);
-        break;
-    case 1:
-        settings.setValue(s_sdr_sound_sample_freq,96000);
-        break;
-    case 2:
-        settings.setValue(s_sdr_sound_sample_freq,192000);
-        break;
-    }
-    switch (speedComboBox->currentIndex()) {
-    case 0:
-        settings.setValue(s_sdr_sound_speed,1);
-        break;
-    case 1:
-        settings.setValue(s_sdr_sound_speed,2);
-        break;
-    case 2:
-        settings.setValue(s_sdr_sound_speed,4);
-        break;
-    }
-    settings.setValue(s_sdr_bits,BitsComboBox->currentIndex());
-    settings.setValue(s_sdr_offset_soundcard,OffsetLineEdit->text().toInt());
-    settings.setValue(s_sdr_api,APIComboBox->currentIndex());
-    settings.setValue(s_sdr_device,SoundCardComboBox->currentIndex());
+void SoundCardSetup::updateSoundCard() {
+  switch (SampleRateComboBox->currentIndex()) {
+  case 0:
+    settings.setValue(s_sdr_sound_sample_freq, 48000);
+    break;
+  case 1:
+    settings.setValue(s_sdr_sound_sample_freq, 96000);
+    break;
+  case 2:
+    settings.setValue(s_sdr_sound_sample_freq, 192000);
+    break;
+  }
+  switch (speedComboBox->currentIndex()) {
+  case 0:
+    settings.setValue(s_sdr_sound_speed, 1);
+    break;
+  case 1:
+    settings.setValue(s_sdr_sound_speed, 2);
+    break;
+  case 2:
+    settings.setValue(s_sdr_sound_speed, 4);
+    break;
+  }
+  settings.setValue(s_sdr_bits, BitsComboBox->currentIndex());
+  settings.setValue(s_sdr_offset_soundcard, OffsetLineEdit->text().toInt());
+  settings.setValue(s_sdr_api, APIComboBox->currentIndex());
+  settings.setValue(s_sdr_device, SoundCardComboBox->currentIndex());
 
-    // calculate overall device index- can be different from s_sdr_device if there
-    // are multiple API's
-    int indx = 0;
-    for (int i = 0; i < settings.value(s_sdr_api,s_sdr_api_def).toInt(); i++) indx += nApiDevices[i];
-    indx += settings.value(s_sdr_device,0).toInt();
-    settings.setValue(s_sdr_deviceindx,indx);
-    settings.setValue(s_sdr_swap_soundcard,checkBoxSwap->isChecked());
-    settings.setValue(s_sdr_iqcorrect,checkBoxIq->isChecked());
-    settings.setValue(s_sdr_iqdata,checkBoxIQData->isChecked());
+  // calculate overall device index- can be different from s_sdr_device if there
+  // are multiple API's
+  int indx = 0;
+  for (int i = 0; i < settings.value(s_sdr_api, s_sdr_api_def).toInt(); i++)
+    indx += nApiDevices[i];
+  indx += settings.value(s_sdr_device, 0).toInt();
+  settings.setValue(s_sdr_deviceindx, indx);
+  settings.setValue(s_sdr_swap_soundcard, checkBoxSwap->isChecked());
+  settings.setValue(s_sdr_iqcorrect, checkBoxIq->isChecked());
+  settings.setValue(s_sdr_iqdata, checkBoxIQData->isChecked());
 }
 
 /*!
  * \brief SoundCardSetup::updateFromSettings
  *   update widgets from settings object
  */
-void SoundCardSetup::updateFromSettings()
-{
-    switch (settings.value(s_sdr_sound_speed,s_sdr_sound_speed_def).toInt()) {
-    case 1:
-        speedComboBox->setCurrentIndex(0);
-        break;
-    case 2:
-        speedComboBox->setCurrentIndex(1);
-        break;
-    case 4:
-        speedComboBox->setCurrentIndex(2);
-        break;
-    default:
-        speedComboBox->setCurrentIndex(0);
-
-    }
-    switch (settings.value(s_sdr_sound_sample_freq,s_sdr_sound_sample_freq_def).toInt()) {
-    case 48000:
-        SampleRateComboBox->setCurrentIndex(0);
-        break;
-    case 96000:
-        SampleRateComboBox->setCurrentIndex(1);
-        break;
-    case 192000:
-        SampleRateComboBox->setCurrentIndex(2);
-        break;
-    default:
-        SampleRateComboBox->setCurrentIndex(1);
-    }
-    BitsComboBox->setCurrentIndex(settings.value(s_sdr_bits,s_sdr_bits_def).toInt());
-    int n=settings.value(s_sdr_api,s_sdr_api_def).toInt();
-    APIComboBox->setCurrentIndex(n);
-    n=settings.value(s_sdr_device,s_sdr_device_def).toInt();
-    SoundCardComboBox->setCurrentIndex(n);
-    checkBoxSwap->setChecked(settings.value(s_sdr_swap_soundcard,s_sdr_swap_soundcard_def).toBool());
-    checkBoxIq->setChecked(settings.value(s_sdr_iqcorrect,s_sdr_iqcorrect_def).toBool());
-    checkBoxIQData->setChecked(settings.value(s_sdr_iqdata,s_sdr_iqdata_def).toBool());
-    OffsetLineEdit->setText(settings.value(s_sdr_offset_soundcard,s_sdr_offset_soundcard_def).toString());
+void SoundCardSetup::updateFromSettings() {
+  switch (settings.value(s_sdr_sound_speed, s_sdr_sound_speed_def).toInt()) {
+  case 1:
+    speedComboBox->setCurrentIndex(0);
+    break;
+  case 2:
+    speedComboBox->setCurrentIndex(1);
+    break;
+  case 4:
+    speedComboBox->setCurrentIndex(2);
+    break;
+  default:
+    speedComboBox->setCurrentIndex(0);
+  }
+  switch (settings.value(s_sdr_sound_sample_freq, s_sdr_sound_sample_freq_def)
+              .toInt()) {
+  case 48000:
+    SampleRateComboBox->setCurrentIndex(0);
+    break;
+  case 96000:
+    SampleRateComboBox->setCurrentIndex(1);
+    break;
+  case 192000:
+    SampleRateComboBox->setCurrentIndex(2);
+    break;
+  default:
+    SampleRateComboBox->setCurrentIndex(1);
+  }
+  BitsComboBox->setCurrentIndex(
+      settings.value(s_sdr_bits, s_sdr_bits_def).toInt());
+  int n = settings.value(s_sdr_api, s_sdr_api_def).toInt();
+  APIComboBox->setCurrentIndex(n);
+  n = settings.value(s_sdr_device, s_sdr_device_def).toInt();
+  SoundCardComboBox->setCurrentIndex(n);
+  checkBoxSwap->setChecked(
+      settings.value(s_sdr_swap_soundcard, s_sdr_swap_soundcard_def).toBool());
+  checkBoxIq->setChecked(
+      settings.value(s_sdr_iqcorrect, s_sdr_iqcorrect_def).toBool());
+  checkBoxIQData->setChecked(
+      settings.value(s_sdr_iqdata, s_sdr_iqdata_def).toBool());
+  OffsetLineEdit->setText(
+      settings.value(s_sdr_offset_soundcard, s_sdr_offset_soundcard_def)
+          .toString());
 }
 
-void SoundCardSetup::updateDeviceList(int indx)
-{
-    SoundCardComboBox->clear();
-    for (int i = 0; i < nApiDeviceNames[indx].size(); i++) {
-        if (deviceOK[indx][i]) {
-            SoundCardComboBox->insertItem(i, iconOK, nApiDeviceNames[indx].at(i),Qt::DisplayRole);
-        } else {
-            SoundCardComboBox->insertItem(i, iconNOK, nApiDeviceNames[indx].at(i),Qt::DisplayRole);
-        }
+void SoundCardSetup::updateDeviceList(int indx) {
+  SoundCardComboBox->clear();
+  for (int i = 0; i < nApiDeviceNames[indx].size(); i++) {
+    if (deviceOK[indx][i]) {
+      SoundCardComboBox->insertItem(i, iconOK, nApiDeviceNames[indx].at(i),
+                                    Qt::DisplayRole);
+    } else {
+      SoundCardComboBox->insertItem(i, iconNOK, nApiDeviceNames[indx].at(i),
+                                    Qt::DisplayRole);
     }
-    SoundCardComboBox->setCurrentIndex(0);
+  }
+  SoundCardComboBox->setCurrentIndex(0);
 }

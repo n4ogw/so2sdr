@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
   This file is part of so2sdr.
 
@@ -19,26 +19,23 @@
 #include "lineedit.h"
 #include <QCoreApplication>
 
-LineEdit::LineEdit(QWidget *parent=nullptr) :QLineEdit(parent)
-{
-    myFocus=false;
-    installEventFilter(this);
+LineEdit::LineEdit(QWidget *parent = nullptr) : QLineEdit(parent) {
+  myFocus = false;
+  installEventFilter(this);
 }
 
-void LineEdit::setMyFocus(bool b)
-{
-    myFocus=b;
-    if (b) {
-        QCoreApplication::postEvent(this,new QEvent(QEvent::FocusIn));
-    } else {
-        QCoreApplication::postEvent(this,new QEvent(QEvent::FocusOut));
-    }
+void LineEdit::setMyFocus(bool b) {
+  myFocus = b;
+  if (b) {
+    QCoreApplication::postEvent(this, new QEvent(QEvent::FocusIn));
+  } else {
+    QCoreApplication::postEvent(this, new QEvent(QEvent::FocusOut));
+  }
 }
 
-bool LineEdit::eventFilter(QObject *o, QEvent *e)
-{
-    if (myFocus && e->type() == QEvent::FocusOut) {
-        return true;
-    }
-    else return QLineEdit::eventFilter(o,e);
+bool LineEdit::eventFilter(QObject *o, QEvent *e) {
+  if (myFocus && e->type() == QEvent::FocusOut) {
+    return true;
+  } else
+    return QLineEdit::eventFilter(o, e);
 }

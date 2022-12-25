@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -17,15 +17,14 @@
 
  */
 #include "call.h"
-Call::Call()
-{
-    call.clear();
-    freq=0;
-    rgbCall[0]=0; // call black by default
-    rgbCall[1]=0;
-    rgbCall[2]=0;
-    markRgb[0]=false;
-    markRgb[1]=false;
-    markRgb[2]=false;
-    mark=false;
+Call::Call() {
+  call.clear();
+  freq = 0;
+  rgbCall[0] = 0; // call black by default
+  rgbCall[1] = 0;
+  rgbCall[2] = 0;
+  markRgb[0] = false;
+  markRgb[1] = false;
+  markRgb[2] = false;
+  mark = false;
 }

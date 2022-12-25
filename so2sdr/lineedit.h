@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
   This file is part of so2sdr.
 
@@ -28,17 +28,16 @@
  * modifications allow controlling focus while in two keyboard mode
  */
 
-class LineEdit : public QLineEdit
-{
+class LineEdit : public QLineEdit {
 public:
-    LineEdit(QWidget *parent);
-    void setMyFocus(bool b);
+  LineEdit(QWidget *parent);
+  void setMyFocus(bool b);
 
 protected:
-    bool eventFilter(QObject*, QEvent* e);
+  bool eventFilter(QObject *, QEvent *e);
 
 private:
-    bool myFocus;
+  bool myFocus;
 };
 
 #endif // LINEEDIT_H

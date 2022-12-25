@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,29 +19,28 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "hamlib/rig.h"
+#include "defines.h"
 #include <QString>
 #include <QValidator>
-#include "defines.h"
 
 /*!
   upper-case validator: converts all input to upper case
   */
-class UpperValidator : public QValidator
-{
+class UpperValidator : public QValidator {
 public:
-    explicit UpperValidator(QObject *parent = nullptr);
-    QValidator::State validate(QString &input, int &pos) const;
+  explicit UpperValidator(QObject *parent = nullptr);
+  QValidator::State validate(QString &input, int &pos) const;
 };
 
 /*!
   time validator: requires time in format 0000 - 2359
   */
-class TimeValidator : public QValidator
-{
+class TimeValidator : public QValidator {
 public:
-    explicit TimeValidator(QObject *parent = nullptr);
-    void fixup ( QString & input ) const;
-    QValidator::State validate(QString &input, int &pos) const;
+  explicit TimeValidator(QObject *parent = nullptr);
+  void fixup(QString &input) const;
+  QValidator::State validate(QString &input, int &pos) const;
 };
 
 int getBand(double f);

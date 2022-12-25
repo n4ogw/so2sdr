@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,59 +19,57 @@
 #ifndef BandmapDisplay_H
 #define BandmapDisplay_H
 
-#include <QWidget>
 #include <QPixmap>
 #include <QSettings>
-#include "defines.h"
-
+#include <QWidget>
 
 /*!
    Low level BandmapDisplay of spectrum.
  */
-class BandmapDisplay : public QWidget
-{
-Q_OBJECT
+class BandmapDisplay : public QWidget {
+  Q_OBJECT
 
 public:
-    explicit BandmapDisplay(QWidget *parent = nullptr);
-    ~BandmapDisplay();
-    friend class So2sdrBandmap;
+  explicit BandmapDisplay(QWidget *parent = nullptr);
+  ~BandmapDisplay();
+  friend class So2sdrBandmap;
 
-    void initialize(QSettings *s);
-    bool invert() const;
-    void setInvert(bool t);
-    void setMark(bool b);
-    void setScale(int s);
-    void setVfoPos(int s);
+  void initialize(QSettings *s);
+  bool invert() const;
+  void setInvert(bool t);
+  void setMark(bool b);
+  void setScale(int s);
+  void setVfoPos(int s);
 
 public slots:
-    void plotSpectrum(unsigned char *, unsigned char);
+  void plotSpectrum(unsigned char *, unsigned char);
+  void setSampleRate( unsigned int f) { samplerate = f; }
 
 signals:
-    void mouseClick();
-    void displayMouseQSY(int);
+  void mouseClick();
+  void displayMouseQSY(int);
 
 protected:
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent * event);
-    void mousePressEvent(QMouseEvent * event);
+  void paintEvent(QPaintEvent *event);
+  void resizeEvent(QResizeEvent *event);
+  void mousePressEvent(QMouseEvent *event);
 
 private:
-    int     cornerx;
-    int     cornery;
-    QPixmap pixmap;
-    bool          *cmap;
-    bool          _invert;
-    bool          mark;
-    bool          *markRgb0;
-    bool          *markRgb1;
-    bool          *markRgb2;
-    int           scale;
-    int           vfoPos;
-    int           samplerate;
-    unsigned char cut;
-    unsigned char *dataptr;
-    QSettings *settings;
+  int cornerx;
+  int cornery;
+  QPixmap pixmap;
+  bool *cmap;
+  bool _invert;
+  bool mark;
+  bool *markRgb0;
+  bool *markRgb1;
+  bool *markRgb2;
+  int scale;
+  int vfoPos;
+  unsigned int samplerate;
+  unsigned char cut;
+  unsigned char *dataptr;
+  QSettings *settings;
 };
 
 #endif

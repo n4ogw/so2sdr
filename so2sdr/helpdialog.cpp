@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,38 +16,35 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include "helpdialog.h"
+#include "utils.h"
+#include <QCommonStyle>
 #include <QDir>
 #include <QFile>
 #include <QIODevice>
-#include <QCommonStyle>
-#include<QStringList>
+#include <QStringList>
 #include <QStyle>
 #include <QTextStream>
-#include "helpdialog.h"
-#include "utils.h"
 
-HelpDialog::HelpDialog(uiSize sizes, QString fileName, QWidget *parent) : QDialog(parent)
-{
-    setMinimumWidth(qRound(sizes.width*80));
-    setupUi(this);
-    QCommonStyle style;
-    connect(pushButton, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(homeButton,SIGNAL(clicked()),this,SLOT(home()));
-    homeButton->setIcon(style.standardIcon(QStyle::SP_ArrowUp));
-    connect(backButton,SIGNAL(clicked()),HelpTextEdit,SLOT(backward()));
-    backButton->setIcon(style.standardIcon(QStyle::SP_ArrowBack));
-    connect(forwardButton,SIGNAL(clicked()),HelpTextEdit,SLOT(forward()));
-    forwardButton->setIcon(style.standardIcon(QStyle::SP_ArrowForward));
-    HelpTextEdit->setSearchPaths(QStringList(dataDirectory()+"help/"));
-    QFile file(fileName);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream ts(&file);
-        HelpTextEdit->setText(ts.readAll());
-    }
-    file.close();
+HelpDialog::HelpDialog(uiSize sizes, QString fileName, QWidget *parent)
+    : QDialog(parent) {
+  setMinimumWidth(qRound(sizes.width * 80));
+  setupUi(this);
+  QCommonStyle style;
+  connect(pushButton, SIGNAL(clicked()), this, SLOT(accept()));
+  connect(homeButton, SIGNAL(clicked()), this, SLOT(home()));
+  homeButton->setIcon(style.standardIcon(QStyle::SP_ArrowUp));
+  connect(backButton, SIGNAL(clicked()), HelpTextEdit, SLOT(backward()));
+  backButton->setIcon(style.standardIcon(QStyle::SP_ArrowBack));
+  connect(forwardButton, SIGNAL(clicked()), HelpTextEdit, SLOT(forward()));
+  forwardButton->setIcon(style.standardIcon(QStyle::SP_ArrowForward));
+  HelpTextEdit->setSearchPaths(QStringList(dataDirectory() + "help/"));
+  QFile file(fileName);
+  if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    QTextStream ts(&file);
+    HelpTextEdit->setText(ts.readAll());
+  }
+  file.close();
 }
 
-void HelpDialog::home()
-{
-    HelpTextEdit->scrollToAnchor("top");
-}
+void HelpDialog::home() { HelpTextEdit->scrollToAnchor("top"); }

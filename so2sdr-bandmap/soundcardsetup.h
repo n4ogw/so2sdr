@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,44 +19,44 @@
 #ifndef SOUNDCARDSETUP_H
 #define SOUNDCARDSETUP_H
 
+#include "bandoffsetsetup.h"
 #include "defines.h"
-#include <portaudio.h>
+#include "ui_soundcard.h"
 #include <QDialog>
 #include <QIcon>
 #include <QList>
-#include <QString>
 #include <QSettings>
-#include "bandoffsetsetup.h"
-#include "ui_soundcard.h"
+#include <QString>
+#include <portaudio.h>
 
-class SoundCardSetup : public QDialog,  public Ui::SoundCardSetup
-{
-    Q_OBJECT
+class SoundCardSetup : public QDialog, public Ui::SoundCardSetup {
+  Q_OBJECT
 public:
-    explicit SoundCardSetup(QSettings &s, uiSize sizes, QWidget  *parent=nullptr);
-    ~SoundCardSetup();
-    double offset(int band) const;
-    bool invert(int band) const;
+  explicit SoundCardSetup(QSettings &s, uiSize sizes,
+                          QWidget *parent = nullptr);
+  ~SoundCardSetup();
+  double offset(int band) const;
+  bool invert(int band) const;
 
 signals:
-    void PortAudioError(const QString &);
+  void PortAudioError(const QString &);
 
 private slots:
-    void updateSoundCard();
-    void rejectChanges();
-    void updateDeviceList(int indx);
+  void updateSoundCard();
+  void rejectChanges();
+  void updateDeviceList(int indx);
 
 private:
-    QSettings        &settings;
-    int                nAPI;
-    int                *nApiDevices;
-    QIcon              iconNOK;
-    QIcon              iconOK;
-    QList<bool>        *deviceOK;
-    QList<QString>     audioDevices;
-    QList<QString>     *nApiDeviceNames;
-    BandOffsetSetup    *offsetSetup;
-    void updateFromSettings();
+  QSettings &settings;
+  int nAPI;
+  int *nApiDevices;
+  QIcon iconNOK;
+  QIcon iconOK;
+  QList<bool> *deviceOK;
+  QList<QString> audioDevices;
+  QList<QString> *nApiDeviceNames;
+  BandOffsetSetup *offsetSetup;
+  void updateFromSettings();
 };
 
 #endif // SOUNDCARDSETUP_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -22,24 +22,23 @@
 #include <QObject>
 #include <QString>
 
-class KeyboardHandler : public QObject
-{
-    Q_OBJECT
+class KeyboardHandler : public QObject {
+  Q_OBJECT
 public:
-    explicit KeyboardHandler(QString deviceName, QObject *parent = nullptr);
-    void quitHandler();
-    void setDevice(QString);
+  explicit KeyboardHandler(QString deviceName, QObject *parent = nullptr);
+  void quitHandler();
+  void setDevice(QString);
 
 signals:
-    void readKey(int code,bool shift,bool ctrl,bool alt);
+  void readKey(int code, bool shift, bool ctrl, bool alt);
 
 public slots:
-    void run();
+  void run();
 
 private:
-    QString device;
-    std::atomic<bool> quitFlag;
-    int fd;
+  QString device;
+  std::atomic<bool> quitFlag;
+  int fd;
 };
 
 #endif // KEYBOARDHANDLER_H

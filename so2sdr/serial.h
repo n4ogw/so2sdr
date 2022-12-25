@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,18 +18,17 @@
  */
 #ifndef SERIAL_H
 #define SERIAL_H
+#include "defines.h"
+#include "utils.h"
 #include <QAbstractSocket>
 #include <QByteArray>
-#include <QString>
 #include <QList>
+#include <QMutex>
 #include <QObject>
+#include <QReadWriteLock>
 #include <QString>
 #include <QTimer>
 #include <QTimerEvent>
-#include <QMutex>
-#include <QReadWriteLock>
-#include "defines.h"
-#include "utils.h"
 
 // using C rather than C++ bindings for hamlib because I don't
 // want to have to deal with exceptions
@@ -38,22 +37,20 @@
 
 // how often to check for commands to be sent to radios
 // Note: setting this to zero will cause 100% CPU when using hamlib dummy rig
-const int RIG_SEND_TIMER=2;
+const int RIG_SEND_TIMER = 2;
 
-class hamlibModel
-{
+class hamlibModel {
 public:
-    QByteArray model_name;
-    int        model_nr;
-    bool operator<(const hamlibModel &other) const;
+  QByteArray model_name;
+  int model_nr;
+  bool operator<(const hamlibModel &other) const;
 };
 
-class hamlibmfg
-{
+class hamlibmfg {
 public:
-    QByteArray         mfg_name;
-    QList<hamlibModel> models;
-    bool operator<(const hamlibmfg &other) const;
+  QByteArray mfg_name;
+  QList<hamlibModel> models;
+  bool operator<(const hamlibmfg &other) const;
 };
 
 class QSettings;
@@ -64,81 +61,80 @@ class QTcpSocket;
 
    note that this class will run in its own QThread
  */
-class RigSerial : public QObject
-{
-Q_OBJECT
+class RigSerial : public QObject {
+  Q_OBJECT
 
 public:
-    RigSerial(int,QString);
-    ~RigSerial();
-    int band() const;
-     QString bandName();
-    void clearRIT();
-    double getRigFreq();
-    QString hamlibModelName(int i, int indx) const;
-    int hamlibNMfg() const;
-    int hamlibNModels(int i) const;
-    int hamlibModelIndex(int, int) const;
-    void hamlibModelLookup(int, int&, int&) const;
-    QString hamlibMfgName(int i) const;
-    int ifFreq();
-    rmode_t mode();
-    QString modeStr();
-    ModeTypes modeType();
-    bool radioOpen();
-    void sendRaw(QByteArray cmd);
+  RigSerial(int, QString);
+  ~RigSerial();
+  int band() const;
+  QString bandName();
+  void clearRIT();
+  double getRigFreq();
+  QString hamlibModelName(int i, int indx) const;
+  int hamlibNMfg() const;
+  int hamlibNModels(int i) const;
+  int hamlibModelIndex(int, int) const;
+  void hamlibModelLookup(int, int &, int &) const;
+  QString hamlibMfgName(int i) const;
+  int ifFreq();
+  rmode_t mode();
+  QString modeStr();
+  ModeTypes modeType();
+  bool radioOpen();
+  void sendRaw(QByteArray cmd);
 
-    static QList<hamlibmfg>        mfg;
-    static QList<QByteArray>       mfgName;
+  static QList<hamlibmfg> mfg;
+  static QList<QByteArray> mfgName;
 signals:
-    void radioError(const QString &);
+  void radioError(const QString &);
 
 public slots:
-    void setPtt(int state);
-    void qsyExact(double f);
-    void setRigMode(rmode_t m, pbwidth_t pb);
-    void run();
-    void stopSerial();
+  void setPtt(int state);
+  void qsyExact(double f);
+  void setRigMode(rmode_t m, pbwidth_t pb);
+  void run();
+  void stopSerial();
 
 protected:
-    void timerEvent(QTimerEvent *event);
+  void timerEvent(QTimerEvent *event);
 
 private slots:
-    void rxSocket();
-    void tcpError(QAbstractSocket::SocketError e);
+  void rxSocket();
+  void tcpError(QAbstractSocket::SocketError e);
 
 private:
-    static int list_caps(const struct rig_caps *caps, void *data);
+  static int list_caps(const struct rig_caps *caps, void *data);
 
-    // number of timers
-    const static int nRigSerialTimers=2;
+  // number of timers
+  const static int nRigSerialTimers = 2;
 
-    void closeRig();
-    void openRig();
-    void openSocket();
+  void closeRig();
+  void openRig();
+  void openSocket();
 
-    bool                    clearRitFlag;
-    bool                    pttOnFlag;
-    bool                    pttOffFlag;
-    const struct confparams *confParamsIF;
-    bool                    hasIFext;
-    const struct confparams *confParamsRIT;
-    double                     qsyFreq;
-    rmode_t                 chgMode;
-    pbwidth_t               passBW;
-    bool                    radioOK;
-    double                  rigFreq;
-    int                     model;
-    int                     ifOffset;
-    int                     nrig;
-    rmode_t                 Mode;
-    QMutex                  pttMutex;
-    QReadWriteLock          lock;
-    RIG                     *rig;
-    int                     timerId[nRigSerialTimers];
-    QSettings              *settings;
-    QString                 settingsFile;
-    QTcpSocket             *socket;
+  bool clearRitFlag;
+  bool pttOnFlag;
+  bool pttOffFlag;
+  const struct confparams *confParamsIF;
+  bool hasIFext;
+  const struct confparams *confParamsRIT;
+  double qsyFreq;
+  rmode_t chgMode;
+  pbwidth_t passBW;
+  bool radioOK;
+  double rigFreq;
+  int model;
+  int ifOffset;
+  int nrig;
+  rmode_t Mode;
+  QMutex pttMutex;
+  QReadWriteLock lock;
+  RIG *rig;
+  int timerId[nRigSerialTimers];
+  QSettings *settings;
+  QString settingsFile;
+  QTcpSocket *socket;
 };
 
 #endif

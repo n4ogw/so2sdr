@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,46 +19,45 @@
 #ifndef SDRDIALOG_H
 #define SDRDIALOG_H
 
+#include "afedrisetup.h"
+#include "defines.h"
+#include "networksetup.h"
+#include "rtlsetup.h"
+#include "soundcardsetup.h"
+#include "ui_sdrdialog.h"
 #include <QIcon>
 #include <QList>
 #include <QSettings>
 #include <QString>
-#include "defines.h"
-#include "soundcardsetup.h"
-#include "afedrisetup.h"
-#include "networksetup.h"
-#include "rtlsetup.h"
-#include "ui_sdrdialog.h"
 
-class SDRDialog : public QDialog, public Ui::SDRDialog
-{
-Q_OBJECT
+class SDRDialog : public QDialog, public Ui::SDRDialog {
+  Q_OBJECT
 
 public:
-    SDRDialog(QSettings &s,uiSize sizes,QWidget *parent = nullptr);
-    ~SDRDialog();
-    double offset(int band) const;
-    bool invert(int band) const;
-    int invertSign(int band) const;
-    SoundCardSetup     *soundcard;
+  SDRDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~SDRDialog();
+  double offset(int band) const;
+  bool invert(int band) const;
+  int invertSign(int band) const;
+  SoundCardSetup *soundcard;
+  AfedriSetup *afedri;
+  NetworkSetup *network;
+  RtlSetup *rtl;
 
 signals:
-    void setupErrors(const QString &);
-    void update();
-    void restartSdr();
+  void setupErrors(const QString &);
+  void update();
+  void restartSdr();
 
 public slots:
-    void updateSDR();
-    void rejectChanges();
+  void updateSDR();
+  void rejectChanges();
 
 private slots:
-    void launchConfigure();
+  void launchConfigure();
 
 private:
-    QSettings          &settings;
-    AfedriSetup        *afedri;
-    NetworkSetup       *network;
-    RtlSetup           *rtl;
-    void updateFromSettings();
+  QSettings &settings;
+  void updateFromSettings();
 };
 #endif

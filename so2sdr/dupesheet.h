@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -24,28 +24,27 @@
 /*!
    Class for visible dupesheet
  */
-class DupeSheet : public QDialog, public Ui::Dupesheet
-{
-Q_OBJECT
+class DupeSheet : public QDialog, public Ui::Dupesheet {
+  Q_OBJECT
 
 public:
-    explicit DupeSheet(QWidget *parent = nullptr);
-    ~DupeSheet();
-    int band() const;
-    void setBand(int);
-    void clear();
-    void updateDupesheet(QByteArray call);
+  explicit DupeSheet(QWidget *parent = nullptr);
+  ~DupeSheet();
+  int band() const;
+  void setBand(int);
+  void clear();
+  void updateDupesheet(QByteArray call);
 
 signals:
-    void closed(bool);
+  void closed(bool);
 
 protected:
-    void closeEvent(QCloseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
+  void closeEvent(QCloseEvent *event);
+  void keyPressEvent(QKeyEvent *event);
 
 private:
-    QList<char>          dupeCallsKey[dsColumns];
-    QList<QByteArray>    dupeCalls[dsColumns];
-    int                  band_;
+  QList<char> dupeCallsKey[dsColumns];
+  QList<QByteArray> dupeCalls[dsColumns];
+  int band_;
 };
 #endif

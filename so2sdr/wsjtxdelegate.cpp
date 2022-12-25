@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,63 +16,66 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
+#include "wsjtxdelegate.h"
+#include "udpreader.h"
 #include <QBrush>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QPainter>
-#include <QStyle>
-#include <QRect>
 #include <QPalette>
-#include "wsjtxdelegate.h"
-#include "udpreader.h"
+#include <QRect>
+#include <QStyle>
 
 /*! wsjtxDelegate:
 
    Controls display of information in wsjtx call list
  */
-wsjtxDelegate::wsjtxDelegate() : QStyledItemDelegate()
-{
-}
+wsjtxDelegate::wsjtxDelegate() : QStyledItemDelegate() {}
 
 /*! paints data into columns of wsjtx call list
  */
-void wsjtxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    bool dupe = index.model()->data(index.model()->index(index.row(),WSJTX_SQL_COL_DUPE)).toBool();
-    bool mult = index.model()->data(index.model()->index(index.row(),WSJTX_SQL_COL_MULT)).toBool();
+void wsjtxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
+                          const QModelIndex &index) const {
+  bool dupe = index.model()
+                  ->data(index.model()->index(index.row(), WSJTX_SQL_COL_DUPE))
+                  .toBool();
+  bool mult = index.model()
+                  ->data(index.model()->index(index.row(), WSJTX_SQL_COL_MULT))
+                  .toBool();
 
-    QStyleOptionViewItem opt = option;
-    initStyleOption(&opt, index);
-    QString s = index.model()->data(index).toString();
+  QStyleOptionViewItem opt = option;
+  initStyleOption(&opt, index);
+  QString s = index.model()->data(index).toString();
 
-    // draw correct background
-    opt.text = "";
-    QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
-    style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
+  // draw correct background
+  opt.text = "";
+  QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+  style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
 
-    QRect rect = opt.rect;
-    QPalette::ColorGroup cg   = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
-        cg = QPalette::Inactive;
+  QRect rect = opt.rect;
+  QPalette::ColorGroup cg =
+      opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
+  if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
+    cg = QPalette::Inactive;
+  }
+
+  // set pen color
+  if (opt.state & QStyle::State_Selected) {
+    painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
+  } else {
+    if (dupe) {
+      QBrush brush;
+      brush.setColor(DUPE_COLOR);
+      brush.setStyle(Qt::SolidPattern);
+      painter->fillRect(opt.rect, brush);
+    } else if (mult) {
+      QBrush brush;
+      brush.setColor(Qt::cyan);
+      brush.setStyle(Qt::SolidPattern);
+      painter->fillRect(opt.rect, brush);
     }
-
-    // set pen color
-    if (opt.state & QStyle::State_Selected) {
-        painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
-    } else {
-        if (dupe) {
-            QBrush brush;
-            brush.setColor(DUPE_COLOR);
-            brush.setStyle(Qt::SolidPattern);
-            painter->fillRect(opt.rect,brush);
-        } else if (mult) {
-            QBrush brush;
-            brush.setColor(Qt::cyan);
-            brush.setStyle(Qt::SolidPattern);
-            painter->fillRect(opt.rect,brush);
-        }
-    }
-    painter->drawText(QRect(rect.left(), rect.top(), rect.width(), rect.height()), opt.displayAlignment, s);
+  }
+  painter->drawText(QRect(rect.left(), rect.top(), rect.width(), rect.height()),
+                    opt.displayAlignment, s);
 }
-

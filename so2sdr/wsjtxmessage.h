@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,22 +19,20 @@
 #ifndef WSJTXMESSAGE_H
 #define WSJTXMESSAGE_H
 
+#include "udpreader.h"
 #include <QByteArray>
 #include <QDataStream>
 #include <QIODevice>
-#include "udpreader.h"
 
 // for sending UDP data stream to wsjtx
-class WsjtxMessage : public QDataStream
-{
+class WsjtxMessage : public QDataStream {
 public:
-    explicit WsjtxMessage(QByteArray *data, QIODevice::OpenMode mode);
-    void startMessage(WsjtxMessageType type);
-    void setSchema(quint32 s) { schema=s; }
+  explicit WsjtxMessage(QByteArray *data, QIODevice::OpenMode mode);
+  void startMessage(WsjtxMessageType type);
+  void setSchema(quint32 s) { schema = s; }
 
 private:
-    quint32 schema;
+  quint32 schema;
 };
-
 
 #endif // WSJTXMESSAGE_H

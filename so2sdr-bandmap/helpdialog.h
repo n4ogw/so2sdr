@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -23,14 +23,13 @@
 /*!
    Displays help file
  */
-class HelpDialog : public QDialog, public Ui::HelpDialog
-{
-Q_OBJECT
+class HelpDialog : public QDialog, public Ui::HelpDialog {
+  Q_OBJECT
 
 public:
-    HelpDialog(QString fileName, QWidget *parent = nullptr);
+  HelpDialog(QString fileName, QWidget *parent = nullptr);
 
 private slots:
-    void home();
+  void home();
 };
 #endif

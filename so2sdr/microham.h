@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,10 +19,10 @@
 #ifndef MICROHAM_H
 #define MICROHAM_H
 
-#include <QSettings>
-#include <QObject>
 #include "defines.h"
+#include <QObject>
 #include <QSerialPort>
+#include <QSettings>
 
 /*
  * Support for microHam Control Protocol enabled devices
@@ -33,31 +33,30 @@
  * -tested on MK2R/+ device (NO3M)
  */
 
-class MicroHam : public QObject
-{
-Q_OBJECT
+class MicroHam : public QObject {
+  Q_OBJECT
 
 public:
-    MicroHam(QSettings& s, QObject *parent = nullptr);
-    ~MicroHam();
-    bool MicroHamIsOpen() const;
-    void switchAudio(int nr);
-    void toggleStereo(int nr);
-    void switchTransmit(int nr);
-    bool stereoActive() const;
-    void sendCommand(QByteArray command);
+  MicroHam(QSettings &s, QObject *parent = nullptr);
+  ~MicroHam();
+  bool MicroHamIsOpen() const;
+  void switchAudio(int nr);
+  void toggleStereo(int nr);
+  void switchTransmit(int nr);
+  bool stereoActive() const;
+  void sendCommand(QByteArray command);
 signals:
-    void microhamError(const QString &);
+  void microhamError(const QString &);
 
 public slots:
-    void openMicroHam();
+  void openMicroHam();
 
 private:
-    bool       MicroHamOpen;
-    bool       stereo;
-    QSerialPort *MicroHamPort;
-    QSettings&  settings;
-    void closeMicroHam();
+  bool MicroHamOpen;
+  bool stereo;
+  QSerialPort *MicroHamPort;
+  QSettings &settings;
+  void closeMicroHam();
 };
 
 #endif // MICROHAM_H

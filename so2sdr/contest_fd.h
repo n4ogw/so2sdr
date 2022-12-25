@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,24 +19,23 @@
 #ifndef CONTEST_FD_H
 #define CONTEST_FD_H
 
-#include "cty.h"
 #include "contest.h"
+#include "cty.h"
 
-class FD : public Contest
-{
+class FD : public Contest {
 public:
-    FD(QSettings &cs,QSettings &ss);
-    ~FD() override;
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    QVariant columnName(int c) const override;
-    ContestType contestType() const override { return Fd_t;}
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    int Score() const override;
-    bool showQsoPtsField() const override { return true;}
+  FD(QSettings &cs, QSettings &ss);
+  ~FD() override;
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  QVariant columnName(int c) const override;
+  ContestType contestType() const override { return Fd_t; }
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  int Score() const override;
+  bool showQsoPtsField() const override { return true; }
 };
 
 #endif

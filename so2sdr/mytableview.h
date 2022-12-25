@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 rec. Torsten Clay N4OGW
+/*! Copyright 2010-2023 rec. Torsten Clay N4OGW
 
    This file is part of so2sdrec.
 
@@ -18,22 +18,22 @@
  */
 #ifndef MYTABLEVIEW_H
 #define MYTABLEVIEW_H
+#include <QEvent>
+#include <QObject>
 #include <QTableView>
 #include <QWidget>
-#include <QObject>
-#include <QEvent>
 
 /*!
 Derived class for log display
 */
-class MyTableView : public QTableView
-{
-    Q_OBJECT
+class MyTableView : public QTableView {
+  Q_OBJECT
 
 public:
-    MyTableView(QWidget *);
+  MyTableView(QWidget *);
+
 protected:
-    bool eventFilter(QObject *, QEvent *);
+  bool eventFilter(QObject *, QEvent *);
 };
 
 #endif // MYTABLEVIEW_H

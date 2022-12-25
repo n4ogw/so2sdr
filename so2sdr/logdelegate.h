@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,58 +19,61 @@
 
 #ifndef LOGDELEGATE_H
 #define LOGDELEGATE_H
-#include <QAbstractItemDelegate>
-#include <QStyledItemDelegate>
-#include <QModelIndex>
-#include <QStyleOptionViewItem>
-#include <QEvent>
-#include <QObject>
-#include <QList>
-#include <QSqlRecord>
-#include <QWidget>
-#include "defines.h"
 #include "contest.h"
+#include "defines.h"
 #include "utils.h"
+#include <QAbstractItemDelegate>
+#include <QEvent>
+#include <QList>
+#include <QModelIndex>
+#include <QObject>
+#include <QSqlRecord>
+#include <QStyleOptionViewItem>
+#include <QStyledItemDelegate>
+#include <QWidget>
 
 /*!
   subclass of delegate for displaying log in main window
   */
-class logDelegate : public QStyledItemDelegate
-{
-Q_OBJECT
+class logDelegate : public QStyledItemDelegate {
+  Q_OBJECT
 
 public:
-    logDelegate(QObject *parent, Contest& c, bool *e, QList<int> *l);
-    bool currentlyEditing;
-    mutable QWidget* currentEditor;
+  logDelegate(QObject *parent, Contest &c, bool *e, QList<int> *l);
+  bool currentlyEditing;
+  mutable QWidget *currentEditor;
 
 signals:
-    void startLogEdit();
-    void logUpdate(QModelIndex);
-    void editLogRow(QModelIndex);
-    void editLogRowDetail(QModelIndex);
-    void setOrigRecord(QModelIndex);
-    void update();
+  void startLogEdit();
+  void logUpdate(QModelIndex);
+  void editLogRow(QModelIndex);
+  void editLogRowDetail(QModelIndex);
+  void setOrigRecord(QModelIndex);
+  void update();
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    virtual QWidget *	createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-    bool editorEvent(QEvent *e, QAbstractItemModel *m, const QStyleOptionViewItem & option, const QModelIndex & index );
-    bool eventFilter(QObject *obj, QEvent *event);
+  void paint(QPainter *painter, const QStyleOptionViewItem &option,
+             const QModelIndex &index) const;
+  virtual QWidget *createEditor(QWidget *parent,
+                                const QStyleOptionViewItem &option,
+                                const QModelIndex &index) const;
+  bool editorEvent(QEvent *e, QAbstractItemModel *m,
+                   const QStyleOptionViewItem &option,
+                   const QModelIndex &index);
+  bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
-    void startDetailedEdit();
+  void startDetailedEdit();
 
 private slots:
-    void closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint = QAbstractItemDelegate::NoHint);
+  void closeEditor(QWidget *editor, QAbstractItemDelegate::EndEditHint hint =
+                                        QAbstractItemDelegate::NoHint);
 
 private:
-    Contest& contest;
-    bool *logSearchFlag;
-    QList<int> *searchList;
-    QModelIndex currentlyEditingIndex;
+  Contest &contest;
+  bool *logSearchFlag;
+  QList<int> *searchList;
+  QModelIndex currentlyEditingIndex;
 };
 
-
 #endif // LOGDELEGATE_H
-

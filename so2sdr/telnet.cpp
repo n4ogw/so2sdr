@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,149 +19,146 @@
 #include <QScrollBar>
 #include <QSettings>
 
-#include "qttelnet.h"
 #include "defines.h"
+#include "qttelnet.h"
 #include "telnet.h"
 
-Telnet::Telnet(QSettings &s, uiSize sizes, QWidget *parent) : QWidget(parent),settings(s)
-{
-    setMinimumWidth(qRound(sizes.width*60));
-    setupUi(this);
-    TelnetDisconnectButton->setFixedWidth(sizes.width*12);
-    adjustSize();
-    telnet = nullptr;
-    telnet = new QtTelnet();
-    connect(TelnetConnectButton, SIGNAL(clicked()), this, SLOT(connectTelnet()));
-    connect(TelnetDisconnectButton, SIGNAL(clicked()), this, SLOT(disconnectTelnet()));
-    connect(telnet, SIGNAL(message(QString)), this, SLOT(showText(QString)));
-    TelnetComboBox->setEditable(true);
-    hosts.clear();
-    buffer.clear();
-    lineEdit->clear();
-    lineEdit->setEnabled(false);
-    TelnetTextEdit->setReadOnly(true);
-    TelnetComboBox->setFocus();
-    TelnetComboBox->clear();
-    connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(sendText()));
+Telnet::Telnet(QSettings &s, uiSize sizes, QWidget *parent)
+    : QWidget(parent), settings(s) {
+  setMinimumWidth(qRound(sizes.width * 60));
+  setupUi(this);
+  TelnetDisconnectButton->setFixedWidth(sizes.width * 12);
+  adjustSize();
+  telnet = nullptr;
+  telnet = new QtTelnet();
+  connect(TelnetConnectButton, SIGNAL(clicked()), this, SLOT(connectTelnet()));
+  connect(TelnetDisconnectButton, SIGNAL(clicked()), this,
+          SLOT(disconnectTelnet()));
+  connect(telnet, SIGNAL(message(QString)), this, SLOT(showText(QString)));
+  TelnetComboBox->setEditable(true);
+  hosts.clear();
+  buffer.clear();
+  lineEdit->clear();
+  lineEdit->setEnabled(false);
+  TelnetTextEdit->setReadOnly(true);
+  TelnetComboBox->setFocus();
+  TelnetComboBox->clear();
+  connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(sendText()));
 
-    // get addresses from settings
-    int sz=settings.beginReadArray(s_telnet_addresses);
-    for (int i=0;i<sz;i++) {
-        settings.setArrayIndex(i);
-        TelnetComboBox->addItem(settings.value("address","").toString());
-    }
-    settings.endArray();
+  // get addresses from settings
+  int sz = settings.beginReadArray(s_telnet_addresses);
+  for (int i = 0; i < sz; i++) {
+    settings.setArrayIndex(i);
+    TelnetComboBox->addItem(settings.value("address", "").toString());
+  }
+  settings.endArray();
 
-    // restore window geometry
-    settings.beginGroup("TelnetWindow");
-    resize(settings.value("size", QSize(400, 594)).toSize());
-    move(settings.value("pos", QPoint(200, 200)).toPoint());
-    settings.endGroup();
+  // restore window geometry
+  settings.beginGroup("TelnetWindow");
+  resize(settings.value("size", QSize(400, 594)).toSize());
+  move(settings.value("pos", QPoint(200, 200)).toPoint());
+  settings.endGroup();
 }
 
-Telnet::~Telnet()
-{
-    disconnectTelnet();
-    delete telnet;
+Telnet::~Telnet() {
+  disconnectTelnet();
+  delete telnet;
 }
 
-void Telnet::closeEvent(QCloseEvent *event)
-{
-    Q_UNUSED(event)
-    // disconnect
-    disconnectTelnet();
+void Telnet::closeEvent(QCloseEvent *event) {
+  Q_UNUSED(event)
+  // disconnect
+  disconnectTelnet();
 
-    // update saved address list
-    int n=TelnetComboBox->count();
-    settings.beginWriteArray(s_telnet_addresses,n);
-    for (int i=0;i<n;i++) {
-        settings.setArrayIndex(i);
-        settings.setValue("address",TelnetComboBox->itemText(i));
-    }
-    settings.endArray();
-    // save window geometry
-    settings.beginGroup("TelnetWindow");
-    settings.setValue("size", size());
-    settings.setValue("pos", pos());
-    settings.endGroup();
+  // update saved address list
+  int n = TelnetComboBox->count();
+  settings.beginWriteArray(s_telnet_addresses, n);
+  for (int i = 0; i < n; i++) {
+    settings.setArrayIndex(i);
+    settings.setValue("address", TelnetComboBox->itemText(i));
+  }
+  settings.endArray();
+  // save window geometry
+  settings.beginGroup("TelnetWindow");
+  settings.setValue("size", size());
+  settings.setValue("pos", pos());
+  settings.endGroup();
 
-    emit(done(false));
+  emit done(false);
 }
 
 /*!
    Open a connection
  */
-void Telnet::connectTelnet()
-{
-    QString host = TelnetComboBox->currentText();
-    if (host.isEmpty()) return;
+void Telnet::connectTelnet() {
+  QString host = TelnetComboBox->currentText();
+  if (host.isEmpty())
+    return;
 
-    host = host.trimmed();
+  host = host.trimmed();
 
-    // get port number
-    int i = host.indexOf(":");
-    int port;
-    if (i == -1) {
-        port = 23; // default port number
-    } else {
-        QString tmp = host.mid(i + 1, host.size() - 1);
-        bool    ok  = false;
-        port = tmp.toInt(&ok, 10);
-        if (!ok) {
-            port = 23;
-        }
-        host.truncate(i);
+  // get port number
+  int i = host.indexOf(":");
+  int port;
+  if (i == -1) {
+    port = 23; // default port number
+  } else {
+    QString tmp = host.mid(i + 1, host.size() - 1);
+    bool ok = false;
+    port = tmp.toInt(&ok, 10);
+    if (!ok) {
+      port = 23;
     }
+    host.truncate(i);
+  }
 
-    telnet->connectToHost(host, port);
-    lineEdit->setEnabled(true);
-    lineEdit->setFocus();
+  telnet->connectToHost(host, port);
+  lineEdit->setEnabled(true);
+  lineEdit->setFocus();
 }
 
 /*!
    Close connection
  */
-void Telnet::disconnectTelnet()
-{
-    telnet->logout();
-    telnet->close();
-    lineEdit->setEnabled(false);
+void Telnet::disconnectTelnet() {
+  telnet->logout();
+  telnet->close();
+  lineEdit->setEnabled(false);
 }
 
 /*!
    Send text currently held by line edit
  */
-void Telnet::sendText()
-{
-    telnet->sendData(lineEdit->text());
-    lineEdit->clear();
+void Telnet::sendText() {
+  telnet->sendData(lineEdit->text());
+  lineEdit->clear();
 }
 
 /*!
    process incoming text. Decode spots and pass everything to telnet window.
  */
-void Telnet::showText(QString txt)
-{
-    // is there a better way to recognize dx spot?
-    if (txt.contains("DX de") || (txt.contains("<") && txt.contains(">"))) {
-        QString call = txt.section(' ', 4, 4, QString::SectionSkipEmpty).toUpper();
+void Telnet::showText(QString txt) {
+  // is there a better way to recognize dx spot?
+  if (txt.contains("DX de") || (txt.contains("<") && txt.contains(">"))) {
+    QString call = txt.section(' ', 4, 4, QString::SectionSkipEmpty).toUpper();
 
-        // don't spot station callsign
-        if (call != settings.value(s_call,s_call_def)) {
-            bool ok;
-            QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
-            double  f = 1000 * freq.toDouble(&ok);
-            emit(dxSpot(call.toLatin1(), f));
-        }
+    // don't spot station callsign
+    if (call != settings.value(s_call, s_call_def)) {
+      bool ok;
+      QString freq = txt.section(' ', 3, 3, QString::SectionSkipEmpty);
+      double f = 1000 * freq.toDouble(&ok);
+      emit dxSpot(call.toLatin1(), f);
     }
-    txt.remove(QRegExp("[^a-zA-Z/.\\d\\s]")); // remove all except letters, numbers, ., and /
-    buffer = buffer + txt;
-    if (buffer.size() > MAX_TELNET_CHARS) {
-        // remove text from top of buffer
-        int i = buffer.size() - MAX_TELNET_CHARS;
-        buffer.remove(0, i);
-    }
-    TelnetTextEdit->setText(buffer);
-    QScrollBar *s = TelnetTextEdit->verticalScrollBar();
-    s->setValue(s->maximum());
+  }
+  txt.remove(QRegExp(
+      "[^a-zA-Z/.\\d\\s]")); // remove all except letters, numbers, ., and /
+  buffer = buffer + txt;
+  if (buffer.size() > MAX_TELNET_CHARS) {
+    // remove text from top of buffer
+    int i = buffer.size() - MAX_TELNET_CHARS;
+    buffer.remove(0, i);
+  }
+  TelnetTextEdit->setText(buffer);
+  QScrollBar *s = TelnetTextEdit->verticalScrollBar();
+  s->setValue(s->maximum());
 }

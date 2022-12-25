@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,53 +19,68 @@
 #ifndef WSJTXCALLDIALOG_H
 #define WSJTXCALLDIALOG_H
 
-#include <QDialog>
-#include <QWidget>
-#include <QSettings>
-#include <QSortFilterProxyModel>
 #include "defines.h"
 #include "qso.h"
 #include "udpreader.h"
-#include "wsjtxdelegate.h"
 #include "ui_wsjtxcalldialog.h"
+#include "wsjtxdelegate.h"
+#include <QDialog>
+#include <QSettings>
+#include <QSortFilterProxyModel>
+#include <QWidget>
 
 /*!
    Dialog showing calls and other information from wsjt-x
  */
-class WsjtxCallDialog : public QDialog, public Ui::WsjtxCalls
-{
-Q_OBJECT
+class WsjtxCallDialog : public QDialog, public Ui::WsjtxCalls {
+  Q_OBJECT
 
 public:
-    WsjtxCallDialog(QSettings &s,uiSize sizes, int nrig, QWidget *parent = nullptr);
-    ~WsjtxCallDialog();
-    void decayCalls() { if (reader->isEnabled()) reader->decayCalls();}
-    bool isEnabled() const { return reader->isEnabled(); }
-    void redupe() { if (reader->isEnabled()) reader->redupe(); }
-    void setNrig(int n);
-    void setFreq(double f);
+  WsjtxCallDialog(QSettings &s, uiSize sizes, int nrig,
+                  QWidget *parent = nullptr);
+  ~WsjtxCallDialog();
+  void decayCalls() {
+    if (reader->isEnabled())
+      reader->decayCalls();
+  }
+  bool isEnabled() const { return reader->isEnabled(); }
+  void redupe() {
+    if (reader->isEnabled())
+      reader->redupe();
+  }
+  void setNrig(int n);
+  void setFreq(double f);
 
 public slots:
-    void clear() { if (reader->isEnabled()) reader->clearCalls(); }
-    void clearWsjtx() { if (reader->isEnabled()) reader->clearWsjtxCalls(); }
-    void enable(bool);
-    void replay() { if (reader->isEnabled()) reader->replay(); }
+  void clear() {
+    if (reader->isEnabled())
+      reader->clearCalls();
+  }
+  void clearWsjtx() {
+    if (reader->isEnabled())
+      reader->clearWsjtxCalls();
+  }
+  void enable(bool);
+  void replay() {
+    if (reader->isEnabled())
+      reader->replay();
+  }
 
 signals:
-    void wsjtxDialog(bool);
-    void dupeCheck(Qso *qso);
-    void wsjtxQso(Qso *);
+  void wsjtxDialog(bool);
+  void dupeCheck(Qso *qso);
+  void wsjtxQso(Qso *);
 
 private slots:
-    void dialogFinished(int);
-    void hideDupesChanged(int);
+  void dialogFinished(int);
+  void hideDupesChanged(int);
 
 private:
-    int _nrig;
-    QSettings &settings;
-    QSortFilterProxyModel *proxy;
-    UDPReader *reader;
-    wsjtxDelegate *delegate;
+  int _nrig;
+  QSettings &settings;
+  QSortFilterProxyModel *proxy;
+  UDPReader *reader;
+  wsjtxDelegate *delegate;
 };
 
 #endif

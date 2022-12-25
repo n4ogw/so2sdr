@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,27 +19,26 @@
 #ifndef NOTEDIALOG_H
 #define NOTEDIALOG_H
 
-#include <QString>
 #include "defines.h"
 #include "ui_notedialog.h"
+#include <QString>
 
 /*!
    Dialog to enter log notes
  */
-class NoteDialog : public QDialog, public Ui::NoteDialog
-{
-Q_OBJECT
+class NoteDialog : public QDialog, public Ui::NoteDialog {
+  Q_OBJECT
 
 public:
-    NoteDialog(uiSize sizes, QWidget *parent = nullptr);
-    void enterNote(QString fname, QString dir, QString time, bool grab = false);
+  NoteDialog(uiSize sizes, QWidget *parent = nullptr);
+  void enterNote(QString fname, QString dir, QString time, bool grab = false);
 
 private slots:
-    void writeNotes();
+  void writeNotes();
 
 private:
-    QString noteDir;
-    QString noteFile;
+  QString noteDir;
+  QString noteFile;
 };
 
 #endif

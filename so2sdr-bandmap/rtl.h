@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -22,29 +22,30 @@
 #include "sdrdatasource.h"
 #include <rtl-sdr.h>
 
-class RtlSDR : public SdrDataSource
-{
-    Q_OBJECT
+class RtlSDR : public SdrDataSource {
+  Q_OBJECT
 
 public:
-    RtlSDR(QString settingsFile,QObject *parent = nullptr);
-    ~RtlSDR();
+  RtlSDR(QString settingsFile, QObject *parent = nullptr);
+  ~RtlSDR();
+  unsigned int sampleRate() const;
 
 public slots:
-    void stop();
-    void initialize();
+  void stop();
+  void initialize();
+  void setRfFreq(double f);
 
 private:
-    void stream();
-    void streamx16();
+  void stream();
+  void streamx16();
 
-    rtlsdr_dev_t       *dev;
-    unsigned char      *buff;
-    unsigned char      *rawBuff;
-    unsigned char      *ptr;
-    unsigned int       bpmax;
-    unsigned int       bptr;
-    unsigned int       iptr;
+  rtlsdr_dev_t *dev;
+  unsigned char *buff;
+  unsigned char *rawBuff;
+  unsigned char *ptr;
+  unsigned int bpmax;
+  unsigned int bptr;
+  unsigned int iptr;
 };
 
 #endif

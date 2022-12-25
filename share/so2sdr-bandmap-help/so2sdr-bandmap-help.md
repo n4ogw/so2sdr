@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.6.0
+## So2sdr-bandmap Help Version 2.6.2
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -26,9 +26,30 @@ So2sdr-bandmap has been tested with the following SDR hardware:
 ethernet.
 * RTL-sdr (Nooelec v5 tested)
 
-Other SDR's may work if they supply an I/Q stream over the sound card interface
-or via ethernet with the SDR-IP protocol. The program has been tested most with the
-Elecraft K3.
+Other SDR's may work if they supply an I/Q stream over the sound card
+interface or via ethernet with the SDR-IP protocol. The program has
+been tested most with the Elecraft K3.
+
+The program operates in two main modes, IF or RF based. In the IF
+mode, the SDR is fed from the IF of the main radio. In this case, the
+frequency the SDR is tuned to is fixed and normally equal or close to
+the IF frequency of the radio.  The frequency the radio is tuned to
+will be centered in the panadapter display and not move (you can
+however drag the frequency ruler with the mouse to move the center).
+Advantages of this setup are that the SDR is completely protected from
+transmitted rf, and no retuning is required so very simple
+crystal-controlled SDRs (like the Softrock) can be used.  In the RF
+based mode, the SDR is connected to an antenna directly. Many radios
+will have receive-level ports where the SDR can be attached, where it
+will be protected during transmit. Some kind of receive splitter is
+still needed however.  In the RF mode the SDR needs to be tuned, and
+the red mark indicating the frequency the radio is tuned to will move.
+For the RF mode, there are two submodes, manual and automatic. In the
+manual mode, the logging program must send commands to recenter the
+display (if the radio is tuned off the display, the red mark will
+not appear). In the automatic mode, so2sdr-bandmap will automatically
+retune the SDR whenever the radio frequency approaches the end of
+the display in order to keep the red mark visible.
 
 **Important for SO2R:** For SO2R usage, you need to provide two
 different configurations for so2sdr-bandmap, with different bandmap ID
@@ -221,6 +242,9 @@ following bytes: data (optional), format depends on command
 + Set Center Frequency: 'f' 0x66 dec 102
   followed by ascii characters giving frequency in Hz
 
++ Set SDR center Frequency: 'f' 0x68 dec 104
+  followed by ascii characters giving frequency in Hz
+
 + Exit program: 'q' 0x71 dec 113
   No data follows (length=0). Using this command before terminating
   the  bandmap process allows the bandmap to shut down properly and
@@ -356,6 +380,15 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.2 (12/25/2022)
+
+* add options for IF versus RF panadapters
+* reformat .h and .cpp files with clang-format
+
+## version 2.6.1
+
+* various bug fixes. Fix ARRL 10m contest indication of which band the radio is on
 
 ## version 2.6.0 (12/03/2022)
 

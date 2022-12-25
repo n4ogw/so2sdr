@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -89,6 +89,7 @@ void NetworkSetup::updateFromSettings()
     default:
         speedComboBox->setCurrentIndex(0);
     }
+    IFFreqLineEdit->setText(settings.value(s_sdr_net_if_freq,s_sdr_net_if_freq_def).toString());
     tcpipaddressLineEdit->setText(settings.value(s_sdr_net_tcp_ip,s_sdr_net_tcp_ip_def).toString());
     tcpportLineEdit->setText(settings.value(s_sdr_net_tcp_port,s_sdr_net_tcp_port_def).toString());
     udpportLineEdit->setText(settings.value(s_sdr_net_udp_port,s_sdr_net_udp_port_def).toString());
@@ -114,6 +115,7 @@ void NetworkSetup::updateNetwork()
         settings.setValue(s_sdr_net_speed,4);
         break;
     }
+    settings.setValue(s_sdr_net_if_freq,IFFreqLineEdit->text());
     settings.setValue(s_sdr_net_tcp_port,tcpportLineEdit->text().toInt());
     settings.setValue(s_sdr_net_udp_port,udpportLineEdit->text().toInt());
     settings.setValue(s_sdr_net_tcp_ip,tcpipaddressLineEdit->text());

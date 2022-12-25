@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,22 +21,21 @@
 
 #include "contest.h"
 
-class Sprint : public Contest
-{
+class Sprint : public Contest {
 public:
-    Sprint(QSettings &cs,QSettings &ss);
-    ~Sprint() override;
+  Sprint(QSettings &cs, QSettings &ss);
+  ~Sprint() override;
 
-    ContestType contestType() const override { return Sprint_t;}
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    unsigned int rcvFieldShown() const override;
-    bool showQsoPtsField() const override { return false;}
-    unsigned int sntFieldShown() const override;
-    QVariant columnName(int c) const override;
+  ContestType contestType() const override { return Sprint_t; }
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  unsigned int rcvFieldShown() const override;
+  bool showQsoPtsField() const override { return false; }
+  unsigned int sntFieldShown() const override;
+  QVariant columnName(int c) const override;
 };
 
 #endif // CONTEST_SPRINT_H

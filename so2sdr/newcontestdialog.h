@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,27 +19,26 @@
 #ifndef NEWCONTESTDIALOG_H
 #define NEWCONTESTDIALOG_H
 
+#include "ui_newcontestdialog.h"
 #include <QByteArray>
 #include <QList>
 #include <QString>
-#include "ui_newcontestdialog.h"
 
 /*!
    New contest selection dialog
  */
-class NewDialog : public QDialog, public Ui::NewContestDialog
-{
-Q_OBJECT
+class NewDialog : public QDialog, public Ui::NewContestDialog {
+  Q_OBJECT
 
 public:
-    NewDialog(QWidget *parent = nullptr);
-    bool readContestList(QString fileName);
-    QString selectedContest();
+  NewDialog(QWidget *parent = nullptr);
+  bool readContestList(QString fileName);
+  QString selectedContest();
 signals:
-    void newContestError(const QString &);
+  void newContestError(const QString &);
 
 private:
-    QList<QByteArray>    configFiles;
+  QList<QByteArray> configFiles;
 };
 
 #endif

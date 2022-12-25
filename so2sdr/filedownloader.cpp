@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,24 +19,21 @@
  */
 #include "filedownloader.h"
 
-FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
-{
-    connect(&m_WebCtrl, SIGNAL (finished(QNetworkReply*)),this, SLOT (fileDownloaded(QNetworkReply*)));
-    QNetworkRequest request(imageUrl);
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("Wget/1.19"));
-    m_WebCtrl.get(request);
+FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent)
+    : QObject(parent) {
+  connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply *)), this,
+          SLOT(fileDownloaded(QNetworkReply *)));
+  QNetworkRequest request(imageUrl);
+  request.setHeader(QNetworkRequest::UserAgentHeader, QVariant("Wget/1.19"));
+  m_WebCtrl.get(request);
 }
 
 FileDownloader::~FileDownloader() {}
 
-void FileDownloader::fileDownloaded(QNetworkReply* pReply)
-{
-    m_DownloadedData = pReply->readAll();
-    pReply->deleteLater();
-    emit downloaded();
+void FileDownloader::fileDownloaded(QNetworkReply *pReply) {
+  m_DownloadedData = pReply->readAll();
+  pReply->deleteLater();
+  emit downloaded();
 }
 
-QByteArray FileDownloader::downloadedData() const
-{
-    return m_DownloadedData;
-}
+QByteArray FileDownloader::downloadedData() const { return m_DownloadedData; }

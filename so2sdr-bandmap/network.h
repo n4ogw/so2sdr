@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,42 +19,43 @@
 
 #ifndef NETWORK_H
 #define NETWORK_H
+#include "sdrdatasource.h"
 #include <QObject>
 #include <QTcpSocket>
 #include <QUdpSocket>
-#include "sdrdatasource.h"
 
-class NetworkSDR : public SdrDataSource
-{
-    Q_OBJECT
+class NetworkSDR : public SdrDataSource {
+  Q_OBJECT
 public:
-    NetworkSDR(QString settingsFile,QObject *parent = nullptr);
-    ~NetworkSDR();
+  NetworkSDR(QString settingsFile, QObject *parent = nullptr);
+  ~NetworkSDR();
+  unsigned int sampleRate() const;
 
 public slots:
-    void stop();
-    void initialize();
+  void stop();
+  void initialize();
+  void setRfFreq(double f);
 
 private slots:
-    void readDatagram();
-    void tcpError(QAbstractSocket::SocketError err);
-    void readTcp();
+  void readDatagram();
+  void tcpError(QAbstractSocket::SocketError err);
+  void readTcp();
 
 protected:
-    void send_rx_command(int);
-    void close_udp();
-    void get_name();
-    void stopNetwork();
+  void send_rx_command(int);
+  void close_udp();
+  void get_name();
+  void stopNetwork();
 
-    QTcpSocket tsocket;
-    QUdpSocket usocket;
-    unsigned char      *buff;
-    unsigned int       bpmax;
-    unsigned int       bptr;
-    unsigned int       iptr;
+  QTcpSocket tsocket;
+  QUdpSocket usocket;
+  unsigned char *buff;
+  unsigned int bpmax;
+  unsigned int bptr;
+  unsigned int iptr;
 
 private:
-    void set_sample_rate(unsigned long sample_rate);
+  void set_sample_rate(unsigned long sample_rate);
 };
 
 #endif

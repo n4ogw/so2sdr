@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -27,30 +27,29 @@
 /*!
    Dialog for setting misc program options
  */
-class ContestOptionsDialog : public QDialog, public Ui::ContestOptDialog
-{
-Q_OBJECT
+class ContestOptionsDialog : public QDialog, public Ui::ContestOptDialog {
+  Q_OBJECT
 
 public:
-    friend class So2sdr;
-    ContestOptionsDialog(uiSize sizes,QWidget *parent = nullptr);
-    ~ContestOptionsDialog();
-    void initialize(QSettings *s);
+  friend class So2sdr;
+  ContestOptionsDialog(uiSize sizes, QWidget *parent = nullptr);
+  ~ContestOptionsDialog();
+  void initialize(QSettings *s);
 
 public slots:
-    void updateOptions();
-    void rejectChanges();
+  void updateOptions();
+  void rejectChanges();
 signals:
-    void rescore();
-    void multiModeChanged();
-    void updateOffTime();
+  void rescore();
+  void multiModeChanged();
+  void updateOffTime();
 
 private:
-    void setOptions();
-    QIntValidator *offValidator;
-    QSettings *settings;
-    QLineEdit *sent[MAX_EXCH_FIELDS];
-    QLabel *sentName[MAX_EXCH_FIELDS];
+  void setOptions();
+  QIntValidator *offValidator;
+  QSettings *settings;
+  QLineEdit *sent[MAX_EXCH_FIELDS];
+  QLabel *sentName[MAX_EXCH_FIELDS];
 };
 
 #endif

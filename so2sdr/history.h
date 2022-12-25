@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,35 +20,33 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
+#include "qso.h"
 #include <QByteArray>
 #include <QObject>
 #include <QSettings>
 #include <QSqlRecord>
-#include "qso.h"
 
 /*!
  exchange history database
  */
-class History : public QObject
-{
-    Q_OBJECT
+class History : public QObject {
+  Q_OBJECT
 public:
-    explicit History(QSettings& csettings,QObject *parent = nullptr);
-    ~History();
-    void fillExchange(Qso *qso,QByteArray part);
-    void startHistory();
-    bool isOpen();
+  explicit History(QSettings &csettings, QObject *parent = nullptr);
+  ~History();
+  void fillExchange(Qso *qso, QByteArray part);
+  void startHistory();
+  bool isOpen();
 
 signals:
-    void message(const QString &,int);
+  void message(const QString &, int);
 
 public slots:
-    void addQso(const Qso *qso);
+  void addQso(const Qso *qso);
 
 private:
-    QSettings&  csettings;
-    bool        isopen;
-
+  QSettings &csettings;
+  bool isopen;
 };
 
 #endif // HISTORY_H

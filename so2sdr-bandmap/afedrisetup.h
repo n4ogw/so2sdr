@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,33 +19,35 @@
 #ifndef AFEDRISETUP_H
 #define AFEDRISETUP_H
 
+#include "bandoffsetsetup.h"
 #include "defines.h"
+#include "ui_afedrisetup.h"
 #include <QDialog>
 #include <QSettings>
-#include "bandoffsetsetup.h"
-#include "ui_afedrisetup.h"
 
-
-class AfedriSetup : public QDialog, public Ui::afedriSetup
-{
-    Q_OBJECT
+class AfedriSetup : public QDialog, public Ui::afedriSetup {
+  Q_OBJECT
 public:
-    explicit AfedriSetup(QSettings &s,uiSize sizes,QWidget *parent = nullptr);
-    double offset(int band) const;
-    bool invert(int band) const;
+  explicit AfedriSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  double offset(int band) const;
+  bool invert(int band) const;
 
 signals:
-    void afedriError(const QString &);
+  void afedriError(const QString &);
+
+public slots:
+  void setFreq(unsigned int f) { clockFreqLabel->setText(QString::number(f)); }
+  void setActualSampleRate(unsigned int f) { realSampleRateLabel->setText(QString::number(f)); }
 
 private slots:
-    void updateAfedri();
-    void rejectChanges();
-    void enableControls();
+  void updateAfedri();
+  void rejectChanges();
+  void enableControls();
 
 private:
-    QSettings &settings;
-    void updateFromSettings();
-    BandOffsetSetup *offsetSetup;
+  QSettings &settings;
+  void updateFromSettings();
+  BandOffsetSetup *offsetSetup;
 };
 
 #endif // AFEDRISETUP_H

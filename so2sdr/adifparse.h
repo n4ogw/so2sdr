@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,23 +19,22 @@
 #ifndef ADIFPARSE_H
 #define ADIFPARSE_H
 
+#include "qso.h"
 #include <QByteArray>
 #include <QObject>
-#include "qso.h"
 
-class ADIFParse : public QObject
-{
-    Q_OBJECT
+class ADIFParse : public QObject {
+  Q_OBJECT
 public:
-    explicit ADIFParse(QObject *parent = nullptr);
-    bool parse(QByteArray data,Qso *qso);
+  explicit ADIFParse(QObject *parent = nullptr);
+  bool parse(QByteArray data, Qso *qso);
 
 signals:
 
 public slots:
 
 private:
-    void parseBit(QByteArray in, QByteArray &key, QByteArray &val);
+  void parseBit(QByteArray in, QByteArray &key, QByteArray &val);
 };
 
 #endif // ADIFPARSE_H

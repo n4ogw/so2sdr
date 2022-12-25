@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,27 +16,23 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
   */
-#include <QApplication>
 #include "so2sdr-bandmap.h"
+#include <QApplication>
 #include <QCoreApplication>
 #include <QStringList>
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-    QStringList args=app.arguments();
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  QStringList args = app.arguments();
 
-    So2sdrBandmap *main = new So2sdrBandmap(args);
-    QObject::connect(main->actionQuit, SIGNAL(triggered()), main, SLOT(quit()));
+  So2sdrBandmap *main = new So2sdrBandmap(args);
 
-    // calls So2sdrBandmap destructor on app exit
-    main->setAttribute(Qt::WA_DeleteOnClose);
+  // calls So2sdrBandmap destructor on app exit
+  main->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (main->so2sdrBandmapOk()) {
-        return app.exec();
-    } else {
-        return -1;
-    }
+  if (main->so2sdrBandmapOk()) {
+    return app.exec();
+  } else {
+    return -1;
+  }
 }
-
-

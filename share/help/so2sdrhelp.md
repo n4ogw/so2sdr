@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.6.0
+## SO2SDR Help file version 2.6.2
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1030,6 +1030,15 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.2 (12/25/2022)
+
+* add options for IF versus RF panadapters
+* reformat .h and .cpp files with clang-format
+
+## version 2.6.1
+
+* various bug fixes. Fix ARRL 10m contest indication of which band the radio is on
 
 ## version 2.6.0 (12/03/2022)
 

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -27,12 +27,12 @@
  */
 class BandmapEntry {
 public:
-    BandmapEntry();
+  BandmapEntry();
 
-    bool       dupe;
-    double     f;
-    qint64     createdTime;
-    QByteArray call;
+  bool dupe;
+  double f;
+  qint64 createdTime;
+  QByteArray call;
 };
 
 Q_DECLARE_TYPEINFO(BandmapEntry, Q_MOVABLE_TYPE);

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,65 +18,64 @@
  */
 #ifndef WINKEY_H
 #define WINKEY_H
+#include "defines.h"
 #include <QByteArray>
+#include <QSerialPort>
 #include <QSettings>
 #include <QString>
-#include "defines.h"
-#include <QSerialPort>
 
 /*!
    Winkey support class
  */
-class Winkey : public QObject
-{
-Q_OBJECT
+class Winkey : public QObject {
+  Q_OBJECT
 
 public:
-    Winkey(QSettings& s, QObject *parent = nullptr);
-    ~Winkey();
-    void loadbuff(QByteArray msg);
-    bool isSending() const;
-    void sendcw();
-    void switchTransmit(int nrig);
-    void setEchoMode(bool b);
-    void setSpeed(int speed);
-    bool winkeyIsOpen() const;
+  Winkey(QSettings &s, QObject *parent = nullptr);
+  ~Winkey();
+  void loadbuff(QByteArray msg);
+  bool isSending() const;
+  void sendcw();
+  void switchTransmit(int nrig);
+  void setEchoMode(bool b);
+  void setSpeed(int speed);
+  bool winkeyIsOpen() const;
 
 signals:
-    void cwCanceled();
-    void finished();
-    void textSent(const QString& t,int);
-    void version(int ver);
-    void winkeyTx(bool, int);
-    void winkeyError(const QString &);
+  void cwCanceled();
+  void finished();
+  void textSent(const QString &t, int);
+  void version(int ver);
+  void winkeyTx(bool, int);
+  void winkeyError(const QString &);
 
 public slots:
-    void cancelcw();
-    void openWinkey();
+  void cancelcw();
+  void openWinkey();
 
 private slots:
-    void receive();
-    void receiveInit();
+  void receive();
+  void receiveInit();
 
 private:
-    QSerialPort *winkeyPort;
-    bool       echoMode;
-    bool       ignoreEcho;
-    bool       sending;
-    bool       winkeyOpen;
-    bool       winkeySendingCmd;
-    int        nchar;
-    int        rigNum;
-    int        txPtr;
-    int        txRig;
-    int        winkeySpeedPot;
-    int        winkeyVersion;
-    QByteArray sendBuff;
-    QString sent;
-    QSettings& settings;
-    void closeWinkey();
-    void openWinkey2();
-    void processEcho(unsigned char byte);
+  QSerialPort *winkeyPort;
+  bool echoMode;
+  bool ignoreEcho;
+  bool sending;
+  bool winkeyOpen;
+  bool winkeySendingCmd;
+  int nchar;
+  int rigNum;
+  int txPtr;
+  int txRig;
+  int winkeySpeedPot;
+  int winkeyVersion;
+  QByteArray sendBuff;
+  QString sent;
+  QSettings &settings;
+  void closeWinkey();
+  void openWinkey2();
+  void processEcho(unsigned char byte);
 };
 
 #endif // WINKEY_H

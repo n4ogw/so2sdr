@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,51 +19,47 @@
 #ifndef CWMANAGER_H
 #define CWMANAGER_H
 
+#include "cwdaemon.h"
 #include "defines.h"
 #include "winkey.h"
-#include "cwdaemon.h"
 #include <QByteArray>
 #include <QObject>
 #include <QSettings>
 #include <QString>
 
-typedef enum cwtype {
-    modeNone = 0,
-    modeWinkey = 1,
-    modeCwdaemon = 2} cwtype;
+typedef enum cwtype { modeNone = 0, modeWinkey = 1, modeCwdaemon = 2 } cwtype;
 
-class CWManager : public QObject
-{
-    Q_OBJECT
+class CWManager : public QObject {
+  Q_OBJECT
 public:
-    explicit CWManager(QSettings& s, QObject *parent = nullptr);
-    ~CWManager();
-    void loadbuff(QByteArray msg);
-    bool isSending() const;
-    void sendcw();
-    void switchTransmit(int nrig);
-    void setEchoMode(bool b);
-    void setSpeed(int speed);
-    QString textStatus() const;
+  explicit CWManager(QSettings &s, QObject *parent = nullptr);
+  ~CWManager();
+  void loadbuff(QByteArray msg);
+  bool isSending() const;
+  void sendcw();
+  void switchTransmit(int nrig);
+  void setEchoMode(bool b);
+  void setSpeed(int speed);
+  QString textStatus() const;
 
 signals:
-    void cwCanceled();
-    void finished();
-    void textSent(const QString& t,int);
-    void winkeyVersion(int ver);
-    void tx(bool, int);
-    void CWError(const QString &);
+  void cwCanceled();
+  void finished();
+  void textSent(const QString &t, int);
+  void winkeyVersion(int ver);
+  void tx(bool, int);
+  void CWError(const QString &);
 
 public slots:
-    void cancelcw();
-    void open();
-    void setType(cwtype t);
+  void cancelcw();
+  void open();
+  void setType(cwtype t);
 
 private:
-    cwtype mode;
-    QSettings& settings;
-    Winkey *winkey;
-    Cwdaemon *cwdaemon;
+  cwtype mode;
+  QSettings &settings;
+  Winkey *winkey;
+  Cwdaemon *cwdaemon;
 };
 
 #endif // CWMANAGER_H

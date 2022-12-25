@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -27,31 +27,32 @@
 /*! widget to display multipliers. Has extra features for grid square display
  *
  */
-class MultDisplay : public QTextEdit
-{
-    Q_OBJECT
+class MultDisplay : public QTextEdit {
+  Q_OBJECT
 
 public:
-    MultDisplay(QWidget *parent = nullptr);
-    void setGridMode(bool);
-    void drawGrids();
-    void updateMults();
+  MultDisplay(QWidget *parent = nullptr);
+  void setGridMode(bool);
+  void drawGrids();
+  void updateMults();
 public slots:
-    void setCenterGrid(QByteArray);
-    void setMults(QList<QByteArray> list) {mults=list;}
-    void setNeededMults(QList<QByteArray> list) {neededMults=list;}
+  void setCenterGrid(QByteArray);
+  void setMults(QList<QByteArray> list) { mults = list; }
+  void setNeededMults(QList<QByteArray> list) { neededMults = list; }
+
 protected:
-    bool eventFilter(QObject*, QEvent* e);
+  bool eventFilter(QObject *, QEvent *e);
+
 private:
-    bool gridMode;
-    QByteArray centerGrid;
-    QList<QByteArray> mults;
-    QList<QByteArray> neededMults;
-    char centerField1;
-    char centerField2;
-    char centerNr1;
-    char centerNr2;
-    char upperLeft[4];
+  bool gridMode;
+  QByteArray centerGrid;
+  QList<QByteArray> mults;
+  QList<QByteArray> neededMults;
+  char centerField1;
+  char centerField2;
+  char centerNr1;
+  char centerNr2;
+  char upperLeft[4];
 };
 
 #endif // MULTDISPLAY_H

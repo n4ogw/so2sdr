@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,27 +20,26 @@
 #ifndef FILEDOWNLOADER_H
 #define FILEDOWNLOADER_H
 
-#include <QObject>
 #include <QByteArray>
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QObject>
 
-class FileDownloader : public QObject
-{
- Q_OBJECT
- public:
+class FileDownloader : public QObject {
+  Q_OBJECT
+public:
   explicit FileDownloader(QUrl imageUrl, QObject *parent = nullptr);
   virtual ~FileDownloader();
   QByteArray downloadedData() const;
 
- signals:
+signals:
   void downloaded();
 
- private slots:
-  void fileDownloaded(QNetworkReply* pReply);
+private slots:
+  void fileDownloaded(QNetworkReply *pReply);
 
- private:
+private:
   QNetworkAccessManager m_WebCtrl;
   QByteArray m_DownloadedData;
 };

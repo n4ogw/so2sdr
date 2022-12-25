@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,9 +19,9 @@
 #ifndef SO2RDIALOG_H
 #define SO2RDIALOG_H
 
-#include "ui_so2rdialog.h"
 #include "defines.h"
 #include "serial.h"
+#include "ui_so2rdialog.h"
 #include <QFile>
 #include <QSettings>
 
@@ -31,27 +31,26 @@ class QLineEdit;
 /*!
    Radio serial communication parameters
  */
-class So2rDialog : public QDialog, public Ui::So2rDialog
-{
-Q_OBJECT
+class So2rDialog : public QDialog, public Ui::So2rDialog {
+  Q_OBJECT
 
 public:
-    So2rDialog(QSettings& s,uiSize sizes,QWidget *parent = nullptr);
-    ~So2rDialog();
+  So2rDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~So2rDialog();
 
 signals:
-    void setParallelPort();
-    void setOTRSP();
-    void setMicroHam();
+  void setParallelPort();
+  void setOTRSP();
+  void setMicroHam();
 
 public slots:
-    void rejectChanges();
-    void updateSo2r();
-    void setOtrspName(QByteArray name,int nr);
+  void rejectChanges();
+  void updateSo2r();
+  void setOtrspName(QByteArray name, int nr);
 
 private:
-    void updateFromSettings();
-    QSettings&  settings;
+  void updateFromSettings();
+  QSettings &settings;
 };
 
 #endif

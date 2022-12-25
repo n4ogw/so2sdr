@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,20 +21,19 @@
 
 #include "contest.h"
 
-class Cwops : public Contest
-{
+class Cwops : public Contest {
 public:
-    Cwops(QSettings &cs,QSettings &ss);
-    ~Cwops() override;
+  Cwops(QSettings &cs, QSettings &ss);
+  ~Cwops() override;
 
-    void addQso(Qso *qso) override;
-    ContestType contestType() const override { return Cwops_t;}
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    void setupContest(QByteArray MultFile[2], const Cty * cty) override;
-    unsigned int rcvFieldShown() const override;
-    bool validateExchange(Qso *qso) override;
-    bool showQsoPtsField() const override { return false;}
+  void addQso(Qso *qso) override;
+  ContestType contestType() const override { return Cwops_t; }
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  void setupContest(QByteArray MultFile[2], const Cty *cty) override;
+  unsigned int rcvFieldShown() const override;
+  bool validateExchange(Qso *qso) override;
+  bool showQsoPtsField() const override { return false; }
 };
 
 #endif

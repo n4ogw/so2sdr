@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,45 +19,45 @@
 #ifndef SDRDIALOG_H
 #define SDRDIALOG_H
 
-#include <QLabel>
-#include <QSettings>
 #include "defines.h"
 #include "ui_sdrdialog.h"
+#include <QLabel>
+#include <QSettings>
 
 class QCheckBox;
 
 /*!
    Visible bandmap parameters
  */
-class SDRDialog : public QDialog, public Ui::SDRDialog
-{
-Q_OBJECT
+class SDRDialog : public QDialog, public Ui::SDRDialog {
+  Q_OBJECT
 
 public:
-    SDRDialog(QSettings& s,uiSize sizes,QWidget *parent = nullptr);
-    ~SDRDialog();
+  SDRDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~SDRDialog();
 
 signals:
-    void updateCQLimits();
+  void updateCQLimits();
 
 public slots:
-    void updateSDR();
-    void rejectChanges();
+  void updateSDR();
+  void rejectChanges();
 
 private slots:
-    void findExeFile1();
-    void findExeFile2();
-    void findConfig1();
-    void findConfig2();
+  void findExeFile1();
+  void findExeFile2();
+  void findConfig1();
+  void findConfig2();
 
 private:
-    void fileGetter(QString msg,QString path,QString files,QString key,QLabel *label);
-    QString shortName(QString s);
-    void updateFromSettings();
-    QLabel             *pathLabel[NRIG];
-    QLineEdit          *ipPtr[NRIG];
-    QLineEdit          *portPtr[NRIG];
-    QLabel             *configLabel[NRIG];
-    QSettings&         settings;
+  void fileGetter(QString msg, QString path, QString files, QString key,
+                  QLabel *label);
+  QString shortName(QString s);
+  void updateFromSettings();
+  QLabel *pathLabel[NRIG];
+  QLineEdit *ipPtr[NRIG];
+  QLineEdit *portPtr[NRIG];
+  QLabel *configLabel[NRIG];
+  QSettings &settings;
 };
 #endif

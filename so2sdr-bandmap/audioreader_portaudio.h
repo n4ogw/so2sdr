@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,44 +19,45 @@
 #ifndef AUDIOREADER_PORTAUDIO_H
 #define AUDIOREADER_PORTAUDIO_H
 
-#include <portaudio.h>
-#include <QSettings>
 #include "sdrdatasource.h"
+#include <QSettings>
+#include <portaudio.h>
 
 /*!
    Low-level audio input using Portaudio
  */
-class AudioReaderPortAudio : public SdrDataSource
-{
-Q_OBJECT
+class AudioReaderPortAudio : public SdrDataSource {
+  Q_OBJECT
 
 public:
-    AudioReaderPortAudio(QString settingsFile,QObject *parent=nullptr);
-    ~AudioReaderPortAudio();
+  AudioReaderPortAudio(QString settingsFile, QObject *parent = nullptr);
+  ~AudioReaderPortAudio();
+  unsigned int sampleRate() const;
 
 protected:
-    static int callback(const void *input, void *output, unsigned long frameCount,
-                        const PaStreamCallbackTimeInfo* timeInfo,
-                        PaStreamCallbackFlags statusFlags, void *userdata);
+  static int callback(const void *input, void *output, unsigned long frameCount,
+                      const PaStreamCallbackTimeInfo *timeInfo,
+                      PaStreamCallbackFlags statusFlags, void *userdata);
 public slots:
-    void stop();
-    void initialize();
+  void stop();
+  void initialize();
+  void setRfFreq(double f) { Q_UNUSED(f) }
 
 private:
-    PaStreamParameters inputParameters;
-    PaError            err;
-    PaStream           *stream;
-    unsigned char      *buff;
-    unsigned char      *ptr;
-    unsigned int       bpmax;
-    unsigned int       bptr;
-    unsigned int       iptr;
-    unsigned long      periodSize;
-    int                frameSize;
+  PaStreamParameters inputParameters;
+  PaError err;
+  PaStream *stream;
+  unsigned char *buff;
+  unsigned char *ptr;
+  unsigned int bpmax;
+  unsigned int bptr;
+  unsigned int iptr;
+  unsigned long periodSize;
+  int frameSize;
 
-    void emitAudioReady();
-    bool checkError(PaError err);
-    void stopAudioreader();
+  void emitAudioReady();
+  bool checkError(PaError err);
+  void stopAudioreader();
 };
 
 #endif // AUDIOREADER_PORT_AUDIO_H

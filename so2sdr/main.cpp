@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,29 +16,28 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
   */
-#include <QApplication>
-#include "so2sdr.h"
 #include "menustyle.h"
+#include "so2sdr.h"
+#include <QApplication>
 #include <QCoreApplication>
 #include <QStringList>
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-    QStringList args=app.arguments();
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  QStringList args = app.arguments();
 
-    // set style that prevents menubar from grabbing focus when Alt pressed
-    app.setStyle(new MenuStyle());
+  // set style that prevents menubar from grabbing focus when Alt pressed
+  app.setStyle(new MenuStyle());
 
-    So2sdr *main = new So2sdr(args);
-    QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
+  So2sdr *main = new So2sdr(args);
+  QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
 
-    // calls So2sdr destructor on app exit
-    main->setAttribute(Qt::WA_DeleteOnClose);
+  // calls So2sdr destructor on app exit
+  main->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (main->so2sdrOk()) {
-        return app.exec();
-    } else {
-        return -1;
-    }
+  if (main->so2sdrOk()) {
+    return app.exec();
+  } else {
+    return -1;
+  }
 }

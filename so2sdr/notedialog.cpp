@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -16,29 +16,29 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include <QDir>
 #include "notedialog.h"
+#include <QDir>
 
-NoteDialog::NoteDialog(uiSize sizes, QWidget *parent) : QDialog(parent)
-{
-    setupUi(this);
-    NoteLineEdit->setFixedWidth(qRound(sizes.width*30));
-    adjustSize();
-    setFixedSize(size());
-    connect(NoteButtonBox, SIGNAL(accepted()), this, SLOT(writeNotes()));
+NoteDialog::NoteDialog(uiSize sizes, QWidget *parent) : QDialog(parent) {
+  setupUi(this);
+  NoteLineEdit->setFixedWidth(qRound(sizes.width * 30));
+  adjustSize();
+  setFixedSize(size());
+  connect(NoteButtonBox, SIGNAL(accepted()), this, SLOT(writeNotes()));
 }
 
 /*!
    called to open note dialog
  */
-void NoteDialog::enterNote(QString fname, QString dir, QString time, bool grab)
-{
-    show();
-    NoteLineEdit->setFocus();
-    if (grab) NoteLineEdit->grabKeyboard();
-    NoteLineEdit->setText(time + ":");
-    noteFile = fname.remove("cfg") + "txt";
-    noteDir  = dir;
+void NoteDialog::enterNote(QString fname, QString dir, QString time,
+                           bool grab) {
+  show();
+  NoteLineEdit->setFocus();
+  if (grab)
+    NoteLineEdit->grabKeyboard();
+  NoteLineEdit->setText(time + ":");
+  noteFile = fname.remove("cfg") + "txt";
+  noteDir = dir;
 }
 
 /*!
@@ -46,14 +46,13 @@ void NoteDialog::enterNote(QString fname, QString dir, QString time, bool grab)
 
    @todo File write error not handled
  */
-void NoteDialog::writeNotes()
-{
-    QDir  directory;
-    directory.setCurrent(noteDir);
-    QFile file(noteFile);
-    if (file.open(QIODevice::Append | QIODevice::Text)) {
-        file.write(NoteLineEdit->text().toLatin1().data());
-        file.write("\n");
-        file.close();
-    }
+void NoteDialog::writeNotes() {
+  QDir directory;
+  directory.setCurrent(noteDir);
+  QFile file(noteFile);
+  if (file.open(QIODevice::Append | QIODevice::Text)) {
+    file.write(NoteLineEdit->text().toLatin1().data());
+    file.write("\n");
+    file.close();
+  }
 }

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,39 +19,38 @@
 #ifndef STATIONDIALOG_H
 #define STATIONDIALOG_H
 
-#include <QString>
-#include <QDialog>
-#include <QCloseEvent>
-#include <QSettings>
-#include "ui_stationdialog.h"
 #include "defines.h"
+#include "ui_stationdialog.h"
 #include "utils.h"
+#include <QCloseEvent>
+#include <QDialog>
+#include <QSettings>
+#include <QString>
 /*!
    Station parameters dialog
  */
-class StationDialog : public QDialog, public Ui::StationDialog
-{
-Q_OBJECT
+class StationDialog : public QDialog, public Ui::StationDialog {
+  Q_OBJECT
 
 public:
-    StationDialog(QSettings& s,uiSize sizes,QWidget *parent = nullptr);
-    ~StationDialog();
-    friend class So2sdr;
+  StationDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  ~StationDialog();
+  friend class So2sdr;
 
-    double lat() const;
-    double lon() const;
+  double lat() const;
+  double lon() const;
 
 public slots:
-    void updateStation();
-    void rejectChanges();
+  void updateStation();
+  void rejectChanges();
 
 signals:
-    void stationUpdate();
+  void stationUpdate();
 
 private:
-    double         Lat;
-    double         Lon;
-    QSettings&      settings;
+  double Lat;
+  double Lon;
+  QSettings &settings;
 };
 
 #endif

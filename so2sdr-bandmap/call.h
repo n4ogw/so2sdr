@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -20,16 +20,15 @@
 #define CALL_H
 #include <QByteArray>
 
-class Call
-{
+class Call {
 public:
-    Call();
+  Call();
 
-    QByteArray call;
-    double freq;
-    unsigned char rgbCall[3];
-    bool markRgb[3];
-    bool mark;
+  QByteArray call;
+  double freq;
+  unsigned char rgbCall[3];
+  bool markRgb[3];
+  bool mark;
 };
 
 #endif // CALL_H

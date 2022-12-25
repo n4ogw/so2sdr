@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,35 +18,32 @@
  */
 #include "signal.h"
 
-Signal::Signal()
-{
-    active = false;
-    cnt    = 0;
-    n      = 0;
-    f      = 0;
-    fcq    = 0;
-    space  = 0;
-    fsum   = 0;
+Signal::Signal() {
+  active = false;
+  cnt = 0;
+  n = 0;
+  f = 0;
+  fcq = 0;
+  space = 0;
+  fsum = 0;
 }
 
-void Signal::clear()
-{
-    active = false;
-    cnt    = 0;
-    f      = 0;
-    fcq    = 0;
-    fsum   = 0;
-    n      = 0;
-    space  = 0;
+void Signal::clear() {
+  active = false;
+  cnt = 0;
+  f = 0;
+  fcq = 0;
+  fsum = 0;
+  n = 0;
+  space = 0;
 }
 
-CalibSignal::CalibSignal()
-{
-    n       = 0;
-    zsum[0] = 0.;
-    zsum[1] = 0.;
-    z[0]    = 0.;
-    z[1]    = 0.;
-    gain    = 1.0;
-    phase   = 0.;
+CalibSignal::CalibSignal() {
+  n = 0;
+  zsum[0] = 0.;
+  zsum[1] = 0.;
+  z[0] = 0.;
+  z[1] = 0.;
+  gain = 1.0;
+  phase = 0.;
 }

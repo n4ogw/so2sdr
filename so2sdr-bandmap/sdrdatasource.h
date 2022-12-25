@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,34 +19,39 @@
 #ifndef SDRDATASOURCE_H
 #define SDRDATASOURCE_H
 
-#include <QObject>
-#include <QString>
-#include <QSettings>
 #include "defines.h"
+#include <QObject>
+#include <QSettings>
+#include <QString>
 
-class SdrDataSource : public QObject
-{
-    Q_OBJECT
+class SdrDataSource : public QObject {
+  Q_OBJECT
 public:
-    explicit SdrDataSource(QString settingsFile,QObject *parent = nullptr);
-    ~SdrDataSource();
-    void setSampleSizes(sampleSizes s);
-    bool isRunning() { return running; };
+  explicit SdrDataSource(QString settingsFile, QObject *parent = nullptr);
+  ~SdrDataSource();
+  virtual unsigned int sampleRate() const = 0;
+  void setSampleSizes(sampleSizes s);
+  bool isRunning() { return running; };
 
 signals:
-    void error(const QString &);
-    void ready(unsigned char *, unsigned int);
-    void stopped();
+  void error(const QString &);
+  void ready(unsigned char *, unsigned int);
+  void resetRfFlag();
+  void stopped();
+  void realSampleRateSignal(unsigned int);
+  void clockFreqSignal(unsigned int);
 
 public slots:
-    virtual void stop() = 0;
-    virtual void initialize() = 0;
+  virtual void stop() = 0;
+  virtual void initialize() = 0;
+  virtual void setRfFreq(double f) = 0;
 
 protected:
-    sampleSizes sizes;
-    QSettings   *settings;
-    std::atomic<bool> stopFlag;
-    std::atomic<bool> running;
+  sampleSizes sizes;
+  QSettings *settings;
+  std::atomic<bool> stopFlag;
+  std::atomic<bool> running;
+  std::atomic<double> rfFreq;
 };
 
 #endif // SDRDATASOURCE_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -18,52 +18,51 @@
  */
 #ifndef IQBALANCE_H
 #define IQBALANCE_H
+#include "defines.h"
 #include "ui_iqbalance.h"
+#include <QCloseEvent>
 #include <QDialog>
 #include <QPainter>
 #include <QPixmap>
-#include <QCloseEvent>
 #include <QWidget>
-#include "defines.h"
 
-const int IQ_PLOT_WIDTH=512;
-const int IQ_PLOT_HEIGHT=120;
+const int IQ_PLOT_WIDTH = 512;
+const int IQ_PLOT_HEIGHT = 120;
 
-class IQBalance : public QWidget, public Ui::IQBalance
-{
-Q_OBJECT
+class IQBalance : public QWidget, public Ui::IQBalance {
+  Q_OBJECT
 
 public:
-    IQBalance(QWidget *parent = nullptr);
-    ~IQBalance();
-    friend class So2sdrBandmap;
+  IQBalance(QWidget *parent = nullptr);
+  ~IQBalance();
+  friend class So2sdrBandmap;
 
 public slots:
-    void clearPlots();
-    void plotGainPoint(int bin, double y);
-    void plotGainFunc(double, double, double, double);
-    void plotPhasePoint(int bin, double y);
-    void plotPhaseFunc(double, double, double, double);
-    void setGainScale(double, double);
-    void setPhaseScale(double, double);
+  void clearPlots();
+  void plotGainPoint(int bin, double y);
+  void plotGainFunc(double, double, double, double);
+  void plotPhasePoint(int bin, double y);
+  void plotPhaseFunc(double, double, double, double);
+  void setGainScale(double, double);
+  void setPhaseScale(double, double);
 
 signals:
-    void closed(bool);
-    void restart();
+  void closed(bool);
+  void restart();
 
 protected:
-    void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent *event);
 
 private slots:
-    void restartIQ();
+  void restartIQ();
 
 private:
-    double  gainOffset;
-    double  gainScale;
-    double  phaseOffset;
-    double  phaseScale;
-    QPixmap gainPixmap;
-    QPixmap phasePixmap;
+  double gainOffset;
+  double gainScale;
+  double phaseOffset;
+  double phaseScale;
+  QPixmap gainPixmap;
+  QPixmap phasePixmap;
 };
 
 #endif

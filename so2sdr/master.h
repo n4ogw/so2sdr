@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -28,28 +28,27 @@
 
    based on code from Alex Shovkoplyas VE3NEA
  */
-class Master : public QObject
-{
-Q_OBJECT
+class Master : public QObject {
+  Q_OBJECT
 
 public:
-    Master();
-    ~Master();
-    void initialize(QFile &file);
-    void search(QByteArray partial, QByteArray &CallList);
+  Master();
+  ~Master();
+  void initialize(QFile &file);
+  void search(QByteArray partial, QByteArray &CallList);
 
 signals:
-    void masterError(const QString &);
+  void masterError(const QString &);
 
 private:
-    bool       initialized;
-    char       *CallData;
-    int        *index;
-    int        indexBytes;
-    int        indexSize;
-    int        nchars;
-    QByteArray chars;
-    qint64     fileSize;
+  bool initialized;
+  char *CallData;
+  int *index;
+  int indexBytes;
+  int indexSize;
+  int nchars;
+  QByteArray chars;
+  qint64 fileSize;
 };
 
 #endif // MASTER_H

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,29 +19,26 @@
 
 #ifndef WSJTXDELEGATE_H
 #define WSJTXDELEGATE_H
-#include <QAbstractItemDelegate>
-#include <QStyledItemDelegate>
-#include <QModelIndex>
-#include <QStyleOptionViewItem>
-#include <QObject>
-#include <QWidget>
 #include "defines.h"
+#include <QAbstractItemDelegate>
+#include <QModelIndex>
+#include <QObject>
+#include <QStyleOptionViewItem>
+#include <QStyledItemDelegate>
+#include <QWidget>
 
 /*!
   subclass of delegate for displaying log in main window
   */
-class wsjtxDelegate  : public QStyledItemDelegate
-{
-Q_OBJECT
+class wsjtxDelegate : public QStyledItemDelegate {
+  Q_OBJECT
 
 public:
-    wsjtxDelegate();
+  wsjtxDelegate();
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
+  void paint(QPainter *painter, const QStyleOptionViewItem &option,
+             const QModelIndex &index) const;
 };
 
-
 #endif // WSJTXDELEGATE_H
-

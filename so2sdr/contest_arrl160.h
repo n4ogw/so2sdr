@@ -1,4 +1,4 @@
-/*! Copyright 2010-2022 R. Torsten Clay N4OGW
+/*! Copyright 2010-2023 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -19,31 +19,31 @@
 #ifndef CONTEST_ARRL160_H
 #define CONTEST_ARRL160_H
 
-#include "cty.h"
 #include "contest.h"
+#include "cty.h"
 
-class ARRL160 : public Contest
-{
+class ARRL160 : public Contest {
 public:
-    ARRL160(bool,QSettings &cs,QSettings &ss);
-    ~ARRL160() override;
+  ARRL160(bool, QSettings &cs, QSettings &ss);
+  ~ARRL160() override;
 
-    QString bandLabel(int i) const override;
-    bool bandLabelEnable(int i) const override;
-    void setupContest(QByteArray MultFile[MMAX], const Cty * cty) override;
-    bool validateExchange(Qso *qso) override;
-    ContestType contestType() const override { return Arrl160_t;}
-    void addQso(Qso *qso) override;
-    int fieldWidth(int col) const override;
-    int numberField() const override;
-    QByteArray prefillExchange(Qso *qso) override;
-    unsigned int rcvFieldShown() const override;
-    unsigned int sntFieldShown() const override;
-    int Score() const override;
-    bool showQsoPtsField() const override { return true;}
-    int rstField() const override { return 0;}
+  QString bandLabel(int i) const override;
+  bool bandLabelEnable(int i) const override;
+  void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
+  bool validateExchange(Qso *qso) override;
+  ContestType contestType() const override { return Arrl160_t; }
+  void addQso(Qso *qso) override;
+  int fieldWidth(int col) const override;
+  int numberField() const override;
+  QByteArray prefillExchange(Qso *qso) override;
+  unsigned int rcvFieldShown() const override;
+  unsigned int sntFieldShown() const override;
+  int Score() const override;
+  bool showQsoPtsField() const override { return true; }
+  int rstField() const override { return 0; }
+
 private:
-    bool usVe;
+  bool usVe;
 };
 
 #endif
