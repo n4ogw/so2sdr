@@ -84,8 +84,6 @@ void RtlSDR::initialize() {
         settings->value(s_sdr_rtl_if_freq, s_sdr_sample_freq_def).toUInt());
   } else {
     rtlsdr_set_center_freq(dev, rfFreq);
-    // force retuning SDR
-    emit resetRfFlag();
   }
   if (settings->value(s_sdr_rtl_tuner_gain, s_sdr_rtl_tuner_gain_def).toInt() !=
       0) {

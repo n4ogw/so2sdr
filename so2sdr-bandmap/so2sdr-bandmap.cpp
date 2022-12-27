@@ -218,7 +218,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   connect(sdrSource, SIGNAL(error(QString)), &errorBox,
           SLOT(showMessage(QString)));
   connect(sdrSource, SIGNAL(resetRfFlag()), this, SLOT(resetRfFlag()));
-  connect(this, SIGNAL(setRfFreq(double)), sdrSource, SLOT(setRfFreq(double)));
+  connect(this, SIGNAL(setRfFreq(double)), sdrSource, SLOT(setRfFreq(double)),Qt::DirectConnection);
   connect(sdrSource, SIGNAL(clockFreqSignal(unsigned int)), sdrSetup->afedri, SLOT(setFreq(unsigned int)));
   connect(sdrSource, SIGNAL(realSampleRateSignal(unsigned int)), sdrSetup->afedri, SLOT(setActualSampleRate(unsigned int)));
   connect(sdrSource, SIGNAL(realSampleRateSignal(unsigned int)), display, SLOT(setSampleRate(unsigned int)));
@@ -700,9 +700,19 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
             scale * fft -
         ((height() - toolBarHeight) / 2 - vfoPos);
 
-    // check to see if near ends of display. If yes, set flag to retune SDR
+    // check to see if near ends of display. If yes, retune SDR
     if ((y < (fft / 2 - vfoPos + 100)) || (y > (fft / 2 + vfoPos - 100))) {
-      setRfFlag = true;
+        rfFreq = centerFreq;
+        cf = rfFreq;
+        emit setRfFreq(centerFreq);
+        y = fft / 2 - ((height() - toolBarHeight) / 2 - vfoPos);
+        endFreqs[0] = rfFreq - sdrSource->sampleRate() / 2;
+        endFreqs[1] = rfFreq + sdrSource->sampleRate() / 2;
+        setWindowTitle("Bandmap " + bandName + " [" +
+                       QString::number(endFreqs[0] / 1000, 'f', 0) + "-" +
+                       QString::number(endFreqs[1] / 1000, 'f', 0) + "]");
+        spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
+        spectrumProcessor->resetAvg();
     }
     break;
   }
@@ -1249,6 +1259,7 @@ void So2sdrBandmap::readData() {
           setRfFlag = true;
         }
         centerFreq = f;
+
         if (setRfFlag) {
           rfFreq = f;
           emit setRfFreq(f);
