@@ -264,7 +264,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
 }
 
 So2sdrBandmap::~So2sdrBandmap() {
-  delete sdrSource;
+  sdrSource->deleteLater();
   delete spectrumProcessor;
   delete deleteAct;
   iqDialog->close();
@@ -451,6 +451,7 @@ void So2sdrBandmap::setSdrType() {
   }
   sizes.advance_size *= settings->value(s_sdr_speed, s_sdr_speed_def).toInt();
   spectrumProcessor->setFFTSize(sizes);
+  settings->setValue(s_sdr_sample_freq,sdrSource->sampleRate());
   spectrumProcessor->updateParams();
   sdrSource->setSampleSizes(sizes);
   bandMapName = "So2sdrBandmap" +
@@ -558,6 +559,7 @@ void So2sdrBandmap::emitParams() {
   settings->setValue(s_sdr_peakdetect, checkBoxMark.isChecked());
   display->setMark(
       settings->value(s_sdr_peakdetect, s_sdr_peakdetect_def).toBool());
+  settings->setValue(s_sdr_sample_freq,sdrSource->sampleRate());
   spectrumProcessor->updateParams();
 }
 
