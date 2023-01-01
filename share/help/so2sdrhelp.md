@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.6.2
+## SO2SDR Help file version 2.6.3
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1030,6 +1030,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.3 (01/01/2023)
+
+* fix signal highlighting in RF/autocenter mode
 
 ## version 2.6.2 (12/25/2022)
 

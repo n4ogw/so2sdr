@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = QByteArrayLiteral("2.6.2");
+const QByteArray Version = QByteArrayLiteral("2.6.3");
 
 typedef enum SdrType {
   soundcard_t = 0,

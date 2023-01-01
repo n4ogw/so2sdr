@@ -578,10 +578,10 @@ void So2sdrBandmap::makeCall() {
   int fft = settings->value(s_sdr_fft, s_sdr_fft_def).toInt();
   int scale = settings->value(s_sdr_scale, s_sdr_scale_def).toInt();
 
-  if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RF) {
-    cf = rfFreq;
-  } else {
+  if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
     cf = centerFreq;
+  } else {
+    cf = rfFreq;
   }
 
   p.setPen(Qt::black);

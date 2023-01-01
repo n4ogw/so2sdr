@@ -31,7 +31,7 @@
 #include <QtGlobal>
 
 // ///////// version ///////////////
-const QByteArray Version = QByteArrayLiteral("2.6.2");
+const QByteArray Version = QByteArrayLiteral("2.6.3");
 
 // //////// colors ////////////////
 // all of form (R,G,B)
