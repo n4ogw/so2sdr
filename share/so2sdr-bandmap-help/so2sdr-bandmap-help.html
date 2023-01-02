@@ -339,6 +339,10 @@ followed by</p>
 <li>length byte</li>
 <li>callsign</li>
 </ul></li>
+<li><p>Delete call at a specific frequency: 'e' 0x65 dec 101
+followed by ascii characters giving a frequency in Hz</p>
+
+<p>Deletes all calls that are  within SIG_MIN_FREQ_DIFF (set in defines.h, 65 Hz) of the given frequency</p></li>
 <li><p>Clear all calls: 'x' 0x78 dec 120
 command length 0</p></li>
 </ol>

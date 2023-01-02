@@ -321,7 +321,12 @@ and signal higlighted in magenta:
     - length byte
     - callsign
 
-3. Clear all calls: 'x' 0x78 dec 120
+3. Delete call at a specific frequency: 'e' 0x65 dec 101
+    followed by ascii characters giving a frequency in Hz
+
+	Deletes all calls that are  within SIG\_MIN\_FREQ\_DIFF (set in defines.h, 65 Hz) of the given frequency
+
+4. Clear all calls: 'x' 0x78 dec 120
    command length 0
 
 
