@@ -32,13 +32,3 @@ QString dataDirectory() {
  * stored
  */
 QString userDirectory() { return QDir::homePath() + "/.so2sdr"; }
-
-/* see
- * http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
- */
-void delay(int millisecondsToWait) {
-  QTime dieTime = QTime::currentTime().addMSecs(millisecondsToWait);
-  while (QTime::currentTime() < dieTime) {
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-  }
-}

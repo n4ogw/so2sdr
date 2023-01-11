@@ -42,7 +42,6 @@ public slots:
 private slots:
   void updateAfedri();
   void rejectChanges();
-  void enableControls();
 
 private:
   QSettings &settings;

@@ -55,6 +55,7 @@ public:
   void setInvert(bool);
   void setPeakDetect(bool);
   void setTuning(bool);
+  void setTx(bool b) { tx = b; }
   void setCalcError();
 
 signals:
@@ -85,6 +86,7 @@ private:
   bool isTuning;
   bool peakDetect;
   bool swapIq;
+  bool tx;
   CalibSignal *calibSigList;
   double aGain[FIT_ORDER];
   double aPhase[FIT_ORDER];

@@ -91,6 +91,7 @@ void Spectrum::setFFTSize(sampleSizes s) {
     aPhase[i] = 0.;
   }
   isTuning = false;
+  tx = false;
   // intialize to unit gain and zero phase
   aGain[0] = 1.0;
   makeGainPhase();
@@ -380,6 +381,11 @@ void Spectrum::processData(unsigned char *data, unsigned int bptr) {
   unsigned char *ptr = &data[j];
   double avgr = 0.;
   double avgi = 0.;
+
+  // if tx stop mode, ignore this data during transmit
+  if (tx && settings.value(s_sdr_txstop, s_sdr_txstop_def).toBool())
+    return;
+
   for (int i = 0; i < fftSize; i++) {
     double tmpr;
     double tmpi;

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>368</width>
-    <height>730</height>
+    <height>646</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -186,12 +186,12 @@
      <item row="5" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>SDR Freq1 (Hz)</string>
+        <string>SDR Freq (Hz)</string>
        </property>
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QLineEdit" name="lineEditFreq1">
+      <widget class="QLineEdit" name="IFFreqLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
@@ -199,81 +199,18 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>SDR center frequency, first receiver</string>
+        <string>SDR frequency. In IF mode this should be set to the IF frequency of the radio. In RF mode this is the initial frequency set.</string>
        </property>
       </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>SDR Freq2 (Hz)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEditFreq2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>SDR center frequency, second receiver</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>SDR Freq3 (Hz)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QLineEdit" name="lineEditFreq3">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>SDR center frequency, third receiver</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>SDR Freq4 (Hz)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLineEdit" name="lineEditFreq4">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>SDR center frequency, fourth receiver</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>IF Offset (Hz)</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="lineEditOffset">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -286,126 +223,7 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
-      <widget class="QLabel" name="label_13">
-       <property name="text">
-        <string>Sample Rate (Hz)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="1">
-      <widget class="QLineEdit" name="sampleFreqLineEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Requested sample rate of SDR. Actual rate depends on clock frequency and will be shown below.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="16" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>Broadcast</string>
-       </property>
-      </widget>
-     </item>
-     <item row="16" column="1">
-      <widget class="QRadioButton" name="broadcastMasterButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Turn on UDP broadcast option. Master controls the SDR.</string>
-       </property>
-       <property name="text">
-        <string>&amp;Master</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">broadcastButtonGroup</string>
-       </attribute>
-      </widget>
-     </item>
-     <item row="17" column="1">
-      <widget class="QRadioButton" name="broadcastSlaveButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Connect to UDP broadcast as Slave. Cannot change any SDR parameters. Use for multichannel SDR's.</string>
-       </property>
-       <property name="text">
-        <string>S&amp;lave</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">broadcastButtonGroup</string>
-       </attribute>
-      </widget>
-     </item>
-     <item row="18" column="1">
-      <widget class="QRadioButton" name="broadcastOffButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Do not use UDP broadcast protocol.</string>
-       </property>
-       <property name="text">
-        <string>Off</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">broadcastButtonGroup</string>
-       </attribute>
-      </widget>
-     </item>
-     <item row="12" column="0">
-      <widget class="QLabel" name="label_12">
-       <property name="text">
-        <string>Speed</string>
-       </property>
-      </widget>
-     </item>
-     <item row="12" column="1">
-      <widget class="QComboBox" name="speedComboBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <item>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>1/2</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>1/4</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="10" column="1">
+     <item row="7" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -421,7 +239,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="8" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -446,14 +264,83 @@
        </property>
       </widget>
      </item>
-     <item row="15" column="0">
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Speed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QComboBox" name="speedComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <item>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1/2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1/4</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Sample Rate (Hz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLineEdit" name="sampleFreqLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Requested sample rate of SDR. Actual rate depends on clock frequency and will be shown below.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Clock freq</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QLabel" name="clockFreqLabel">
+       <property name="toolTip">
+        <string>Clock frequency of SDR. Will be filled in after SDR has been starte.</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
       <widget class="QLabel" name="label_14">
        <property name="text">
         <string>Actual Sample Rate:</string>
        </property>
       </widget>
      </item>
-     <item row="15" column="1">
+     <item row="12" column="1">
       <widget class="QLabel" name="realSampleRateLabel">
        <property name="toolTip">
         <string>Actual sampling frequency of SDR</string>
@@ -463,21 +350,71 @@
        </property>
       </widget>
      </item>
-     <item row="14" column="0">
-      <widget class="QLabel" name="label_15">
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Clock freq</string>
+        <string>Broadcast</string>
        </property>
       </widget>
      </item>
-     <item row="14" column="1">
-      <widget class="QLabel" name="clockFreqLabel">
+     <item row="13" column="1">
+      <widget class="QRadioButton" name="broadcastMasterButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
-        <string>Clock frequency of SDR. Will be filled in after SDR has been starte.</string>
+        <string>Turn on UDP broadcast option. Master controls the SDR.</string>
        </property>
        <property name="text">
-        <string/>
+        <string>&amp;Master</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">broadcastButtonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="14" column="1">
+      <widget class="QRadioButton" name="broadcastSlaveButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Connect to UDP broadcast as Slave. Cannot change any SDR parameters. Use for multichannel SDR's.</string>
+       </property>
+       <property name="text">
+        <string>S&amp;lave</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">broadcastButtonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="15" column="1">
+      <widget class="QRadioButton" name="broadcastOffButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Do not use UDP broadcast protocol.</string>
+       </property>
+       <property name="text">
+        <string>Off</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">broadcastButtonGroup</string>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -500,10 +437,7 @@
   <tabstop>udpportLineEdit</tabstop>
   <tabstop>multiChannelComboBox</tabstop>
   <tabstop>channelComboBox</tabstop>
-  <tabstop>lineEditFreq1</tabstop>
-  <tabstop>lineEditFreq2</tabstop>
-  <tabstop>lineEditFreq3</tabstop>
-  <tabstop>lineEditFreq4</tabstop>
+  <tabstop>IFFreqLineEdit</tabstop>
   <tabstop>lineEditOffset</tabstop>
   <tabstop>speedComboBox</tabstop>
   <tabstop>sampleFreqLineEdit</tabstop>

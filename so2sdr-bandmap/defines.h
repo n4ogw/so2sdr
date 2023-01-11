@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = QByteArrayLiteral("2.6.3");
+const QByteArray Version = QByteArrayLiteral("2.6.4");
 
 typedef enum SdrType {
   soundcard_t = 0,
@@ -239,6 +239,9 @@ const int s_sdr_sample_freq_def = 96000;
 const QString s_sdr_mode = QStringLiteral("mode");
 const mode s_sdr_mode_def = IF;
 
+const QString s_sdr_txstop = QStringLiteral("txstop");
+const bool s_sdr_txstop_def = false;
+
 // sdr-ip SDR
 
 const QString s_sdr_net_speed = QStringLiteral("net_speed");
@@ -287,7 +290,8 @@ const int s_sdr_afedri_speed_def = 1;
 const QString s_sdr_afedri_sample_freq = QStringLiteral("afedri_sample_freq");
 const int s_sdr_afedri_sample_freq_def = 100000;
 
-const QString s_sdr_afedri_real_sample_freq = QStringLiteral("afedri_sample_freq");
+const QString s_sdr_afedri_real_sample_freq =
+    QStringLiteral("afedri_sample_freq");
 const int s_sdr_afedri_real_sample_freq_def = 0;
 
 const QString s_sdr_offset_afedri = QStringLiteral("offset_afedri");
@@ -311,18 +315,9 @@ const int s_sdr_afedri_multi_def = 0;
 const QString s_sdr_afedri_bcast = QStringLiteral("afedri_bcast");
 const int s_sdr_afedri_bcast_def = 0;
 
-const QString s_sdr_afedri_freq1 = QStringLiteral("afedri_freq1");
+const QString s_sdr_afedri_freq = QStringLiteral("afedri_freq");
 // this is the IF frequency needed for an Elecraft K3
-const int s_sdr_afedri_freq1_def = 8225000;
-
-const QString s_sdr_afedri_freq2 = QStringLiteral("afedri_freq2");
-const int s_sdr_afedri_freq2_def = 8225000;
-
-const QString s_sdr_afedri_freq3 = QStringLiteral("afedri_freq3");
-const int s_sdr_afedri_freq3_def = 0;
-
-const QString s_sdr_afedri_freq4 = QStringLiteral("afedri_freq4");
-const int s_sdr_afedri_freq4_def = 0;
+const int s_sdr_afedri_freq_def = 8225000;
 
 const QString s_sdr_swap_afedri = QStringLiteral("swapiq_afedri");
 const bool s_sdr_swap_afedri_def = false;
@@ -433,12 +428,15 @@ const double cqlimit_default_high[N_BANDS] = {
     250000000000, 479000,      137800};
 
 const QString bandName[N_BANDS] = {
-    QStringLiteral("160"),  QStringLiteral("80"),   QStringLiteral("40"),    QStringLiteral("20"),
-    QStringLiteral("15"),  QStringLiteral("10"),    QStringLiteral("60"),    QStringLiteral("30"),
-    QStringLiteral("17"),   QStringLiteral("12"),    QStringLiteral("6M"),  QStringLiteral("2M"),
-    QStringLiteral("1.25M"), QStringLiteral("70cm"),   QStringLiteral("33cm"), QStringLiteral("23cm"),
-    QStringLiteral("13cm"),  QStringLiteral("9cm"), QStringLiteral("6cm"), QStringLiteral("3cm"),
-    QStringLiteral("1.25cm"), QStringLiteral("6mm"),  QStringLiteral("4mm"),  QStringLiteral("2.5mm"),
-    QStringLiteral("2mm"), QStringLiteral("1mm"), QStringLiteral("630"),  QStringLiteral("2200")};
+    QStringLiteral("160"),   QStringLiteral("80"),   QStringLiteral("40"),
+    QStringLiteral("20"),    QStringLiteral("15"),   QStringLiteral("10"),
+    QStringLiteral("60"),    QStringLiteral("30"),   QStringLiteral("17"),
+    QStringLiteral("12"),    QStringLiteral("6M"),   QStringLiteral("2M"),
+    QStringLiteral("1.25M"), QStringLiteral("70cm"), QStringLiteral("33cm"),
+    QStringLiteral("23cm"),  QStringLiteral("13cm"), QStringLiteral("9cm"),
+    QStringLiteral("6cm"),   QStringLiteral("3cm"),  QStringLiteral("1.25cm"),
+    QStringLiteral("6mm"),   QStringLiteral("4mm"),  QStringLiteral("2.5mm"),
+    QStringLiteral("2mm"),   QStringLiteral("1mm"),  QStringLiteral("630"),
+    QStringLiteral("2200")};
 
 #endif // DEFINES_H

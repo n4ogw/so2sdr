@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.6.3
+## SO2SDR Help file version 2.6.4
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1030,6 +1030,12 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.4 (01/10/2023)
+
+* Add option to stop bandmap during transmit
+* Improve recentering of display in RFauto mode
+* Fix dual channel Afedri in RF/RFauto modes
 
 ## version 2.6.3 (01/01/2023)
 

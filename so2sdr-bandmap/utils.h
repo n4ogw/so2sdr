@@ -22,6 +22,5 @@
 
 QString dataDirectory();
 QString userDirectory();
-void delay(int millisecondsToWait);
 
 #endif // UTILS_H

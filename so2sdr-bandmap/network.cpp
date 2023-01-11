@@ -200,7 +200,7 @@ void NetworkSDR::readTcp() {
   // continue on as long as data is available
   while (tsocket.bytesAvailable()) {
     data = tsocket.read(128);
-    qDebug("<%s>", data.data());
+    // qDebug("<%s>", data.data());
   }
 }
 
@@ -262,7 +262,7 @@ void NetworkSDR::setRfFreq(double f) {
   tsocket.flush();
 }
 
-unsigned int NetworkSDR::sampleRate() const
-{
-    return settings->value(s_sdr_net_sample_freq, s_sdr_net_sample_freq_def).toUInt();
+unsigned int NetworkSDR::sampleRate() const {
+  return settings->value(s_sdr_net_sample_freq, s_sdr_net_sample_freq_def)
+      .toUInt();
 }

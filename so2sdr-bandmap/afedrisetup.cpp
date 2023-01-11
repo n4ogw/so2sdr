@@ -31,10 +31,7 @@ AfedriSetup::AfedriSetup(QSettings &s, uiSize sizes, QWidget *parent)
   tcpipaddressLineEdit->setFixedWidth(sizes.width * 15);
   tcpportLineEdit->setFixedWidth(sizes.width * 15);
   udpportLineEdit->setFixedWidth(sizes.width * 15);
-  lineEditFreq1->setFixedWidth(sizes.width * 15);
-  lineEditFreq2->setFixedWidth(sizes.width * 15);
-  lineEditFreq3->setFixedWidth(sizes.width * 15);
-  lineEditFreq4->setFixedWidth(sizes.width * 15);
+  IFFreqLineEdit->setFixedWidth(sizes.width * 15);
   sampleFreqLineEdit->setFixedWidth(sizes.width * 15);
   lineEditOffset->setFixedWidth(sizes.width * 15);
   adjustSize();
@@ -46,37 +43,6 @@ AfedriSetup::AfedriSetup(QSettings &s, uiSize sizes, QWidget *parent)
           SLOT(exec()));
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateAfedri()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
-  connect(broadcastOffButton, SIGNAL(clicked()), this, SLOT(enableControls()));
-  connect(broadcastMasterButton, SIGNAL(clicked()), this,
-          SLOT(enableControls()));
-  connect(broadcastSlaveButton, SIGNAL(clicked()), this,
-          SLOT(enableControls()));
-}
-
-/*! enable/disable controls depending on master/slave settings
- *  some controls disabled if in slave mode
- **/
-void AfedriSetup::enableControls() {
-  int b = broadcastButtonGroup->checkedId();
-  switch (b) {
-  case -2:
-  case -4: // master, off
-    tcpipaddressLineEdit->setEnabled(true);
-    tcpportLineEdit->setEnabled(true);
-    lineEditFreq1->setEnabled(true);
-    lineEditFreq2->setEnabled(true);
-    lineEditFreq3->setEnabled(true);
-    lineEditFreq4->setEnabled(true);
-    break;
-  case -3: // slave
-    tcpipaddressLineEdit->setEnabled(false);
-    tcpportLineEdit->setEnabled(false);
-    lineEditFreq1->setEnabled(false);
-    lineEditFreq2->setEnabled(false);
-    lineEditFreq3->setEnabled(false);
-    lineEditFreq4->setEnabled(false);
-    break;
-  }
 }
 
 /*!
@@ -121,17 +87,10 @@ void AfedriSetup::updateFromSettings() {
     broadcastSlaveButton->setChecked(true);
     break;
   }
-  enableControls();
   tcpipaddressLineEdit->setText(
       settings.value(s_sdr_afedri_tcp_ip, s_sdr_afedri_tcp_ip_def).toString());
-  lineEditFreq1->setText(
-      settings.value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def).toString());
-  lineEditFreq2->setText(
-      settings.value(s_sdr_afedri_freq2, s_sdr_afedri_freq2_def).toString());
-  lineEditFreq3->setText(
-      settings.value(s_sdr_afedri_freq3, s_sdr_afedri_freq3_def).toString());
-  lineEditFreq4->setText(
-      settings.value(s_sdr_afedri_freq4, s_sdr_afedri_freq4_def).toString());
+  IFFreqLineEdit->setText(
+      settings.value(s_sdr_afedri_freq, s_sdr_afedri_freq_def).toString());
   lineEditOffset->setText(
       settings.value(s_sdr_offset_afedri, s_sdr_offset_afedri_def).toString());
   checkBoxSwap->setChecked(
@@ -191,10 +150,7 @@ void AfedriSetup::updateAfedri() {
   if (broadcastSlaveButton->isChecked())
     settings.setValue(s_sdr_afedri_bcast, 2);
   settings.setValue(s_sdr_afedri_tcp_ip, tcpipaddressLineEdit->text());
-  settings.setValue(s_sdr_afedri_freq1, lineEditFreq1->text().toInt());
-  settings.setValue(s_sdr_afedri_freq2, lineEditFreq2->text().toInt());
-  settings.setValue(s_sdr_afedri_freq3, lineEditFreq3->text().toInt());
-  settings.setValue(s_sdr_afedri_freq4, lineEditFreq4->text().toInt());
+  settings.setValue(s_sdr_afedri_freq, IFFreqLineEdit->text().toInt());
   settings.setValue(s_sdr_swap_afedri, checkBoxSwap->isChecked());
   settings.setValue(s_sdr_offset_afedri, lineEditOffset->text().toInt());
 }

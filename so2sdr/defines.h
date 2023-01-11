@@ -31,7 +31,7 @@
 #include <QtGlobal>
 
 // ///////// version ///////////////
-const QByteArray Version = QByteArrayLiteral("2.6.3");
+const QByteArray Version = QByteArrayLiteral("2.6.4");
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -73,7 +73,9 @@ Q_DECLARE_TYPEINFO(WinkeyParam, Q_PRIMITIVE_TYPE);
 
 // /////////// Radio serial communications ///////////////
 
-const QString defaultSerialPort[3] = {QStringLiteral("/dev/ttyS0"), QStringLiteral("/dev/ttyS1"), QStringLiteral("/dev/ttyS2")};
+const QString defaultSerialPort[3] = {QStringLiteral("/dev/ttyS0"),
+                                      QStringLiteral("/dev/ttyS1"),
+                                      QStringLiteral("/dev/ttyS2")};
 
 const int NRIG = 2;
 
@@ -245,9 +247,11 @@ typedef enum FieldTypes {
   Number = 9
 } FieldTypes;
 
-const QString FieldTypesNames[10] = {QLatin1String(""), QStringLiteral("RST"), QStringLiteral("Mult"), QStringLiteral("Z"),
-                                     QStringLiteral("#"), QStringLiteral("Name"), QStringLiteral("St"),
-                                     QStringLiteral("Sec"), QStringLiteral("Grid"), QStringLiteral("#")};
+const QString FieldTypesNames[10] = {
+    QLatin1String(""),    QStringLiteral("RST"), QStringLiteral("Mult"),
+    QStringLiteral("Z"),  QStringLiteral("#"),   QStringLiteral("Name"),
+    QStringLiteral("St"), QStringLiteral("Sec"), QStringLiteral("Grid"),
+    QStringLiteral("#")};
 
 // //////////////// Bandscope defines //////////////////
 
@@ -342,13 +346,16 @@ const int NO_DUPE_CHECKING = 2; // no dupe checking
 const int N_BANDS = 28;
 
 const QString bandNames[N_BANDS] = {
-    QStringLiteral("160"),  QStringLiteral("80"),   QStringLiteral("40"),  QStringLiteral( "20"),
-    QStringLiteral("15"),  QStringLiteral("10"), QStringLiteral("60"), QStringLiteral("30"),
-    QStringLiteral("17"), QStringLiteral("12"), QStringLiteral("6"), QStringLiteral("2"),
-    QStringLiteral("1.25m"), QStringLiteral("70cm"), QStringLiteral("33cm"), QStringLiteral("1.2G"),
-    QStringLiteral("2.3G"), QStringLiteral("3.3G"), QStringLiteral("5.6G"), QStringLiteral("10G"),
-    QStringLiteral("24G"), QStringLiteral("47G"), QStringLiteral("76G"), QStringLiteral("122G"),
-    QStringLiteral("134G"), QStringLiteral("241G"), QStringLiteral("630m"), QStringLiteral("2200m")};
+    QStringLiteral("160"),   QStringLiteral("80"),   QStringLiteral("40"),
+    QStringLiteral("20"),    QStringLiteral("15"),   QStringLiteral("10"),
+    QStringLiteral("60"),    QStringLiteral("30"),   QStringLiteral("17"),
+    QStringLiteral("12"),    QStringLiteral("6"),    QStringLiteral("2"),
+    QStringLiteral("1.25m"), QStringLiteral("70cm"), QStringLiteral("33cm"),
+    QStringLiteral("1.2G"),  QStringLiteral("2.3G"), QStringLiteral("3.3G"),
+    QStringLiteral("5.6G"),  QStringLiteral("10G"),  QStringLiteral("24G"),
+    QStringLiteral("47G"),   QStringLiteral("76G"),  QStringLiteral("122G"),
+    QStringLiteral("134G"),  QStringLiteral("241G"), QStringLiteral("630m"),
+    QStringLiteral("2200m")};
 
 const int N_BANDS_HF = 6;
 const int BAND_NONE = -1;
@@ -384,19 +391,23 @@ const int BAND2200 = 27;
 // hamlib modes : this has to match the modes defined in hamlib rig.h, enum
 // rmode_t
 const int nModes = 23;
-const QString modes[nModes] = {QStringLiteral("NONE"), QStringLiteral("AM"), QStringLiteral("CW"),  QStringLiteral("USB"),
-                               QStringLiteral("LSB"), QStringLiteral("RTTY"), QStringLiteral("FM"), QStringLiteral("WFM"),
-                               QStringLiteral("CWR"), QStringLiteral("RTTYR"), QStringLiteral("AMS"), QStringLiteral("PKT"),
-                               QStringLiteral("PKT"), QStringLiteral("PKT"), QStringLiteral("USB"), QStringLiteral("LSB"),
-                               QStringLiteral("FAX"), QStringLiteral("SAM"), QStringLiteral("SAL"), QStringLiteral("SAH"),
-                               QStringLiteral("DSB"), QStringLiteral("FM"), QStringLiteral("PKT")};
+const QString modes[nModes] = {
+    QStringLiteral("NONE"),  QStringLiteral("AM"),  QStringLiteral("CW"),
+    QStringLiteral("USB"),   QStringLiteral("LSB"), QStringLiteral("RTTY"),
+    QStringLiteral("FM"),    QStringLiteral("WFM"), QStringLiteral("CWR"),
+    QStringLiteral("RTTYR"), QStringLiteral("AMS"), QStringLiteral("PKT"),
+    QStringLiteral("PKT"),   QStringLiteral("PKT"), QStringLiteral("USB"),
+    QStringLiteral("LSB"),   QStringLiteral("FAX"), QStringLiteral("SAM"),
+    QStringLiteral("SAL"),   QStringLiteral("SAH"), QStringLiteral("DSB"),
+    QStringLiteral("FM"),    QStringLiteral("PKT")};
 
 // mode types
 typedef enum { CWType = 0, PhoneType = 1, DigiType = 2 } ModeTypes;
 const int NModeTypes = 3;
 
 // mode type names
-const QString modeNames[NModeTypes] = {QStringLiteral("CW"), QStringLiteral("Phone"), QStringLiteral("Digital")};
+const QString modeNames[NModeTypes] = {
+    QStringLiteral("CW"), QStringLiteral("Phone"), QStringLiteral("Digital")};
 
 // maximum number of Cabrillo fields
 const int MAX_CAB_FIELDS = 7;
@@ -409,8 +420,9 @@ const int MAX_CAB_FIELDS = 7;
 const QString s_twokeyboard_enable = QStringLiteral("twokeyboard/enable");
 const bool s_twokeyboard_enable_def = false;
 
-const QString s_twokeyboard_device[NRIG] = {QStringLiteral("twokeyboard/device1"),
-                                            QStringLiteral("twokeyboard/device2")};
+const QString s_twokeyboard_device[NRIG] = {
+    QStringLiteral("twokeyboard/device1"),
+    QStringLiteral("twokeyboard/device2")};
 const QString s_twokeyboard_device_def[NRIG] = {"", ""};
 
 const QString s_twokeyboard_dev1 = QStringLiteral("twokeyboard/device1");
@@ -464,25 +476,32 @@ const QString s_cab_name_def = QLatin1String("");
 const QString c_cab_club = QStringLiteral("cabrillo/club");
 const QString c_cab_club_def = QLatin1String("");
 
-const QString s_otrsp_enabled[NRIG] = {QStringLiteral("otrsp/enable1"), QStringLiteral("otrsp/enable2")};
+const QString s_otrsp_enabled[NRIG] = {QStringLiteral("otrsp/enable1"),
+                                       QStringLiteral("otrsp/enable2")};
 const bool s_otrsp_enabled_def = false;
 
-const QString s_otrsp_device[NRIG] = {QStringLiteral("otrsp/device1"), QStringLiteral("otrsp/device2")};
+const QString s_otrsp_device[NRIG] = {QStringLiteral("otrsp/device1"),
+                                      QStringLiteral("otrsp/device2")};
 const QString s_otrsp_device_def = QLatin1String("");
 
-const QString s_otrsp_baud[NRIG] = {QStringLiteral("otrsp/baud1"), QStringLiteral("otrsp/baud2")};
+const QString s_otrsp_baud[NRIG] = {QStringLiteral("otrsp/baud1"),
+                                    QStringLiteral("otrsp/baud2")};
 const int s_otrsp_baud_def = 9600;
 
-const QString s_otrsp_databits[NRIG] = {QStringLiteral("otrsp/databits1"), QStringLiteral("otrsp/databits2")};
+const QString s_otrsp_databits[NRIG] = {QStringLiteral("otrsp/databits1"),
+                                        QStringLiteral("otrsp/databits2")};
 const int s_otrsp_databits_def = 8;
 
-const QString s_otrsp_parity[NRIG] = {QStringLiteral("otrsp/parity1"), QStringLiteral("otrsp/parity2")};
+const QString s_otrsp_parity[NRIG] = {QStringLiteral("otrsp/parity1"),
+                                      QStringLiteral("otrsp/parity2")};
 const bool s_otrsp_parity_def = false;
 
-const QString s_otrsp_stopbits[NRIG] = {QStringLiteral("otrsp/stopbits1"), QStringLiteral("otrsp/stopbits2")};
+const QString s_otrsp_stopbits[NRIG] = {QStringLiteral("otrsp/stopbits1"),
+                                        QStringLiteral("otrsp/stopbits2")};
 const int s_otrsp_stopbits_def = 1;
 
-const QString s_otrsp_focus[NRIG] = {QStringLiteral("otrsp/focus1"), QStringLiteral("otrsp/focus2")};
+const QString s_otrsp_focus[NRIG] = {QStringLiteral("otrsp/focus1"),
+                                     QStringLiteral("otrsp/focus2")};
 const bool s_otrsp_focus_def = true;
 
 const QString s_microham_enabled = QStringLiteral("microham/enable");
@@ -521,20 +540,24 @@ const bool s_winkey_usepot_def = false;
 const QString s_winkey_sidetonepaddle = QStringLiteral("winkey/sidetonepaddle");
 const bool s_winkey_sidetonepaddle_def = true;
 
-const QString s_wpm[NRIG] = {QStringLiteral("winkey/wpm1"), QStringLiteral("winkey/wpm2")};
+const QString s_wpm[NRIG] = {QStringLiteral("winkey/wpm1"),
+                             QStringLiteral("winkey/wpm2")};
 const int s_wpm_def[NRIG] = {35, 35};
 
-const QString s_cwdaemon_udp[NRIG] = {QStringLiteral("cwdaemon/udp1"), QStringLiteral("cwdaemon/udp2")};
+const QString s_cwdaemon_udp[NRIG] = {QStringLiteral("cwdaemon/udp1"),
+                                      QStringLiteral("cwdaemon/udp2")};
 const int s_cwdaemon_udp_def[NRIG] = {6789, 6790};
 
 const QString s_cty_url = QStringLiteral("main/ctyurl");
-const QString s_cty_url_def = QStringLiteral("http://www.country-files.com/cty/wl_cty.dat");
+const QString s_cty_url_def =
+    QStringLiteral("http://www.country-files.com/cty/wl_cty.dat");
 
 // each of these is an array of variable length
-const QString c_cab[7] = {QStringLiteral("cabrillo/cab1"), QStringLiteral("cabrillo/cab2"),
-                          QStringLiteral("cabrillo/cab3"), QStringLiteral("cabrillo/cab4"),
-                          QStringLiteral("cabrillo/cab5"), QStringLiteral("cabrillo/cab6"),
-                          QStringLiteral("cabrillo/cab7")};
+const QString c_cab[7] = {
+    QStringLiteral("cabrillo/cab1"), QStringLiteral("cabrillo/cab2"),
+    QStringLiteral("cabrillo/cab3"), QStringLiteral("cabrillo/cab4"),
+    QStringLiteral("cabrillo/cab5"), QStringLiteral("cabrillo/cab6"),
+    QStringLiteral("cabrillo/cab7")};
 
 const QString c_cab_contestname = QStringLiteral("cabrillo/contestname");
 const QString c_cab_contestname_def = QLatin1String("");
@@ -550,26 +573,34 @@ const QString c_col_width_item = QStringLiteral("width");
 const int c_col_width_def[SQL_N_COL] = {5, 5, 7, 9, 0, 0, 0, 5, 5,
                                         5, 5, 5, 5, 5, 5, 2, 2};
 
-const QString s_sdr_path[NRIG] = {QStringLiteral("sdr/path1"), QStringLiteral("sdr/path2")};
+const QString s_sdr_path[NRIG] = {QStringLiteral("sdr/path1"),
+                                  QStringLiteral("sdr/path2")};
 
-const QString s_wsjtx_enable[NRIG] = {QStringLiteral("wsjtx/enable1"), QStringLiteral("wsjtx/enable2")};
+const QString s_wsjtx_enable[NRIG] = {QStringLiteral("wsjtx/enable1"),
+                                      QStringLiteral("wsjtx/enable2")};
 const bool s_wsjtx_enable_def = false;
 
-const QString s_wsjtx_udp[NRIG] = {QStringLiteral("wsjtx/udp1"), QStringLiteral("wsjtx/udp2")};
+const QString s_wsjtx_udp[NRIG] = {QStringLiteral("wsjtx/udp1"),
+                                   QStringLiteral("wsjtx/udp2")};
 const int s_wsjtx_udp_def[NRIG] = {2237, 2238};
 
-const QString s_wsjtx_hide_dupes[NRIG] = {QStringLiteral("wsjtx/dupes1"), QStringLiteral("wsjtx/dupes2")};
+const QString s_wsjtx_hide_dupes[NRIG] = {QStringLiteral("wsjtx/dupes1"),
+                                          QStringLiteral("wsjtx/dupes2")};
 const bool s_wsjtx_hide_dupes_def = true;
 
-const QString s_sdr_config[NRIG] = {QStringLiteral("sdr/config1"), QStringLiteral("sdr/config2")};
+const QString s_sdr_config[NRIG] = {QStringLiteral("sdr/config1"),
+                                    QStringLiteral("sdr/config2")};
 const QString s_sdr_config_def[NRIG] = {
     QDir::homePath() + QStringLiteral("/.so2sdr/so2sdr-bandmap1.ini"),
     QDir::homePath() + QStringLiteral("/.so2sdr/so2sdr-bandmap2.ini")};
 
-const QString s_sdr_ip[NRIG] = {QStringLiteral("sdr/ip1"), QStringLiteral("sdr/ip2")};
-const QString s_sdr_ip_def[NRIG] = {QStringLiteral("localhost"), QStringLiteral("localhost")};
+const QString s_sdr_ip[NRIG] = {QStringLiteral("sdr/ip1"),
+                                QStringLiteral("sdr/ip2")};
+const QString s_sdr_ip_def[NRIG] = {QStringLiteral("localhost"),
+                                    QStringLiteral("localhost")};
 
-const QString s_sdr_port[NRIG] = {QStringLiteral("sdr/port1"), QStringLiteral("sdr/port2")};
+const QString s_sdr_port[NRIG] = {QStringLiteral("sdr/port1"),
+                                  QStringLiteral("sdr/port2")};
 const int s_sdr_port_def[NRIG] = {5001, 5002};
 
 const QString s_sdr_udp = QStringLiteral("sdr/udp");
@@ -585,10 +616,14 @@ const QString s_sdr_spottime = QStringLiteral("sdr/spottime");
 const int s_sdr_spottime_def = 1800;
 
 const QString s_sdr_cqlimit_low[N_BANDS] = {
-    QStringLiteral("sdr/160low"), QStringLiteral("sdr/80low"),  QStringLiteral("sdr/40low"),  QStringLiteral("sdr/20low"),
-    QStringLiteral("sdr/15low"), QStringLiteral("sdr/10low"),   QStringLiteral("sdr/60low"),  QStringLiteral("sdr/30low"),
-    QStringLiteral("sdr/17low"),  QStringLiteral("sdr/12low"), QStringLiteral("sdr/6low"),    QStringLiteral("sdr/2low"),
-    QStringLiteral("sdr/420low"), QStringLiteral("sdr/222low"), QStringLiteral("sdr/902low"), QStringLiteral("sdr/1240low"),
+    QStringLiteral("sdr/160low"), QStringLiteral("sdr/80low"),
+    QStringLiteral("sdr/40low"),  QStringLiteral("sdr/20low"),
+    QStringLiteral("sdr/15low"),  QStringLiteral("sdr/10low"),
+    QStringLiteral("sdr/60low"),  QStringLiteral("sdr/30low"),
+    QStringLiteral("sdr/17low"),  QStringLiteral("sdr/12low"),
+    QStringLiteral("sdr/6low"),   QStringLiteral("sdr/2low"),
+    QStringLiteral("sdr/420low"), QStringLiteral("sdr/222low"),
+    QStringLiteral("sdr/902low"), QStringLiteral("sdr/1240low"),
     QStringLiteral("sdr/620low"), QStringLiteral("sdr/2200low")};
 const double cqlimit_default_low[N_BANDS] = {
     1805000,   3505000,   7005000,   14005000,   21005000, 28005000,
@@ -596,42 +631,53 @@ const double cqlimit_default_low[N_BANDS] = {
     420000000, 222000000, 902000000, 1240000000, 472000,   135700};
 
 const QString s_sdr_cqlimit_high[N_BANDS] = {
-    QStringLiteral("sdr/160high"), QStringLiteral("sdr/80high"),  QStringLiteral("sdr/40high"),  QStringLiteral("sdr/20high"),
-    QStringLiteral("sdr/15high"), QStringLiteral("sdr/10high"),   QStringLiteral("sdr/60high"),  QStringLiteral("sdr/30high"),
-    QStringLiteral("sdr/17high"),  QStringLiteral("sdr/12high"), QStringLiteral("sdr/6high"),    QStringLiteral("sdr/2high"),
-    QStringLiteral("sdr/420high"), QStringLiteral("sdr/222high"), QStringLiteral("sdr/902high"), QStringLiteral("sdr/1240high"),
+    QStringLiteral("sdr/160high"), QStringLiteral("sdr/80high"),
+    QStringLiteral("sdr/40high"),  QStringLiteral("sdr/20high"),
+    QStringLiteral("sdr/15high"),  QStringLiteral("sdr/10high"),
+    QStringLiteral("sdr/60high"),  QStringLiteral("sdr/30high"),
+    QStringLiteral("sdr/17high"),  QStringLiteral("sdr/12high"),
+    QStringLiteral("sdr/6high"),   QStringLiteral("sdr/2high"),
+    QStringLiteral("sdr/420high"), QStringLiteral("sdr/222high"),
+    QStringLiteral("sdr/902high"), QStringLiteral("sdr/1240high"),
     QStringLiteral("sdr/620high"), QStringLiteral("sdr/2200high")};
 const double cqlimit_default_high[N_BANDS] = {
     1845000,   3555000,   7550000,   14055000,   21055000, 28055000,
     5403500,   10150000,  18110000,  24930000,   50100000, 144100000,
     450000000, 225000000, 928000000, 1300000000, 479000,   137800};
 
-const QString s_radios_rigctld_enable[NRIG] = {QStringLiteral("radios/rigctldenable1"),
-                                               QStringLiteral("radios/rigctldenable2")};
+const QString s_radios_rigctld_enable[NRIG] = {
+    QStringLiteral("radios/rigctldenable1"),
+    QStringLiteral("radios/rigctldenable2")};
 const bool s_radios_rigctld_enable_def[NRIG] = {false, false};
 
 const QString s_radios_rigctld_ip[NRIG] = {QStringLiteral("radios/rigctldip1"),
                                            QStringLiteral("radios/rigctldip2")};
-const QString s_radios_rigctld_ip_def[NRIG] = {QStringLiteral("localhost"), QStringLiteral("localhost")};
+const QString s_radios_rigctld_ip_def[NRIG] = {QStringLiteral("localhost"),
+                                               QStringLiteral("localhost")};
 
-const QString s_radios_rigctld_port[NRIG] = {QStringLiteral("radios/rigctldport1"),
-                                             QStringLiteral("radios/rigctldport2")};
+const QString s_radios_rigctld_port[NRIG] = {
+    QStringLiteral("radios/rigctldport1"),
+    QStringLiteral("radios/rigctldport2")};
 const int s_radios_rigctld_port_def[NRIG] = {4532, 4534};
 
 const QString s_radios_rig[NRIG] = {QStringLiteral("radios/hamlibmodel1"),
                                     QStringLiteral("radios/hamlibmodel2")};
 const int s_radios_rig_def[NRIG] = {1, 1};
 
-const QString s_radios_port[NRIG] = {QStringLiteral("radios/port1"), QStringLiteral("radios/port2")};
+const QString s_radios_port[NRIG] = {QStringLiteral("radios/port1"),
+                                     QStringLiteral("radios/port2")};
 const QString s_radios_port_def[NRIG] = {QLatin1String(""), QLatin1String("")};
 
-const QString s_radios_baud[NRIG] = {QStringLiteral("radios/baud1"), QStringLiteral("radios/baud2")};
+const QString s_radios_baud[NRIG] = {QStringLiteral("radios/baud1"),
+                                     QStringLiteral("radios/baud2")};
 const int s_radios_baud_def[NRIG] = {4800, 4800};
 
-const QString s_radios_poll[NRIG] = {QStringLiteral("radios/poll1"), QStringLiteral("radios/poll2")};
+const QString s_radios_poll[NRIG] = {QStringLiteral("radios/poll1"),
+                                     QStringLiteral("radios/poll2")};
 const int s_radios_poll_def[NRIG] = {500, 500};
 
-const QString s_radios_if[NRIG] = {QStringLiteral("radios/if1"), QStringLiteral("radios/if2")};
+const QString s_radios_if[NRIG] = {QStringLiteral("radios/if1"),
+                                   QStringLiteral("radios/if2")};
 const double s_radios_if_def[NRIG] = {8215000,
                                       8215000}; // default for Elecraft K3
 
@@ -662,7 +708,8 @@ const QString s_telnet_addresses_def = QLatin1String("");
 const QString s_settings_qsyfocus = QStringLiteral("main/qsyfocus");
 const bool s_settings_qsyfocus_def = false;
 
-const QString s_settings_focusindicators = QStringLiteral("main/focusindicators");
+const QString s_settings_focusindicators =
+    QStringLiteral("main/focusindicators");
 const bool s_settings_focusindicators_def = false;
 
 const QString s_settings_exchangelogs = QStringLiteral("main/exchangelogs");
@@ -743,7 +790,8 @@ const QString c_exchname4_def = QLatin1String("");
 const QString c_contestname = QStringLiteral("contest/contest");
 const QString c_contestname_def = QLatin1String("");
 
-const QString c_contestname_displayed = QStringLiteral("contest/contestname_displayed");
+const QString c_contestname_displayed =
+    QStringLiteral("contest/contestname_displayed");
 const QString c_contestname_displayed_def = QLatin1String("");
 
 const QString c_multfile1 = QStringLiteral("contest/multfile1");
@@ -773,37 +821,44 @@ const QString c_qso_type1_def = QLatin1String("");
 const QString c_qso_type2 = QStringLiteral("contest/qsotype2");
 const QString c_qso_type2_def = QLatin1String("");
 
-const QString c_cq_func[2] = {QStringLiteral("keys/cq"), QStringLiteral("keys_phone/cq")};
+const QString c_cq_func[2] = {QStringLiteral("keys/cq"),
+                              QStringLiteral("keys_phone/cq")};
 const QString c_cq_func_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_cq_rec_func = QStringLiteral("keys_phone_rec/cq");
 const QString c_cq_rec_func_def = QLatin1String("");
 
-const QString c_ex_func[2] = {QStringLiteral("keys/ex"), QStringLiteral("keys_phone/ex")};
+const QString c_ex_func[2] = {QStringLiteral("keys/ex"),
+                              QStringLiteral("keys_phone/ex")};
 const QString c_ex_func_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_ex_rec_func = QStringLiteral("keys_phone_rec/ex");
 const QString c_ex_rec_func_def = QLatin1String("");
 
-const QString c_ctrl_func[2] = {QStringLiteral("keys/ctrl"), QStringLiteral("keys_phone/ctrl")};
+const QString c_ctrl_func[2] = {QStringLiteral("keys/ctrl"),
+                                QStringLiteral("keys_phone/ctrl")};
 const QString c_ctrl_func_def[2] = {QLatin1String(""), QLatin1String("")};
 
-const QString c_shift_func[2] = {QStringLiteral("keys/shift"), QStringLiteral("keys_phone/shift")};
+const QString c_shift_func[2] = {QStringLiteral("keys/shift"),
+                                 QStringLiteral("keys_phone/shift")};
 const QString c_shift_func_def[2] = {QLatin1String(""), QLatin1String("")};
 
-const QString c_sp_exc[2] = {QStringLiteral("keys/sp_exch"), QStringLiteral("keys_phone/sp_exch")};
+const QString c_sp_exc[2] = {QStringLiteral("keys/sp_exch"),
+                             QStringLiteral("keys_phone/sp_exch")};
 const QString c_sp_exc_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_sp_exc_rec = QStringLiteral("keys_phone/sp_exch_rec");
 const QString c_sp_exc_rec_def = QLatin1String("");
 
-const QString c_cq_exc[2] = {QStringLiteral("keys/cq_exch"), QStringLiteral("keys_phone/cq_exch")};
+const QString c_cq_exc[2] = {QStringLiteral("keys/cq_exch"),
+                             QStringLiteral("keys_phone/cq_exch")};
 const QString c_cq_exc_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_cq_exc_rec = QStringLiteral("keys_phone/cq_exch_rec");
 const QString c_cq_exc_rec_def = QLatin1String("");
 
-const QString c_qsl_msg[2] = {QStringLiteral("keys/qsl_msg"), QStringLiteral("keys_phone/qsl_msg")};
+const QString c_qsl_msg[2] = {QStringLiteral("keys/qsl_msg"),
+                              QStringLiteral("keys_phone/qsl_msg")};
 const QString c_qsl_msg_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_call_msg = QStringLiteral("keys_phone/call");
@@ -815,20 +870,24 @@ const QString c_call_msg_rec_def = QLatin1String("");
 const QString c_qsl_msg_rec = QStringLiteral("keys_phone/qsl_msg_rec");
 const QString c_qsl_msg_rec_def = QLatin1String("");
 
-const QString c_qsl_msg_updated[2] = {QStringLiteral("keys/qsl_msg_updated"),
-                                      QStringLiteral("keys_phone/qsl_msg_updated")};
+const QString c_qsl_msg_updated[2] = {
+    QStringLiteral("keys/qsl_msg_updated"),
+    QStringLiteral("keys_phone/qsl_msg_updated")};
 const QString c_qsl_msg_updated_def[2] = {QLatin1String(""), QLatin1String("")};
 
-const QString c_qsl_msg_updated_rec = QStringLiteral("keys_phone/qsl_msg_updated_rec");
+const QString c_qsl_msg_updated_rec =
+    QStringLiteral("keys_phone/qsl_msg_updated_rec");
 const QString c_qsl_msg_updated_rec_def = QLatin1String("");
 
-const QString c_qqsl_msg[2] = {QStringLiteral("keys/qqsl_msg"), QStringLiteral("keys_phone/qqsl_msg")};
+const QString c_qqsl_msg[2] = {QStringLiteral("keys/qqsl_msg"),
+                               QStringLiteral("keys_phone/qqsl_msg")};
 const QString c_qqsl_msg_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_qqsl_msg_rec = QStringLiteral("keys_phone/qqsl_msg_rec");
 const QString c_qqsl_msg_rec_def = QLatin1String("");
 
-const QString c_dupe_msg[2] = {QStringLiteral("keys/dupe_msg"), QStringLiteral("keys_phone/dupe_msg")};
+const QString c_dupe_msg[2] = {QStringLiteral("keys/dupe_msg"),
+                               QStringLiteral("keys_phone/dupe_msg")};
 const QString c_dupe_msg_def[2] = {QLatin1String(""), QLatin1String("")};
 
 const QString c_dupe_msg_rec = QStringLiteral("keys_phone/dupe_msg_rec");
@@ -843,7 +902,8 @@ const QString c_cty_def = QStringLiteral("wl_cty.dat");
 const QString c_mobile_dupes = QStringLiteral("contest/mobile_dupes");
 const bool c_mobile_dupes_def = false;
 
-const QString c_mobile_dupes_col = QStringLiteral("contest/mobile_dupes_column");
+const QString c_mobile_dupes_col =
+    QStringLiteral("contest/mobile_dupes_column");
 const int c_mobile_dupes_col_def = 1;
 
 const QString c_mult1_displayonly = QStringLiteral("contest/mult1_displayonly");
@@ -876,16 +936,19 @@ const int c_off_time_min_def = 30;
 const QString c_off_time_enable = QStringLiteral("contest/offtime_enable");
 const bool c_off_time_enable_def = false;
 
-const QString s_play_command[2] = {QStringLiteral("play_command1"), QStringLiteral("play_command2")};
+const QString s_play_command[2] = {QStringLiteral("play_command1"),
+                                   QStringLiteral("play_command2")};
 const QString s_play_command_def =
-        QStringLiteral("gst-launch-1.0 -q filesrc location=$.wav ! wavparse ! audioconvert ! pulsesink");
+    QStringLiteral("gst-launch-1.0 -q filesrc location=$.wav ! wavparse ! "
+                   "audioconvert ! pulsesink");
 
-const QString s_switch_command[2] = {QStringLiteral("switch_command1"), QStringLiteral("switch_command2")};
+const QString s_switch_command[2] = {QStringLiteral("switch_command1"),
+                                     QStringLiteral("switch_command2")};
 const QString s_switch_command_def = QLatin1String("");
 
 const QString s_rec_command = QStringLiteral("rec_command");
-const QString s_rec_command_def =
-    QStringLiteral("gst-launch-1.0 -q pulsesrc ! wavenc ! filesink location=$.wav");
+const QString s_rec_command_def = QStringLiteral(
+    "gst-launch-1.0 -q pulsesrc ! wavenc ! filesink location=$.wav");
 
 const QString s_before_rec = QStringLiteral("before_rec");
 const QString s_before_rec_def = QStringLiteral("pactl set-source-mute 1 0");
@@ -893,10 +956,12 @@ const QString s_before_rec_def = QStringLiteral("pactl set-source-mute 1 0");
 const QString s_after_rec = QStringLiteral("after_rec");
 const QString s_after_rec_def = QLatin1String("");
 
-const QString s_before_play[2] = {QStringLiteral("before_play1"), QStringLiteral("before_play2")};
+const QString s_before_play[2] = {QStringLiteral("before_play1"),
+                                  QStringLiteral("before_play2")};
 const QString s_before_play_def = QStringLiteral("pactl set-source-mute 1 1");
 
-const QString s_after_play[2] = {QStringLiteral("after_play1"), QStringLiteral("after_play2")};
+const QString s_after_play[2] = {QStringLiteral("after_play1"),
+                                 QStringLiteral("after_play2")};
 const QString s_after_play_def = QStringLiteral("pactl set-source-mute 1 0");
 
 const QString s_radios_ptt_type[NRIG] = {QStringLiteral("radios/ptt1_type"),

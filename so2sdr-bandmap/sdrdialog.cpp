@@ -151,6 +151,8 @@ void SDRDialog::launchConfigure() {
  *   Update dialog widgets from settings object
  */
 void SDRDialog::updateFromSettings() {
+  txStopCheckBox->setChecked(
+      settings.value(s_sdr_txstop, s_sdr_txstop_def).toBool());
   n1mmUdpCheckBox->setChecked(
       settings.value(s_sdr_n1mm, s_sdr_n1mm_def).toBool());
   n1mmUdpLineEdit->setText(
@@ -225,6 +227,7 @@ SDRDialog::~SDRDialog() {
  *  Update settings object from dialog widgets
  */
 void SDRDialog::updateSDR() {
+  settings.setValue(s_sdr_txstop, txStopCheckBox->isChecked());
   settings.setValue(s_sdr_cqtime, lineEditIntegTime->text().toInt());
   settings.setValue(s_sdr_cq_finder_calls, cqFinderCallsCheckbox->isChecked());
   settings.setValue(s_sdr_n1mm, n1mmUdpCheckBox->isChecked());
@@ -236,6 +239,7 @@ void SDRDialog::updateSDR() {
   settings.setValue(s_sdr_type, comboBoxSdrType->currentIndex());
   settings.setValue(s_sdr_nrig, comboBoxIDNumber->currentIndex());
   settings.setValue(s_sdr_reverse_scroll, reverseScrollCheckBox->isChecked());
+  int oldMode = settings.value(s_sdr_mode, s_sdr_mode_def).toInt();
   settings.setValue(s_sdr_mode, modeComboBox->currentIndex());
   switch (static_cast<SdrType>(
       settings.value(s_sdr_type, s_sdr_type_def).toInt())) {
@@ -276,8 +280,9 @@ void SDRDialog::updateSDR() {
   }
   emit update();
 
-  // restart sdr if type changed
-  if (old != static_cast<SdrType>(
+  // restart sdr if mode or type changed
+  if (oldMode != settings.value(s_sdr_mode, s_sdr_mode_def).toInt() ||
+      old != static_cast<SdrType>(
                  settings.value(s_sdr_type, s_sdr_type_def).toInt())) {
     emit restartSdr();
   }

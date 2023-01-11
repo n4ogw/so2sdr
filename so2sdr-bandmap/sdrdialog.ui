@@ -245,6 +245,23 @@
      <item row="5" column="1">
       <widget class="QComboBox" name="modeComboBox"/>
      </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Stop during TX</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QCheckBox" name="txStopCheckBox">
+       <property name="toolTip">
+        <string>Stop bandmap during transmit</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

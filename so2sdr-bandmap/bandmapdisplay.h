@@ -40,10 +40,12 @@ public:
   void setMark(bool b);
   void setScale(int s);
   void setVfoPos(int s);
+  int y1() const { return cornery; }
+  int y2() const { return (cornery + height()); }
 
 public slots:
   void plotSpectrum(unsigned char *, unsigned char);
-  void setSampleRate( unsigned int f) { samplerate = f; }
+  void setSampleRate(unsigned int f) { samplerate = f; }
 
 signals:
   void mouseClick();

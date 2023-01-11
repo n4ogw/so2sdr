@@ -21,32 +21,36 @@
 #include "afedri-cmd.h"
 #include "defines.h"
 #include "sdr-ip.h"
-#include "utils.h"
 #include <QDebug>
 #include <QHostAddress>
 #include <sys/socket.h>
 #include <unistd.h>
 
 Afedri::Afedri(QString settingsFile, QObject *parent)
-    : NetworkSDR(settingsFile, parent)
-{
-    clockFreq = 0;
-    realSampleRate = 0;
+    : NetworkSDR(settingsFile, parent) {
+  clockFreq = 0;
+  realSampleRate = 0;
 }
 
 /*! initialize and start sdr
  */
 void Afedri::initialize() {
-  stopFlag = false;
+  delete[] buff;
   bpmax = sizes.chunk_size / sizes.advance_size;
-  if (buff) {
-    delete[] buff;
-  }
   buff = new unsigned char[sizes.chunk_size];
   for (unsigned long i = 0; i < sizes.chunk_size; i++) {
     buff[i] = 0;
   }
-  realSampleRate = settings->value(s_sdr_afedri_real_sample_freq,s_sdr_afedri_real_sample_freq_def).toUInt();
+  realSampleRate = settings
+                       ->value(s_sdr_afedri_real_sample_freq,
+                               s_sdr_afedri_real_sample_freq_def)
+                       .toUInt();
+  if (tsocket.isOpen()) {
+    tsocket.close();
+    if (tsocket.state() != QAbstractSocket::UnconnectedState) {
+      tsocket.waitForDisconnected(1000);
+    }
+  }
   if (settings->value(s_sdr_afedri_bcast, s_sdr_afedri_bcast_def).toInt() ==
       0) {
     // non-broadcast connection
@@ -77,28 +81,6 @@ void Afedri::initialize() {
       set_multichannel_mode(
           settings->value(s_sdr_afedri_multi, s_sdr_afedri_multi_def).toInt());
       send_rx_command(RCV_START);
-      if (rfFreq == 0) {
-        // IF mode
-        set_freq(settings->value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def)
-                     .toULongLong(),
-                 1);
-        set_freq(settings->value(s_sdr_afedri_freq2, s_sdr_afedri_freq2_def)
-                     .toULongLong(),
-                 2);
-        // for some reason, need to send frequency again to channel 0 in order
-        // for freq setting to work:
-        set_freq(settings->value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def)
-                     .toULongLong(),
-                 0);
-      } else {
-        // RF mode
-        set_freq((unsigned long)rfFreq,
-                 settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
-                     .toInt());
-        // force retuning SDR
-        emit resetRfFlag();
-      }
-      running = true;
     }
   } else if (settings->value(s_sdr_afedri_bcast, s_sdr_afedri_bcast_def)
                  .toInt() == 1) {
@@ -111,9 +93,9 @@ void Afedri::initialize() {
     tsocket.setSocketOption(QAbstractSocket::KeepAliveOption, QVariant(1));
     connect(&tsocket, SIGNAL(readyRead()), this, SLOT(readTcp()));
     if (tsocket.waitForConnected()) {
-        get_sdr_name();
-        get_clock_freq();
-        set_sample_rate(
+      get_sdr_name();
+      get_clock_freq();
+      set_sample_rate(
           settings
               ->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def)
               .toInt());
@@ -167,34 +149,26 @@ void Afedri::initialize() {
       }
 #endif
       send_rx_command(RCV_START);
-
-      delay(200); // this might not be needed
-
-      if (rfFreq == 0) {
-        // IF mode
-        set_freq(settings->value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def)
-                     .toULongLong(),
-                 1);
-        set_freq(settings->value(s_sdr_afedri_freq2, s_sdr_afedri_freq2_def)
-                     .toULongLong(),
-                 2);
-        // for some reason, need to send frequency again to channel 0 in order
-        // for freq setting to work:
-        set_freq(settings->value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def)
-                     .toULongLong(),
-                 0);
-      } else {
-        // RF mode
-        set_freq((unsigned long)rfFreq,
-                 settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
-                     .toInt());
-        // force retuning SDR
-        emit resetRfFlag();
-      }
-      running = true;
+    } else {
+      qDebug("tcp not connected");
     }
   } else {
     // broadcast connection, slave
+    tsocket.connectToHost(
+        settings->value(s_sdr_afedri_tcp_ip, s_sdr_afedri_tcp_ip_def)
+            .toString(),
+        settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
+            .toInt());
+    tsocket.setSocketOption(QAbstractSocket::KeepAliveOption, QVariant(1));
+    connect(&tsocket, SIGNAL(readyRead()), this, SLOT(readTcp()));
+    if (tsocket.waitForConnected()) {
+      get_sdr_name();
+      get_clock_freq();
+      set_sample_rate(
+          settings
+              ->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def)
+              .toInt());
+    }
     connect(&usocket, SIGNAL(readyRead()), this, SLOT(readDatagram()));
 
 #ifdef Q_OS_LINUX
@@ -222,41 +196,12 @@ void Afedri::initialize() {
       qDebug() << "Afedri: error setting SO_REUSEADDR";
       return;
     }
-
-    if (rfFreq != 0) {
-      // RF mode
-      set_freq((unsigned long)rfFreq,
-               settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
-                   .toInt());
-      emit resetRfFlag();
-    }
     if (!usocket.bind(
             settings->value(s_sdr_afedri_udp_port, s_sdr_afedri_udp_port_def)
                 .toInt())) {
       emit error("Afedri: UDP connection failed");
       running = false;
       return;
-    }
-    if (rfFreq == 0) {
-      // IF mode
-      set_freq(settings->value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def)
-                   .toULongLong(),
-               1);
-      set_freq(settings->value(s_sdr_afedri_freq2, s_sdr_afedri_freq2_def)
-                   .toULongLong(),
-               2);
-      // for some reason, need to send frequency again to channel 0 in order for
-      // freq setting to work:
-      set_freq(settings->value(s_sdr_afedri_freq1, s_sdr_afedri_freq1_def)
-                   .toULongLong(),
-               0);
-    } else {
-      // RF mode
-      set_freq((unsigned long)rfFreq,
-               settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
-                   .toInt());
-      // force retuning SDR
-      emit resetRfFlag();
     }
 #endif
 #ifdef Q_OS_WIN
@@ -272,7 +217,19 @@ void Afedri::initialize() {
 #endif
     running = true;
   }
-
+  // set initial frequency to frequency in setup dialog if not zero
+  if (settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def).toULongLong() !=
+      0) {
+    set_freq(
+        settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def).toULongLong(),
+        settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+            .toInt());
+  }
+  // if RF mode, set flag so next frequency set command will also tune sdr
+  if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() != IF) {
+    emit resetRfFlag();
+  }
+  running = true;
   get_real_sample_rate();
 }
 
@@ -284,8 +241,12 @@ void Afedri::initialize() {
  */
 void Afedri::set_freq(unsigned long frequency, int channel) {
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
-      tsocket.state() == QAbstractSocket::ClosingState)
+      tsocket.state() == QAbstractSocket::ClosingState) {
     return;
+  }
+  // channels are 0, 1, 2, 3 in rest of code; Afedri expects 0, 2, 3, 4
+  if (channel > 0)
+    channel++;
 
   // version 1
   unsigned short control_code = CI_FREQUENCY;
@@ -429,48 +390,45 @@ void Afedri::readTcp() {
   // just for testing, normally nothing interesting
   // comes back via TCP
 
-    QByteArray dat=tsocket.readAll();
+  QByteArray dat = tsocket.readAll();
 
-    // process data packets. First byte is length of following packet
-    // each tcp read may contain several Afedri command responses
+  // process data packets. First byte is length of following packet
+  // each tcp read may contain several Afedri command responses
 
-    // Afedri SDR speaks two protocols: i) SDR-IP ii) Afedri HID over TCP
-    // rsponse packet for ii) has extra 2-byte header of 0x09 0xe0
-    int ptr = 0;
-    while ( ptr < dat.size()) {
-        int sz = (unsigned char)dat.data()[ptr];
-        if  (dat.data()[ptr + 1] == 0) {
-            // SDR-IP response
-            switch ((unsigned char)dat.data()[ptr + 2]) {
-            case 0xb0:
-                // Afedri clock frequency
-                clockFreq = dat.data()[ptr+5] +
-                        (dat.data()[ptr+6] << 8) +
-                        (dat.data()[ptr+7] << 16) +
-                        (dat.data()[ptr+8] << 24);
-                get_real_sample_rate();
-                break;
-            }
-        } else if (((unsigned char)dat.data()[ptr] == 0x09)
-                   && ((unsigned char)dat.data()[ptr + 1] == 0xe0)) {
-            // Afedri HID over TCP response
-            switch ((unsigned char)dat.data()[ptr + 3]) {
-            case HID_GENERIC_GET_AFEDRI_ID_COMMAND:
-            {
-                int id = dat.data()[ptr + 4];
-                if (id >= afedriNames->size()) {
-                    id = afedriNames->size()-1;
-                }
-                name = afedriNames[id];
-                break;
-            }
-            case HID_GENERIC_GET_SERIAL_NUMBER_COMMAND:
-
-                break;
-            }
+  // Afedri SDR speaks two protocols: i) SDR-IP ii) Afedri HID over TCP
+  // rsponse packet for ii) has extra 2-byte header of 0x09 0xe0
+  int ptr = 0;
+  while (ptr < dat.size()) {
+    int sz = (unsigned char)dat.data()[ptr];
+    if (dat.data()[ptr + 1] == 0) {
+      // SDR-IP response
+      switch ((unsigned char)dat.data()[ptr + 2]) {
+      case 0xb0:
+        // Afedri clock frequency
+        clockFreq = dat.data()[ptr + 5] + (dat.data()[ptr + 6] << 8) +
+                    (dat.data()[ptr + 7] << 16) + (dat.data()[ptr + 8] << 24);
+        get_real_sample_rate();
+        break;
+      }
+    } else if (((unsigned char)dat.data()[ptr] == 0x09) &&
+               ((unsigned char)dat.data()[ptr + 1] == 0xe0)) {
+      // Afedri HID over TCP response
+      switch ((unsigned char)dat.data()[ptr + 3]) {
+      case HID_GENERIC_GET_AFEDRI_ID_COMMAND: {
+        int id = dat.data()[ptr + 4];
+        if (id >= afedriNames->size()) {
+          id = afedriNames->size() - 1;
         }
-        ptr += sz;
+        name = afedriNames[id];
+        break;
+      }
+      case HID_GENERIC_GET_SERIAL_NUMBER_COMMAND:
+
+        break;
+      }
     }
+    ptr += sz;
+  }
 }
 
 /*
@@ -481,9 +439,12 @@ void Afedri::readDatagram() {
     stopAfedri();
     return;
   }
-  if (usocket.state() != QAbstractSocket::BoundState) return;
-  if (usocket.pendingDatagramSize() == -1)
+  if (usocket.state() != QAbstractSocket::BoundState) {
     return;
+  }
+  if (usocket.pendingDatagramSize() == -1) {
+    return;
+  }
   // actual number of IQ samples per UDP read for different channel modes
   const int read_size1 = 1024;
   const int read_size2 = 512;
@@ -495,7 +456,6 @@ void Afedri::readDatagram() {
     udp_size += 16;
   }
   char data[MAX_UDP_SIZE];
-
   if (usocket.readDatagram((char *)data, udp_size) == -1) {
     emit error("Afedri: UDP read failed");
     return;
@@ -514,7 +474,8 @@ void Afedri::readDatagram() {
                 .toInt()) {
     case 0:
       // dual channel, channel 1
-      // with 16 bit data, this is (16 bit I1),(16 bit Q1),32 bits skipped, etc
+      // with 16 bit data, this is (16 bit I1),(16 bit Q1),32 bits skipped,
+      // etc
       for (int i = 0, j = 0; i < 1024; i += 8, j += 4) {
         buff[bptr * sizes.advance_size + iptr + j] = data[i + 20];
         buff[bptr * sizes.advance_size + iptr + j + 1] = data[i + 21];
@@ -524,7 +485,8 @@ void Afedri::readDatagram() {
       break;
     case 1:
       // dual channel, channel 2
-      // with 16 bit data, this is 32 bits skipped, (16 bit I2),(16 bit Q2),etc
+      // with 16 bit data, this is 32 bits skipped, (16 bit I2),(16 bit
+      // Q2),etc
       for (int i = 0, j = 0; i < 1024; i += 8, j += 4) {
         buff[bptr * sizes.advance_size + iptr + j] = data[i + 24];
         buff[bptr * sizes.advance_size + iptr + j + 1] = data[i + 25];
@@ -542,7 +504,8 @@ void Afedri::readDatagram() {
                 .toInt()) {
     case 0:
       // quad channel, channel 1
-      // with 16 bit data, this is (16 bit I1),(16 bit Q1),96 bits skipped, etc
+      // with 16 bit data, this is (16 bit I1),(16 bit Q1),96 bits skipped,
+      // etc
       for (int i = 0, j = 0; i < 1024; i += 16, j += 4) {
         buff[bptr * sizes.advance_size + iptr + j] = data[i + 20];
         buff[bptr * sizes.advance_size + iptr + j + 1] = data[i + 21];
@@ -552,8 +515,8 @@ void Afedri::readDatagram() {
       break;
     case 1:
       // quad channel, channel 2
-      // with 16 bit data, this is 32 bits skipped, (16 bit I2),(16 bit Q2),64
-      // bits skipped,...
+      // with 16 bit data, this is 32 bits skipped, (16 bit I2),(16 bit
+      // Q2),64 bits skipped,...
       for (int i = 0, j = 0; i < 1024; i += 16, j += 4) {
         buff[bptr * sizes.advance_size + iptr + j] = data[i + 24];
         buff[bptr * sizes.advance_size + iptr + j + 1] = data[i + 25];
@@ -563,8 +526,8 @@ void Afedri::readDatagram() {
       break;
     case 2:
       // quad channel, channel 3
-      // with 16 bit data, this is 64 bits skipped, (16 bit I3),(16 bit Q3),32
-      // bits skipped,...
+      // with 16 bit data, this is 64 bits skipped, (16 bit I3),(16 bit
+      // Q3),32 bits skipped,...
       for (int i = 0, j = 0; i < 1024; i += 16, j += 4) {
         buff[bptr * sizes.advance_size + iptr + j] = data[i + 28];
         buff[bptr * sizes.advance_size + iptr + j + 1] = data[i + 29];
@@ -574,7 +537,8 @@ void Afedri::readDatagram() {
       break;
     case 3:
       // quad channel, channel 4
-      // with 16 bit data, this is 96 bits skipped, (16 bit I4),(16 bit Q4),...
+      // with 16 bit data, this is 96 bits skipped, (16 bit I4),(16 bit
+      // Q4),...
       for (int i = 0, j = 0; i < 1024; i += 16, j += 4) {
         buff[bptr * sizes.advance_size + iptr + j] = data[i + 32];
         buff[bptr * sizes.advance_size + iptr + j + 1] = data[i + 33];
@@ -668,55 +632,60 @@ void Afedri::get_clock_freq() {
  *    Set the Afedri device name
  *
  */
-void Afedri::get_sdr_name()
-{
-    unsigned char block[9];
+void Afedri::get_sdr_name() {
+  unsigned char block[9];
 
-    if (tsocket.state() != QAbstractSocket::ConnectedState ||
-            tsocket.state() == QAbstractSocket::ClosingState)
-        return;
+  if (tsocket.state() != QAbstractSocket::ConnectedState ||
+      tsocket.state() == QAbstractSocket::ClosingState)
+    return;
 
-    block[0] = 0x09;
-    block[1] = 0xe0;
-    block[2] = 0x02;
-    block[3] = HID_GENERIC_GET_AFEDRI_ID_COMMAND;
-    block[4] = 0;
-    block[5] = 0;
-    block[6] = 0;
-    block[7] = 0;
-    block[8] = 0;
+  block[0] = 0x09;
+  block[1] = 0xe0;
+  block[2] = 0x02;
+  block[3] = HID_GENERIC_GET_AFEDRI_ID_COMMAND;
+  block[4] = 0;
+  block[5] = 0;
+  block[6] = 0;
+  block[7] = 0;
+  block[8] = 0;
 
-    if (tsocket.write((char*)block, 9) == -1) {
-        emit error("Afedri: TCP write error, get_sdr_name");
-    }
-    tsocket.flush();
+  if (tsocket.write((char *)block, 9) == -1) {
+    emit error("Afedri: TCP write error, get_sdr_name");
+  }
+  tsocket.flush();
 }
 
 /* compute actual sampling rate based on requested rate
  * and SDR clock frequency.
  */
-void Afedri::get_real_sample_rate()
-{
-    if (clockFreq == 0) {
-        realSampleRate = 0;
-        return;
-    }
-    unsigned long temp = clockFreq / settings->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def).toUInt();
-    temp = temp / 4;
-    if ( clockFreq > settings->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def).toUInt()*(4*temp+2)) {
-        temp++;
-    }
-    realSampleRate = clockFreq / (4*temp);
-    emit clockFreqSignal ( clockFreq );
-    emit realSampleRateSignal( realSampleRate );
+void Afedri::get_real_sample_rate() {
+  if (clockFreq == 0) {
+    realSampleRate = 0;
+    return;
+  }
+  unsigned long temp =
+      clockFreq /
+      settings->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def)
+          .toUInt();
+  temp = temp / 4;
+  if (clockFreq >
+      settings->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def)
+              .toUInt() *
+          (4 * temp + 2)) {
+    temp++;
+  }
+  realSampleRate = clockFreq / (4 * temp);
+  settings->setValue(s_sdr_afedri_real_sample_freq, realSampleRate);
+  emit clockFreqSignal(clockFreq);
+  emit realSampleRateSignal(realSampleRate);
 }
 
-
-unsigned int Afedri::sampleRate() const
-{
-    if (realSampleRate == 0) {
-        return settings->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def).toUInt();
-    } else {
-        return realSampleRate;
-    }
+unsigned int Afedri::sampleRate() const {
+  if (realSampleRate == 0) {
+    return settings
+        ->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def)
+        .toUInt();
+  } else {
+    return realSampleRate;
+  }
 }

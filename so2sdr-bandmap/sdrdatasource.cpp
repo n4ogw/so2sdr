@@ -20,11 +20,9 @@
 #include "sdrdatasource.h"
 
 SdrDataSource::SdrDataSource(QString settingsFile, QObject *parent)
-    : QObject(parent) {
-  running = false;
+    : QObject(parent), stopFlag(false), running(false), rfFreq(0.0) {
   sizes.advance_size = 0;
   sizes.chunk_size = 0;
-  rfFreq = 0.0;
   settings = new QSettings(settingsFile, QSettings::IniFormat, this);
 }
 
