@@ -212,7 +212,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   }
   setSdrType();
   sdrSource->moveToThread(&sdrThread);
-  connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
+  // connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
   connect(&sdrThread, SIGNAL(started()), sdrSource, SLOT(initialize()));
   connect(sdrSource, SIGNAL(stopped()), &sdrThread, SLOT(quit()));
   connect(sdrSource, SIGNAL(error(QString)), &errorBox,
@@ -1009,6 +1009,7 @@ void So2sdrBandmap::start() {
   if (sdrThread.isRunning()) {
     return;
   }
+  connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
   sdrThread.start();
 }
 
@@ -1021,6 +1022,7 @@ void So2sdrBandmap::stop() {
     sdrThread.wait();
   }
   spectrumProcessor->stopSpectrum();
+  disconnect(actionSetup, SIGNAL(triggered(bool)), sdrSource, SLOT(stop()));
 }
 
 /*!
