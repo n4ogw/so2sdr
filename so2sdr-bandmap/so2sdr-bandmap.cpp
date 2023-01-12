@@ -710,8 +710,9 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
         (centerFreq - rfFreq) / (double)sdrSource->sampleRate() * scale * fft -
         ((height() - toolBarHeight) / 2 - vfoPos);
 
-    // check to see if near ends of display. If yes, retune SDR
-    if (ycheck < (display->y1() + 50) || (ycheck > display->y2() - 50)) {
+    // check to see if near ends of display (500 Hz). If yes, retune SDR
+    if (ycheck < (display->y1() + (int)(pix_per_khz / 2)) ||
+        (ycheck > display->y2() - (int)(pix_per_khz / 2))) {
 
       double df = (height() - toolBarHeight) * (double)sdrSource->sampleRate() /
                   (fft * scale);
