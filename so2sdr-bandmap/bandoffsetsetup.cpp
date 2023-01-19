@@ -189,7 +189,7 @@ ComboBoxItemDelegate::ComboBoxItemDelegate(QObject *parent)
 
 ComboBoxItemDelegate::~ComboBoxItemDelegate() {}
 
-int ComboBoxItemDelegate::bandNameToIndex(QString name) {
+int ComboBoxItemDelegate::bandNameToIndex(const QString &name) {
   for (int i = 0; i < N_BANDS; i++) {
     if (name == bandName[i])
       return i;

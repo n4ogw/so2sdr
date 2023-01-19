@@ -21,7 +21,6 @@
 
 #include "defines.h"
 #include "ui_settingsdialog.h"
-#include "utils.h"
 #include <QCloseEvent>
 #include <QDialog>
 #include <QSettings>

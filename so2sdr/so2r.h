@@ -32,7 +32,7 @@
 class So2r : public QObject {
   Q_OBJECT
 public:
-  explicit So2r(QSettings &s, uiSize sz, QObject *parent = nullptr,
+  explicit So2r(QSettings &s, const uiSize &sz, QObject *parent = nullptr,
                 QWidget *widgetParent = nullptr);
   ~So2r();
   bool isVisible();

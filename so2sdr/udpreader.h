@@ -19,7 +19,6 @@
 #ifndef UDPREADER_H
 #define UDPREADER_H
 
-#include "defines.h"
 #include "qso.h"
 #include "utils.h"
 #include <QByteArray>
@@ -130,9 +129,9 @@ private:
 
   void clearColors();
   bool decode(QByteArray msg, QByteArray &call, QByteArray &grid);
-  void highlightCall(QByteArray call, QColor bg, QColor fg);
+  void highlightCall(const QByteArray &call, QColor bg, QColor fg);
   void processDatagram(QNetworkDatagram datagram);
-  void sendCall(QByteArray call);
+  void sendCall(const QByteArray &call);
 };
 
 #endif // UDPREADER_H

@@ -20,7 +20,7 @@
 #include "rtl.h"
 #include <QDebug>
 
-RtlSDR::RtlSDR(QString settingsFile, QObject *parent)
+RtlSDR::RtlSDR(const QString &settingsFile, QObject *parent)
     : SdrDataSource(settingsFile, parent) {
   bptr = 0;
   ptr = nullptr;
@@ -45,7 +45,7 @@ void RtlSDR::initialize() {
     buff[i] = 0;
   }
   if (rawBuff) {
-      delete[] rawBuff;
+    delete[] rawBuff;
   }
   rawBuff = new unsigned char[sizes.advance_size * 8];
   for (unsigned long i = 0; i < sizes.advance_size * 8; i++) {
@@ -60,6 +60,7 @@ void RtlSDR::initialize() {
       settings->value(s_sdr_rtl_dev_index, s_sdr_rtl_dev_index_def).toInt());
   if (dev == nullptr) {
     qDebug("RTL-SDR: device open failed");
+    return;
   }
   if (settings->value(s_sdr_rtl_direct, s_sdr_rtl_direct_def).toBool()) {
     rtlsdr_set_direct_sampling(dev, 2);
@@ -125,9 +126,10 @@ void RtlSDR::stream() {
     int n_read;
 
     if (stopFlag) {
-        running = false;
-        emit stopped();
-        break;
+      running = false;
+      stopRtl();
+      emit stopped();
+      break;
     }
 
     // should check to make sure n_read == sizes.advance_size
@@ -158,9 +160,10 @@ void RtlSDR::streamx16() {
     int n_read;
 
     if (stopFlag) {
-        running = false;
-        emit stopped();
-        break;
+      running = false;
+      stopRtl();
+      emit stopped();
+      break;
     }
 
     // should check to make sure n_read == sizes.advance_size
@@ -207,13 +210,15 @@ RtlSDR::~RtlSDR() {
     delete[] buff;
   }
   if (rawBuff) {
-      delete[] rawBuff;
+    delete[] rawBuff;
   }
 }
 
-void RtlSDR::stop() {
-  stopFlag = true;
-}
+void RtlSDR::stop() { stopFlag = true; }
+
+/* shut down RTL sdr library
+ */
+void RtlSDR::stopRtl() { rtlsdr_close(dev); }
 
 /* set center frequency
  *
@@ -226,7 +231,7 @@ void RtlSDR::setRfFreq(double f) {
   rtlsdr_set_center_freq(dev, uif);
 }
 
-unsigned int RtlSDR::sampleRate() const
-{
-    return settings->value(s_sdr_rtl_sample_freq, s_sdr_rtl_sample_freq_def).toUInt();
+unsigned int RtlSDR::sampleRate() const {
+  return settings->value(s_sdr_rtl_sample_freq, s_sdr_rtl_sample_freq_def)
+      .toUInt();
 }

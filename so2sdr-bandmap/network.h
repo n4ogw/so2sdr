@@ -27,14 +27,19 @@
 class NetworkSDR : public SdrDataSource {
   Q_OBJECT
 public:
-  NetworkSDR(QString settingsFile, QObject *parent = nullptr);
+  explicit NetworkSDR(const QString &settingsFile, QObject *parent = nullptr);
   ~NetworkSDR();
-  unsigned int sampleRate() const;
+  unsigned int sampleRate() const override;
+  bool isSlave() const override { return false; }
 
 public slots:
-  void stop();
-  void initialize();
-  void setRfFreq(double f);
+  void stop() override;
+  void initialize() override;
+  void setRfFreq(double f) override;
+  void setRfFreqChannel(double f, int c) override {
+    Q_UNUSED(f)
+    Q_UNUSED(c)
+  }
 
 private slots:
   void readDatagram();
@@ -43,7 +48,6 @@ private slots:
 
 protected:
   void send_rx_command(int);
-  void close_udp();
   void get_name();
   void stopNetwork();
 

@@ -100,7 +100,7 @@ void Spectrum::setFFTSize(sampleSizes s) {
   calcError(true);
 }
 
-Spectrum::Spectrum(QObject *parent, QSettings &s, QString dir)
+Spectrum::Spectrum(QObject *parent, QSettings &s, const QString &dir)
     : QObject(parent), settings(s), userDirectory(dir) {
   addOffset = 0;
   offset = 0;
@@ -213,7 +213,8 @@ void Spectrum::clearCQ() {
 /*! start CQ finding process
 
  */
-void Spectrum::startFindCQ(double low, double high, QList<Call> &callList) {
+void Spectrum::startFindCQ(double low, double high,
+                           const QList<Call> &callList) {
   findCQ(low, high, callList);
   if (sigCQ) {
     emit qsy(sigCQ);
@@ -225,7 +226,7 @@ void Spectrum::startFindCQ(double low, double high, QList<Call> &callList) {
 /*! find best CQ freqs among detected signals. Once freq is found,
    qsy is emitted
  */
-void Spectrum::findCQ(double flow, double fhigh, QList<Call> &callList) {
+void Spectrum::findCQ(double flow, double fhigh, const QList<Call> &callList) {
   // peak detect must be turned on
   if (!peakDetect) {
     return;

@@ -17,6 +17,7 @@
 
  */
 #include "bandmapinterface.h"
+#include "../so2sdr-bandmap/bandmap-tcp.h"
 #include "bandmapentry.h"
 #include "utils.h"
 #include <QByteArray>
@@ -90,20 +91,20 @@ void BandmapInterface::tcpSocketStateChange(
     bandmapOn[nr] = true;
     switch (nr) {
     case 0:
-      emit(bandmap1state(true));
+      emit bandmap1state(true);
       break;
     case 1:
-      emit(bandmap2state(true));
+      emit bandmap2state(true);
       break;
     }
   } else if (state == QAbstractSocket::UnconnectedState) {
     bandmapOn[nr] = false;
     switch (nr) {
     case 0:
-      emit(bandmap1state(false));
+      emit bandmap1state(false);
       break;
     case 1:
-      emit(bandmap2state(false));
+      emit bandmap2state(false);
       break;
     }
   }
@@ -257,7 +258,7 @@ void BandmapInterface::nextFreq(int nr, bool higher) {
  * \param nr radio number (0,1)
  * \param spotList : list of spots for this band
  */
-void BandmapInterface::syncCalls(int nr, QList<BandmapEntry> &spotList) {
+void BandmapInterface::syncCalls(int nr, const QList<BandmapEntry> &spotList) {
   if (nr < 0 || nr >= NRIG)
     return;
 
@@ -343,12 +344,12 @@ void BandmapInterface::xmlParse() {
   }
   xmlReader.clear();
   if (deleteCall && !call.isEmpty() && f > 0) {
-    emit(removeCall(f, getBand(f)));
+    emit removeCall(f, getBand(f));
   } else if (f > 0 && (nr != -1)) {
     if (nr == 0) {
-      emit(qsy1(f));
+      emit qsy1(f);
     } else {
-      emit(qsy2(f));
+      emit qsy2(f);
     }
   }
 }
@@ -369,10 +370,10 @@ void BandmapInterface::setBandmapState(int nr, QProcess::ProcessState state) {
     band[nr] = -1;
     switch (nr) {
     case 0:
-      emit(bandmap1state(false));
+      emit bandmap1state(false);
       break;
     case 1:
-      emit(bandmap2state(false));
+      emit bandmap2state(false);
       break;
     }
     break;

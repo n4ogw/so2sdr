@@ -33,7 +33,7 @@ class CWDialog : public QDialog, public Ui::CwDialog {
   Q_OBJECT
 
 public:
-  CWDialog(QSettings &s, QWidget *parent = nullptr);
+  explicit CWDialog(QSettings &s, QWidget *parent = nullptr);
   ~CWDialog();
 signals:
   void setType(cwtype);

@@ -33,6 +33,8 @@ Cwdaemon::Cwdaemon(QSettings &s, QObject *parent)
   sendingCmd = false;
   txRig = 0;
   rigNum = 0;
+  udpPort[0] = 6789;
+  udpPort[1] = 6790;
 }
 
 Cwdaemon::~Cwdaemon() {

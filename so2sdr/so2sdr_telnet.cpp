@@ -134,7 +134,7 @@ void So2sdr::showTelnet(bool checkboxState)
 
 /*! add a spot. Checks to see if it is a dupe first
  */
-void So2sdr::addSpot(QByteArray call, double f) {
+void So2sdr::addSpot(const QByteArray &call, double f) {
   // * is a special case, used to mark freq without callsign
   bool d = true;
   if (call != "*") {
@@ -379,7 +379,7 @@ void So2sdr::checkSpot(int nr) {
 
 /*! remove a spot by callsign
  */
-void So2sdr::removeSpot(QByteArray call, int band) {
+void So2sdr::removeSpot(const QByteArray &call, int band) {
   if (band == BAND_NONE)
     return;
 

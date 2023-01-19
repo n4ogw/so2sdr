@@ -34,7 +34,7 @@ class History : public QObject {
 public:
   explicit History(QSettings &csettings, QObject *parent = nullptr);
   ~History();
-  void fillExchange(Qso *qso, QByteArray part);
+  void fillExchange(Qso *qso, const QByteArray &part);
   void startHistory();
   bool isOpen();
 

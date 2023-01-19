@@ -19,33 +19,12 @@
 #ifndef LOG_H
 #define LOG_H
 #include "contest.h"
-#include "contest_arrl10.h"
-#include "contest_arrl160.h"
-#include "contest_arrldx.h"
-#include "contest_cq160.h"
-#include "contest_cqp.h"
-#include "contest_cqww.h"
-#include "contest_cwops.h"
-#include "contest_dxped.h"
-#include "contest_fd.h"
-#include "contest_iaru.h"
-#include "contest_junevhf.h"
-#include "contest_kqp.h"
-#include "contest_msqp.h"
-#include "contest_naqp.h"
-#include "contest_paqp.h"
-#include "contest_sprint.h"
-#include "contest_stew.h"
-#include "contest_sweepstakes.h"
-#include "contest_wpx.h"
-#include "contest_wwdigi.h"
 #include "cty.h"
 #include "defines.h"
 #include "detailededit.h"
 #include "logdelegate.h"
 #include "logedit.h"
 #include "qso.h"
-#include "serial.h"
 #include <QDateTime>
 #include <QEvent>
 #include <QFile>
@@ -115,7 +94,7 @@ public:
   void rescore();
   int rowCount() const;
   int score() const;
-  void searchPartial(Qso *qso, QByteArray part, QList<QByteArray> &calls,
+  void searchPartial(Qso *qso, const QByteArray &part, QList<QByteArray> &calls,
                      QList<unsigned int> &worked, QList<int> &mult1,
                      QList<int> &mult2);
   void selectContest();

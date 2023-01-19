@@ -32,7 +32,7 @@ QString NewDialog::selectedContest() {
 bool NewDialog::readContestList(QString fileName) {
   QFile file(fileName);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    emit(newContestError("Can't open contest list file at " + fileName));
+    emit newContestError("Can't open contest list file at " + fileName);
     return (false);
   }
   while (!file.atEnd()) {

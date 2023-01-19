@@ -18,7 +18,6 @@
  */
 #ifndef LINUX_PP_H
 #define LINUX_PP_H
-#include "defines.h"
 #include <QSettings>
 #include <QString>
 #include <stdio.h>
@@ -40,7 +39,7 @@ class ParallelPort : public QObject {
   Q_OBJECT
 
 public:
-  ParallelPort(QSettings &s);
+  explicit ParallelPort(QSettings &s);
   ~ParallelPort();
   void switchAudio(int r);
   void toggleStereoPin();

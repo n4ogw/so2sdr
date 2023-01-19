@@ -18,7 +18,6 @@
  */
 #ifndef IQBALANCE_H
 #define IQBALANCE_H
-#include "defines.h"
 #include "ui_iqbalance.h"
 #include <QCloseEvent>
 #include <QDialog>

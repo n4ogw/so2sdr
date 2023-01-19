@@ -37,7 +37,7 @@ public:
   explicit Cty(QSettings &s);
   ~Cty();
 
-  int findPfx(QByteArray prefix, int &zone, Cont &continent, bool &o) const;
+  int findPfx(const QByteArray &prefix, int &zone, Cont &continent, bool &o) const;
   int idPfx(Qso *qso, bool &qsy) const;
   void initialize(double la, double lo, int ZoneType);
   QString mySunTimes() const;
@@ -64,7 +64,7 @@ private:
   QList<int> zoneBearing;
   QList<QString> zoneSun;
 
-  int checkException(QByteArray call, int &zone, QString &sun) const;
+  int checkException(const QByteArray &call, int &zone, QString &sun) const;
   int idPfx2(Qso *qso, int sz) const;
   bool isDigit(char c) const;
   void sunTimes(double lat, double lon, QString &suntime);

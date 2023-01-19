@@ -27,11 +27,12 @@
 class SdrDataSource : public QObject {
   Q_OBJECT
 public:
-  explicit SdrDataSource(QString settingsFile, QObject *parent = nullptr);
+  explicit SdrDataSource(const QString &settingsFile, QObject *parent = nullptr);
   ~SdrDataSource();
   virtual unsigned int sampleRate() const = 0;
   void setSampleSizes(sampleSizes s);
-  bool isRunning() { return running; };
+  bool isRunning() { return running; }
+  virtual bool isSlave() const = 0;
 
 signals:
   void error(const QString &);
@@ -45,6 +46,7 @@ public slots:
   virtual void stop() = 0;
   virtual void initialize() = 0;
   virtual void setRfFreq(double f) = 0;
+  virtual void setRfFreqChannel(double f, int c) = 0;
 
 protected:
   sampleSizes sizes;

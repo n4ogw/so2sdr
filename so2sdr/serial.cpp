@@ -16,9 +16,9 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "hamlib/rig.h"
 #include "serial.h"
 #include "defines.h"
+#include "hamlib/rig.h"
 #include <QByteArray>
 #include <QDebug>
 #include <QDir>
@@ -669,8 +669,8 @@ void RigSerial::openRig() {
     // ext param for RIT clear
     confParamsRIT = rig_ext_lookup(rig, "ritclr");
   } else {
-    emit(radioError("ERROR: radio " + QString::number(nrig + 1) +
-                    " could not be opened"));
+    emit radioError("ERROR: radio " + QString::number(nrig + 1) +
+                    " could not be opened");
     radioOK = false;
     rig_close(rig);
   }
@@ -811,8 +811,8 @@ void RigSerial::rxSocket() {
 void RigSerial::tcpError(QAbstractSocket::SocketError e) {
   Q_UNUSED(e)
   radioOK = false;
-  emit(radioError("ERROR: Rigctld radio " + QString::number(nrig + 1) + " " +
-                  socket->errorString().toLatin1()));
+  emit radioError("ERROR: Rigctld radio " + QString::number(nrig + 1) + " " +
+                  socket->errorString().toLatin1());
 }
 
 int RigSerial::band() const {

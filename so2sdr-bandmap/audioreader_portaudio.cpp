@@ -19,7 +19,7 @@
 
 #include "audioreader_portaudio.h"
 
-AudioReaderPortAudio::AudioReaderPortAudio(QString settingsFile,
+AudioReaderPortAudio::AudioReaderPortAudio(const QString &settingsFile,
                                            QObject *parent)
     : SdrDataSource(settingsFile, parent) {
   bptr = 0;

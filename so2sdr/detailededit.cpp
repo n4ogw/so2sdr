@@ -175,5 +175,5 @@ void DetailedEdit::updateRecord() {
     rec.setValue(SQL_COL_CALL, QVariant(callLineEdit->text()));
     rec.setGenerated(SQL_COL_CALL, true);
   }
-  emit(editedRecord(rec));
+  emit editedRecord(rec);
 }

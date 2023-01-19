@@ -35,7 +35,7 @@ class ComboBoxItemDelegate : public QStyledItemDelegate {
 public:
   ComboBoxItemDelegate(QObject *parent = nullptr);
   ~ComboBoxItemDelegate();
-  int bandNameToIndex(QString name);
+  int bandNameToIndex(const QString &name);
 
 protected:
   virtual QWidget *createEditor(QWidget *parent,

@@ -38,6 +38,6 @@ void CenterGridDialog::setText(QByteArray s) { lineEdit->setText(s); }
 
 void CenterGridDialog::emitgrid() {
   QByteArray text = lineEdit->text().toLatin1();
-  emit(grid(text));
+  emit grid(text);
   close();
 }

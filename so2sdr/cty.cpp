@@ -78,7 +78,7 @@ Cty::~Cty() {
    returns CTY index, or -1 if callsign not found
    if found, returns cq and itu zones if known (or -1 if not)
  */
-int Cty::checkException(QByteArray call, int &zone, QString &sun) const {
+int Cty::checkException(const QByteArray &call, int &zone, QString &sun) const {
   // start search in middle of list
   int i1 = 0;
   int i2 = CallE.size() / 2;
@@ -120,7 +120,8 @@ int Cty::checkException(QByteArray call, int &zone, QString &sun) const {
    returns CTY index, or -1 if prefix not found.
    if found,
  */
-int Cty::findPfx(QByteArray prefix, int &zone, Cont &continent, bool &o) const {
+int Cty::findPfx(const QByteArray &prefix, int &zone, Cont &continent,
+                 bool &o) const {
   // start search in middle of list
   int i1 = 0;
   int i2 = pfxList.size() / 2;

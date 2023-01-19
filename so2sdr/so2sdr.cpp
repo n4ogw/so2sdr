@@ -48,7 +48,6 @@
 #include <QTimer>
 #include <QUrl>
 
-#include "hamlib/rig.h"
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
 #include "contestoptdialog.h"
@@ -58,6 +57,7 @@
 #include "defines.h"
 #include "dupesheet.h"
 #include "filedownloader.h"
+#include "hamlib/rig.h"
 #include "helpdialog.h"
 #include "history.h"
 #include "keyboardhandler.h"
@@ -77,8 +77,7 @@
 #include "telnet.h"
 #include "wsjtxcalldialog.h"
 
-So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent)
-{
+So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   setupUi(this);
   setWindowFlags(Qt::Window | Qt::CustomizeWindowHint |
                  Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
@@ -2073,7 +2072,7 @@ void So2sdr::superPartial(QByteArray partial) {
    if external = true, qso is from an external source like wsjtx and may not
    correspond to either radio.
  */
-bool So2sdr::logPartial(int nrig, QByteArray partial, bool external,
+bool So2sdr::logPartial(int nrig, const QByteArray &partial, bool external,
                         Qso *externalQso) {
   Qso *partialQso;
   if (external) {
@@ -4045,7 +4044,7 @@ void So2sdr::showBandmap2(bool state) {
   bandmap->showBandmap(1, state);
 }
 
-void So2sdr::runScript(QString cmd, QString args) {
+void So2sdr::runScript(const QString &cmd, QString args) {
   So2sdrStatusBar->showMessage("Script:" + cmd, 3000);
   QString program = userDirectory() + "/scripts/" + cmd;
   QStringList arglist = args.simplified().split(" ");

@@ -26,16 +26,22 @@ class RtlSDR : public SdrDataSource {
   Q_OBJECT
 
 public:
-  RtlSDR(QString settingsFile, QObject *parent = nullptr);
+  explicit RtlSDR(const QString &settingsFile, QObject *parent = nullptr);
   ~RtlSDR();
-  unsigned int sampleRate() const;
+  unsigned int sampleRate() const override;
+  bool isSlave() const override { return false; }
 
 public slots:
-  void stop();
-  void initialize();
-  void setRfFreq(double f);
+  void stop() override;
+  void initialize() override;
+  void setRfFreq(double f) override;
+  void setRfFreqChannel(double f, int c) override {
+    Q_UNUSED(f)
+    Q_UNUSED(c)
+  }
 
 private:
+  void stopRtl();
   void stream();
   void streamx16();
 

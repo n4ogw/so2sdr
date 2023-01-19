@@ -101,7 +101,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   resize(settings->value("size", QSize(400, 594)).toSize());
   move(settings->value("pos", QPoint(200, 200)).toPoint());
   settings->endGroup();
-
   directory.setCurrent(dataDirectory());
   if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
           .toBool()) {
@@ -112,7 +111,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
     horizontalLayout->insertWidget(1, FreqLabel);
     horizontalLayout->insertWidget(2, display);
   }
-
   freqPixmap = QPixmap(FreqLabel->width(),
                        settings->value(s_sdr_fft, s_sdr_fft_def).toInt());
   callPixmap = QPixmap(CallLabel->width(),
@@ -125,7 +123,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
     qDebug("couldn't start tcp server");
   }
   connect(&server, SIGNAL(newConnection()), this, SLOT(startConnection()));
-
   setFocusPolicy(Qt::StrongFocus);
   setFocusPolicy(Qt::NoFocus);
   display->setFocusPolicy(Qt::NoFocus);
@@ -136,6 +133,10 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   toolBar->setMovable(false);
   QWidget *spacer1 = new QWidget();
   spacer1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  clientLabelTxt = new QLabel("Clients:");
+  clientLabel = new QLabel("0");
+  toolBar->addWidget(clientLabelTxt);
+  toolBar->addWidget(clientLabel);
   toolBar->addWidget(spacer1);
   toolBar->addWidget(&checkBoxMark);
   txLabel.clear();
@@ -164,7 +165,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   deleteAct = new QAction("&Delete Call", this);
   checkBoxMark.setChecked(
       settings->value(s_sdr_peakdetect, s_sdr_peakdetect_def).toBool());
-
   iqShowData = new QAction("IQ Balance", this);
   connect(iqShowData, SIGNAL(triggered()), this, SLOT(showIQData()));
   connect(&checkBoxMark, SIGNAL(clicked()), this, SLOT(emitParams()));
@@ -192,7 +192,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   connect(display, SIGNAL(displayMouseQSY(int)), this,
           SLOT(mouseQSYDelta(int)));
   toolBarHeight = toolBar->height();
-
   // select type of SDR, create data source sdrSource
   spectrumProcessor = new Spectrum(this, *settings, userDirectory());
   switch (static_cast<SdrType>(
@@ -212,9 +211,9 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   }
   setSdrType();
   sdrSource->moveToThread(&sdrThread);
-  // connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
   connect(&sdrThread, SIGNAL(started()), sdrSource, SLOT(initialize()));
   connect(sdrSource, SIGNAL(stopped()), &sdrThread, SLOT(quit()));
+  connect(this, SIGNAL(startSdrThread()), &sdrThread, SLOT(start()));
   connect(sdrSource, SIGNAL(error(QString)), &errorBox,
           SLOT(showMessage(QString)));
   connect(sdrSource, SIGNAL(resetRfFlag()), this, SLOT(resetRfFlag()));
@@ -250,7 +249,6 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
           SLOT(plotPhaseFunc(double, double, double, double)));
   tuningTimer.setSingleShot(true);
   connect(&tuningTimer, SIGNAL(timeout()), this, SLOT(resetTuningTimer()));
-
   // vfoPos is the position of the center of the spectrum, measured in pixels
   vfoPos = (height() - toolBarHeight) / 2;
   dragPos = vfoPos;
@@ -259,12 +257,15 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   makeFreqScaleAbsolute();
   FreqLabel->setPixmap(freqPixmap);
   FreqLabel->update();
-
   startTimers();
   show();
 }
 
 So2sdrBandmap::~So2sdrBandmap() {
+  if (sdrThread.isRunning()) {
+    sdrThread.quit();
+    sdrThread.wait();
+  }
   sdrSource->deleteLater();
   delete spectrumProcessor;
   delete deleteAct;
@@ -275,6 +276,8 @@ So2sdrBandmap::~So2sdrBandmap() {
   delete scaleX1;
   delete scaleX2;
   delete showToolBar;
+  delete clientLabel;
+  delete clientLabelTxt;
   delete settings;
 }
 
@@ -316,6 +319,7 @@ void So2sdrBandmap::updateLevel(int level) {
  */
 void So2sdrBandmap::restartSdr() {
   disconnect(this, SIGNAL(setRfFreq(double)), nullptr, nullptr);
+  disconnect(this, SIGNAL(setRfFreqChannel(double, int)), nullptr, nullptr);
   sdrSource->stop();
   if (sdrThread.isRunning()) {
     sdrThread.quit();
@@ -323,26 +327,31 @@ void So2sdrBandmap::restartSdr() {
   }
   spectrumProcessor->stopSpectrum();
   delete sdrSource;
-
   // start new one
+  centerFreq = 0.0;
+  rfFreq = 0.0;
   switch (static_cast<SdrType>(
       settings->value(s_sdr_type, s_sdr_type_def).toInt())) {
   case soundcard_t:
     sdrSource = new AudioReaderPortAudio(settingsFile);
+    connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
     break;
   case afedri_t:
     sdrSource = new Afedri(settingsFile);
+    connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
     break;
   case network_t:
     sdrSource = new NetworkSDR(settingsFile);
+    connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
     break;
   case rtl_t:
     sdrSource = new RtlSDR(settingsFile);
+    connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()),
+            Qt::DirectConnection);
     break;
   }
   setSdrType();
   sdrSource->moveToThread(&sdrThread);
-  connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
   connect(&sdrThread, SIGNAL(started()), sdrSource, SLOT(initialize()));
   connect(sdrSource, SIGNAL(stopped()), &sdrThread, SLOT(quit()));
   connect(sdrSource, SIGNAL(error(QString)), &errorBox,
@@ -360,10 +369,13 @@ void So2sdrBandmap::restartSdr() {
 
 /*!
  * \brief So2sdrBandmap::setSdrType
- *  this gets triggered when the type of SDR is selected in SDRDialog, or other
- * options change
+ *  this gets triggered when the type of SDR is selected in SDRDialog, or
+ * other options change
  */
 void So2sdrBandmap::setSdrType() {
+  centerFreq = 0.0;
+  rfFreq = 0.0;
+  setRfFlag = true;
   switch (static_cast<SdrType>(
       settings->value(s_sdr_type, s_sdr_type_def).toInt())) {
   case soundcard_t:
@@ -373,8 +385,33 @@ void So2sdrBandmap::setSdrType() {
         settings->value(s_sdr_sound_speed, s_sdr_sound_speed_def).toInt());
     break;
   case afedri_t:
+    // for Afedri slave, connect to master bandmap
+    if (sdrSource->isSlave()) {
+      if (masterSocket.state() == QAbstractSocket::ConnectedState) {
+        masterSocket.close();
+        masterSocket.waitForDisconnected();
+      }
+      masterSocket.connectToHost(
+          settings->value(s_sdr_afedri_tcp_ip, s_sdr_afedri_tcp_ip_def)
+              .toString(),
+          settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
+              .toInt());
+      while (masterSocket.state() == QAbstractSocket::UnconnectedState) {
+        masterSocket.waitForConnected();
+      }
+      // in IF mode, send IF frequency
+      if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
+        sendToMaster(
+            settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
+                .toDouble(),
+            settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                .toInt());
+      }
+    }
     connect(this, SIGNAL(setRfFreq(double)), sdrSource,
             SLOT(setRfFreq(double)));
+    connect(this, SIGNAL(setRfFreqChannel(double, int)), sdrSource,
+            SLOT(setRfFreqChannel(double, int)));
     iqShowData->setEnabled(false);
     settings->setValue(
         s_sdr_tcp_ip,
@@ -427,6 +464,7 @@ void So2sdrBandmap::setSdrType() {
         settings->value(s_sdr_rtl_speed, s_sdr_rtl_speed_def).toInt());
     break;
   }
+
   settings->setValue(s_sdr_offset, sdrSetup->offset(getBand(centerFreq)));
   settings->setValue(s_sdr_swapiq, sdrSetup->invert(getBand(centerFreq)));
   unsigned int fft, period;
@@ -437,6 +475,7 @@ void So2sdrBandmap::setSdrType() {
   } else {
     fft = 8192;
   }
+
   settings->setValue(s_sdr_fft, fft);
   period = fft / 4;
   switch (settings->value(s_sdr_bits, s_sdr_bits_def).toInt()) {
@@ -474,7 +513,6 @@ void So2sdrBandmap::setSdrType() {
   vfoPos = (height() - toolBarHeight) / 2;
   dragPos = vfoPos;
   display->setVfoPos(vfoPos);
-
   switch (settings->value(s_sdr_scale, s_sdr_scale_def).toInt()) {
   case 1:
     setScaleX1();
@@ -514,6 +552,7 @@ void So2sdrBandmap::setSdrType() {
       socketUdpN1MM.close();
     }
   }
+
   settings->sync();
 }
 
@@ -640,10 +679,10 @@ void So2sdrBandmap::makeCall() {
     // uiSizes.height/3 is fudge factor to center callsign
     if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
             .toBool()) {
-      QFontMetrics fm(font);
+      QFontMetrics fontm(font);
       p.drawText(callPixmap.width() -
                      qRound(uiSizes.height / 3 - uiSizes.width * 1.5) -
-                     fm.horizontalAdvance(callList.at(i).call),
+                     fontm.horizontalAdvance(callList.at(i).call),
                  y + qRound(uiSizes.width / 3), callList.at(i).call);
     } else {
       p.drawText(qRound(uiSizes.width * 1.5), y + qRound(uiSizes.height / 3),
@@ -689,7 +728,6 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
   int y, ycheck;
   int fft = settings->value(s_sdr_fft, s_sdr_fft_def).toInt();
   int scale = settings->value(s_sdr_scale, s_sdr_scale_def).toInt();
-
   switch (settings->value(s_sdr_mode, s_sdr_mode_def).toInt()) {
   case IF:
   default:
@@ -703,16 +741,29 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
         ((height() - toolBarHeight) / 2 - vfoPos);
     break;
   case RFauto:
+    // if centerFreq and rfFreq are not set, make scale like in IF mode
+    if (centerFreq == 0.0 && rfFreq == 0.0) {
+      cf = centerFreq;
+      y = fft / 2 - ((height() - toolBarHeight) / 2 - vfoPos);
+      break;
+    }
     cf = rfFreq;
+
     ycheck = fft / 2 - (centerFreq - rfFreq) / (double)sdrSource->sampleRate() *
                            scale * fft;
     y = fft / 2 -
         (centerFreq - rfFreq) / (double)sdrSource->sampleRate() * scale * fft -
         ((height() - toolBarHeight) / 2 - vfoPos);
 
+    // if centerFreq and rfFreq are not set, make scale like in IF mode and
+    // don't draw red line
+    if (centerFreq == 0.0 && rfFreq == 0.0) {
+      break;
+    }
+
     // check to see if near ends of display (500 Hz). If yes, retune SDR
-    if (ycheck < (display->y1() + (int)(pix_per_khz / 2)) ||
-        (ycheck > display->y2() - (int)(pix_per_khz / 2))) {
+    if (!mouseDrag && (ycheck < (display->y1() + (int)(pix_per_khz / 2)) ||
+                       (ycheck > display->y2() - (int)(pix_per_khz / 2)))) {
 
       double df = (height() - toolBarHeight) * (double)sdrSource->sampleRate() /
                   (fft * scale);
@@ -722,14 +773,20 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
         rfFreq -= 0.9 * df;
       }
       cf = rfFreq;
-      emit setRfFreq(rfFreq);
-
+      // slave device: pass frequency to master
+      if (sdrSource->isSlave()) {
+        sendToMaster(
+            rfFreq,
+            settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                .toInt());
+      } else {
+        emit setRfFreq(rfFreq);
+      }
       //  recompute red line position
       y = fft / 2 -
           (centerFreq - rfFreq) / (double)sdrSource->sampleRate() * scale *
               fft -
           ((height() - toolBarHeight) / 2 - vfoPos);
-
       endFreqs[0] = rfFreq - sdrSource->sampleRate() / 2;
       endFreqs[1] = rfFreq + sdrSource->sampleRate() / 2;
       setWindowTitle("Bandmap " + bandName + " [" +
@@ -742,7 +799,6 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
   }
 
   int dy = (height() - toolBarHeight) / 2 - vfoPos;
-
   // minimum frequency in displayed spectrum. This is usually off screen
   freqMin =
       cf - (fft / 2 + dy) * (double)sdrSource->sampleRate() / (scale * fft);
@@ -752,7 +808,6 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
       qFloor((bottom_start - freqMin) * fft * scale) / sdrSource->sampleRate();
   int j = (bottom_start / 1000) % 1000;
   int i, i0 = fft - bottom_pix_offset;
-
   // maximum frequency in displayed spectrum. This is usually off screen
   freqMax = freqMin + (fft * (double)sdrSource->sampleRate() / (scale * fft));
   QPainter p(&freqPixmap);
@@ -790,7 +845,6 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
     i = i0 - qRound(k * pix_per_khz) - 2;
     k++;
   }
-
   // draw red line at center freq
   if (y >= 0 && y < freqPixmap.height()) {
     p.setPen(qRgb(255, 0, 0));
@@ -800,12 +854,30 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
   }
 }
 
+/*! reset drag status when mouse button is released
+ */
+void So2sdrBandmap::mouseReleaseEvent(QMouseEvent *event) {
+  Q_UNUSED(event)
+
+  mouseDrag = false;
+  if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RFauto) {
+    vfoPos = (height() - toolBarHeight) / 2;
+    dragPos = vfoPos;
+    display->setVfoPos(vfoPos);
+    makeFreqScaleAbsolute();
+    FreqLabel->setPixmap(freqPixmap);
+    FreqLabel->update();
+  }
+}
+
 /*! event for mouse moved while left button is pressed
 
    detect when frequency scale is dragged
+   in RFauto mode, frequency will not update while mouseDrag is true
  */
 void So2sdrBandmap::mouseMoveEvent(QMouseEvent *event) {
   if (FreqLabel->underMouse()) {
+    mouseDrag = true;
     // constant here (50) affects sensitivity of dragging freq scale
     if (abs(event->pos().y() - dragPos) < 50) {
       int tmp = vfoPos + (event->pos().y() - dragPos);
@@ -991,12 +1063,10 @@ void So2sdrBandmap::setScaleX2() {
   scaleX1->setChecked(false);
   scaleX2->setChecked(true);
   spectrumProcessor->updateParams();
-
   pix_per_khz = settings->value(s_sdr_fft, s_sdr_fft_def).toDouble() * 2 /
                 ((double)sdrSource->sampleRate() / 1000);
   pix_per_hz = settings->value(s_sdr_fft, s_sdr_fft_def).toDouble() * 2 /
                (double)sdrSource->sampleRate();
-
   makeFreqScaleAbsolute();
   FreqLabel->setPixmap(freqPixmap);
   FreqLabel->update();
@@ -1009,18 +1079,24 @@ void So2sdrBandmap::start() {
   if (sdrThread.isRunning()) {
     return;
   }
-  connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
-  sdrThread.start();
+  // to stop SDR, RTL needs a direct signal-slot connection
+  if (static_cast<SdrType>(
+          settings->value(s_sdr_type, s_sdr_type_def).toInt()) == rtl_t) {
+    connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()),
+            Qt::DirectConnection);
+  } else {
+    connect(actionSetup, SIGNAL(triggered()), sdrSource, SLOT(stop()));
+  }
+  emit startSdrThread();
 }
 
 /*! stops bandmap
  */
 void So2sdrBandmap::stop() {
+  // set stop flag in sdrSource. sdrSource then emits stopped(), which
+  // is connected to sdrThread quit().
   sdrSource->stop();
-  if (sdrThread.isRunning()) {
-    sdrThread.quit();
-    sdrThread.wait();
-  }
+
   spectrumProcessor->stopSpectrum();
   disconnect(actionSetup, SIGNAL(triggered(bool)), sdrSource, SLOT(stop()));
 }
@@ -1047,12 +1123,12 @@ void So2sdrBandmap::initPointers() {
   scaleX2 = nullptr;
   spectrumProcessor = nullptr;
   help = nullptr;
+  for (int i = 0; i < nTcpSocket; i++)
+    socket[i] = nullptr;
 }
 
 void So2sdrBandmap::initVariables() {
   callList.clear();
-  cmdLen = 0;
-  cmd = 0;
   flow = 0;
   fhigh = 0;
   initialized = false;
@@ -1069,6 +1145,9 @@ void So2sdrBandmap::initVariables() {
   setRfFlag = true;
   for (int i = 0; i < N_BANDMAP_TIMERS; i++)
     timerId[i] = -1;
+  socketIndx = 0;
+  tcpClients = 0;
+  mouseDrag = false;
 }
 
 void So2sdrBandmap::quit() {
@@ -1139,6 +1218,41 @@ void So2sdrBandmap::timerEvent(QTimerEvent *event) {
   } else if (event->timerId() == timerId[1]) {
     // UDP beacon
     writeUdpXML(0, "", false);
+    // count tcp clients
+    tcpClients = 0;
+    if (socket[0]) {
+      if (socket[0]->state() == QAbstractSocket::ConnectedState) {
+        tcpClients++;
+      }
+    }
+    if (socket[1]) {
+      if (socket[1]->state() == QAbstractSocket::ConnectedState) {
+        tcpClients++;
+      }
+    }
+    clientLabel->setText(QString::number(tcpClients));
+
+    // recheck connection to master
+    if (sdrSource && sdrSource->isSlave()) {
+      if (masterSocket.state() != QAbstractSocket::ConnectedState) {
+        masterSocket.connectToHost(
+            settings->value(s_sdr_afedri_tcp_ip, s_sdr_afedri_tcp_ip_def)
+                .toString(),
+            settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
+                .toInt());
+        while (masterSocket.state() == QAbstractSocket::UnconnectedState) {
+          masterSocket.waitForConnected();
+        }
+        // in IF mode, send IF frequency
+        if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
+          sendToMaster(
+              settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
+                  .toDouble(),
+              settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                  .toInt());
+        }
+      }
+    }
   } else if (event->timerId() == timerId[2]) {
     // update IQ balance plot
     if (settings->value(s_sdr_type, s_sdr_type_def).toInt() == soundcard_t) {
@@ -1147,17 +1261,28 @@ void So2sdrBandmap::timerEvent(QTimerEvent *event) {
   }
 }
 
-/*! read data from TCP socket. Connects to signal readyRead of socket
+/*! read data from TCP socket[0]. Connects to signal readyRead of socket[0]
  */
-void So2sdrBandmap::readData() {
+void So2sdrBandmap::readData0() {
+  static char cmd = 0;
+  static char cmdLen = 0;
+
+  if (!socket[0])
+    return;
+  if (socket[0]->state() != QAbstractSocket::ConnectedState)
+    return;
+
   // continue on as long as data is available
-  while (socket->bytesAvailable()) {
+  while (socket[0]->state() == QAbstractSocket::ConnectedState &&
+         socket[0]->bytesAvailable()) {
+
     // first read command and length
     char buff[2];
     if (cmdLen == 0) {
-      if (socket->bytesAvailable() < 2)
+      if (socket[0]->state() != QAbstractSocket::ConnectedState ||
+          socket[0]->bytesAvailable() < 2)
         return;
-      qint64 n = socket->read(buff, 2);
+      qint64 n = socket[0]->read(buff, 2);
       if (n == 2) {
         cmd = buff[0];
         cmdLen = buff[1];
@@ -1166,20 +1291,186 @@ void So2sdrBandmap::readData() {
     QByteArray data;
     data.clear();
     if (cmdLen > 0) {
-      if (socket->bytesAvailable() < cmdLen)
+      if (socket[0]->state() != QAbstractSocket::ConnectedState ||
+          socket[0]->bytesAvailable() < cmdLen)
         return;
-      data = socket->read(cmdLen);
+      data = socket[0]->read(cmdLen);
     }
-    bool ok = false;
-    double f;
-    double ff;
-    switch (cmd) {
-    // set SDR frequency
-    case BANDMAP_CMD_SET_SDR_FREQ:
-      f = data.toDouble(&ok);
-      if (ok) {
-        rfFreq = f;
+    parseData(cmd, cmdLen, data);
+  }
+}
+
+/*! read data from TCP socket[1]. Connects to signal readyRead of socket[1]
+ */
+void So2sdrBandmap::readData1() {
+  static char cmd = 0;
+  static char cmdLen = 0;
+
+  if (!socket[1])
+    return;
+  if (socket[1]->state() != QAbstractSocket::ConnectedState)
+    return;
+
+  // continue on as long as data is available
+  while (socket[1]->state() == QAbstractSocket::ConnectedState &&
+         socket[1]->bytesAvailable()) {
+
+    // first read command and length
+    char buff[2];
+    if (cmdLen == 0) {
+      if (socket[1]->state() != QAbstractSocket::ConnectedState ||
+          socket[1]->bytesAvailable() < 2)
+        return;
+      qint64 n = socket[1]->read(buff, 2);
+      if (n == 2) {
+        cmd = buff[0];
+        cmdLen = buff[1];
+      }
+    }
+    QByteArray data;
+    data.clear();
+    if (cmdLen > 0) {
+      if (socket[1]->state() != QAbstractSocket::ConnectedState ||
+          socket[1]->bytesAvailable() < cmdLen)
+        return;
+      data = socket[1]->read(cmdLen);
+    }
+    parseData(cmd, cmdLen, data);
+  }
+}
+
+/* parse commands from tcp servers
+ */
+void So2sdrBandmap::parseData(char &cmd, char &cmdLen, QByteArray data) {
+
+  bool ok = false;
+  double f;
+  double ff;
+
+  switch (cmd) {
+
+  // set SDR frequency
+  case BANDMAP_CMD_SET_SDR_FREQ:
+    f = data.toDouble(&ok);
+    if (ok) {
+      rfFreq = f;
+      // slave device: pass frequency to master
+      if (sdrSource->isSlave()) {
+        sendToMaster(
+            f, settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                   .toInt());
+      } else {
         emit setRfFreq(f);
+      }
+      setRfFlag = false;
+      endFreqs[0] = rfFreq - sdrSource->sampleRate() / 2;
+      endFreqs[1] = rfFreq + sdrSource->sampleRate() / 2;
+      setWindowTitle("Bandmap " + bandName + " [" +
+                     QString::number(endFreqs[0] / 1000, 'f', 0) + "-" +
+                     QString::number(endFreqs[1] / 1000, 'f', 0) + "]");
+      spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
+      spectrumProcessor->resetAvg();
+      makeFreqScaleAbsolute();
+      FreqLabel->setPixmap(freqPixmap);
+      FreqLabel->update();
+    }
+    break;
+
+  // set SDR frequency for multichannel SDR. For use by slave connected
+  // bandmap
+  case BANDMAP_CMD_SET_SDR_FREQ_CHANNEL:
+    // first two characters of data string are channel number (ascii)
+    // followed by a space
+    {
+      int channel = data.left(1).toInt(&ok);
+      if (ok) {
+        f = data.mid(2, -1).toDouble(&ok);
+        if (ok) {
+          emit setRfFreqChannel(f, channel);
+        }
+      }
+    }
+    break;
+
+    // set radio frequency
+  case BANDMAP_CMD_SET_FREQ: {
+    f = data.toDouble(&ok);
+    if (!ok || (qAbs(centerFreq - f) == 0)) {
+      break;
+    }
+
+    if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
+      // panadapter at IF freq
+      // check for band change
+      int b = getBand(f);
+      if (b == BAND_NONE)
+        return;
+      setBandName(b);
+      if (band != b) {
+        // if band changed, clear all signals
+        spectrumProcessor->clearSigs();
+        spectrumProcessor->clearCQ();
+        settings->setValue(s_sdr_offset, sdrSetup->offset(getBand(centerFreq)));
+        settings->setValue(s_sdr_swapiq, sdrSetup->invert(getBand(centerFreq)));
+        spectrumProcessor->updateParams();
+        band = b;
+      }
+      centerFreq = f;
+      spectrumProcessor->setTuning(true);
+      tuningTimer.start(TUNING_TIMEOUT);
+
+      endFreqs[0] = centerFreq - sdrSource->sampleRate() / 2 -
+                    settings->value(s_sdr_offset, s_sdr_offset_def).toInt();
+      endFreqs[1] = centerFreq + sdrSource->sampleRate() / 2 -
+                    settings->value(s_sdr_offset, s_sdr_offset_def).toInt();
+
+      setWindowTitle("Bandmap " + bandName + " [" +
+                     QString::number(endFreqs[0] / 1000, 'f', 0) + "-" +
+                     QString::number(endFreqs[1] / 1000, 'f', 0) + "]");
+      spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
+      spectrumProcessor->resetAvg();
+      makeFreqScaleAbsolute();
+      FreqLabel->setPixmap(freqPixmap);
+      FreqLabel->update();
+    } else if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RF) {
+      // panadapter at RF freq, SDR freq set manually
+
+      centerFreq = f;
+      setRfFlag = false;
+      makeFreqScaleAbsolute();
+      FreqLabel->setPixmap(freqPixmap);
+      FreqLabel->update();
+    } else if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RFauto) {
+      // panadapter at RF freq, automatically recenter SDR freq
+
+      // check for band change
+      int b = getBand(f);
+      if (b == BAND_NONE)
+        return;
+      setBandName(b);
+      if (band != b) {
+        // if band changed, clear all signals
+        spectrumProcessor->clearSigs();
+        spectrumProcessor->clearCQ();
+        settings->setValue(s_sdr_offset, sdrSetup->offset(getBand(centerFreq)));
+        settings->setValue(s_sdr_swapiq, sdrSetup->invert(getBand(centerFreq)));
+        spectrumProcessor->updateParams();
+        band = b;
+        // set flag to retune SDR
+        setRfFlag = true;
+      }
+      centerFreq = f;
+
+      if (setRfFlag) {
+        rfFreq = f;
+        // slave device: pass frequency to master
+        if (sdrSource->isSlave()) {
+          sendToMaster(
+              f, settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                     .toInt());
+        } else {
+          emit setRfFreq(f);
+        }
         setRfFlag = false;
         endFreqs[0] = rfFreq - sdrSource->sampleRate() / 2;
         endFreqs[1] = rfFreq + sdrSource->sampleRate() / 2;
@@ -1188,169 +1479,109 @@ void So2sdrBandmap::readData() {
                        QString::number(endFreqs[1] / 1000, 'f', 0) + "]");
         spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
         spectrumProcessor->resetAvg();
-        makeFreqScaleAbsolute();
-        FreqLabel->setPixmap(freqPixmap);
-        FreqLabel->update();
       }
-      break;
-    // set radio frequency
-    case BANDMAP_CMD_SET_FREQ: {
-      f = data.toDouble(&ok);
-      if (!ok || (qAbs(centerFreq - f) == 0))
-        break;
-      if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
-        // panadapter at IF freq
-        // check for band change
-        int b = getBand(f);
-        if (b == BAND_NONE)
-          return;
-        setBandName(b);
-        if (band != b) {
-          // if band changed, clear all signals
-          spectrumProcessor->clearSigs();
-          spectrumProcessor->clearCQ();
-          settings->setValue(s_sdr_offset,
-                             sdrSetup->offset(getBand(centerFreq)));
-          settings->setValue(s_sdr_swapiq,
-                             sdrSetup->invert(getBand(centerFreq)));
-          spectrumProcessor->updateParams();
-          band = b;
-        }
-        centerFreq = f;
-        spectrumProcessor->setTuning(true);
-        tuningTimer.start(TUNING_TIMEOUT);
-
-        endFreqs[0] = centerFreq - sdrSource->sampleRate() / 2 -
-                      settings->value(s_sdr_offset, s_sdr_offset_def).toInt();
-        endFreqs[1] = centerFreq + sdrSource->sampleRate() / 2 -
-                      settings->value(s_sdr_offset, s_sdr_offset_def).toInt();
-
-        setWindowTitle("Bandmap " + bandName + " [" +
-                       QString::number(endFreqs[0] / 1000, 'f', 0) + "-" +
-                       QString::number(endFreqs[1] / 1000, 'f', 0) + "]");
-        spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
-        spectrumProcessor->resetAvg();
-        makeFreqScaleAbsolute();
-        FreqLabel->setPixmap(freqPixmap);
-        FreqLabel->update();
-      } else if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RF) {
-        // panadapter at RF freq, SDR freq set manually
-
-        centerFreq = f;
-        setRfFlag = false;
-        makeFreqScaleAbsolute();
-        FreqLabel->setPixmap(freqPixmap);
-        FreqLabel->update();
-      } else if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() ==
-                 RFauto) {
-        // panadapter at RF freq, automatically recenter SDR freq
-        // check for band change
-        int b = getBand(f);
-        if (b == BAND_NONE)
-          return;
-        setBandName(b);
-        if (band != b) {
-          // if band changed, clear all signals
-          spectrumProcessor->clearSigs();
-          spectrumProcessor->clearCQ();
-          settings->setValue(s_sdr_offset,
-                             sdrSetup->offset(getBand(centerFreq)));
-          settings->setValue(s_sdr_swapiq,
-                             sdrSetup->invert(getBand(centerFreq)));
-          spectrumProcessor->updateParams();
-          band = b;
-          // set flag to retune SDR
-          setRfFlag = true;
-        }
-        centerFreq = f;
-
-        if (setRfFlag) {
-          rfFreq = f;
-          emit setRfFreq(f);
-          setRfFlag = false;
-          endFreqs[0] = rfFreq - sdrSource->sampleRate() / 2;
-          endFreqs[1] = rfFreq + sdrSource->sampleRate() / 2;
-          setWindowTitle("Bandmap " + bandName + " [" +
-                         QString::number(endFreqs[0] / 1000, 'f', 0) + "-" +
-                         QString::number(endFreqs[1] / 1000, 'f', 0) + "]");
-          spectrumProcessor->setFreq(centerFreq, endFreqs[0], endFreqs[1]);
-          spectrumProcessor->resetAvg();
-        }
-        makeFreqScaleAbsolute();
-        FreqLabel->setPixmap(freqPixmap);
-        FreqLabel->update();
-      }
-    } break;
-    case BANDMAP_CMD_SET_LOWER_FREQ: // set freq finder lower limit
-      ff = data.toDouble(&ok);
-      if (ok) {
-        flow = ff;
-      }
-      break;
-    case BANDMAP_CMD_SET_UPPER_FREQ: // set freq finder upper limit
-      ff = data.toDouble(&ok);
-      if (ok) {
-        fhigh = ff;
-      }
-      break;
-    case BANDMAP_CMD_QUIT: // quit program
-      quit();
-      break;
-    case BANDMAP_CMD_TX: // set transmit state
-      txLabel.setText("<font color=#FF0000>TX");
-      spectrumProcessor->setPeakDetect(false);
-      spectrumProcessor->setTx(true);
-      settings->setValue(s_sdr_peakdetect, false);
-      break;
-    case BANDMAP_CMD_RX: // cancel transmit state
-      txLabel.setText("<font color=#000000>TX");
-      spectrumProcessor->setPeakDetect(true);
-      spectrumProcessor->setTx(false);
-      settings->setValue(s_sdr_peakdetect, true);
-      break;
-    case BANDMAP_CMD_FIND_FREQ: // find open frequency
-      if (qAbs(centerFreq) > 0 && qAbs(flow) > 0 && qAbs(fhigh) > 0) {
-        spectrumProcessor->startFindCQ(flow, fhigh, callList);
-      }
-      break;
-    case BANDMAP_CMD_SET_INVERT: // invert spectrum
-      if (data[0] == char(0x00)) {
-        setInvert(false);
-      } else {
-        setInvert(true);
-      }
-      break;
-    case BANDMAP_CMD_SET_ADD_OFFSET: // set additional IF offset
-      if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
-        f = data.toDouble(&ok);
-        if (ok) {
-          spectrumProcessor->setAddOffset(f);
-        }
-      }
-      break;
-    case BANDMAP_CMD_ADD_CALL: // add callsign
-      addCall(data);
-      break;
-    case BANDMAP_CMD_CLEAR: // clear callsign list
-      callList.clear();
-      break;
-    case BANDMAP_CMD_DELETE_CALL: // delete callsign
-      deleteCall(data);
-      break;
-    case BANDMAP_CMD_DELETE_CALL_FREQ: // delete call at a specific frequency
-      f = data.toDouble(&ok);
-      deleteCallFreq(f);
-      break;
-    case BANDMAP_CMD_QSY_UP: // qsy to next higher signal
-      qsyNext(true);
-      break;
-    case BANDMAP_CMD_QSY_DOWN: // qsy to next lower signal
-      qsyNext(false);
-      break;
+      makeFreqScaleAbsolute();
+      FreqLabel->setPixmap(freqPixmap);
+      FreqLabel->update();
     }
-    cmd = 0;
-    cmdLen = 0;
+  } break;
+
+  // set freq finder lower limit
+  case BANDMAP_CMD_SET_LOWER_FREQ:
+    ff = data.toDouble(&ok);
+    if (ok) {
+      flow = ff;
+    }
+    break;
+
+  // set freq finder upper limit
+  case BANDMAP_CMD_SET_UPPER_FREQ:
+    ff = data.toDouble(&ok);
+    if (ok) {
+      fhigh = ff;
+    }
+    break;
+
+  // quit program
+  case BANDMAP_CMD_QUIT:
+    quit();
+    break;
+
+  // set transmit state
+  case BANDMAP_CMD_TX:
+    txLabel.setText("<font color=#FF0000>TX");
+    spectrumProcessor->setPeakDetect(false);
+    spectrumProcessor->setTx(true);
+    settings->setValue(s_sdr_peakdetect, false);
+    break;
+
+  // cancel transmit state
+  case BANDMAP_CMD_RX:
+    txLabel.setText("<font color=#000000>TX");
+    spectrumProcessor->setPeakDetect(true);
+    spectrumProcessor->setTx(false);
+    settings->setValue(s_sdr_peakdetect, true);
+    break;
+
+  // find open frequency
+  case BANDMAP_CMD_FIND_FREQ:
+    if (qAbs(centerFreq) > 0 && qAbs(flow) > 0 && qAbs(fhigh) > 0) {
+      spectrumProcessor->startFindCQ(flow, fhigh, callList);
+    }
+    break;
+
+  // invert spectrum
+  case BANDMAP_CMD_SET_INVERT:
+    if (data[0] == char(0x00)) {
+      setInvert(false);
+    } else {
+      setInvert(true);
+    }
+    break;
+
+  // set additional IF offset
+  case BANDMAP_CMD_SET_ADD_OFFSET:
+    if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
+      f = data.toDouble(&ok);
+      if (ok) {
+        spectrumProcessor->setAddOffset(f);
+      }
+    }
+    break;
+
+  // add callsign
+  case BANDMAP_CMD_ADD_CALL:
+    addCall(data);
+    break;
+
+  // clear callsign list
+  case BANDMAP_CMD_CLEAR:
+    callList.clear();
+    break;
+
+  // delete callsign
+  case BANDMAP_CMD_DELETE_CALL:
+    deleteCall(data);
+    break;
+
+  // delete call at a specific frequency
+  case BANDMAP_CMD_DELETE_CALL_FREQ:
+    f = data.toDouble(&ok);
+    deleteCallFreq(f);
+    break;
+
+  // qsy to next higher signal
+  case BANDMAP_CMD_QSY_UP:
+    qsyNext(true);
+    break;
+
+  // qsy to next lower signal
+  case BANDMAP_CMD_QSY_DOWN:
+    qsyNext(false);
+    break;
   }
+  cmd = 0;
+  cmdLen = 0;
 }
 
 /*!
@@ -1399,7 +1630,7 @@ void So2sdrBandmap::qsyNext(bool higher) {
  * if call is present more than once, all entries with that call are removed
  *
  */
-void So2sdrBandmap::deleteCall(QByteArray data) {
+void So2sdrBandmap::deleteCall(const QByteArray &data) {
   QList<Call>::iterator iter = callList.begin();
   while (iter != callList.end()) {
     if ((*iter).call == data)
@@ -1468,11 +1699,44 @@ void So2sdrBandmap::addCall(QByteArray data) {
 }
 
 /*! start TCP connection
+ *
+ *  Two tcp connections can be handled: 1) connection from logging computer
+ *  2) connection from slave bandmap. The order of connection (socket[0]
+ *  versus socket[1]) does not matter.
+ *
  */
 void So2sdrBandmap::startConnection() {
-  socket = server.nextPendingConnection();
-  connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
-  connect(socket, SIGNAL(readyRead()), this, SLOT(readData()));
+
+  // if current socket is in use, move to next
+  if (socket[socketIndx]) {
+    if (socket[socketIndx]->state() == QAbstractSocket::ConnectedState) {
+      socketIndx = (socketIndx + 1) % nTcpSocket;
+    }
+  }
+
+  // close next one just to be sure
+  if (socket[socketIndx] &&
+      socket[socketIndx]->state() == QAbstractSocket::ConnectedState) {
+    disconnect(socket[socketIndx], SIGNAL(readyRead()), nullptr, nullptr);
+    socket[socketIndx]->close();
+    while (socket[socketIndx]->state() != QAbstractSocket::UnconnectedState)
+      socket[socketIndx]->waitForDisconnected();
+    delete socket[socketIndx];
+  }
+  socket[socketIndx] = server.nextPendingConnection();
+  if (socketIndx == 0) {
+    connect(socket[socketIndx], SIGNAL(readyRead()), this, SLOT(readData0()));
+    connect(socket[socketIndx],
+            SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
+            SLOT(tcpError0(QAbstractSocket::SocketError)));
+  } else {
+    connect(socket[socketIndx], SIGNAL(readyRead()), this, SLOT(readData1()));
+    connect(socket[socketIndx],
+            SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
+            SLOT(tcpError1(QAbstractSocket::SocketError)));
+  }
+
+  socketIndx = (socketIndx + 1) % nTcpSocket;
 }
 
 int So2sdrBandmap::getBand(double f) {
@@ -1585,8 +1849,7 @@ void So2sdrBandmap::setBandName(int b) {
  * this frequency is returned to the connected program through tcp
  */
 void So2sdrBandmap::findQsy(double f) {
-  if (f <= 0 || socket->state() != QAbstractSocket::ConnectedState ||
-      socket->state() == QAbstractSocket::ClosingState)
+  if (f <= 0)
     return;
   writeUdpXML(f, "", false);
 
@@ -1743,4 +2006,45 @@ void So2sdrBandmap::setUiSize() {
   actionSetup->setIcon(QIcon(":/icons/stock_properties.svg"));
   actionQuit->setIcon(QIcon(":/icons/exit.svg"));
   FreqLabel->setFixedWidth(qRound(uiSizes.width * 6));
+}
+
+/* Send message to master bandmap to set sdr frequency on channel c to f
+ */
+void So2sdrBandmap::sendToMaster(double f, int c) {
+  if (masterSocket.state() == QAbstractSocket::ConnectedState) {
+    const char cmd = BANDMAP_CMD_SET_SDR_FREQ_CHANNEL;
+    QByteArray str =
+        QByteArray::number(c) + ' ' + QByteArray::number(f, 'f', 0);
+    char len = str.length();
+
+    if (masterSocket.write(&cmd, 1) != 1) {
+      qDebug("sendToMaster tcp write error 1!");
+    }
+    if (masterSocket.write(&len, 1) != 1) {
+      qDebug("sendToMaster tcp write error 2!");
+    }
+    if (masterSocket.write(str.data(), len) != len) {
+      qDebug("sendToMaster tcp write error 3!");
+    }
+  }
+}
+
+/* Print errors coming from first tcp socket
+ */
+void So2sdrBandmap::tcpError0(QAbstractSocket::SocketError socketError) {
+  Q_UNUSED(socketError)
+
+  if (socket[0])
+    qDebug("TCP socket 0 error <%s>",
+           socket[0]->errorString().toLatin1().data());
+}
+
+/* Print errors coming from second tcp socket
+ */
+void So2sdrBandmap::tcpError1(QAbstractSocket::SocketError socketError) {
+  Q_UNUSED(socketError)
+
+  if (socket[1])
+    qDebug("TCP socket 1 error <%s>",
+           socket[1]->errorString().toLatin1().data());
 }

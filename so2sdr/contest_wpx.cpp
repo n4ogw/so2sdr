@@ -167,7 +167,6 @@ void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
   const QByteArray ignorePfx[nIgnorePfx] = {"P",  "M",  "QRP", "AE",
                                             "AG", "KT", "MM",  "AM"};
   bool changeDigit = false;
-  bool ignore = false;
   QByteArray portPfx = "";
   pfx = "";
 
@@ -188,6 +187,7 @@ void WPX::wpxPrefix(QByteArray call, QByteArray &pfx)
     }
 
     // certain portable prefixes do not count as new pfx
+    bool ignore = false;
     for (int i = 0; i < nIgnorePfx; i++) {
       if (portPfx == ignorePfx[i]) {
         portPfx.clear();

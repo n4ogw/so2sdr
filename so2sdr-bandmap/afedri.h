@@ -34,22 +34,23 @@
 
 #define MAX_UDP_SIZE 1044
 
-const QString afedriNames[4] = { QStringLiteral("AFEDRI SDR-Net"),
-                               QStringLiteral("SDR-IP"),
-                               QStringLiteral("AFE822x SDR-Net"),
-                               QStringLiteral("Unknown")};
+const QString afedriNames[4] = {
+    QStringLiteral("AFEDRI SDR-Net"), QStringLiteral("SDR-IP"),
+    QStringLiteral("AFE822x SDR-Net"), QStringLiteral("Unknown")};
 
 class Afedri : public NetworkSDR {
   Q_OBJECT
 public:
-  Afedri(QString settingsFile, QObject *parent = nullptr);
+  explicit Afedri(const QString &settingsFile, QObject *parent = nullptr);
   ~Afedri();
-  unsigned int sampleRate() const;
+  unsigned int sampleRate() const override;
+  bool isSlave() const override;
 
 public slots:
-  void stop();
-  void initialize();
-  void setRfFreq(double f);
+  void stop() override;
+  void initialize() override;
+  void setRfFreq(double f) override;
+  void setRfFreqChannel(double f, int c) override;
 
 private slots:
   void readDatagram();

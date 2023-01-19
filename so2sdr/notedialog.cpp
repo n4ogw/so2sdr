@@ -30,8 +30,8 @@ NoteDialog::NoteDialog(uiSize sizes, QWidget *parent) : QDialog(parent) {
 /*!
    called to open note dialog
  */
-void NoteDialog::enterNote(QString fname, QString dir, QString time,
-                           bool grab) {
+void NoteDialog::enterNote(QString fname, const QString &dir,
+                           const QString &time, bool grab) {
   show();
   NoteLineEdit->setFocus();
   if (grab)

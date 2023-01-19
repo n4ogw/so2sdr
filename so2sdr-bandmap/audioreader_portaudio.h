@@ -30,18 +30,24 @@ class AudioReaderPortAudio : public SdrDataSource {
   Q_OBJECT
 
 public:
-  AudioReaderPortAudio(QString settingsFile, QObject *parent = nullptr);
+  explicit AudioReaderPortAudio(const QString &settingsFile,
+                                QObject *parent = nullptr);
   ~AudioReaderPortAudio();
-  unsigned int sampleRate() const;
+  unsigned int sampleRate() const override;
+  bool isSlave() const override { return false; }
 
 protected:
   static int callback(const void *input, void *output, unsigned long frameCount,
                       const PaStreamCallbackTimeInfo *timeInfo,
                       PaStreamCallbackFlags statusFlags, void *userdata);
 public slots:
-  void stop();
-  void initialize();
-  void setRfFreq(double f) { Q_UNUSED(f) }
+  void stop() override;
+  void initialize() override;
+  void setRfFreq(double f) override { Q_UNUSED(f) }
+  void setRfFreqChannel(double f, int c) override {
+    Q_UNUSED(f)
+    Q_UNUSED(c)
+  }
 
 private:
   PaStreamParameters inputParameters;

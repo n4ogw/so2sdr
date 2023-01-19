@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.6.4
+## SO2SDR Help file version 2.6.5
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1030,6 +1030,17 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.5 (01/17/2023)
+
+* Add indicator showing number of tcp clients connected (two maximum)
+* New method of tuning SDR in RF/RFauto modes for Afedri dual receiver
+sdr. One bandmap is set up as master and controls the sdr parameters.
+The other bandmap is set up as slave. The slave
+now connects to the tcp server of the master bandmap and passes frequency
+changes to the master bandmap.
+* Do not retune SDR in RFauto mode when dragging frequency scale with mouse
+* Fix bug where bandmap would only start on second click
 
 ## version 2.6.4 (01/10/2023)
 

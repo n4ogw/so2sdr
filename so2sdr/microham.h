@@ -19,7 +19,6 @@
 #ifndef MICROHAM_H
 #define MICROHAM_H
 
-#include "defines.h"
 #include <QObject>
 #include <QSerialPort>
 #include <QSettings>
@@ -37,7 +36,7 @@ class MicroHam : public QObject {
   Q_OBJECT
 
 public:
-  MicroHam(QSettings &s, QObject *parent = nullptr);
+  explicit MicroHam(QSettings &s, QObject *parent = nullptr);
   ~MicroHam();
   bool MicroHamIsOpen() const;
   void switchAudio(int nr);

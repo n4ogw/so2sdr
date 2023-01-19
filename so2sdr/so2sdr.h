@@ -79,12 +79,12 @@ public:
   bool so2sdrOk() const;
 
 public slots:
-  void addSpot(QByteArray call, double f);
+  void addSpot(const QByteArray &call, double f);
   void addSpot(QByteArray call, double f, bool d);
   void messageFinished();
   void expandMacro(QByteArray msg, bool stopcw = true, bool restart = false);
   void expandMacro2(QByteArray msg, bool stopcw = true, bool instant = false);
-  void removeSpot(QByteArray call, int band);
+  void removeSpot(const QByteArray &call, int band);
   void removeSpotFreq(double f, int band);
   void rescore();
   void setEntryFocus(int nr);
@@ -318,7 +318,7 @@ private:
   void launch_speedDn(Qt::KeyboardModifiers, int nr);
   void launch_WPMDialog(int);
   void loadSpots();
-  bool logPartial(int nrig, QByteArray partial, bool external = false,
+  bool logPartial(int nrig, const QByteArray &partial, bool external = false,
                   Qso *externalQso = nullptr);
   void logSearch(int nr);
   void markDupe(int nr);
@@ -329,7 +329,7 @@ private:
   void qsy(int nrig, double &freq, bool exact);
   void readStationSettings();
   void readExcludeMults();
-  void runScript(QString cmd, QString args);
+  void runScript(const QString &cmd, QString args);
   void saveSpots();
   void searchPartial(Qso *qso, QByteArray part, QList<QByteArray> &calls,
                      QList<unsigned int> &worked, QList<int> &mult1,

@@ -19,7 +19,6 @@
 #ifndef BANDMAPINTERFACE_H
 #define BANDMAPINTERFACE_H
 
-#include "../so2sdr-bandmap/bandmap-tcp.h"
 #include "bandmapentry.h"
 #include "defines.h"
 #include <QAbstractSocket>
@@ -47,7 +46,7 @@ public:
   void setInvert(int nr, bool b);
   void setFreqLimits(int nr, double flow, double fhigh);
   void setAddOffset(double f, int nr);
-  void syncCalls(int nr, QList<BandmapEntry> &spotList);
+  void syncCalls(int nr, const QList<BandmapEntry> &spotList);
   unsigned long winId(int nr) const { return winid[nr]; }
 
 signals:

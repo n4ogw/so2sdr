@@ -27,7 +27,7 @@ class HelpDialog : public QDialog, public Ui::HelpDialog {
   Q_OBJECT
 
 public:
-  HelpDialog(QString fileName, QWidget *parent = nullptr);
+  explicit HelpDialog(QString fileName, QWidget *parent = nullptr);
 
 private slots:
   void home();

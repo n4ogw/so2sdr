@@ -30,7 +30,7 @@ class MyTableView : public QTableView {
   Q_OBJECT
 
 public:
-  MyTableView(QWidget *);
+  explicit MyTableView(QWidget *);
 
 protected:
   bool eventFilter(QObject *, QEvent *);

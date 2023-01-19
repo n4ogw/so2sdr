@@ -198,9 +198,9 @@ bool JuneVHF::validateExchange(Qso *qso) {
   }
   // if exchange is ok and this is a rover, we need a mobile dupe check
   if (qso->isRover && ok) {
-    emit(mobileDupeCheck(qso));
+    emit mobileDupeCheck(qso);
     if (!qso->dupe) {
-      emit(clearDupe());
+      emit clearDupe();
     }
   }
   return ok;

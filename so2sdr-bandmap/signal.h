@@ -19,7 +19,7 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
-#include "defines.h"
+#include <Qt>
 
 class Signal {
 public:

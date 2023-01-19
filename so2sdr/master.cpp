@@ -23,14 +23,14 @@
 /*!
    Must call initialize after constructor before using class
  */
-Master::Master() {
+Master::Master() : chars("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/") {
   initialized = false;
   index = nullptr;
   CallData = nullptr;
-  chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/";
   nchars = chars.size();
   indexSize = nchars * nchars + 1;
   indexBytes = indexSize * sizeof(int);
+  fileSize = 0;
 }
 
 Master::~Master() {

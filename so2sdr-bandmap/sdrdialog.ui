@@ -96,6 +96,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>tcp port bandmap will listen for connections on. For so2sdr the default value is 5001for bandmap 1 and 5002 for bandmap 2</string>
+       </property>
       </widget>
      </item>
      <item row="2" column="0">
@@ -113,6 +116,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>udp port so2sdr-bandmap will broadcast information packets to. Default is 45454</string>
+       </property>
       </widget>
      </item>
      <item row="3" column="0">
@@ -123,7 +129,11 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QCheckBox" name="n1mmUdpCheckBox"/>
+      <widget class="QCheckBox" name="n1mmUdpCheckBox">
+       <property name="toolTip">
+        <string>listen for udp broadcasts from N1MM (experimental)</string>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_6">
@@ -139,6 +149,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>N1MM udp port</string>
        </property>
       </widget>
      </item>

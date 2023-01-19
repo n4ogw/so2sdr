@@ -116,7 +116,7 @@ void UDPReader::enable(bool b) {
             settings.value(s_wsjtx_udp[_nrig], s_wsjtx_udp_def[_nrig]).toInt(),
             QAbstractSocket::ReuseAddressHint |
                 QAbstractSocket::ShareAddress)) {
-      emit(error("UDPsocket: UDP connection to wsjtx failed"));
+      emit error("UDPsocket: UDP connection to wsjtx failed");
       isOpen = false;
       return;
     }
@@ -243,7 +243,7 @@ void UDPReader::redupe() {
     qso.valid = true;
     qso.mult_name = query.value(WSJTX_SQL_COL_GRID).toByteArray();
     qso.isamult[0] = true;
-    emit(dupeCheck(&qso));
+    emit dupeCheck(&qso);
     if (qso.dupe != oldDupe || qso.isnewmult[0] != oldMult) {
       if (qso.dupe) {
         highlightCall(qso.call, Qt::white, DUPE_COLOR);
@@ -463,9 +463,6 @@ void UDPReader::processDatagram(QNetworkDatagram datagram) {
       qso.nr = _nrig;
       qso.freq = _freq;
       qso.band = _band;
-      if (qso.band != _band) {
-        qDebug("Warning: wsjtx and radio are set to different bands!");
-      }
       QByteArray repSent, repRecv, txPower, comments, name, opCall, myCall,
           myGrid;
       QDateTime timeOn;
@@ -575,7 +572,7 @@ void UDPReader::tcpError(QAbstractSocket::SocketError err) {
 
 /*! send a call from a double-clicked row to wsjtx, and generate messages
  */
-void UDPReader::sendCall(QByteArray call) {
+void UDPReader::sendCall(const QByteArray &call) {
   if (id.isEmpty() || wsjtxPort == 0)
     return;
   QSqlQuery query(QSqlDatabase::database(dbName));
@@ -613,7 +610,7 @@ void UDPReader::clearColors() {
 
 /*! color highlight a call in wsjtx
  */
-void UDPReader::highlightCall(QByteArray call, QColor bg, QColor fg) {
+void UDPReader::highlightCall(const QByteArray &call, QColor bg, QColor fg) {
   if (id.isEmpty() || wsjtxPort == 0)
     return;
   QByteArray data;

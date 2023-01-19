@@ -18,6 +18,7 @@
  */
 #ifndef LOGEDIT_H
 #define LOGEDIT_H
+
 #include "contest.h"
 #include "defines.h"
 #include "utils.h"
@@ -57,7 +58,7 @@ class LogQLineEdit : public QLineEdit {
   Q_OBJECT
 
 public:
-  LogQLineEdit(QWidget *w);
+  explicit LogQLineEdit(QWidget *w);
 
 private slots:
   void fixSelect();

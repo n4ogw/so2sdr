@@ -33,7 +33,7 @@ class Cwdaemon : public QObject {
   Q_OBJECT
 
 public:
-  Cwdaemon(QSettings &s, QObject *parent = nullptr);
+  explicit Cwdaemon(QSettings &s, QObject *parent = nullptr);
   ~Cwdaemon();
   void loadbuff(QByteArray msg);
   bool isSending() const;

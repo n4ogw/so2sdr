@@ -25,21 +25,17 @@
 #include <QFile>
 #include <QObject>
 #include <QSettings>
-#include <portaudio.h>
-#ifdef Q_OS_LINUX
 #include <fftw3.h>
-#endif
+#include <portaudio.h>
 
 /*!
    Spectrum calculation: FFT of audio data, etc
-
-   This is a separate thread
  */
 class Spectrum : public QObject {
   Q_OBJECT
 
 public:
-  Spectrum(QObject *parent, QSettings &s, QString dir);
+  Spectrum(QObject *parent, QSettings &s, const QString &dir);
   friend class So2sdrBandmap;
 
   ~Spectrum();
@@ -59,22 +55,22 @@ public:
   void setCalcError();
 
 signals:
-  void spectrumReady(unsigned char *, unsigned char);
-  void findCQMessage(QString);
   void clearPlot();
-  void qsy(double);
+  void findCQMessage(QString);
   void gainPoint(int, double);
-  void phasePoint(int, double);
   void gainScale(double, double);
+  void qsy(double);
+  void phasePoint(int, double);
   void phaseScale(double, double);
   void plotGainFunc(double, double, double, double);
   void plotPhaseFunc(double, double, double, double);
+  void spectrumReady(unsigned char *, unsigned char);
 
 public slots:
-  void processData(unsigned char *, unsigned int);
   void clearIQ();
+  void processData(unsigned char *, unsigned int);
   void setPlotPoints(bool);
-  void startFindCQ(double low, double high, QList<Call> &callList);
+  void startFindCQ(double low, double high, const QList<Call> &callList);
   void updateParams();
 
 private:
@@ -127,7 +123,7 @@ private:
   void complexMult(double a[], double b[], double c[]) const;
   void detectPeaks(double bg, double sigma, double spec[]);
   void fitErrors();
-  void findCQ(double flow, double fhigh, QList<Call> &callList);
+  void findCQ(double flow, double fhigh, const QList<Call> &callList);
   void gaussElim(double a[FIT_ORDER][FIT_ORDER], double y[FIT_ORDER], int n);
   void interp2(double in[], double out[], double);
   void makeGainPhase();

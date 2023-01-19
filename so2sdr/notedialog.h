@@ -30,8 +30,8 @@ class NoteDialog : public QDialog, public Ui::NoteDialog {
   Q_OBJECT
 
 public:
-  NoteDialog(uiSize sizes, QWidget *parent = nullptr);
-  void enterNote(QString fname, QString dir, QString time, bool grab = false);
+  explicit NoteDialog(uiSize sizes, QWidget *parent = nullptr);
+  void enterNote(QString fname, const QString &dir, const QString &time, bool grab = false);
 
 private slots:
   void writeNotes();

@@ -65,6 +65,9 @@ Qso::Qso(int n) {
   for (int ii = 0; ii < MMAX; ii++) {
     isamult[ii] = false;
   }
+  continent = NA;
+  bearing = 0;
+  country = 0;
 }
 
 Qso::~Qso() {

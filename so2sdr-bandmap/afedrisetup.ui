@@ -64,7 +64,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>IP address of Afedri SDR</string>
+        <string>IP address of Afedri SDR. For Slave, this is the IP address where the Master so2sdr-bandmap is running (usually localhost)</string>
        </property>
       </widget>
      </item>
@@ -84,7 +84,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>TCP port number. Default often 50000.</string>
+        <string>Afedri TCP port number. Default often 50000. For Slave this is the so2sdr-bandmap tcp port, usually 5001 or 5002.</string>
        </property>
       </widget>
      </item>
@@ -104,7 +104,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>UDP port number. Default often 50000.</string>
+        <string>Afedri UDP port number. Default often 50000.</string>
        </property>
       </widget>
      </item>

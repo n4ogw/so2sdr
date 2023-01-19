@@ -650,7 +650,7 @@ void SSBMessageDialog::switchRadio(int nrig) {
  * m is the filename of the audio file (without .wav extension) in ~/.so2sdr/wav
  *
  */
-void SSBMessageDialog::playMessage(int nrig, QString m) {
+void SSBMessageDialog::playMessage(int nrig, const QString &m) {
   message = m;
   playMessageRig = nrig;
   disconnect(scriptProcess, SIGNAL(finished(int)), nullptr, nullptr);
@@ -669,7 +669,7 @@ void SSBMessageDialog::playMessage2(int signal) {
   Q_UNUSED(signal)
   disconnect(scriptProcess, SIGNAL(finished(int)), nullptr, nullptr);
   connect(scriptProcess, SIGNAL(finished(int)), this, SLOT(playMessage3(int)));
-  emit(setPtt(playMessageRig, 1));
+  emit setPtt(playMessageRig, 1);
   cmd = csettings->value(s_play_command[playMessageRig], s_play_command_def)
             .toString();
   cmd = cmd.replace("$", message);
@@ -697,7 +697,7 @@ void SSBMessageDialog::playMessage3(int signal) {
   emit finished();
 }
 
-void SSBMessageDialog::recMessage(QString m) {
+void SSBMessageDialog::recMessage(const QString &m) {
   if (!recording) {
     recording = true;
     message = m;

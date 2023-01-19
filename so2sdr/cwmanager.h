@@ -20,7 +20,6 @@
 #define CWMANAGER_H
 
 #include "cwdaemon.h"
-#include "defines.h"
 #include "winkey.h"
 #include <QByteArray>
 #include <QObject>

@@ -19,6 +19,7 @@
 #include "stationdialog.h"
 #include "defines.h"
 #include "hamlib/rotator.h"
+#include "utils.h"
 #include <QDialog>
 #include <QMessageBox>
 #include <QSettings>

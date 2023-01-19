@@ -169,14 +169,14 @@ void So2rDialog::updateSo2r() {
   settings.sync();
   // in case parallel port is changed
   if (pportUpdate) {
-    emit(setParallelPort());
+    emit setParallelPort();
   }
   // restart otrsp if needed
   if (otrspUpdate) {
-    emit(setOTRSP());
+    emit setOTRSP();
   }
   if (microHamUpdate) {
-    emit(setMicroHam());
+    emit setMicroHam();
   }
   accept();
 }

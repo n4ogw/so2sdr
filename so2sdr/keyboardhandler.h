@@ -25,9 +25,9 @@
 class KeyboardHandler : public QObject {
   Q_OBJECT
 public:
-  explicit KeyboardHandler(QString deviceName, QObject *parent = nullptr);
+  explicit KeyboardHandler(const QString &deviceName, QObject *parent = nullptr);
   void quitHandler();
-  void setDevice(QString);
+  void setDevice(const QString &);
 
 signals:
   void readKey(int code, bool shift, bool ctrl, bool alt);

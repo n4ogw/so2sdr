@@ -18,7 +18,6 @@
  */
 #ifndef WINKEY_H
 #define WINKEY_H
-#include "defines.h"
 #include <QByteArray>
 #include <QSerialPort>
 #include <QSettings>
@@ -31,7 +30,7 @@ class Winkey : public QObject {
   Q_OBJECT
 
 public:
-  Winkey(QSettings &s, QObject *parent = nullptr);
+  explicit Winkey(QSettings &s, QObject *parent = nullptr);
   ~Winkey();
   void loadbuff(QByteArray msg);
   bool isSending() const;

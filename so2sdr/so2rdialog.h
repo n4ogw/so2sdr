@@ -20,7 +20,7 @@
 #define SO2RDIALOG_H
 
 #include "defines.h"
-#include "serial.h"
+// #include "serial.h"
 #include "ui_so2rdialog.h"
 #include <QFile>
 #include <QSettings>

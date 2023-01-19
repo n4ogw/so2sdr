@@ -115,7 +115,7 @@ void SettingsDialog::updateSettings() {
   settings.setValue(s_twokeyboard_device[1], kbd2LineEdit->text());
   settings.setValue(s_queuemessages, queueCheckBox->isChecked());
   settings.sync();
-  emit(settingsUpdate());
+  emit settingsUpdate();
   accept();
 }
 

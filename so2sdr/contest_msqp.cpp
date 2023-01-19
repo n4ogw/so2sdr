@@ -168,9 +168,9 @@ bool MSQP::validateExchange(Qso *qso) {
   }
   // if exchange is ok and a mobile, we need a mobile dupe check
   if (qso->isMobile && ok_part[0] && ok_part[1]) {
-    emit(mobileDupeCheck(qso));
+    emit mobileDupeCheck(qso);
     if (!qso->dupe) {
-      emit(clearDupe());
+      emit clearDupe();
     }
   }
   return (ok_part[0] && ok_part[1]);

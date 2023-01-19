@@ -19,6 +19,7 @@
 #ifndef SO2SDR_BANDMAP_H
 #define SO2SDR_BANDMAP_H
 
+#include <QAbstractSocket>
 #include <QAction>
 #include <QApplication>
 #include <QByteArray>
@@ -60,7 +61,7 @@ class So2sdrBandmap : public QMainWindow, public Ui::Bandmap {
   Q_OBJECT
 
 public:
-  So2sdrBandmap(QStringList args, QWidget *parent = nullptr);
+  explicit So2sdrBandmap(QStringList args, QWidget *parent = nullptr);
   ~So2sdrBandmap();
   bool so2sdrBandmapOk() const;
   void calc();
@@ -76,6 +77,8 @@ public:
 
 signals:
   void setRfFreq(double);
+  void setRfFreqChannel(double, int);
+  void startSdrThread();
 
 public slots:
   void quit();
@@ -86,6 +89,7 @@ protected:
   void closeEvent(QCloseEvent *event);
   void mousePressEvent(QMouseEvent *event);
   void mouseMoveEvent(QMouseEvent *event);
+  void mouseReleaseEvent(QMouseEvent *event);
   void resizeEvent(QResizeEvent *event);
   void timerEvent(QTimerEvent *event);
 
@@ -100,12 +104,15 @@ private slots:
   void showIQData();
   void start();
   void stop();
-  void readData();
+  void readData0();
+  void readData1();
   void resetTuningTimer();
   void startConnection();
   void udpRead();
   void updateLevel(int);
   void mouseQSYDelta(int);
+  void tcpError0(QAbstractSocket::SocketError socketError);
+  void tcpError1(QAbstractSocket::SocketError socketError);
   void findQsy(double);
 
 private:
@@ -127,12 +134,13 @@ private:
   double endFreqs[2];
   double freqMax;
   double freqMin;
+  bool mouseDrag;
   int mouse_y;
+  int tcpClients;
   int vfoPos;
+  int socketIndx;
   int toolBarHeight;
   int timerId[N_BANDMAP_TIMERS];
-  char cmd;
-  char cmdLen;
   IQBalance *iqDialog;
   QAction *showToolBar;
   QAction *deleteAct;
@@ -140,6 +148,8 @@ private:
   QAction *scaleX1;
   QAction *scaleX2;
   QLabel txLabel;
+  QLabel *clientLabelTxt;
+  QLabel *clientLabel;
   QPixmap callPixmap;
   QPixmap freqPixmap;
   QString settingsFile;
@@ -155,7 +165,8 @@ private:
   QTimer tuningTimer;
   double flow;
   double fhigh;
-  QTcpSocket *socket;
+  QTcpSocket *socket[nTcpSocket];
+  QTcpSocket masterSocket;
   QTcpServer server;
   QUdpSocket socketUdp, socketUdpN1MM;
   QXmlStreamReader xmlReader;
@@ -164,13 +175,15 @@ private:
 
   void addCall(QByteArray);
   bool checkUserDirectory();
-  void deleteCall(QByteArray);
+  void deleteCall(const QByteArray &);
   void deleteCallFreq(double f);
   void makeCall();
   void makeFreqScaleAbsolute();
   void qsyToNearest();
   int getBand(double f);
+  void parseData(char &cmd, char &cmdLen, QByteArray data);
   void qsyNext(bool up);
+  void sendToMaster(double f, int c);
   void setBandName(int b);
   void setUiSize();
   void startTimers();

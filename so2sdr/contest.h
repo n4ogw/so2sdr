@@ -52,7 +52,7 @@ public:
   virtual ~Contest();
 
   void addQsoMult(Qso *qso);
-  void addQsoType(QByteArray str, int ii);
+  void addQsoType(const QByteArray &str, int ii);
   virtual void addQso(Qso *qso) = 0;
   virtual QString bandLabel(int i) const;
   virtual bool bandLabelEnable(int i) const;
@@ -100,7 +100,7 @@ public:
   void readMultFile(QByteArray filename[MMAX], const Cty *cty);
   virtual int rstField() const { return -1; }
   virtual int Score() const;
-  void setContestName(QByteArray s);
+  void setContestName(const QByteArray &s);
   void setContinent(Cont);
   void setCountry(int);
   virtual void setupContest(QByteArray MultFile[MMAX], const Cty *cty) = 0;

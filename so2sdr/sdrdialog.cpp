@@ -171,7 +171,7 @@ void SDRDialog::updateSDR() {
   settings.setValue(s_sdr_cqlimit_low[5], lineEdit10low->text().toInt());
   settings.setValue(s_sdr_cqlimit_high[5], lineEdit10high->text().toInt());
   settings.sync();
-  emit(updateCQLimits());
+  emit updateCQLimits();
 }
 
 void SDRDialog::rejectChanges() {

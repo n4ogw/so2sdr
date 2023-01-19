@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = QByteArrayLiteral("2.6.4");
+const QByteArray Version = QByteArrayLiteral("2.6.5");
 
 typedef enum SdrType {
   soundcard_t = 0,
@@ -205,6 +205,8 @@ const double band_limits[N_BANDS][2] = {{1800000, 1900000},
                                         {241000000000, 250000000000},
                                         {472000, 479000},
                                         {135700, 137800}};
+
+const int nTcpSocket = 2;
 
 //////// QSettings key names and default values used in so2sdr-bandmap.ini
 //////////

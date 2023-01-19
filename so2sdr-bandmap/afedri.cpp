@@ -26,7 +26,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-Afedri::Afedri(QString settingsFile, QObject *parent)
+Afedri::Afedri(const QString &settingsFile, QObject *parent)
     : NetworkSDR(settingsFile, parent) {
   clockFreq = 0;
   realSampleRate = 0;
@@ -81,6 +81,14 @@ void Afedri::initialize() {
       set_multichannel_mode(
           settings->value(s_sdr_afedri_multi, s_sdr_afedri_multi_def).toInt());
       send_rx_command(RCV_START);
+      // set initial frequency to frequency in setup dialog if not zero
+      if (settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
+              .toULongLong() != 0) {
+        set_freq(settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
+                     .toULongLong(),
+                 settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                     .toInt());
+      }
     }
   } else if (settings->value(s_sdr_afedri_bcast, s_sdr_afedri_bcast_def)
                  .toInt() == 1) {
@@ -149,28 +157,20 @@ void Afedri::initialize() {
       }
 #endif
       send_rx_command(RCV_START);
+      // set initial frequency to frequency in setup dialog if not zero
+      if (settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
+              .toULongLong() != 0) {
+        set_freq(settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
+                     .toULongLong(),
+                 settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
+                     .toInt());
+      }
     } else {
       qDebug("tcp not connected");
     }
   } else {
-    // broadcast connection, slave
-    tsocket.connectToHost(
-        settings->value(s_sdr_afedri_tcp_ip, s_sdr_afedri_tcp_ip_def)
-            .toString(),
-        settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
-            .toInt());
-    tsocket.setSocketOption(QAbstractSocket::KeepAliveOption, QVariant(1));
-    connect(&tsocket, SIGNAL(readyRead()), this, SLOT(readTcp()));
-    if (tsocket.waitForConnected()) {
-      get_sdr_name();
-      get_clock_freq();
-      set_sample_rate(
-          settings
-              ->value(s_sdr_afedri_sample_freq, s_sdr_afedri_sample_freq_def)
-              .toInt());
-    }
+    // broadcast connection, slave. Only connect to udp
     connect(&usocket, SIGNAL(readyRead()), this, SLOT(readDatagram()));
-
 #ifdef Q_OS_LINUX
     /* Qt bug:
      * on linux, multiple connections to same UDP port fail.
@@ -217,14 +217,7 @@ void Afedri::initialize() {
 #endif
     running = true;
   }
-  // set initial frequency to frequency in setup dialog if not zero
-  if (settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def).toULongLong() !=
-      0) {
-    set_freq(
-        settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def).toULongLong(),
-        settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def)
-            .toInt());
-  }
+
   // if RF mode, set flag so next frequency set command will also tune sdr
   if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() != IF) {
     emit resetRfFlag();
@@ -237,13 +230,19 @@ void Afedri::initialize() {
  * \brief Afedri::set_freq
  *  Set frequency
  * \param frequency  Frequency (Hz)
- * \param channel (1,2,3,4)
+ * \param channel (0,1,2,3)
  */
 void Afedri::set_freq(unsigned long frequency, int channel) {
+
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState) {
     return;
   }
+
+  // slave cannot set frequency
+  if (isSlave())
+    return;
+
   // channels are 0, 1, 2, 3 in rest of code; Afedri expects 0, 2, 3, 4
   if (channel > 0)
     channel++;
@@ -289,8 +288,12 @@ void Afedri::set_freq(unsigned long frequency, int channel) {
  * channel=2 : quad
  */
 void Afedri::set_multichannel_mode(int channel) {
+
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState)
+    return;
+
+  if (isSlave())
     return;
 
   const int size = 9;
@@ -336,6 +339,9 @@ void Afedri::set_sample_rate(unsigned long sample_rate) {
       tsocket.state() == QAbstractSocket::ClosingState)
     return;
 
+  if (isSlave())
+    return;
+
   block[0] = size;
   block[1] = (SET_CONTROL_ITEM << 5);
   block[2] = control_code & 0xFF;
@@ -362,6 +368,9 @@ void Afedri::set_broadcast_flag(bool b) {
       tsocket.state() == QAbstractSocket::ClosingState)
     return;
 
+  if (isSlave())
+    return;
+
   const int size = 9;
   char block[size];
 
@@ -386,10 +395,9 @@ void Afedri::set_broadcast_flag(bool b) {
 
 Afedri::~Afedri() {}
 
+/* read data from tcp socket
+ */
 void Afedri::readTcp() {
-  // just for testing, normally nothing interesting
-  // comes back via TCP
-
   QByteArray dat = tsocket.readAll();
 
   // process data packets. First byte is length of following packet
@@ -577,7 +585,6 @@ void Afedri::stopAfedri() {
       tsocket.waitForDisconnected(1000);
     }
   }
-  close_udp();
   usocket.close();
   if (usocket.state() != QAbstractSocket::UnconnectedState) {
     usocket.waitForDisconnected(1000);
@@ -596,11 +603,31 @@ void Afedri::stop() { stopFlag = true; }
 /* set center frequency
  */
 void Afedri::setRfFreq(double f) {
+  // slave should not set frequency
+  if (settings->value(s_sdr_afedri_bcast, s_sdr_afedri_bcast_def).toInt() > 1)
+    return;
+
   unsigned int uif = f;
   rfFreq = f;
   set_freq(
       uif,
       settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def).toInt());
+}
+
+/* set center frequency for channel c (multichannel afedri)
+ */
+void Afedri::setRfFreqChannel(double f, int c) {
+
+  // slave should not set frequency
+  if (isSlave())
+    return;
+  unsigned int uif = f;
+  // only update frequency if c matches channel set for this bandmap
+  if (c ==
+      settings->value(s_sdr_afedri_channel, s_sdr_afedri_channel_def).toInt()) {
+    rfFreq = f;
+  }
+  set_freq(uif, c);
 }
 
 /*!
@@ -614,6 +641,9 @@ void Afedri::get_clock_freq() {
 
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState)
+    return;
+
+  if (isSlave())
     return;
 
   block[0] = size;
@@ -637,6 +667,9 @@ void Afedri::get_sdr_name() {
 
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState)
+    return;
+
+  if (isSlave())
     return;
 
   block[0] = 0x09;
@@ -687,5 +720,14 @@ unsigned int Afedri::sampleRate() const {
         .toUInt();
   } else {
     return realSampleRate;
+  }
+}
+
+bool Afedri::isSlave() const {
+  if (settings->value(s_sdr_afedri_bcast, s_sdr_afedri_bcast_def).toInt() ==
+      2) {
+    return true;
+  } else {
+    return false;
   }
 }

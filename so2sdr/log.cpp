@@ -16,8 +16,28 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "hamlib/rig.h"
 #include "log.h"
+#include "contest_arrl10.h"
+#include "contest_arrl160.h"
+#include "contest_arrldx.h"
+#include "contest_cq160.h"
+#include "contest_cqp.h"
+#include "contest_cqww.h"
+#include "contest_cwops.h"
+#include "contest_dxped.h"
+#include "contest_fd.h"
+#include "contest_iaru.h"
+#include "contest_junevhf.h"
+#include "contest_kqp.h"
+#include "contest_msqp.h"
+#include "contest_naqp.h"
+#include "contest_paqp.h"
+#include "contest_sprint.h"
+#include "contest_stew.h"
+#include "contest_sweepstakes.h"
+#include "contest_wpx.h"
+#include "contest_wwdigi.h"
+#include "hamlib/rig.h"
 #include "qso.h"
 #include <QByteArray>
 #include <QChar>
@@ -721,7 +741,7 @@ QWidget *Log::currentEditor() const { return logdel->currentEditor; }
 
 void Log::finishEdit(int row, QSqlRecord &r) {
   Q_UNUSED(row)
-  emit(logEditDone(origEditRecord, r));
+  emit logEditDone(origEditRecord, r);
 }
 
 void Log::postEditorEvent(QEvent *event) {
@@ -874,7 +894,7 @@ void Log::addQso(Qso *qso) {
     model->fetchMore();
   }
   if (csettings.value(c_historyupdate, c_historyupdate_def).toBool()) {
-    emit(addQsoHistory(qso));
+    emit addQsoHistory(qso);
   }
   contest->addQso(qso);
   if (!qso->dupe && qso->valid)
@@ -890,7 +910,7 @@ void Log::importCabrillo(QString cabFile) {
   for (int i = 0; i < N_BANDS; i++)
     n += qsoCnt[i];
   if (n) {
-    emit(errorMessage("ERROR: log must be empty to import cabrillo"));
+    emit errorMessage("ERROR: log must be empty to import cabrillo");
     return;
   }
 
@@ -906,7 +926,7 @@ void Log::importCabrillo(QString cabFile) {
     buffer = file.readLine();
     maxLines++;
   }
-  emit(progressMax(maxLines));
+  emit progressMax(maxLines);
   file.close();
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     return;
@@ -1056,15 +1076,15 @@ void Log::importCabrillo(QString cabFile) {
     query.bindValue(":valid", true);
     contest->addQso(&qso);
     query.exec();
-    emit(progressCnt(cnt));
+    emit progressCnt(cnt);
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
   }
   model->select();
   while (model->canFetchMore()) {
     model->fetchMore();
   }
-  emit(update());
-  emit(progressCnt(maxLines));
+  emit update();
+  emit progressCnt(maxLines);
 }
 
 int Log::rowCount() const { return model->rowCount(); }
@@ -1213,7 +1233,7 @@ void Log::updateRecord(QSqlRecord &r) {
   while (model->canFetchMore()) {
     model->fetchMore();
   }
-  emit(update());
+  emit update();
 }
 
 void Log::updateHistory() {
@@ -1223,7 +1243,7 @@ void Log::updateHistory() {
   log.setQuery(query_log);
   while (log.canFetchMore())
     log.fetchMore();
-  emit(progressMax(log.rowCount()));
+  emit progressMax(log.rowCount());
   Qso tmpqso(contest->nExchange());
   for (int i = 0; i < contest->nExchange(); i++) {
     tmpqso.setExchangeType(i, contest->exchType(i));
@@ -1233,11 +1253,11 @@ void Log::updateHistory() {
     for (int i = 0; i < contest->nExchange(); i++) {
       tmpqso.rcv_exch[i] = log.record(row).value(i + 1).toString().toLatin1();
     }
-    emit(addQsoHistory(&tmpqso));
-    emit(progressCnt(row));
+    emit addQsoHistory(&tmpqso);
+    emit progressCnt(row);
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
   }
-  emit(progressCnt(log.rowCount()));
+  emit progressCnt(log.rowCount());
 }
 
 /* search log for partial callsign fragment
@@ -1245,9 +1265,9 @@ void Log::updateHistory() {
  * also checks if this call is a dupe
  *
  */
-void Log::searchPartial(Qso *qso, QByteArray part, QList<QByteArray> &calls,
-                        QList<unsigned int> &worked, QList<int> &mult1,
-                        QList<int> &mult2) {
+void Log::searchPartial(Qso *qso, const QByteArray &part,
+                        QList<QByteArray> &calls, QList<unsigned int> &worked,
+                        QList<int> &mult1, QList<int> &mult2) {
   logSearchClear();
   qso->dupe = false;
 
@@ -1397,7 +1417,7 @@ void Log::startDetailedQsoEditRow(QModelIndex index) {
   detail->show();
   detail->callLineEdit->setFocus();
   detail->callLineEdit->deselect();
-  emit(ungrab());
+  emit ungrab();
 }
 
 bool Log::detailIsVisible() const { return detail->isVisible(); }
@@ -1623,7 +1643,7 @@ void Log::initializeContest() {
                         .toUpper()
                         .toLatin1();
   if (name == "CWOPS" || name == "WPX") {
-    emit(multByBandEnabled(false));
+    emit multByBandEnabled(false);
   }
   if (zoneType() == 0) {
     setMyZone(settings.value(s_cqzone, s_cqzone_def).toInt());

@@ -47,7 +47,7 @@ int getBand(double f);
 QString dataDirectory();
 QString userDirectory();
 QByteArray getAdifMode(rmode_t mode);
-ModeTypes getAdifModeType(QByteArray mode);
+ModeTypes getAdifModeType(const QByteArray &mode);
 ModeTypes getModeType(rmode_t mode);
 
 #endif // UTILS_H

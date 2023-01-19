@@ -57,9 +57,9 @@ bool logDelegate::editorEvent(QEvent *e, QAbstractItemModel *m,
   // this is for "inline" editing of a single cell
   if (e->type() == QEvent::MouseButtonDblClick && col != SQL_COL_VALID) {
     currentlyEditingIndex = index;
-    emit(startLogEdit());
-    emit(setOrigRecord(currentlyEditingIndex));
-    emit(editLogRow(currentlyEditingIndex));
+    emit startLogEdit();
+    emit setOrigRecord(currentlyEditingIndex);
+    emit editLogRow(currentlyEditingIndex);
     currentlyEditing = true;
     return false;
   }
@@ -77,8 +77,8 @@ bool logDelegate::editorEvent(QEvent *e, QAbstractItemModel *m,
       m->setData(index, QVariant(Qt::Checked), Qt::CheckStateRole);
     }
     // emit signal so log will be rescored
-    emit(QAbstractItemDelegate::closeEditor(nullptr,
-                                            QAbstractItemDelegate::NoHint));
+    emit QAbstractItemDelegate::closeEditor(nullptr,
+                                            QAbstractItemDelegate::NoHint);
   }
   // this is needed before control-E is pressed
   if (e->type() == QEvent::MouseButtonPress) {
@@ -131,8 +131,8 @@ QWidget *logDelegate::createEditor(QWidget *parent,
  */
 void logDelegate::startDetailedEdit() {
   if (currentlyEditingIndex.isValid()) {
-    emit(setOrigRecord(currentlyEditingIndex));
-    emit(editLogRowDetail(currentlyEditingIndex));
+    emit setOrigRecord(currentlyEditingIndex);
+    emit editLogRowDetail(currentlyEditingIndex);
   }
 }
 

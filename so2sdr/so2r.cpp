@@ -55,9 +55,9 @@ void So2r::setPtt(int nr, int state) {
   close(fd);
 }
 
-So2r::So2r(QSettings &s, uiSize sz, QObject *parent, QWidget *widgetParent)
-    : QObject(parent), settings(s) {
-  sizes = sz;
+So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
+           QWidget *widgetParent)
+    : QObject(parent), settings(s), sizes(sz) {
   microham = new MicroHam(settings, this);
   otrsp[0] = new OTRSP(settings, 0, this);
   otrsp[1] = new OTRSP(settings, 1, this);

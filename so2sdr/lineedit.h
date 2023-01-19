@@ -30,7 +30,7 @@
 
 class LineEdit : public QLineEdit {
 public:
-  LineEdit(QWidget *parent);
+  explicit LineEdit(QWidget *parent);
   void setMyFocus(bool b);
 
 protected:

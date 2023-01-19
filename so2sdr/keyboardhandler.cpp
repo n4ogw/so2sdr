@@ -17,6 +17,7 @@
 
  */
 #include "keyboardhandler.h"
+#include <QDebug>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -29,25 +30,17 @@
 #include <sys/types.h>
 #include <termios.h>
 #include <unistd.h>
-
-#include <QDebug>
 #
-KeyboardHandler::KeyboardHandler(QString deviceName, QObject *parent)
-    : QObject(parent) {
-  device = deviceName;
-  quitFlag = false;
+KeyboardHandler::KeyboardHandler(const QString &deviceName, QObject *parent)
+    : QObject(parent), device(deviceName), quitFlag(false) {
   fd = 0;
 }
 
-void KeyboardHandler::setDevice(QString d) { device = d; }
+void KeyboardHandler::setDevice(const QString &d) { device = d; }
 
 void KeyboardHandler::run() {
   struct input_event ev;
   int size = sizeof(struct input_event);
-  int rd, ret;
-  bool shift = false;
-  bool alt = false;
-  bool ctrl = false;
   struct pollfd pfd[1];
 
   quitFlag = false;
@@ -63,13 +56,16 @@ void KeyboardHandler::run() {
     ioctl(fd, EVIOCGRAB, 1);
     while (!quitFlag) {
       // timeout is set to 5 ms. Does this need adjusting?
-      ret = poll(pfd, 1, 5);
+      int ret = poll(pfd, 1, 5);
       if (ret > 0) {
         if (pfd[0].revents == POLLIN) {
-          rd = read(fd, &ev, size);
+          int rd = read(fd, &ev, size);
           if (rd != size)
             break;
           // value 1 catches single keypresses; value 2 catches autorepeat
+          bool shift = false;
+          bool alt = false;
+          bool ctrl = false;
           if (ev.type == EV_KEY && ((ev.value == 1) || ev.value == 2)) {
             switch (ev.code) {
             case KEY_LEFTSHIFT:

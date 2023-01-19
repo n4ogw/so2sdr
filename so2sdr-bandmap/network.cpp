@@ -22,7 +22,7 @@
 #include <QDebug>
 #include <QHostAddress>
 
-NetworkSDR::NetworkSDR(QString settingsFile, QObject *parent)
+NetworkSDR::NetworkSDR(const QString &settingsFile, QObject *parent)
     : SdrDataSource(settingsFile, parent) {
   bptr = 0;
   buff = nullptr;
@@ -69,7 +69,7 @@ void NetworkSDR::initialize() {
     } else {
       setRfFreq(rfFreq);
       // force retuning SDR
-      emit(resetRfFlag());
+      emit resetRfFlag();
     }
     send_rx_command(RCV_START);
     running = true;
@@ -101,6 +101,10 @@ void NetworkSDR::send_rx_command(int cmd) {
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState)
     return;
+
+  if (isSlave())
+    return;
+
   block[0] = size;
   block[1] = (SET_CONTROL_ITEM << 5);
   block[2] = control_code & 0xFF;
@@ -119,6 +123,10 @@ void NetworkSDR::get_name() {
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState)
     return;
+
+  if (isSlave())
+    return;
+
   char block[4];
   block[0] = 0x04;
   block[1] = 0x20;
@@ -165,23 +173,12 @@ void NetworkSDR::readDatagram() {
   }
 }
 
-void NetworkSDR::close_udp() {
-  short msg = 0x7373;
-
-  if (usocket.state() == QAbstractSocket::ConnectedState) {
-    usocket.write((char *)&msg, 2);
-    usocket.write((char *)&msg, 2);
-    usocket.flush();
-  }
-}
-
 void NetworkSDR::stop() { stopFlag = true; }
 
 void NetworkSDR::stopNetwork() {
   send_rx_command(RCV_STOP);
   tsocket.flush();
 
-  close_udp();
   usocket.close();
   if (usocket.state() != QAbstractSocket::UnconnectedState) {
     usocket.waitForDisconnected(1000);
@@ -219,6 +216,9 @@ void NetworkSDR::set_sample_rate(unsigned long sample_rate) {
       tsocket.state() == QAbstractSocket::ClosingState)
     return;
 
+  if (isSlave())
+    return;
+
   block[0] = size;
   block[1] = (SET_CONTROL_ITEM << 5);
   block[2] = control_code & 0xFF;
@@ -239,6 +239,9 @@ void NetworkSDR::set_sample_rate(unsigned long sample_rate) {
 void NetworkSDR::setRfFreq(double f) {
   if (tsocket.state() != QAbstractSocket::ConnectedState ||
       tsocket.state() == QAbstractSocket::ClosingState)
+    return;
+
+  if (isSlave())
     return;
 
   unsigned short control_code = CI_FREQUENCY;

@@ -124,7 +124,7 @@ void ContestOptionsDialog::updateOptions() {
   bool newMultiMode = MultiModeCheckBox->isChecked();
   settings->setValue(c_multimode, newMultiMode);
   if (oldMultiMode != newMultiMode)
-    emit(multiModeChanged());
+    emit multiModeChanged();
 
   settings->setValue(c_mastermode, MasterCheckBox->isChecked());
   if (HistoryLineEdit->text().isEmpty()) {
@@ -155,7 +155,7 @@ void ContestOptionsDialog::updateOptions() {
        (oldDupeMode == NO_DUPE_CHECKING || newDupeMode == NO_DUPE_CHECKING)) ||
       oldShowMults != newShowMults || oldMultiMode != newMultiMode ||
       oldMultsMode != newMultsMode || oldMultsBand != newMultsBand)
-    emit(rescore());
+    emit rescore();
 
   settings->setValue(c_sentexch1, sent[0]->text());
   settings->setValue(c_sentexch2, sent[1]->text());

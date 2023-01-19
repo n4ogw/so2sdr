@@ -19,7 +19,6 @@
 
 #ifndef WSJTXDELEGATE_H
 #define WSJTXDELEGATE_H
-#include "defines.h"
 #include <QAbstractItemDelegate>
 #include <QModelIndex>
 #include <QObject>

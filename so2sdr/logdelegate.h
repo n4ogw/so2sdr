@@ -20,8 +20,6 @@
 #ifndef LOGDELEGATE_H
 #define LOGDELEGATE_H
 #include "contest.h"
-#include "defines.h"
-#include "utils.h"
 #include <QAbstractItemDelegate>
 #include <QEvent>
 #include <QList>

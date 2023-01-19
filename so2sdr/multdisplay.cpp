@@ -26,9 +26,9 @@
 #include <QTextCursor>
 #include <QtMath>
 
-MultDisplay::MultDisplay(QWidget *parent) : QTextEdit(parent) {
+MultDisplay::MultDisplay(QWidget *parent)
+    : QTextEdit(parent), centerGrid("EM53") {
   gridMode = false;
-  centerGrid = "EM53";
   centerField1 = 'E';
   centerField2 = 'M';
   centerNr1 = '5';

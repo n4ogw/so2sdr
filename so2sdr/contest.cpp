@@ -16,11 +16,11 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "hamlib/rig.h"
-#include "qso.h"
 #include "contest.h"
 #include "cty.h"
+#include "hamlib/rig.h"
 #include "hamlib/rotator.h"
+#include "qso.h"
 #include "utils.h"
 #include <QDebug>
 #include <QDir>
@@ -63,6 +63,7 @@ Contest::Contest(QSettings &cs, QSettings &ss) : settings(cs), stnSettings(ss) {
   _vExch = false;
   for (int i = 0; i < 6; i++)
     qsoCnt[i] = 0;
+  finalExch = nullptr;
 }
 
 /* default labels for bands in score summary */
@@ -212,7 +213,7 @@ QVariant Contest::columnName(int c) const {
   }
 }
 
-void Contest::setContestName(QByteArray s) { _contestName = s; }
+void Contest::setContestName(const QByteArray &s) { _contestName = s; }
 
 Contest::~Contest() {
   for (int j = 0; j < MMAX; j++) {
@@ -531,7 +532,7 @@ void Contest::addQsoTypeCntry(int i, int ii) { qsoTypeCntry[ii].append(i); }
 /*!
    Add a new qso/mult type
  */
-void Contest::addQsoType(const QByteArray str, const int ii) {
+void Contest::addQsoType(const QByteArray &str, const int ii) {
   qsoTypeStr[ii].append(str);
 }
 
@@ -1361,20 +1362,17 @@ bool Contest::separateExchange(Qso *qso) {
     return (false); // nothing to do!
   }
   // find exchange elements separated by space
-  int nel = 0;
   int i1 = 0;
   int i2 = exchange.indexOf(" ");
   exchElement.clear();
   while (i2 != -1) {
     exchElement.append(exchange.mid(i1, i2 - i1));
-    nel++;
     i1 = i2 + 1;
     i2 = exchange.indexOf(" ", i1);
   }
 
   // last (or only) piece
   exchElement.append(exchange.mid(i1, exchange.size() - i1));
-  nel++;
 
   // put first nExch or non-null pieces into qso received info. This will be
   // used in the case the exchange can't be validated, but the qso is forcibly

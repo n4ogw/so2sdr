@@ -40,7 +40,7 @@ class SSBMessageDialog : public QDialog, public Ui::SSBMessageDialog {
   Q_OBJECT
 
 public:
-  SSBMessageDialog(uiSize sizes, QWidget *parent = nullptr);
+  explicit SSBMessageDialog(uiSize sizes, QWidget *parent = nullptr);
   ~SSBMessageDialog();
   void initialize(QSettings *cs, QSettings *s);
   bool isPlaying() const { return playing; }
@@ -53,9 +53,9 @@ signals:
   void setPtt(int nr, int state);
 
 public slots:
-  void recMessage(QString);
+  void recMessage(const QString &);
   void cancelMessage();
-  void playMessage(int nrig, QString);
+  void playMessage(int nrig, const QString &);
   void updateSSBMsg();
   void rejectChanges();
   void switchRadio(int nrig);

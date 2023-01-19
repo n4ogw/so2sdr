@@ -105,7 +105,7 @@ void History::addQso(const Qso *qso) {
  * \brief History::fillExchange copy exchange from history database to Qso
  * prefill field \param qso current qso \param part partial callsign
  */
-void History::fillExchange(Qso *qso, QByteArray part) {
+void History::fillExchange(Qso *qso, const QByteArray &part) {
   QSqlQueryModel h;
   QString query;
   query.append("SELECT Call");
@@ -167,21 +167,20 @@ void History::startHistory() {
   if (info.exists()) {
     history.setDatabaseName(userDirectory() + "/" + filename);
     if (!history.open()) {
-      emit(message("ERROR: can't open history file " + userDirectory() + "/" +
+      emit message("ERROR: can't open history file " + userDirectory() + "/" +
                        filename,
-                   3000));
+                   3000);
     } else {
       isopen = true;
-      emit(message("History file " + userDirectory() + "/" + filename +
-                       " loaded",
-                   3000));
+      emit message(
+          "History file " + userDirectory() + "/" + filename + " loaded", 3000);
     }
   } else { // create new history file
     history.setDatabaseName(userDirectory() + "/" + filename);
     if (!history.open()) {
-      emit(message("ERROR: can't open history file " + userDirectory() + "/" +
+      emit message("ERROR: can't open history file " + userDirectory() + "/" +
                        filename,
-                   3000));
+                   3000);
     } else {
       isopen = true;
       QSqlQuery h(history);
@@ -195,9 +194,9 @@ void History::startHistory() {
       query.append("CREATE UNIQUE INDEX `call_idx` ON history (`Call`)");
       h.exec(query);
       query.clear();
-      emit(message("INFO: History file " + userDirectory() + "/" + filename +
+      emit message("INFO: History file " + userDirectory() + "/" + filename +
                        " created",
-                   3000));
+                   3000);
     }
   }
 }

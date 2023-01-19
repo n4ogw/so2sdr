@@ -16,9 +16,9 @@
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-#include "hamlib/rig.h"
 #include "utils.h"
 #include "defines.h"
+#include "hamlib/rig.h"
 #include <QString>
 
 /*!
@@ -221,7 +221,7 @@ ModeTypes getModeType(rmode_t mode) {
 
 /*! convert ADIF mode to ModeType
  */
-ModeTypes getAdifModeType(QByteArray mode) {
+ModeTypes getAdifModeType(const QByteArray &mode) {
   if (mode == "CW") {
     return CWType;
   } else if (mode == "SSB" || mode == "USB" || mode == "LSB" || mode == "AM" ||
