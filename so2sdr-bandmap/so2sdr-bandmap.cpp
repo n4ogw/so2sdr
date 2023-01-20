@@ -396,9 +396,10 @@ void So2sdrBandmap::setSdrType() {
               .toString(),
           settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
               .toInt());
-      while (masterSocket.state() == QAbstractSocket::UnconnectedState) {
-        masterSocket.waitForConnected();
+      if (!masterSocket.waitForConnected(1000)) {
+        qDebug("ERROR: could not connect to master bandmap");
       }
+
       // in IF mode, send IF frequency
       if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
         sendToMaster(
@@ -2016,7 +2017,6 @@ void So2sdrBandmap::sendToMaster(double f, int c) {
     QByteArray str =
         QByteArray::number(c) + ' ' + QByteArray::number(f, 'f', 0);
     char len = str.length();
-
     if (masterSocket.write(&cmd, 1) != 1) {
       qDebug("sendToMaster tcp write error 1!");
     }
@@ -2026,6 +2026,9 @@ void So2sdrBandmap::sendToMaster(double f, int c) {
     if (masterSocket.write(str.data(), len) != len) {
       qDebug("sendToMaster tcp write error 3!");
     }
+  } else {
+    qDebug("ERROR: not connected to master bandmap state = %d",
+           masterSocket.state());
   }
 }
 

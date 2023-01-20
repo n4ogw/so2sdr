@@ -22,9 +22,10 @@
 #include "defines.h"
 #include "sdr-ip.h"
 #include <QDebug>
-#include <QHostAddress>
-#include <sys/socket.h>
-#include <unistd.h>
+#include <QThread>
+
+// wait time after each Afedri command (ms)
+#define AFEDRI_WAIT 100
 
 Afedri::Afedri(const QString &settingsFile, QObject *parent)
     : NetworkSDR(settingsFile, parent) {
@@ -59,7 +60,7 @@ void Afedri::initialize() {
             .toString(),
         settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
             .toInt());
-    tsocket.setSocketOption(QAbstractSocket::KeepAliveOption, QVariant(1));
+    tsocket.setSocketOption(QAbstractSocket::LowDelayOption, QVariant(1));
     connect(&tsocket, SIGNAL(readyRead()), this, SLOT(readTcp()));
     if (tsocket.waitForConnected()) {
       set_broadcast_flag(false);
@@ -98,7 +99,7 @@ void Afedri::initialize() {
             .toString(),
         settings->value(s_sdr_afedri_tcp_port, s_sdr_afedri_tcp_port_def)
             .toInt());
-    tsocket.setSocketOption(QAbstractSocket::KeepAliveOption, QVariant(1));
+    tsocket.setSocketOption(QAbstractSocket::LowDelayOption, QVariant(1));
     connect(&tsocket, SIGNAL(readyRead()), this, SLOT(readTcp()));
     if (tsocket.waitForConnected()) {
       get_sdr_name();
@@ -111,51 +112,16 @@ void Afedri::initialize() {
           settings->value(s_sdr_afedri_multi, s_sdr_afedri_multi_def).toInt());
       set_broadcast_flag(true);
       connect(&usocket, SIGNAL(readyRead()), this, SLOT(readDatagram()));
-#ifdef Q_OS_LINUX
-      /* Qt bug:
-       * on linux, multiple connections to same UDP port fail.
-       *
-       * workaround: create a socket using OS calls and set SO_REUSEADDR.
-       *
-       * see https://bugreports.qt.io/browse/QTBUG-33419
-       *
-       * 04/30/2020 (Qt 5.14.1) above bug report is marked as fixed but this
-       * code still fails.
-       *
-       */
-      int socket_descriptor;
-      if ((socket_descriptor = ::socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
-        qDebug() << "Afedri: error creating datagram socket";
-        return;
-      }
-      usocket.setSocketDescriptor(socket_descriptor,
-                                  QAbstractSocket::UnconnectedState);
-      int reuse = 1;
-      if (::setsockopt(usocket.socketDescriptor(), SOL_SOCKET, SO_REUSEADDR,
-                       &reuse, sizeof(reuse)) < 0) {
-        qDebug() << "Afedri: error setting SO_REUSEADDR";
-        return;
-      }
 
       if (!usocket.bind(
               settings->value(s_sdr_afedri_udp_port, s_sdr_afedri_udp_port_def)
-                  .toInt())) {
+                  .toInt(),
+              QUdpSocket::ReuseAddressHint | QUdpSocket::ShareAddress)) {
         emit error("Afedri: UDP connection failed");
         running = false;
         return;
       }
-#endif
-#ifdef Q_OS_WIN
-      // code without the above workaround
-      if (!usocket.bind(
-              settings->value(s_sdr_afedri_udp_port, s_sdr_afedri_udp_port_def)
-                  .toInt()),
-          QUdpSocket::ReuseAddressHint) {
-        emit error("Afedri: UDP connection failed");
-        running = false;
-        return;
-      }
-#endif
+
       send_rx_command(RCV_START);
       // set initial frequency to frequency in setup dialog if not zero
       if (settings->value(s_sdr_afedri_freq, s_sdr_afedri_freq_def)
@@ -171,50 +137,16 @@ void Afedri::initialize() {
   } else {
     // broadcast connection, slave. Only connect to udp
     connect(&usocket, SIGNAL(readyRead()), this, SLOT(readDatagram()));
-#ifdef Q_OS_LINUX
-    /* Qt bug:
-     * on linux, multiple connections to same UDP port fail.
-     *
-     * workaround: create a socket using OS calls and set SO_REUSEADDR.
-     *
-     * see https://bugreports.qt.io/browse/QTBUG-33419
-     *
-     * 04/30/2020 (Qt 5.14.1) above bug report is marked as fixed but this code
-     * still fails.
-     *
-     */
-    int socket_descriptor;
-    if ((socket_descriptor = ::socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
-      qDebug() << "Afedri: error creating datagram socket";
-      return;
-    }
-    usocket.setSocketDescriptor(socket_descriptor,
-                                QAbstractSocket::UnconnectedState);
-    int reuse = 1;
-    if (::setsockopt(usocket.socketDescriptor(), SOL_SOCKET, SO_REUSEADDR,
-                     &reuse, sizeof(reuse)) < 0) {
-      qDebug() << "Afedri: error setting SO_REUSEADDR";
-      return;
-    }
+
     if (!usocket.bind(
             settings->value(s_sdr_afedri_udp_port, s_sdr_afedri_udp_port_def)
-                .toInt())) {
+                .toInt(),
+            QUdpSocket::ReuseAddressHint | QUdpSocket::ShareAddress)) {
       emit error("Afedri: UDP connection failed");
       running = false;
       return;
     }
-#endif
-#ifdef Q_OS_WIN
-    // code without the above workaround
-    if (!usocket.bind(
-            settings->value(s_sdr_afedri_udp_port, s_sdr_afedri_udp_port_def)
-                .toInt()),
-        QUdpSocket::ReuseAddressHint) {
-      emit error("Afedri: UDP connection failed");
-      running = false;
-      return;
-    }
-#endif
+
     running = true;
   }
 
@@ -263,23 +195,26 @@ void Afedri::set_freq(unsigned long frequency, int channel) {
   block[9] = 0;
 
   // version 2 using Afedri HID command set
+  // does not seem to work
   /*
   const int size = 9;
   char block[size];
-  block[0]=size;
-  block[1]=TCP_HID_PACKET << 5;
-  block[2]=HID_FREQUENCY_REPORT;
-  for (int i = 0; i < 4; i++)
-  {
-      block[3+i] = (frequency >> (i*8)) & 0xFF;
+  block[0] = size;
+  block[1] = TCP_HID_PACKET << 5;
+  block[2] = HID_FREQUENCY_REPORT;
+  for (int i = 0; i < 4; i++) {
+    block[3 + i] = (frequency >> (i * 8)) & 0xFF;
   }
-  block[7]=channel;
-  block[8]=0;
-  */
+  block[7] = channel;
+  block[8] = 0;
+*/
+
   if (tsocket.write(block, size) == -1) {
     emit error("Afedri: TCP write set_frequency failed");
   }
   tsocket.flush();
+  tsocket.waitForReadyRead(1000);
+  QThread::msleep(AFEDRI_WAIT);
 }
 
 /*! sets single, dual, qual channel modes
@@ -322,6 +257,8 @@ void Afedri::set_multichannel_mode(int channel) {
     emit error("Afedri: TCP write error, set_multichannel_mode");
   }
   tsocket.flush();
+  tsocket.waitForReadyRead(1000);
+  QThread::msleep(AFEDRI_WAIT);
 }
 
 /*!
@@ -354,6 +291,8 @@ void Afedri::set_sample_rate(unsigned long sample_rate) {
     emit error("Afedri: TCP write error, set_sample_rate");
   }
   tsocket.flush();
+  tsocket.waitForReadyRead(1000);
+  QThread::msleep(AFEDRI_WAIT);
 }
 
 /*!
@@ -391,6 +330,8 @@ void Afedri::set_broadcast_flag(bool b) {
     emit error("Afedri: TCP write error, set_broadcast_flag");
   }
   tsocket.flush();
+  tsocket.waitForReadyRead(1000);
+  QThread::msleep(AFEDRI_WAIT);
 }
 
 Afedri::~Afedri() {}
@@ -410,13 +351,32 @@ void Afedri::readTcp() {
     int sz = (unsigned char)dat.data()[ptr];
     if (dat.data()[ptr + 1] == 0) {
       // SDR-IP response
+
       switch ((unsigned char)dat.data()[ptr + 2]) {
       case 0xb0:
         // Afedri clock frequency
+        qDebug("Afedri tcp ack: get clock frequency");
         clockFreq = dat.data()[ptr + 5] + (dat.data()[ptr + 6] << 8) +
                     (dat.data()[ptr + 7] << 16) + (dat.data()[ptr + 8] << 24);
         get_real_sample_rate();
         break;
+      case CI_DDC_SAMPLE_RATE:
+        qDebug("Afedri tcp ack: set sample rate");
+        break;
+      case CI_FREQUENCY:
+        qDebug("Afedri tcp ack: set freq for chan = %d f = %u",
+               dat.data()[ptr + 4],
+               (unsigned char)dat.data()[ptr + 5] +
+                   ((unsigned char)dat.data()[ptr + 6] << 8) +
+                   ((unsigned char)dat.data()[ptr + 7] << 16) +
+                   ((unsigned char)dat.data()[ptr + 8] << 24));
+        break;
+      case CI_RECEIVER_STATE:
+        qDebug("Afedri tcp ack: set receiver state %d", dat.data()[ptr + 5]);
+        break;
+      default:
+        qDebug("Afedri tcp ack:  sdr-ip format cmd=%x",
+               (unsigned char)dat.data()[ptr + 2]);
       }
     } else if (((unsigned char)dat.data()[ptr] == 0x09) &&
                ((unsigned char)dat.data()[ptr + 1] == 0xe0)) {
@@ -433,6 +393,12 @@ void Afedri::readTcp() {
       case HID_GENERIC_GET_SERIAL_NUMBER_COMMAND:
 
         break;
+      case HID_GENERIC_ACK:
+        qDebug("Afedri tcp ack: general hid ack");
+        break;
+      default:
+        qDebug("Afedri tcp ack: hid format cmd=%x",
+               (unsigned char)dat.data()[ptr + 3]);
       }
     }
     ptr += sz;
@@ -653,8 +619,9 @@ void Afedri::get_clock_freq() {
   if (tsocket.write(block, size) == -1) {
     emit error("Afedri: TCP write error, get_clock_freq");
   }
-
   tsocket.flush();
+  tsocket.waitForReadyRead(1000);
+  QThread::msleep(AFEDRI_WAIT);
 }
 
 /*!
@@ -686,6 +653,8 @@ void Afedri::get_sdr_name() {
     emit error("Afedri: TCP write error, get_sdr_name");
   }
   tsocket.flush();
+  tsocket.waitForReadyRead(1000);
+  QThread::msleep(AFEDRI_WAIT);
 }
 
 /* compute actual sampling rate based on requested rate

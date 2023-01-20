@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.6.5
+## So2sdr-bandmap Help Version 2.6.6
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -385,6 +385,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.6 (01/20/2023)
+
+* Afedri: wait for acknowledgement after each tcp command. This should
+help prevent commands being sent too fast to the sdr.
 
 ## version 2.6.5 (01/17/2023)
 
