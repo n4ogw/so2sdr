@@ -584,6 +584,9 @@ void So2sdrBandmap::closeIQ() { iqDialog->hide(); }
 
 /*!
    Delete call via mouse
+
+   This will delete all calls within SIG_MIN_SPOT_DIFF of where the
+   mouse was clicked. More than one call may be deleted.
  */
 void So2sdrBandmap::deleteCallMouse() {
   double f;
@@ -596,15 +599,10 @@ void So2sdrBandmap::deleteCallMouse() {
         settings->value(s_sdr_fft, s_sdr_fft_def).toDouble() /
         settings->value(s_sdr_scale, s_sdr_scale_def).toDouble() *
         (vfoPos - mouse_y + toolBarHeight));
-  QByteArray call = "";
   for (int i = 0; i < callList.size(); i++) {
-    if ((callList.at(i).freq - f) < SIG_MIN_SPOT_DIFF) {
-      call = callList.at(i).call;
-      break;
+    if (qAbs(callList.at(i).freq - f) < SIG_MIN_SPOT_DIFF) {
+      writeUdpXML(callList.at(i).freq, callList.at(i).call, true);
     }
-  }
-  if (!call.isEmpty()) {
-    writeUdpXML(f, call, true);
   }
 }
 

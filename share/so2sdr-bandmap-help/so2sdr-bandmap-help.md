@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.6.6
+## So2sdr-bandmap Help Version 2.6.7
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -385,6 +385,11 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.7 (03/12/2023)
+
+* Fix bug with deleting calls with right mouse click. Wrong call
+was being sent.
 
 ## version 2.6.6 (01/20/2023)
 
