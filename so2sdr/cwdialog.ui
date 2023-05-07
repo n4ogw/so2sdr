@@ -72,6 +72,11 @@
          <string>CWDaemon</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>SO2RMini/N6TR</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

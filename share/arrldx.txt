@@ -1,4 +1,4 @@
-#ARRL DX mult file
+#ARRL DX mult file. US States + DC - AK, HI; VE prov., terr., plus LB (14 total)
 AL
 AZ
 AR
@@ -50,15 +50,15 @@ WI
 WY
 NB
 NS
+NL
+LB
+PE;PEI
 QC
 ON
 MB
 SK
 AB
 BC
-NWT
-NF
-LB
+NT;NWT
 NU
-YT
-PEI
+YT;YU
