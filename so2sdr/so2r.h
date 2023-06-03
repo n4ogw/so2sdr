@@ -24,6 +24,7 @@
 #include "microham.h"
 #include "otrsp.h"
 #include "so2rdialog.h"
+#include "so2rmini.h"
 #include <QObject>
 #include <QSettings>
 #include <QString>
@@ -37,6 +38,7 @@ public:
   ~So2r();
   bool isVisible();
   void sendMicrohamCommand(QByteArray c);
+  void sendMiniCommand(QByteArray c);
   void sendOtrspCommand(QByteArray c, int nr);
   bool stereoActive() const;
   void switchAudio(int r);
@@ -53,10 +55,16 @@ signals:
   void error(const QString &);
   void So2rDialogAccepted();
   void So2rDialogRejected();
+  void So2rMiniTx(bool, int);
+  void So2rMiniFinished();
 
 public slots:
   void setPtt(int nr, int state);
   void showDialog();
+  void so2rMiniCancelCW() { mini->cancelcw(); }
+  void so2rMiniLoadbuff(QByteArray msg) { mini->loadbuff(msg); }
+  void so2rMiniSendCW() { mini->sendcw(); }
+  void so2rMiniSpeed(int s) { mini->setSpeed(s); }
 
 private:
   bool stereo;
@@ -65,6 +73,7 @@ private:
   MicroHam *microham;
   OTRSP *otrsp[2];
   ParallelPort *pport;
+  SO2RMini *mini;
   const QString redLED =
       "QLabel { background-color : red; border-radius: 4px; }";
   const QString greenLED =

@@ -71,6 +71,14 @@ typedef struct WinkeyParam {
 } WinkeyParam;
 Q_DECLARE_TYPEINFO(WinkeyParam, Q_PRIMITIVE_TYPE);
 
+// type of cw device
+typedef enum cwtype {
+  modeNone = 0,
+  modeWinkey = 1,
+  modeCwdaemon = 2,
+  modeSo2rMini = 3
+} cwtype;
+
 // /////////// Radio serial communications ///////////////
 
 const QString defaultSerialPort[3] = {QStringLiteral("/dev/ttyS0"),
@@ -543,6 +551,12 @@ const bool s_winkey_sidetonepaddle_def = true;
 const QString s_wpm[NRIG] = {QStringLiteral("winkey/wpm1"),
                              QStringLiteral("winkey/wpm2")};
 const int s_wpm_def[NRIG] = {35, 35};
+
+const QString s_mini_enabled = QStringLiteral("mini/enabled");
+const bool s_mini_enabled_def = false;
+
+const QString s_mini_device = QStringLiteral("mini/device");
+const QString s_mini_device_def = QLatin1String("");
 
 const QString s_cwdaemon_udp[NRIG] = {QStringLiteral("cwdaemon/udp1"),
                                       QStringLiteral("cwdaemon/udp2")};

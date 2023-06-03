@@ -62,6 +62,7 @@ So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
   otrsp[0] = new OTRSP(settings, 0, this);
   otrsp[1] = new OTRSP(settings, 1, this);
   pport = new ParallelPort(settings);
+  mini = new SO2RMini(settings);
   so2rDialog = new So2rDialog(settings, sizes, widgetParent);
   so2rDialog->hide();
   connect(so2rDialog, SIGNAL(accepted()), this, SIGNAL(So2rDialogAccepted()));
@@ -81,6 +82,12 @@ So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
           SLOT(setOtrspName(QByteArray, int)));
   connect(otrsp[1], SIGNAL(otrspNameSet(QByteArray, int)), so2rDialog,
           SLOT(setOtrspName(QByteArray, int)));
+  connect(mini, SIGNAL(miniError(const QString &)), this,
+          SIGNAL(error(const QString &)));
+  connect(mini, SIGNAL(miniName(QByteArray)), so2rDialog,
+          SLOT(setMiniName(QByteArray)));
+  connect(mini, SIGNAL(finished()), this, SIGNAL(So2rMiniFinished()));
+  connect(mini, SIGNAL(tx(bool, int)), this, SIGNAL(So2rMiniTx(bool, int)));
   connect(so2rDialog, SIGNAL(setMicroHam()), microham, SLOT(openMicroHam()));
   if (settings.value(s_radios_pport_enabled, s_radios_pport_enabled_def)
           .toBool()) {
@@ -94,6 +101,9 @@ So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
   }
   if (settings.value(s_microham_enabled, s_microham_enabled_def).toBool()) {
     microham->openMicroHam();
+  }
+  if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool()) {
+    mini->openSO2RMini();
   }
   txRadio = 0;
   if (settings.value(s_settings_focusindicators, s_settings_focusindicators_def)
@@ -110,6 +120,7 @@ So2r::~So2r() {
   delete otrsp[0];
   delete otrsp[1];
   delete pport;
+  delete mini;
   delete so2rDialog;
 }
 
@@ -136,11 +147,15 @@ void So2r::toggleStereo(int activeRadio) {
   if (settings.value(s_microham_enabled, s_microham_enabled_def).toBool()) {
     microham->toggleStereo(activeRadio);
   }
+  if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool()) {
+    mini->toggleStereo(activeRadio);
+  }
 }
 
 bool So2r::stereoActive() const {
   return (pport->stereoActive() || otrsp[0]->stereoActive() ||
-          otrsp[1]->stereoActive() || microham->stereoActive());
+          otrsp[1]->stereoActive() || microham->stereoActive() ||
+          mini->stereoActive());
 }
 
 void So2r::switchAudio(int r) {
@@ -159,6 +174,9 @@ void So2r::switchAudio(int r) {
   }
   if (settings.value(s_microham_enabled, s_microham_enabled_def).toBool()) {
     microham->switchAudio(r);
+  }
+  if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool()) {
+    mini->switchAudio(r);
   }
 }
 
@@ -179,6 +197,9 @@ void So2r::switchTransmit(int r) {
   if (settings.value(s_microham_enabled, s_microham_enabled_def).toBool()) {
     microham->switchTransmit(r);
   }
+  if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool()) {
+    mini->switchTransmit(r);
+  }
   txRadio = r;
 }
 
@@ -193,6 +214,12 @@ void So2r::sendOtrspCommand(QByteArray c, int nr) {
 void So2r::sendMicrohamCommand(QByteArray c) {
   if (settings.value(s_microham_enabled, s_microham_enabled_def).toBool()) {
     microham->sendCommand(c);
+  }
+}
+
+void So2r::sendMiniCommand(QByteArray c) {
+  if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool()) {
+    mini->sendCommand(c);
   }
 }
 

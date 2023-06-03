@@ -42,11 +42,13 @@ signals:
   void setParallelPort();
   void setOTRSP();
   void setMicroHam();
+  void setMini();
 
 public slots:
   void rejectChanges();
   void updateSo2r();
   void setOtrspName(QByteArray name, int nr);
+  void setMiniName(QByteArray name);
 
 private:
   void updateFromSettings();

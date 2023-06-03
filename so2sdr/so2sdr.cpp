@@ -379,6 +379,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
           SLOT(setWinkeyVersionLabel(int)));
   connect(cw, SIGNAL(tx(bool, int)), bandmap,
           SLOT(setBandmapTxStatus(bool, int)));
+  connect(so2r, SIGNAL(So2rMiniTx(bool, int)), bandmap,
+          SLOT(setBandmapTxStatus(bool, int)));
   connect(cwDialog, SIGNAL(startCw()), cw, SLOT(open()));
   connect(radios, SIGNAL(startRadios()), this, SLOT(openRadios()));
   connect(cw, SIGNAL(textSent(const QString &, int)), So2sdrStatusBar,
@@ -387,6 +389,14 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   connect(cw, SIGNAL(CWError(const QString &)), errorBox,
           SLOT(showMessage(const QString &)));
   connect(cw, SIGNAL(finished()), this, SLOT(messageFinished()));
+  connect(so2r, SIGNAL(So2rMiniFinished()), this, SLOT(messageFinished()));
+  connect(cw, SIGNAL(so2rMiniLoadbuff(const QByteArray &)), so2r,
+          SLOT(so2rMiniLoadbuff(const QByteArray &)));
+  connect(cw, SIGNAL(so2rMiniSendCW()), so2r, SLOT(so2rMiniSendCW()));
+  connect(cw, SIGNAL(so2rMiniCancelCW()), so2r, SLOT(so2rMiniCancelCW()));
+  connect(so2r, SIGNAL(So2rMiniTx(bool, int)), cw,
+          SLOT(so2rMiniSetSending(bool, int)));
+  connect(cw, SIGNAL(so2rMiniSpeed(int)), so2r, SLOT(so2rMiniSpeed(int)));
   startCw();
 
   openRadios();
@@ -565,6 +575,7 @@ void So2sdr::cleanup() {
 void So2sdr::startCw() {
   cw->open();
   cw->setSpeed(wpm[activeRadio]);
+  so2r->switchTransmit(activeRadio);
   cw->switchTransmit(activeRadio);
 }
 
@@ -2845,7 +2856,6 @@ void So2sdr::setCqMode(int i) {
 void So2sdr::send(QByteArray text, bool stopcw) {
   if (cat[activeTxRadio]->modeType() != CWType)
     return;
-
   if (cw->isSending() && stopcw) {
     cw->cancelcw(); // cancel any cw in progress
   }
@@ -3207,7 +3217,8 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant) {
             // return immediately to avoid stopping cw on current radio
             return;
           case 24: // cancel speed change
-            out.append(0x1e);
+            if (cw->cwDevice() == modeWinkey)
+              out.append(0x1e);
             break;
           case 25: // play
             command = msg.mid(i2 + 1, msg.indexOf("{", i2) - (i2 + 1));
@@ -3366,8 +3377,9 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant) {
       out.append(msg.right(i1 - i2 - 1));
     }
 
-    // cancel any buffered speed changes
-    out.append(0x1e);
+    // winkey: cancel any buffered speed changes
+    if (cw->cwDevice() == modeWinkey)
+      out.append(0x1e);
     if (repeat) {
       send(lastMsg, stopcw);
     } else {

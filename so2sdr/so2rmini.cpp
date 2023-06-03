@@ -214,6 +214,7 @@ void SO2RMini::openSO2RMini() {
     qDebug("ERROR: could not open SO2RMini");
     return;
   }
+
   if (!SO2RMiniPort->setBaudRate(QSerialPort::Baud19200))
     qDebug() << SO2RMiniPort->errorString();
   if (!SO2RMiniPort->setFlowControl(QSerialPort::NoFlowControl))
@@ -246,6 +247,7 @@ void SO2RMini::openSO2RMini() {
     if (deviceName.size() > 0)
       break;
   }
+
   emit miniName(deviceName);
   connect(SO2RMiniPort, SIGNAL(readyRead()), this, SLOT(receive()));
   SO2RMiniOpen = true;

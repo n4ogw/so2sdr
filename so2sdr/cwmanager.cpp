@@ -53,6 +53,9 @@ void CWManager::cancelcw() {
   case modeCwdaemon:
     cwdaemon->cancelcw();
     break;
+  case modeSo2rMini:
+    emit so2rMiniCancelCW();
+    break;
   }
 }
 
@@ -66,6 +69,9 @@ bool CWManager::isSending() const {
     break;
   case modeCwdaemon:
     return cwdaemon->isSending();
+    break;
+  case modeSo2rMini:
+    return miniSending;
     break;
   }
   return false;
@@ -81,6 +87,9 @@ void CWManager::loadbuff(QByteArray msg) {
   case modeCwdaemon:
     cwdaemon->loadbuff(msg);
     break;
+  case modeSo2rMini:
+    emit(so2rMiniLoadbuff(msg));
+    break;
   }
 }
 
@@ -94,6 +103,9 @@ void CWManager::sendcw() {
   case modeCwdaemon:
     cwdaemon->sendcw();
     break;
+  case modeSo2rMini:
+    emit so2rMiniSendCW();
+    break;
   }
 }
 
@@ -106,6 +118,9 @@ void CWManager::setSpeed(int speed) {
     break;
   case modeCwdaemon:
     cwdaemon->setSpeed(speed);
+    break;
+  case modeSo2rMini:
+    emit so2rMiniSpeed(speed);
     break;
   }
 }
@@ -125,6 +140,9 @@ void CWManager::open() {
   case modeCwdaemon:
     cwdaemon->open();
     break;
+  case modeSo2rMini:
+    // this is opened in so2r dialog
+    break;
   }
 }
 
@@ -132,6 +150,7 @@ void CWManager::setEchoMode(bool b) {
   switch (mode) {
   case modeNone:
   case modeCwdaemon:
+  case modeSo2rMini:
     break;
   case modeWinkey:
     winkey->setEchoMode(b);
@@ -148,6 +167,9 @@ void CWManager::switchTransmit(int nrig) {
     break;
   case modeCwdaemon:
     cwdaemon->switchTransmit(nrig);
+    break;
+  case modeSo2rMini:
+    // transmit switching for mini is in so2r.h
     break;
   }
 }
@@ -168,6 +190,8 @@ QString CWManager::textStatus() const {
       return (QString("CW:ON"));
     else
       return (QString("<font color=#FF0000>CW:OFF </font>"));
+    break;
+  case modeSo2rMini:
     break;
   }
   return QString("");

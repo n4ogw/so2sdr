@@ -20,19 +20,19 @@
 #define CWMANAGER_H
 
 #include "cwdaemon.h"
+#include "defines.h"
 #include "winkey.h"
 #include <QByteArray>
 #include <QObject>
 #include <QSettings>
 #include <QString>
 
-typedef enum cwtype { modeNone = 0, modeWinkey = 1, modeCwdaemon = 2 } cwtype;
-
 class CWManager : public QObject {
   Q_OBJECT
 public:
   explicit CWManager(QSettings &s, QObject *parent = nullptr);
   ~CWManager();
+  cwtype cwDevice() const { return mode; }
   void loadbuff(QByteArray msg);
   bool isSending() const;
   void sendcw();
@@ -48,13 +48,22 @@ signals:
   void winkeyVersion(int ver);
   void tx(bool, int);
   void CWError(const QString &);
+  void so2rMiniCancelCW();
+  void so2rMiniLoadbuff(const QByteArray &);
+  void so2rMiniSendCW();
+  void so2rMiniSpeed(int);
 
 public slots:
   void cancelcw();
   void open();
   void setType(cwtype t);
+  void so2rMiniSetSending(bool b, int i) {
+    Q_UNUSED(i)
+    miniSending = b;
+  }
 
 private:
+  bool miniSending;
   cwtype mode;
   QSettings &settings;
   Winkey *winkey;

@@ -31,6 +31,7 @@ So2rDialog::So2rDialog(QSettings &s, uiSize sizes, QWidget *parent)
   lineEditOTRSPPort1->setFixedWidth(qRound(sizes.width * 15));
   lineEditOTRSPPort2->setFixedWidth(qRound(sizes.width * 15));
   lineEditMicroHamPort->setFixedWidth(qRound(sizes.width * 15));
+  lineEditMiniPort->setFixedWidth(qRound(sizes.width * 15));
   adjustSize();
   setFixedSize(size());
 
@@ -166,6 +167,19 @@ void So2rDialog::updateSo2r() {
     settings.setValue(s_microham_device, lineEditMicroHamPort->text());
     microHamUpdate = true;
   }
+  bool miniUpdate = false;
+  if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool() !=
+      checkBoxMini->isChecked()) {
+    settings.setValue(s_mini_enabled, checkBoxMini->isChecked());
+    if (settings.value(s_mini_enabled, s_mini_enabled_def).toBool()) {
+      miniUpdate = true;
+    }
+  }
+  if (settings.value(s_mini_device, s_mini_device_def).toString() !=
+      lineEditMiniPort->text()) {
+    settings.setValue(s_mini_device, lineEditMiniPort->text());
+    miniUpdate = true;
+  }
   settings.sync();
   // in case parallel port is changed
   if (pportUpdate) {
@@ -177,6 +191,9 @@ void So2rDialog::updateSo2r() {
   }
   if (microHamUpdate) {
     emit setMicroHam();
+  }
+  if (miniUpdate) {
+    emit setMini();
   }
   accept();
 }
@@ -223,6 +240,10 @@ void So2rDialog::updateFromSettings() {
       settings.value(s_microham_enabled, s_microham_enabled_def).toBool());
   lineEditMicroHamPort->setText(
       settings.value(s_microham_device, s_microham_device_def).toString());
+  checkBoxMini->setChecked(
+      settings.value(s_mini_enabled, s_mini_enabled_def).toBool());
+  lineEditMiniPort->setText(
+      settings.value(s_mini_device, s_mini_device_def).toString());
 }
 
 /*! called if dialog rejected */
@@ -238,4 +259,9 @@ void So2rDialog::setOtrspName(QByteArray name, int nr) {
   } else if (nr == 1) {
     labelOTRSPName2->setText(name);
   }
+}
+
+/* set name or version displayed for SO2R Mini */
+void So2rDialog::setMiniName(QByteArray name) {
+  labelMiniVersion->setText(name);
 }

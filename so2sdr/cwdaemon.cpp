@@ -91,14 +91,11 @@ void Cwdaemon::loadbuff(QByteArray msg) {
     sendBuff.append(msg);
     sent = QString::fromLatin1(sendBuff);
 
-    sent.remove('|');         // remove half spaces
-    sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel
-                              // buffered speed change
+    sent.remove('|'); // remove half spaces
   } else {
     // if cwdaemon not open, just echo back the sent text as if it had been sent
     QString tmp = QString::number(rigNum + 1) + ":" + QString::fromLatin1(msg);
     tmp.remove('|');
-    tmp.remove(QChar(0x1e));
     emit textSent(tmp, 3600);
   }
 }

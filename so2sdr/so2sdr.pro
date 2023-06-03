@@ -22,6 +22,7 @@ HEADERS += cwmessagedialog.h \
     cwdialog.h \
     cwmanager.h \
     serial.h \
+    so2rmini.h \
     so2sdr.h \
     stationdialog.h \
     log.h \
@@ -112,6 +113,7 @@ SOURCES += cwmessagedialog.cpp \
     cwmanager.cpp \
     main.cpp \
     serial.cpp \
+    so2rmini.cpp \
     so2sdr.cpp \
     stationdialog.cpp \
     log.cpp \
