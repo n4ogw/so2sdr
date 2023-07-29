@@ -139,8 +139,8 @@ void SO2RMini::switchAudio(int nr) {
       relayBits |= 0x01;
       SO2RMiniPort->write(&relaycmd, 1);
       SO2RMiniPort->write(&relayBits, 1);
-      SO2RMiniPort->flush();
     }
+    SO2RMiniPort->flush();
   }
 }
 
@@ -158,7 +158,6 @@ void SO2RMini::switchTransmit(int nr) {
     relayBits = (relayBits & 0x03);
     SO2RMiniPort->write(&txmic, 1);
     SO2RMiniPort->write(&relayBits, 1);
-    SO2RMiniPort->flush();
   } else {
     SO2RMiniPort->write(txcw2, 2);
     // keep bits 1 and 2, set bit 3
@@ -166,8 +165,8 @@ void SO2RMini::switchTransmit(int nr) {
     relayBits |= 0x04;
     SO2RMiniPort->write(&txmic, 1);
     SO2RMiniPort->write(&relayBits, 1);
-    SO2RMiniPort->flush();
   }
+  SO2RMiniPort->flush();
 }
 
 /*!
@@ -240,6 +239,7 @@ void SO2RMini::openSO2RMini() {
 
     const char cmd = 0x01;
     SO2RMiniPort->write(&cmd, 1);
+    SO2RMiniPort->flush();
     deviceName.clear();
     while (SO2RMiniPort->waitForReadyRead(200)) {
       deviceName = SO2RMiniPort->readAll();

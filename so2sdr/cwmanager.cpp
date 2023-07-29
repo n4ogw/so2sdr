@@ -36,6 +36,7 @@ CWManager::CWManager(QSettings &s, QObject *parent)
           SIGNAL(textSent(const QString &, int)));
   connect(cwdaemon, SIGNAL(textSent(const QString &, int)), this,
           SIGNAL(textSent(const QString &, int)));
+  miniSending = false;
 }
 
 CWManager::~CWManager() {
