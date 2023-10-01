@@ -251,6 +251,14 @@ void SO2RMini::openSO2RMini() {
   emit miniName(deviceName);
   connect(SO2RMiniPort, SIGNAL(readyRead()), this, SLOT(receive()));
   SO2RMiniOpen = true;
+
+  // turn off computer CW monitor, turn on paddle CW monitor
+  const char cmd1[2] = {0x03, 0x00}; // 00 = turn off
+  const char cmd2[2] = {0x04, 0x46}; // 70 = 700 Hz
+  SO2RMiniPort->write(cmd1, 2);
+  SO2RMiniPort->flush();
+  SO2RMiniPort->write(cmd2, 2);
+  SO2RMiniPort->flush();
 }
 
 void SO2RMini::closeSO2RMini() {
