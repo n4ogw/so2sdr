@@ -70,6 +70,7 @@ So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
   connect(so2rDialog, SIGNAL(setParallelPort()), pport, SLOT(initialize()));
   connect(so2rDialog, SIGNAL(setOTRSP()), otrsp[0], SLOT(openOTRSP()));
   connect(so2rDialog, SIGNAL(setOTRSP()), otrsp[1], SLOT(openOTRSP()));
+  connect(so2rDialog, SIGNAL(setMini()), mini, SLOT(openSO2RMini()));
   connect(otrsp[0], SIGNAL(otrspError(const QString &)), this,
           SIGNAL(error(const QString &)));
   connect(otrsp[1], SIGNAL(otrspError(const QString &)), this,

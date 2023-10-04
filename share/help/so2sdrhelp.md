@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.6.8
+## SO2SDR Help file version 2.6.9
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1030,6 +1030,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.9 (10/03/2023)
+
+* add option to control sidetone frequency on so2rMini
 
 ## version 2.6.8 (10/01/2023)
 

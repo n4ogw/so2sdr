@@ -57,9 +57,23 @@ void SO2RMini::cancelcw() {
 /*! \brief set cw speed
  *  currently assume both computer and paddle are same speed, but
  *  so2rmini allows them to be set differently
+ *
+ *  if s=0, sets the last saved speed
  */
 void SO2RMini::setSpeed(int s) {
+  static int last_s = 0;
   const char cmd = 0x08;
+
+  // save speed in case mini is restarted
+  if (s!=0) {
+      last_s = s;
+  } else if (s==0 && last_s!=0) {
+      s = last_s;
+  } else {
+      // this normally shouldn't happen
+      s = 32;
+      last_s = 32;
+  }
   if (s > 1 && s < 100) {
     char ss = s;
     if (SO2RMiniPort->isOpen()) {
@@ -198,9 +212,11 @@ bool SO2RMini::stereoActive() const { return stereo; }
  */
 void SO2RMini::openSO2RMini() {
   // in case we are re-starting SO2RMini
+  bool restart = false;
   if (SO2RMiniPort->isOpen()) {
     closeSO2RMini();
     SO2RMiniOpen = false;
+    restart = true;
   }
 
   SO2RMiniPort->setPortName(
@@ -252,13 +268,27 @@ void SO2RMini::openSO2RMini() {
   connect(SO2RMiniPort, SIGNAL(readyRead()), this, SLOT(receive()));
   SO2RMiniOpen = true;
 
-  // turn off computer CW monitor, turn on paddle CW monitor
-  const char cmd1[2] = {0x03, 0x00}; // 00 = turn off
-  const char cmd2[2] = {0x04, 0x46}; // 70 = 700 Hz
+  // reset speed if restarting
+  if (restart) setSpeed(0);
+
+  char cmd1[2];
+  // sidetone freq, set in units of 10 Hz
+  cmd1[0] = 0x03;
+  if (settings.value(s_mini_sidetone,s_mini_sidetone_def).toBool()) {
+      cmd1[1] = settings.value(s_mini_sidetone_freq,s_mini_sidetone_freq_def).toInt();
+  } else {
+      cmd1[1] = 0;
+  }
   SO2RMiniPort->write(cmd1, 2);
-  SO2RMiniPort->flush();
-  SO2RMiniPort->write(cmd2, 2);
-  SO2RMiniPort->flush();
+
+  // paddle sidetone freq, set in units of 10 Hz
+  cmd1[0] = 0x04;
+  if (settings.value(s_mini_paddle_sidetone,s_mini_paddle_sidetone_def).toBool()) {
+      cmd1[1] = settings.value(s_mini_paddle_sidetone_freq,s_mini_paddle_sidetone_freq_def).toInt();
+  } else {
+      cmd1[1] = 0;
+  }
+  SO2RMiniPort->write(cmd1, 2);
 }
 
 void SO2RMini::closeSO2RMini() {

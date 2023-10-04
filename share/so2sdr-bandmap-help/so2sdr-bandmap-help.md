@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.6.8
+## So2sdr-bandmap Help Version 2.6.9
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -385,6 +385,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.9 (10/03/2023)
+
+* add option to control sidetone frequency on so2rMini
 
 ## version 2.6.8 (10/01/2023)
 
