@@ -214,21 +214,35 @@ void SO2RMini::openSO2RMini() {
   // in case we are re-starting SO2RMini
   bool restart = false;
   if (SO2RMiniPort->isOpen()) {
+    disconnect(SO2RMiniPort);
     closeSO2RMini();
     SO2RMiniOpen = false;
     restart = true;
   }
 
-  SO2RMiniPort->setPortName(
-      settings.value(s_mini_device, s_mini_device_def).toString());
+  // if restart, must completely restart serial port, otherwise
+  // get error rereading version string. Not sure why
+  if (restart) {
+      delete SO2RMiniPort;
+      QSerialPortInfo info(settings.value(s_mini_device, s_mini_device_def).toString());
+      SO2RMiniPort = new QSerialPort(info);
+  }
+
+  SO2RMiniPort->setPortName(settings.value(s_mini_device, s_mini_device_def).toString());
 
   SO2RMiniPort->open(QIODevice::ReadWrite);
+  SO2RMiniPort->setDataTerminalReady(false);
+  SO2RMiniPort->setRequestToSend(false);
+
+  QThread::sleep(1);
+
   if (!SO2RMiniPort->isOpen()) {
     SO2RMiniOpen = false;
     emit miniError("ERROR: could not open SO2RMini");
     qDebug("ERROR: could not open SO2RMini");
     return;
   }
+  SO2RMiniPort->clearError();
 
   if (!SO2RMiniPort->setBaudRate(QSerialPort::Baud19200))
     qDebug() << SO2RMiniPort->errorString();
@@ -245,21 +259,22 @@ void SO2RMini::openSO2RMini() {
   if (!SO2RMiniPort->setDataTerminalReady(false))
     qDebug() << SO2RMiniPort->errorString();
 
-  // get device version
-  // QSerialport 5.15.8 is buggy (or I have a flaky cable). Often will not
-  // not read data coming from SO2RMini. Other software (minicom) seems to
-  // read without problems
-
   // try a few times to get the device version
   for (int i = 0; i < 5; i++) {
-
     const char cmd = 0x01;
-    SO2RMiniPort->write(&cmd, 1);
+    if (!SO2RMiniPort->write(&cmd, 1)) {
+        SO2RMiniPort->clearError();
+        continue;
+    }
     SO2RMiniPort->flush();
     deviceName.clear();
-    while (SO2RMiniPort->waitForReadyRead(200)) {
-      deviceName = SO2RMiniPort->readAll();
+    while (SO2RMiniPort->waitForReadyRead(500)) {
+      deviceName = SO2RMiniPort->readAll().simplified();
     }
+    if (SO2RMiniPort->error()) {
+        SO2RMiniPort->clearError();
+    }
+    if (deviceName.left(2) != "TR") deviceName.clear();
     if (deviceName.size() > 0)
       break;
   }
