@@ -231,10 +231,14 @@ void SO2RMini::openSO2RMini() {
   SO2RMiniPort->setPortName(settings.value(s_mini_device, s_mini_device_def).toString());
 
   SO2RMiniPort->open(QIODevice::ReadWrite);
+
+  // opening port forces Arduino Nano to reset. Must wait
+  // for reset to complete
+  QThread::sleep(2);
+
   SO2RMiniPort->setDataTerminalReady(false);
   SO2RMiniPort->setRequestToSend(false);
 
-  QThread::sleep(1);
 
   if (!SO2RMiniPort->isOpen()) {
     SO2RMiniOpen = false;
