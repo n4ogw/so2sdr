@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.6.9
+## So2sdr-bandmap Help Version 2.6.10
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -385,6 +385,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.6.10 (12/06/2023)
+
+* add Labrador as mult in ARRL 10m contest
 
 ## version 2.6.9 (10/03/2023)
 

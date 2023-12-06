@@ -1,4 +1,4 @@
-#ARRL 10m US states + DC+ VE + XE
+#ARRL 10m US states + DC(51)+ VE(14) + XE(32) = 97 total mults
 AL
 AK
 AZ
@@ -54,7 +54,8 @@ NB;VE9
 NS;VE1
 QC;VE2
 PE;PEI;VY2
-NL;VO
+NL;NF;VO
+LB;VO2
 ON;VE3
 MB;VE4
 SK;VE5
