@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -48,15 +48,14 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   setupUi(this);
   initPointers();
   initVariables();
-  setUiSize();
 
   // check to see if user directory exists
   initialized = checkUserDirectory();
   settingsFile = userDirectory() + "/so2sdr-bandmap.ini";
 
   // check for optional command argument giving station config file name
-  if (args.size() > 1) {
-    settingsFile = args[1].trimmed();
+  if (args.size() > 0) {
+    settingsFile = args[0].trimmed();
     // Qt doesn't understand that ~/... implies home directory...
     if (settingsFile.at(0) == "~") {
       if (settingsFile.left(2) == "~/") {
@@ -95,6 +94,10 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   if (firstTime && settingsFile.right(19) == "so2sdr-bandmap2.ini") {
     settings->setValue(s_sdr_nrig, 1);
   }
+
+  setFontSize();
+  setUiSize();
+
   // restore window size and position
   QString tmp = "BandmapWindow";
   settings->beginGroup(tmp);
@@ -373,6 +376,8 @@ void So2sdrBandmap::restartSdr() {
  * other options change
  */
 void So2sdrBandmap::setSdrType() {
+  setFontSize();
+  setUiSize();
   centerFreq = 0.0;
   rfFreq = 0.0;
   setRfFlag = true;
@@ -636,8 +641,8 @@ void So2sdrBandmap::makeCall() {
   }
 
   p.setPen(Qt::black);
-  QFont font;
-  font.setPointSize(BANDMAP_FONT_POINT_SIZE);
+  QFont font(settings->value(s_ui_font, s_ui_font_def).toString(),
+             settings->value(s_call_font_size, s_call_font_size_def).toInt());
   p.setFont(font);
   for (int i = 0; i < fft; i++) {
     display->cmap[i] = false;
@@ -680,12 +685,12 @@ void So2sdrBandmap::makeCall() {
             .toBool()) {
       QFontMetrics fontm(font);
       p.drawText(callPixmap.width() -
-                     qRound(uiSizes.height / 3 - uiSizes.width * 1.5) -
+                     qRound(uiSizes.callHeight / 3 - uiSizes.callWidth * 1.5) -
                      fontm.horizontalAdvance(callList.at(i).call),
-                 y + qRound(uiSizes.width / 3), callList.at(i).call);
+                 y + qRound(uiSizes.callWidth / 3), callList.at(i).call);
     } else {
-      p.drawText(qRound(uiSizes.width * 1.5), y + qRound(uiSizes.height / 3),
-                 callList.at(i).call);
+      p.drawText(qRound(uiSizes.callWidth * 1.5),
+                 y + qRound(uiSizes.callHeight / 3), callList.at(i).call);
     }
   }
   p.setPen(Qt::black);
@@ -708,10 +713,10 @@ void So2sdrBandmap::makeCall() {
         if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
                 .toBool()) {
           p.drawEllipse(callPixmap.width() -
-                            qRound(uiSizes.rad - uiSizes.width / 2),
+                            qRound(uiSizes.rad - uiSizes.callWidth / 2),
                         y, qRound(uiSizes.rad), qRound(uiSizes.rad));
         } else {
-          p.drawEllipse(qRound(uiSizes.width / 2), y, qRound(uiSizes.rad),
+          p.drawEllipse(qRound(uiSizes.callWidth / 2), y, qRound(uiSizes.rad),
                         qRound(uiSizes.rad));
         }
       }
@@ -812,18 +817,19 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
   QPainter p(&freqPixmap);
   p.fillRect(freqPixmap.rect(), Qt::lightGray);
   p.setPen(Qt::black);
-  QFont font;
-  font.setPointSize(BANDMAP_FONT_POINT_SIZE);
+  QFont font(settings->value(s_ui_font, s_ui_font_def).toString(),
+             settings->value(s_scale_font_size, s_scale_font_size_def).toInt());
+  p.setFont(font);
   QString tmp;
   i = i0;
   int k = 1;
   while (i > 0) {
     if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
             .toBool()) {
-      p.drawLine(freqPixmap.width() - qRound(uiSizes.width * 0.5), i,
+      p.drawLine(freqPixmap.width() - qRound(uiSizes.scaleWidth * 0.5), i,
                  freqPixmap.width() - 1, i);
     } else {
-      p.drawLine(0, i, qRound(uiSizes.width * 0.5), i);
+      p.drawLine(0, i, qRound(uiSizes.scaleWidth * 0.5), i);
     }
     // if center freq never set, don't make negative freq labels
     int jj;
@@ -838,7 +844,8 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
     } else {
       tmp = QString::number(jj);
     }
-    p.drawText(qRound(uiSizes.width), i + qRound(uiSizes.height * 0.4), tmp);
+    p.drawText(qRound(uiSizes.scaleWidth),
+               i + qRound(uiSizes.scaleHeight * 0.4), tmp);
     j++;
     j = j % 1000;
     i = i0 - qRound(k * pix_per_khz) - 2;
@@ -860,12 +867,17 @@ void So2sdrBandmap::mouseReleaseEvent(QMouseEvent *event) {
 
   mouseDrag = false;
   if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RFauto) {
-    vfoPos = (height() - toolBarHeight) / 2;
-    dragPos = vfoPos;
-    display->setVfoPos(vfoPos);
-    makeFreqScaleAbsolute();
-    FreqLabel->setPixmap(freqPixmap);
-    FreqLabel->update();
+    if (settings->value(s_rfauto_drag, s_rfauto_drag_def).toInt() ==
+        resetOnDrag) {
+      vfoPos = (height() - toolBarHeight) / 2;
+      dragPos = vfoPos;
+      display->setVfoPos(vfoPos);
+      makeFreqScaleAbsolute();
+      FreqLabel->setPixmap(freqPixmap);
+      FreqLabel->update();
+    }
+  } else {
+    mouseDrag = false;
   }
 }
 
@@ -914,7 +926,7 @@ void So2sdrBandmap::mousePressEvent(QMouseEvent *event) {
       menu.exec(event->globalPos());
     } else if (event->button() == Qt::LeftButton &&
                (event->x() < (FreqLabel->width() + display->width() +
-                              SIG_SYMBOL_X + 4 * SIG_SYMBOL_RAD))) {
+                              SIG_SYMBOL_X + 4 * qRound(uiSizes.rad)))) {
       // left-mouse: qsy to signal
       qsyToNearest();
     }
@@ -1361,6 +1373,16 @@ void So2sdrBandmap::parseData(char &cmd, char &cmdLen, QByteArray data) {
       } else {
         emit setRfFreq(f);
       }
+      // reset mouse drag status
+      if (mouseDrag &&
+          settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RFauto &&
+          settings->value(s_rfauto_drag, s_rfauto_drag_def).toInt() ==
+              resetOnTune) {
+        mouseDrag = false;
+        vfoPos = (height() - toolBarHeight) / 2;
+        dragPos = vfoPos;
+        display->setVfoPos(vfoPos);
+      }
       setRfFlag = false;
       endFreqs[0] = rfFreq - sdrSource->sampleRate() / 2;
       endFreqs[1] = rfFreq + sdrSource->sampleRate() / 2;
@@ -1441,7 +1463,16 @@ void So2sdrBandmap::parseData(char &cmd, char &cmdLen, QByteArray data) {
       FreqLabel->update();
     } else if (settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RFauto) {
       // panadapter at RF freq, automatically recenter SDR freq
-
+      // reset mouse drag status
+      if (mouseDrag &&
+          settings->value(s_sdr_mode, s_sdr_mode_def).toInt() == RFauto &&
+          settings->value(s_rfauto_drag, s_rfauto_drag_def).toInt() ==
+              resetOnTune) {
+        mouseDrag = false;
+        vfoPos = (height() - toolBarHeight) / 2;
+        dragPos = vfoPos;
+        display->setVfoPos(vfoPos);
+      }
       // check for band change
       int b = getBand(f);
       if (b == BAND_NONE)
@@ -1981,30 +2012,70 @@ void So2sdrBandmap::showHelp() {
 
 void So2sdrBandmap::resetTuningTimer() { spectrumProcessor->setTuning(false); }
 
+/*! Set fonts and font sizes
+ *
+ */
+void So2sdrBandmap::setFontSize() {
+  // set default UI font size
+  QString styleSheet =
+      "font-family: " + settings->value(s_ui_font, s_ui_font_def).toString() +
+      ";font-size: " +
+      QString::number(
+          settings->value(s_ui_font_size, s_ui_font_size_def).toInt()) +
+      "px;";
+  setStyleSheet(styleSheet);
+
+  // size of text in frequency scale
+  styleSheet =
+      "font-family: " + settings->value(s_ui_font, s_ui_font_def).toString() +
+      ";font-size: " +
+      QString::number(
+          settings->value(s_scale_font_size, s_scale_font_size_def).toInt()) +
+      "px;";
+  FreqLabel->setStyleSheet(styleSheet);
+
+  // size of callsign text
+  styleSheet =
+      "font-family: " + settings->value(s_ui_font, s_ui_font_def).toString() +
+      ";font-size: " +
+      QString::number(
+          settings->value(s_call_font_size, s_call_font_size_def).toInt()) +
+      "px;";
+  CallLabel->setStyleSheet(styleSheet);
+}
+
 /*! resize UI elements based on actual font size
  */
 void So2sdrBandmap::setUiSize() {
-  // x11extras depreciated, need to update to new way of icon scaling
-  // if (QX11Info::appDpiX()>100) {
   setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
-  //} else {
-  // setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
-  //}
-  QFont font10("sans", BANDMAP_FONT_POINT_SIZE);
-  QFontMetricsF fm10(font10);
-  uiSizes.height = fm10.height();
-  uiSizes.width = fm10.horizontalAdvance("0");
-  uiSizes.rad = uiSizes.width / 1.5;
-  QFont font9("sans", 9);
-  QFontMetricsF fm9(font9);
-  uiSizes.smallHeight = fm9.height();
-  uiSizes.smallWidth = fm9.horizontalAdvance("0");
-  toolBar->setFixedHeight(qRound(uiSizes.height * 1.5));
+
+  QFont uiFont(settings->value(s_ui_font, s_ui_font_def).toString(),
+               settings->value(s_ui_font_size, s_ui_font_size_def).toInt());
+  QFontMetricsF uiFm(uiFont);
+  uiSizes.uiHeight = uiFm.height();
+  uiSizes.uiWidth = uiFm.width("0");
+
+  uiFont =
+      QFont(settings->value(s_ui_font, s_ui_font_def).toString(),
+            settings->value(s_scale_font_size, s_scale_font_size_def).toInt());
+  uiFm = QFontMetrics(uiFont);
+  uiSizes.scaleHeight = uiFm.height();
+  uiSizes.scaleWidth = uiFm.width("0");
+
+  uiFont =
+      QFont(settings->value(s_ui_font, s_ui_font_def).toString(),
+            settings->value(s_call_font_size, s_call_font_size_def).toInt());
+  uiFm = QFontMetrics(uiFont);
+  uiSizes.callHeight = uiFm.height();
+  uiSizes.callWidth = uiFm.width("0");
+  uiSizes.rad = uiSizes.callWidth / 1.5;
+
+  toolBar->setFixedHeight(qRound(uiSizes.uiHeight * 1.5));
   actionRun->setIcon(QIcon(":/icons/player_play.svg"));
   actionStop->setIcon(QIcon(":/icons/player_stop.svg"));
   actionSetup->setIcon(QIcon(":/icons/stock_properties.svg"));
   actionQuit->setIcon(QIcon(":/icons/exit.svg"));
-  FreqLabel->setFixedWidth(qRound(uiSizes.width * 6));
+  FreqLabel->setFixedWidth(qRound(uiSizes.scaleWidth * 6));
 }
 
 /* Send message to master bandmap to set sdr frequency on channel c to f

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -39,6 +39,7 @@
 #include <QPalette>
 #include <QQueue>
 #include <QScreen>
+#include <QScrollBar>
 #include <QSettings>
 #include <QSize>
 #include <QSqlDatabase>
@@ -83,7 +84,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
                  Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
   initPointers();
   initVariables();
-  setUiSize();
 
   qRegisterMetaType<rmode_t>("rmode_t");
   qRegisterMetaType<pbwidth_t>("pbwidth_t");
@@ -94,14 +94,18 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
 
   settingsFile = userDirectory() + "/so2sdr.ini";
   // check for optional command argument giving station config file name
-  if (args.size() > 1) {
-    settingsFile = args[1];
+  if (args.size() > 0) {
+    settingsFile = args[0];
   }
   settings = new QSettings(settingsFile, QSettings::IniFormat);
-  setFocusPolicy(Qt::StrongFocus);
+
   errorBox = new QErrorMessage(this);
   errorBox->setModal(true);
   errorBox->setFont(QFont("Sans", 10));
+
+  setFontSize();
+  setUiSize();
+  setFocusPolicy(Qt::StrongFocus);
 
   if (!iconValid.load(dataDirectory() + "/check.png")) {
     qDebug("file check.png missing");
@@ -528,6 +532,9 @@ void So2sdr::stationUpdate() {
     Update labels for General Settings changes
  */
 void So2sdr::settingsUpdate() {
+  setFontSize();
+  setUiSize();
+
   switchAudio(activeRadio);
   switchTransmit(activeRadio);
   if (autoSend) {
@@ -545,6 +552,7 @@ void So2sdr::settingsUpdate() {
           ")</font>");
     }
   }
+
   if (autoCQMode) {
     autoCQStatus->setText(
         "<font color=#5200CC>AutoCQ (" +
@@ -1322,7 +1330,7 @@ void So2sdr::initLogView() {
     LogTableView->setColumnWidth(
         i,
         qRound(csettings->value(c_col_width_item, c_col_width_def[i]).toInt() *
-               sizes.width));
+               sizes.textWidth));
   }
   // set contest-specific column widths
   // first are sent data fields
@@ -1330,51 +1338,51 @@ void So2sdr::initLogView() {
   int cnt = 0;
   if (f & 1) {
     LogTableView->setColumnHidden(SQL_COL_SNT1, false);
-    LogTableView->setColumnWidth(SQL_COL_SNT1,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_SNT1, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   if (f & 2) {
     LogTableView->setColumnHidden(SQL_COL_SNT2, false);
-    LogTableView->setColumnWidth(SQL_COL_SNT2,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_SNT2, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   if (f & 4) {
     LogTableView->setColumnHidden(SQL_COL_SNT3, false);
-    LogTableView->setColumnWidth(SQL_COL_SNT3,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_SNT3, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   if (f & 8) {
     LogTableView->setColumnHidden(SQL_COL_SNT4, false);
-    LogTableView->setColumnWidth(SQL_COL_SNT4,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_SNT4, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   f = log->rcvFieldShown();
   if (f & 1) {
     LogTableView->setColumnHidden(SQL_COL_RCV1, false);
-    LogTableView->setColumnWidth(SQL_COL_RCV1,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_RCV1, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   if (f & 2) {
     LogTableView->setColumnHidden(SQL_COL_RCV2, false);
-    LogTableView->setColumnWidth(SQL_COL_RCV2,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_RCV2, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   if (f & 4) {
     LogTableView->setColumnHidden(SQL_COL_RCV3, false);
-    LogTableView->setColumnWidth(SQL_COL_RCV3,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_RCV3, qRound(log->fieldWidth(cnt) * sizes.textWidth));
     cnt++;
   }
   if (f & 8) {
     LogTableView->setColumnHidden(SQL_COL_RCV4, false);
-    LogTableView->setColumnWidth(SQL_COL_RCV4,
-                                 qRound(log->fieldWidth(cnt) * sizes.width));
+    LogTableView->setColumnWidth(
+        SQL_COL_RCV4, qRound(log->fieldWidth(cnt) * sizes.textWidth));
   }
   if (log->showQsoPtsField()) {
     LogTableView->setColumnHidden(SQL_COL_PTS, false);
@@ -1400,7 +1408,7 @@ void So2sdr::initLogView() {
 
   QHeaderView *header = LogTableView->verticalHeader();
   header->setSectionResizeMode(QHeaderView::Fixed);
-  header->setDefaultSectionSize(qRound(sizes.height));
+  header->setDefaultSectionSize(qRound(sizes.textHeight));
 
   LogTableView->scrollToBottom();
   LogTableView->show();
@@ -1411,7 +1419,7 @@ void So2sdr::about() {
   aboutOn = true;
   QMessageBox::about(
       this, "SO2SDR",
-      "<p>SO2SDR " + Version + " Copyright 2010-2023 R.T. Clay N4OGW</p>" +
+      "<p>SO2SDR " + Version + " Copyright 2010-2024 R.T. Clay N4OGW</p>" +
           "  Qt library version: " + qVersion() +
           +"<li>hamlib http://www.hamlib.org " + hamlib_version +
           "<li>QtSolutions_Telnet 2.1" +
@@ -4238,74 +4246,126 @@ void So2sdr::logWsjtx(Qso *qso) {
     wsjtx[qso->nr]->redupe();
 }
 
+/*! Set fonts and font sizes
+ *
+ */
+void So2sdr::setFontSize() {
+  // set default UI font size
+  QString styleSheet =
+      "font-family: " + settings->value(s_ui_font, s_ui_font_def).toString() +
+      ";font-size: " +
+      QString::number(
+          settings->value(s_ui_font_size, s_ui_font_size_def).toInt()) +
+      "px;";
+  setStyleSheet(styleSheet);
+  // some widgets need transparent background
+  WPMLineEdit->setStyleSheet(styleSheet + " background: transparent;");
+  WPMLineEdit2->setStyleSheet(styleSheet + " background: transparent;");
+
+  // size of text in mult box, call box, log
+  styleSheet =
+      "font-family: " +
+      settings->value(s_text_font, s_text_font_def).toString() +
+      ";font-size: " +
+      QString::number(
+          settings->value(s_text_font_size, s_text_font_size_def).toInt()) +
+      "px;";
+  MasterTextEdit->setStyleSheet(styleSheet);
+  MultTextEdit->setStyleSheet(styleSheet);
+  LogTableView->setStyleSheet(styleSheet);
+
+  // size of text in entry windows
+  styleSheet =
+      "font-family: " +
+      settings->value(s_entry_font, s_entry_font_def).toString() +
+      ";font-size: " +
+      QString::number(
+          settings->value(s_entry_font_size, s_entry_font_size_def).toInt()) +
+      "px;";
+  lineEditCall1->setStyleSheet(styleSheet);
+  lineEditCall2->setStyleSheet(styleSheet);
+  lineEditExchange1->setStyleSheet(styleSheet);
+  lineEditExchange2->setStyleSheet(styleSheet);
+}
+
 /*! resize UI elements based on actual font size
  */
 void So2sdr::setUiSize() {
-  // x11extras depreciated, need to update to new way of icon scaling
-  // if (QX11Info::appDpiX()>100) {
   setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
-  //} else {
-  //    setWindowIcon(QIcon(dataDirectory() + "/icon24x24.png"));
-  //}
-  QFont font10("sans", 10);
-  QFontMetricsF fm10(font10);
-  sizes.height = fm10.height();
-  sizes.width = fm10.width("0");
-  QFont font9("sans", 9);
-  QFontMetricsF fm9(font9);
-  sizes.smallHeight = fm9.height();
-  sizes.smallWidth = fm9.width("0");
 
-  LogTableView->setFixedHeight(qRound(sizes.height * 6));
-  groupBox->setFixedHeight(qRound(sizes.height * 6));
+  QFont uiFont(settings->value(s_ui_font, s_ui_font_def).toString(),
+               settings->value(s_ui_font_size, s_ui_font_size_def).toInt());
+  QFontMetricsF uiFm(uiFont);
+  sizes.uiHeight = uiFm.height();
+  sizes.uiWidth = uiFm.width("0");
 
-  label_160->setFixedHeight(qRound(sizes.height));
-  label_80->setFixedHeight(qRound(sizes.height));
-  label_40->setFixedHeight(qRound(sizes.height));
-  label_20->setFixedHeight(qRound(sizes.height));
-  label_15->setFixedHeight(qRound(sizes.height));
-  label_10->setFixedHeight(qRound(sizes.height));
-  label_13->setFixedHeight(qRound(sizes.height));
+  label_160->setFixedHeight(qRound(sizes.uiHeight));
+  label_80->setFixedHeight(qRound(sizes.uiHeight));
+  label_40->setFixedHeight(qRound(sizes.uiHeight));
+  label_20->setFixedHeight(qRound(sizes.uiHeight));
+  label_15->setFixedHeight(qRound(sizes.uiHeight));
+  label_10->setFixedHeight(qRound(sizes.uiHeight));
+  label_13->setFixedHeight(qRound(sizes.uiHeight));
+  ModeDisplay->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  ModeDisplay2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  FreqDisplay->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  FreqDisplay2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  SpeedDisplay->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  SpeedDisplay2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  WPMLineEdit->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  WPMLineEdit2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  NumLabel->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  NumLabel2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  Sun1Label->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  Sun2Label->setFixedHeight(qRound(sizes.uiHeight * 1.25));
+  labelBearing1->setFixedWidth(qRound(sizes.uiWidth * 5));
+  labelBearing2->setFixedWidth(qRound(sizes.uiWidth * 5));
+  labelLPBearing1->setFixedWidth(qRound(sizes.uiWidth * 5));
+  labelLPBearing2->setFixedWidth(qRound(sizes.uiWidth * 5));
 
-  for (int i = 0; i < NRIG; i++) {
-    lineEditCall[i]->setFixedHeight(qRound(sizes.height * 1.5));
-    lineEditExchange[i]->setFixedHeight(qRound(sizes.height * 1.5));
-  }
-  for (int i = 0; i < 6; i++) {
-    gridLayout->setRowStretch(i, 0);
-  }
-  ModeDisplay->setFixedHeight(qRound(sizes.height * 1.5));
-  ModeDisplay2->setFixedHeight(qRound(sizes.height * 1.5));
-  FreqDisplay->setFixedHeight(qRound(sizes.height * 1.5));
-  FreqDisplay2->setFixedHeight(qRound(sizes.height * 1.5));
-  SpeedDisplay->setFixedHeight(qRound(sizes.height * 1.5));
-  SpeedDisplay2->setFixedHeight(qRound(sizes.height * 1.5));
-  WPMLineEdit->setFixedHeight(qRound(sizes.height * 1.5));
-  WPMLineEdit2->setFixedHeight(qRound(sizes.height * 1.5));
-  NumLabel->setFixedHeight(qRound(sizes.height * 1.5));
-  NumLabel2->setFixedHeight(qRound(sizes.height * 1.5));
-  Sun1Label->setFixedHeight(qRound(sizes.height * 1.5));
-  Sun2Label->setFixedHeight(qRound(sizes.height * 1.5));
   for (int i = 0; i < 6; i++) {
     qsoLabel[i]->setFixedSize(
-        QSize(qRound(sizes.smallWidth * 4), qRound(sizes.smallHeight)));
+        QSize(qRound(sizes.uiWidth * 4), qRound(sizes.uiHeight)));
   }
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 6; j++) {
       multLabel[i][j]->setFixedSize(
-          QSize(qRound(sizes.smallWidth * 4), qRound(sizes.smallHeight)));
+          QSize(qRound(sizes.uiWidth * 4), qRound(sizes.uiHeight)));
     }
     for (int j = 0; j < 2; j++) {
       multWorkedLabel[i][j]->setFixedSize(
-          QSize(qRound(sizes.smallWidth * 25), qRound(sizes.smallHeight)));
+          QSize(qRound(sizes.uiWidth * 25), qRound(sizes.uiHeight)));
     }
     qsoWorkedLabel[i]->setFixedSize(
-        QSize(qRound(sizes.smallWidth * 25), qRound(sizes.smallHeight)));
+        QSize(qRound(sizes.uiWidth * 25), qRound(sizes.uiHeight)));
   }
   TotalQsoLabel->setFixedSize(
-      QSize(qRound(sizes.smallWidth * 5), qRound(sizes.smallHeight)));
+      QSize(qRound(sizes.uiWidth * 5), qRound(sizes.uiHeight)));
   TotalMultLabel->setFixedSize(
-      QSize(qRound(sizes.smallWidth * 5), qRound(sizes.smallHeight)));
+      QSize(qRound(sizes.uiWidth * 5), qRound(sizes.uiHeight)));
   TotalMultLabel2->setFixedSize(
-      QSize(qRound(sizes.smallWidth * 5), qRound(sizes.smallHeight)));
+      QSize(qRound(sizes.uiWidth * 5), qRound(sizes.uiHeight)));
+
+  QFont textFont(
+      settings->value(s_text_font, s_text_font_def).toString(),
+      settings->value(s_text_font_size, s_text_font_size_def).toInt());
+  QFontMetricsF textFm(textFont);
+  sizes.textHeight = textFm.height();
+  sizes.textWidth = textFm.width("0");
+
+  LogTableView->setFixedHeight(qRound(sizes.textHeight * 6));
+
+  groupBox->setFixedHeight(qRound(sizes.textHeight * 6));
+
+  QFont entryFont(
+      settings->value(s_entry_font, s_entry_font_def).toString(),
+      settings->value(s_entry_font_size, s_entry_font_size_def).toInt());
+  QFontMetricsF entryFm(entryFont);
+  sizes.entryHeight = entryFm.height();
+  sizes.entryWidth = entryFm.width("0");
+
+  for (int i = 0; i < NRIG; i++) {
+    lineEditCall[i]->setFixedHeight(qRound(sizes.entryHeight * 1.25));
+    lineEditExchange[i]->setFixedHeight(qRound(sizes.entryHeight * 1.25));
+  }
 }

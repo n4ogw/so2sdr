@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,7 +21,7 @@
 
 NoteDialog::NoteDialog(uiSize sizes, QWidget *parent) : QDialog(parent) {
   setupUi(this);
-  NoteLineEdit->setFixedWidth(qRound(sizes.width * 30));
+  NoteLineEdit->setFixedWidth(qRound(sizes.uiWidth * 30));
   adjustSize();
   setFixedSize(size());
   connect(NoteButtonBox, SIGNAL(accepted()), this, SLOT(writeNotes()));

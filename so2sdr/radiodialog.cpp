@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,10 +30,10 @@ RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, uiSize sizes,
                          QWidget *parent)
     : QDialog(parent), settings(s), catptr(cat) {
   setupUi(this);
-  lineEditIp1->setFixedWidth(qRound(sizes.width * 15));
-  lineEditPort1->setFixedWidth(qRound(sizes.width * 15));
-  lineEditIp2->setFixedWidth(qRound(sizes.width * 15));
-  lineEditPort2->setFixedWidth(qRound(sizes.width * 15));
+  lineEditIp1->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditPort1->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditIp2->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditPort2->setFixedWidth(qRound(sizes.uiWidth * 15));
   adjustSize();
   setFixedSize(size());
 

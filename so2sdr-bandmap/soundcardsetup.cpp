@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -28,7 +28,7 @@
 SoundCardSetup::SoundCardSetup(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  OffsetLineEdit->setFixedWidth(qRound(sizes.width * 15));
+  OffsetLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
   adjustSize();
   setFixedSize(size());
 
@@ -42,9 +42,15 @@ SoundCardSetup::SoundCardSetup(QSettings &s, uiSize sizes, QWidget *parent)
   BitsComboBox->insertItem(0, "16", Qt::DisplayRole);
 
   // find audio devices; start Portaudio to get the device list
+
+  // do this to suppress the many warnings from Portaudio/alsa/etc
+  FILE *fp;
+  fp = freopen("/dev/null", "w", stderr);
+
   PaError err = Pa_Initialize();
   if (err != paNoError) {
     qDebug("Soundcardsetup Pa_Initialize error");
+    // @todo needs rework: emitting signal from constructor doesn't work
     emit PortAudioError("ERROR: couldn't start portaudio to enumerate devices");
     nAPI = 0;
     nApiDevices = new int[nAPI + 1];
@@ -109,13 +115,16 @@ SoundCardSetup::SoundCardSetup(QSettings &s, uiSize sizes, QWidget *parent)
       deviceOK[api].append(ok);
     }
     // terminate once we have the list
-    PaError err = Pa_Terminate();
-    if (err != paNoError) {
+    if (Pa_Terminate() != paNoError) {
       qDebug("Soundcardsetup Pa_Terminate error");
+      // @todo needs rework: emitting signal from constructor doesn't work
       emit PortAudioError("ERROR: couldn't terminate test portaudio");
     }
     updateDeviceList(0);
   }
+  if (!fp)
+    fp = freopen("/dev/tty", "w", stderr);
+
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSoundCard()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
   updateFromSettings();

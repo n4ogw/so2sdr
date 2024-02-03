@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -27,11 +27,11 @@
 So2rDialog::So2rDialog(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  setFixedWidth(qRound(sizes.width * 50));
-  lineEditOTRSPPort1->setFixedWidth(qRound(sizes.width * 15));
-  lineEditOTRSPPort2->setFixedWidth(qRound(sizes.width * 15));
-  lineEditMicroHamPort->setFixedWidth(qRound(sizes.width * 15));
-  lineEditMiniPort->setFixedWidth(qRound(sizes.width * 15));
+  setFixedWidth(qRound(sizes.uiWidth * 50));
+  lineEditOTRSPPort1->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditOTRSPPort2->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditMicroHamPort->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditMiniPort->setFixedWidth(qRound(sizes.uiWidth * 15));
   adjustSize();
   setFixedSize(size());
 

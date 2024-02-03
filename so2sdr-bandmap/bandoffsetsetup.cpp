@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -30,7 +30,7 @@ BandOffsetSetup::BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes,
                                  QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  tableView->setFixedWidth(qRound(sizes.width * 45));
+  tableView->setFixedWidth(qRound(sizes.uiWidth * 45));
   adjustSize();
   setFixedSize(size());
   sdr = stype;

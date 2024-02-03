@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -451,7 +451,6 @@ void Cty::initialize(double la, double lo, int ZoneType) {
       double lat = field.at(1).toDouble();
       double lon = field.at(2).toDouble();
       QString sunTime;
-      QString set;
       sunTimes(lat, -lon, sunTime);
       zoneSun.append(sunTime);
 

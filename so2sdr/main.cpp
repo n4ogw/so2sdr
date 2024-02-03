@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -21,23 +21,33 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QStringList>
+#include <QCommandLineParser>
 
 int main(int argc, char *argv[]) {
-  QApplication app(argc, argv);
-  QStringList args = app.arguments();
+    QApplication app(argc, argv);
+    QApplication::setApplicationName("so2sdr");
+    QApplication::setApplicationVersion(Version);
 
-  // set style that prevents menubar from grabbing focus when Alt pressed
-  app.setStyle(new MenuStyle());
+    QCommandLineParser parser;
+    parser.setApplicationDescription("so2sdr: a contest logging program, https://github.com/n4ogw/so2sdr");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("configfile","(optional) configuration file with full path");
+    parser.process(app);
+    const QStringList args = parser.positionalArguments();
 
-  So2sdr *main = new So2sdr(args);
-  QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
+    // set style that prevents menubar from grabbing focus when Alt pressed
+    app.setStyle(new MenuStyle());
 
-  // calls So2sdr destructor on app exit
-  main->setAttribute(Qt::WA_DeleteOnClose);
+    So2sdr *main = new So2sdr(args);
+    QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
 
-  if (main->so2sdrOk()) {
-    return app.exec();
-  } else {
-    return -1;
-  }
+    // calls So2sdr destructor on app exit
+    main->setAttribute(Qt::WA_DeleteOnClose);
+
+    if (main->so2sdrOk()) {
+        return app.exec();
+    } else {
+        return -1;
+    }
 }

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -52,7 +52,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   funcEditPtr[10] = cq_f11_edit;
   funcEditPtr[11] = cq_f12_edit;
   for (int i = 0; i < 12; i++) {
-    funcEditPtr[i]->setFixedWidth(qRound(sizes.width * 16));
+    funcEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
   }
 
   funcRecEditPtr[0] = cq_f1_rec_edit;
@@ -68,7 +68,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   funcRecEditPtr[10] = cq_f11_rec_edit;
   funcRecEditPtr[11] = cq_f12_rec_edit;
   for (int i = 0; i < 12; i++) {
-    funcRecEditPtr[i]->setFixedWidth(qRound(sizes.width * 16));
+    funcRecEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
   }
   funcRecPtr[0] = recF1;
   funcRecPtr[1] = recF2;
@@ -115,7 +115,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   excFuncEditPtr[10] = exc_f11_edit;
   excFuncEditPtr[11] = exc_f12_edit;
   for (int i = 0; i < 12; i++) {
-    excFuncEditPtr[i]->setFixedWidth(qRound(sizes.width * 16));
+    excFuncEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
   }
   excFuncRecEditPtr[0] = exc_f1_rec_edit;
   excFuncRecEditPtr[1] = exc_f2_rec_edit;
@@ -130,7 +130,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   excFuncRecEditPtr[10] = exc_f11_rec_edit;
   excFuncRecEditPtr[11] = exc_f12_rec_edit;
   for (int i = 0; i < 12; i++) {
-    excFuncRecEditPtr[i]->setFixedWidth(qRound(sizes.width * 16));
+    excFuncRecEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
   }
   excFuncRecPtr[0] = recExcF1;
   excFuncRecPtr[1] = recExcF2;

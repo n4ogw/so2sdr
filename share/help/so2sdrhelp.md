@@ -1,10 +1,11 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.6.10
+## SO2SDR Help file version 2.7.0
 
 * [Overview](#overview)
 * [Installation](#install)
 * [Setup: so2sdr](#so2sdr_setup)
 * [Setup: So2sdr-bandmap setup](#bandmap_setup)
+* [Screen resolution issues](#resolution)
 * [Key Reference](#keyref)
 * [Message macros](#macros)
 * [Voice keyer setup](#ssb)
@@ -97,7 +98,7 @@ In so2sdr there are two types of configuration:
 do not generally change between different contests. These
 include station hardware,
 location, etc. Under "Config", this includes
-Station, General Settings, Radios/SO2R, Winkey, and Bandmap.
+Station, General Settings, Radios, SO2R, CW Devices, and Bandmap.
 Station settings are loaded as soon
 as the program is run. These settings are stored 
 in the so2sdr.ini file in the main configuration
@@ -111,6 +112,8 @@ contest. Most people would keep these in a different directory that
 different contest you must exit and restart so2sdr.
 
 ---
+
+#### 
 
 #### Station data
 
@@ -409,6 +412,7 @@ file can for example then link to a different multiplier file.
 
 ![CW Messages](./cw_messages.png "CW Messages")
 
+These are sample messages for the North American QSO party.
 
 * Separate messages can be programmed
 for the F1-F12 keys in CQ and S&P modes, as well as Ctrl and Shift modified
@@ -490,18 +494,45 @@ So2sdr-bandmap has been tested with the following SDR hardware:
 * LP-PAN
 * Afedri SDR, interfaced both via USB as a sound card, and via
 ethernet.
+* RTL-sdr (Nooelec v5 tested)
 
-Other SDR's may work if they supply an I/Q stream over the sound card interface
-or via ethernet with the SDR-IP protocol. The program has been tested most with the
-Elecraft K3.
+Other SDR's may work if they supply an I/Q stream over the sound card
+interface or via ethernet with the SDR-IP protocol. The program has
+been tested most with the Elecraft K3.
 
-**Important for SO2R:** For SO2R usage, you need to provide two different
-configurations for so2sdr-bandmap, with different bandmap ID numbers (see below).
-Test each radio's bandmap separately, and then copy the .ini file so2sdr-bandmap.ini
-to a separate copy for that bandmap, such as so2sdr-bandmap1.ini and so2sdr-bandmap2.ini.
-So2sdr has a setting to use different so2sdr-bandmap.ini files for each radio.
-You can also make a separate desktop shortcut to start the bandmap for each
-radio, and so2sdr will detect when each has been started.
+The program operates in two main modes, IF or RF based. In the IF
+mode, the SDR is fed from the IF of the main radio. In this case, the
+frequency the SDR is tuned to is fixed and normally equal or close to
+the IF frequency of the radio.  The frequency the radio is tuned to
+will be centered in the panadapter display and not move (you can
+however drag the frequency ruler with the mouse to move the center).
+Advantages of this setup are that the SDR is completely protected from
+transmitted rf, and no retuning is required so very simple
+crystal-controlled SDRs (like the Softrock) can be used.  In the RF
+based mode, the SDR is connected to an antenna directly.
+This option is better if the radio has no IF tap, or if filters limit the
+IF bandwidth.
+Many radios
+will have receive-level ports where the SDR can be attached, where it
+will be protected during transmit. Some kind of receive splitter is
+still needed however.  In the RF mode the SDR needs to be tuned, and
+the red mark indicating the frequency the radio is tuned to will move.
+For the RF mode, there are two submodes, manual and automatic. In the
+manual mode, the logging program must send commands to recenter the
+display (if the radio is tuned off the display, the red mark will
+not appear). In the automatic mode, so2sdr-bandmap will automatically
+retune the SDR whenever the radio frequency approaches the end of
+the display in order to keep the red mark visible.
+
+**Important for SO2R:** For SO2R usage, you need to provide two
+different configurations for so2sdr-bandmap, with different bandmap ID
+numbers (see below).  Test each radio's bandmap separately, and then
+copy the .ini file so2sdr-bandmap.ini to a separate copy for that
+bandmap, such as so2sdr-bandmap1.ini and so2sdr-bandmap2.ini.  So2sdr
+has a setting to use different so2sdr-bandmap.ini files for each
+radio.  You can also make a separate desktop shortcut to start the
+bandmap for each radio, and so2sdr will detect when each has been
+started.
 
 #### Bandmap controls
 
@@ -537,12 +568,14 @@ Other controls:
 	upper toolbar; zoom (scale) setting; call delete function (if
 	near a callsign); and IQ balance status dialog.
 
-#### Setting up So2sdr-bandmap
+### Setting up So2sdr-bandmap
 
 When the program starts, click the "wrench" icon. The main setup dialog opens:
 
 ![so2sdr-bandmap setup](./so2sdr-bandmap-setup.png)
 
+* There are three font settings: for the general user interface of the program; for
+the frequency scale on the bandmap; and for callsigns placed on the bandmap.
 * Bandmap ID number corresponds to the radio number in so2sdr; 1 or 2.
 * TCP port: this is the TCP port number used to control the bandmap. If running SO2R,
 each needs a different port number.
@@ -557,6 +590,10 @@ a frequency is "empty."  This should be set to roughly the length of a typical
 qso in the contest being operated. With longer exchanges (like in the
 ARRL Sweepstakes) a longer time should be used here. Typically you should use a
 value less than 30 seconds.
+* CQ Finder use calls: if selected, spotted calls will also be used (in addition to
+detected signals) to determine what frequencies for the CQ finder.
+* Scroll right: reverses the scroll direction. Some people like this for one bandmap if two bandmaps
+are placed on either side of the logging window.
 
 #### Soundcard SDR setup
 
@@ -578,7 +615,17 @@ inverted.
 If I and Q are imbalanced, image signals will be present on the
 display.
 * Collect IQ correction data: so2sdr-bandmap will use strong signals
-to measure and correct IQ balance.
+to measure and correct IQ balance. This only applies to soundcard
+based SDRs.
+
+Setup hints:
+
+* On some linux systems so2sdr-bandmap may not be able to open
+the sound card. A workaround is to use #pasuspender# to suspend
+pulseaudio:
+
+        pasuspender -- so2sdr-bandmap
+
 
 #### SDR-IP (Network) SDR
 
@@ -587,11 +634,28 @@ SDR-IP protocol.
 
 ![Network setup](./network-setup.png)
 
+#### RTL-SDR SDR
+
+This supports rtl-sdr devices using the librtl-sdr library.
+
+![RTL setup](./rtl-setup.png)
+
+* Device index: this is normally 0 (zero) if only one rtl-sdr device
+is present. Several devices can be supported with different device indices.
+
+* Sample rate: currently two rates are available: 262144 Hz, and 128000 Hz.
+128000 Hz actually runs the rtl-sdr at 16 times this frequency, or 2040000 Hz.
+16 samples are averaged together in this case, which helps to improve the
+signal to noise ratio.
+
+* Direct sampling: this is a special feature of some rtl-sdr devices that
+allows covering HF (below 24 MHz).
+
 #### Afedri Net SDR
 
-This is an interface for the Afedri SDR
-using the network interface. Note that it can also be used via the
-USB/Soundcard interface.
+This is an interface for the Afedri SDR using the network
+interface. Note that it can also be used via the Soundcard
+interface.
 
 ![Afedri setup](./afedri-setup.png)
 
@@ -620,6 +684,59 @@ Start the Master bandmap first followed by the Slave.
 [Return to top](#top)
 
 ---
+
+<a name="resolution"></a>
+### Screen resolution issues
+
+The amount of spectrum you will be able to see on the bandmap is directly
+connected to the vertical resolution of your monitor. To see the largest slice of
+the band you will want a monitor with the largest possible vertical resolution.
+There are a  few different ways to achieve this:
+
+* use a second monitor for the bandmap(s), physically turned in "portrait" mode. Using
+display settings, rotate the image on this display by 90 degrees.
+* use a high resolution monitor. 4k resolution works well.
+
+There are some issues with the second option (known as a high-DPI
+monitor). As of 2024, many Linux desktops do not support high DPI monitors very well.
+Most graphical apps are written according to pixel dimensions, and when put on a
+high-DPI screen they may be too small to see easily. Some desktops have options to
+scale apps and fonts, but this often does not work well. For example, in Gnome version
+3, fonts can be scaled by a fractional amount. But apps can only be scaled by an
+integer amount (x1, x2, ...), which will not match a fractional font scaling.
+
+So2sdr and so2sdr-bandmap do try to adjust the size of UI elements according
+to the actual size of the font chosen. As of version 2.7.0, you can also set the size
+of the fonts used in both programs. Here is how I set up the programs
+on a 4k monitor:
+
+1) Set the scaling factor for Qt apps:
+
+    export QT_SCALE_FACTOR=1.4
+
+If you want to make this only apply to so2sdr, then you can start so2sdr via a
+bash script. For example:
+
+    #!/bin/bash
+    export QT_SCALE_FACTOR=1.4
+    so2sdr
+
+Save this as e.g. runso2sdr, and then make it executable with
+
+    chmod +x runso2dr
+
+2) Use slightly larger fonts. I use UI and text font sizes of 12,  and an entry line font size
+of 14.
+
+QT\_SCALE\_FACTOR enlarges both the fonts and other elements of so2sdr. So2sdr-bandmap
+however will by default ignore this setting, as using rescaling on the bandmap is usually
+what you don't want to do. If you really want to use this to rescale so2sdr-bandmap, there
+is a command-line option (-s) that will enable this.
+
+When selecting fonts for the text and entry fonts, it
+also helps to use a font that has a slashed or dotted zero. Bitstream Vera Mono is
+one choice.
+
 
 <a name="keyref"></a>
 ### Key reference
@@ -1030,6 +1147,17 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.7.0 (01/28/2024)
+
+* so2sdr-bandmap: add setting to control behavior when dragging the frequency
+scale. There are now two possible behaviors: (a) the bandmap is 
+recentered when the mouse is released, and (b) the bandmap is recentered
+when the radio is tune (the frequency sent to so2sdr-bandmap changes).
+
+* add settings to set the font and font size in so2sdr and so2sdr-bandmap.
+
+* add information in help on setup and display resolution.
 
 ## version 2.6.10 (12/06/2023)
 

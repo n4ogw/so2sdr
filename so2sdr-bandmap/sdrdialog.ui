@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>368</width>
-    <height>443</height>
+    <width>380</width>
+    <height>518</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -45,14 +45,14 @@
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
-     <item row="0" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Bandmap ID number</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item row="4" column="1">
       <widget class="QComboBox" name="comboBoxIDNumber">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -81,14 +81,14 @@
        </item>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>TCP port</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="5" column="1">
       <widget class="QLineEdit" name="tcpPortLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -101,14 +101,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
         <string>UDP broadcast port</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="udpPortLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -121,28 +121,28 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="n1MMUDPLabel">
        <property name="text">
         <string>N1MM+ UDP</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="7" column="1">
       <widget class="QCheckBox" name="n1mmUdpCheckBox">
        <property name="toolTip">
         <string>listen for udp broadcasts from N1MM (experimental)</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>port</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="8" column="1">
       <widget class="QLineEdit" name="n1mmUdpLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -155,14 +155,14 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>SDR type</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="11" column="1">
       <widget class="QComboBox" name="comboBoxSdrType">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -172,7 +172,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="12" column="1">
       <widget class="QPushButton" name="configureButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -185,14 +185,14 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>CQ Finder time (sec)</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="13" column="1">
       <widget class="QLineEdit" name="lineEditIntegTime">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -205,7 +205,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="14" column="1">
       <widget class="QCheckBox" name="cqFinderCallsCheckbox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -221,14 +221,14 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Scroll right</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="15" column="1">
       <widget class="QCheckBox" name="reverseScrollCheckBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -241,37 +241,98 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>CQ Finder use calls</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
         <string>Configuration</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="9" column="1">
       <widget class="QComboBox" name="modeComboBox"/>
      </item>
-     <item row="11" column="0">
+     <item row="16" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
         <string>Stop during TX</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="16" column="1">
       <widget class="QCheckBox" name="txStopCheckBox">
        <property name="toolTip">
         <string>Stop bandmap during transmit</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Font</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>UI font size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Scale font size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Call font size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QFontComboBox" name="fontComboBox"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="uiFontSpinBox"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="scaleFontSpinBox"/>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="callFontSpinBox"/>
+     </item>
+     <item row="10" column="1">
+      <widget class="QComboBox" name="rfautoDragCombo">
+       <item>
+        <property name="text">
+         <string>recenter on radio tune</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>recenter on mouse release</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>RFAuto mouse drag</string>
        </property>
       </widget>
      </item>

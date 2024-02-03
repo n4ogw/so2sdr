@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 rec. Torsten Clay N4OGW
+/*! Copyright 2010-2024 rec. Torsten Clay N4OGW
 
    This file is part of so2sdrec.
 

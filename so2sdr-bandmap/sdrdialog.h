@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -55,6 +55,7 @@ public slots:
 
 private slots:
   void launchConfigure();
+  void setRfAuto(int);
 
 private:
   QSettings &settings;

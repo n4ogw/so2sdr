@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -32,7 +32,7 @@ class IQBalance : public QWidget, public Ui::IQBalance {
   Q_OBJECT
 
 public:
-  IQBalance(QWidget *parent = nullptr);
+  explicit IQBalance(QWidget *parent = nullptr);
   ~IQBalance();
   friend class So2sdrBandmap;
 

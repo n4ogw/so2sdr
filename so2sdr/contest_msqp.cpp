@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -131,11 +131,10 @@ bool MSQP::validateExchange(Qso *qso) {
   // look for state or MS county
 
   // both MS and non-MS can work stations with county mults
-  int m = -1;
   int multField = -1;
   if (qso->isamult[0]) {
     for (int i = exchElement.size() - 1; i >= 0; i--) {
-      m = isAMult(exchElement.at(i), 0);
+      int m = isAMult(exchElement.at(i), 0);
       if (m != -1) {
         ok_part[1] = true;
         qso->mult[0] = m;

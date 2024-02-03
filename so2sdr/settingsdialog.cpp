@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -26,13 +26,13 @@ SettingsDialog::SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
 
-  AutoSendComboBox->setFixedWidth(qRound(sizes.width * 8));
-  AutoSendLineEdit->setFixedWidth(qRound(sizes.width * 5));
-  UDPPortLineEdit1->setFixedWidth(qRound(sizes.width * 5));
-  UDPPortLineEdit2->setFixedWidth(qRound(sizes.width * 5));
-  CQRepeatLineEdit->setFixedWidth(qRound(sizes.width * 5));
-  DuelingCQLineEdit->setFixedWidth(qRound(sizes.width * 5));
-  label_5->setFixedWidth(qRound(sizes.width * 8));
+  AutoSendComboBox->setFixedWidth(qRound(sizes.uiWidth * 8));
+  AutoSendLineEdit->setFixedWidth(qRound(sizes.uiWidth * 5));
+  UDPPortLineEdit1->setFixedWidth(qRound(sizes.uiWidth * 5));
+  UDPPortLineEdit2->setFixedWidth(qRound(sizes.uiWidth * 5));
+  CQRepeatLineEdit->setFixedWidth(qRound(sizes.uiWidth * 5));
+  DuelingCQLineEdit->setFixedWidth(qRound(sizes.uiWidth * 5));
+  label_5->setFixedWidth(qRound(sizes.uiWidth * 8));
   AutoSendComboBox->insertItem(0, "Semi");
   AutoSendComboBox->insertItem(1, "Auto");
   adjustSize();
@@ -91,6 +91,12 @@ void SettingsDialog::loadSettings() {
       settings.value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool());
   queueCheckBox->setChecked(
       settings.value(s_queuemessages, s_queuemessages_def).toBool());
+  uiFontComboBox->setCurrentFont(settings.value(s_ui_font,s_ui_font_def).value<QFont>());
+  uiFontSpinBox->setValue(settings.value(s_ui_font_size,s_ui_font_size_def).toInt());
+  textFontComboBox->setCurrentFont(settings.value(s_text_font,s_text_font_def).value<QFont>());
+  textFontSpinBox->setValue(settings.value(s_text_font_size,s_text_font_size_def).toInt());
+  entryFontComboBox->setCurrentFont(settings.value(s_entry_font,s_entry_font_def).value<QFont>());
+  entryFontSpinBox->setValue(settings.value(s_entry_font_size,s_entry_font_size_def).toInt());
 }
 
 void SettingsDialog::updateSettings() {
@@ -114,6 +120,18 @@ void SettingsDialog::updateSettings() {
   settings.setValue(s_twokeyboard_device[0], kbd1LineEdit->text());
   settings.setValue(s_twokeyboard_device[1], kbd2LineEdit->text());
   settings.setValue(s_queuemessages, queueCheckBox->isChecked());
+  QString tmp = uiFontComboBox->currentFont().family();
+  QStringList tmpList = tmp.split('[');
+  settings.setValue(s_ui_font, tmpList.at(0));
+  settings.setValue(s_ui_font_size,uiFontSpinBox->value());
+  tmp = textFontComboBox->currentFont().family();
+  tmpList = tmp.split('[');
+  settings.setValue(s_text_font,tmpList.at(0));
+  settings.setValue(s_text_font_size,textFontSpinBox->value());
+  tmp = entryFontComboBox->currentFont().family();
+  tmpList = tmp.split('[');
+  settings.setValue(s_entry_font,tmpList.at(0));
+  settings.setValue(s_entry_font_size,entryFontSpinBox->value());
   settings.sync();
   emit settingsUpdate();
   accept();

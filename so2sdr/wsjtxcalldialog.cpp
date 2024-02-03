@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -28,7 +28,7 @@ WsjtxCallDialog::WsjtxCallDialog(QSettings &s, uiSize sizes, int nrig,
     : QDialog(parent), settings(s) {
   setupUi(this);
   tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-  tableView->verticalHeader()->setDefaultSectionSize(qRound(sizes.height));
+  tableView->verticalHeader()->setDefaultSectionSize(qRound(sizes.textHeight));
   tableView->setSelectionMode(QAbstractItemView::NoSelection);
   tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
   adjustSize();
@@ -62,12 +62,12 @@ WsjtxCallDialog::WsjtxCallDialog(QSettings &s, uiSize sizes, int nrig,
   tableView->setColumnHidden(WSJTX_SQL_COL_DT, true);
   tableView->setColumnHidden(WSJTX_SQL_COL_MODE, true);
   tableView->setColumnHidden(WSJTX_SQL_COL_CONF, true);
-  tableView->setColumnWidth(WSJTX_SQL_COL_RX, qRound(sizes.width * 5));
-  tableView->setColumnWidth(WSJTX_SQL_COL_SEQ, qRound(sizes.width * 6));
-  tableView->setColumnWidth(WSJTX_SQL_COL_AGE, qRound(sizes.width * 5));
-  tableView->setColumnWidth(WSJTX_SQL_COL_SNR, qRound(sizes.width * 6));
-  tableView->setColumnWidth(WSJTX_SQL_COL_GRID, qRound(sizes.width * 8));
-  tableView->setColumnWidth(WSJTX_SQL_COL_FREQ, qRound(sizes.width * 8));
+  tableView->setColumnWidth(WSJTX_SQL_COL_RX, qRound(sizes.textWidth * 5));
+  tableView->setColumnWidth(WSJTX_SQL_COL_SEQ, qRound(sizes.textWidth * 6));
+  tableView->setColumnWidth(WSJTX_SQL_COL_AGE, qRound(sizes.textWidth * 5));
+  tableView->setColumnWidth(WSJTX_SQL_COL_SNR, qRound(sizes.textWidth * 6));
+  tableView->setColumnWidth(WSJTX_SQL_COL_GRID, qRound(sizes.textWidth * 8));
+  tableView->setColumnWidth(WSJTX_SQL_COL_FREQ, qRound(sizes.textWidth * 8));
   tableView->setSortingEnabled(true);
   connect(tableView, SIGNAL(doubleClicked(const QModelIndex &)), reader,
           SLOT(callClicked(const QModelIndex &)));

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 rec. Torsten Clay N4OGW
+/*! Copyright 2010-2024 rec. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -63,7 +63,7 @@ DetailedEdit::DetailedEdit(uiSize sizes, QWidget *parent) : QDialog(parent) {
   rcvExch4LineEdit->setValidator(new UpperValidator(rcvExch4LineEdit));
   freqLineEdit->setValidator(new QIntValidator(freqLineEdit));
   callLineEdit->setFocus();
-  callLineEdit->setFixedWidth(qRound(sizes.width * 12));
+  callLineEdit->setFixedWidth(qRound(sizes.uiWidth * 12));
   adjustSize();
   setFixedSize(size());
 }

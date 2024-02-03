@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -107,6 +107,7 @@ private slots:
   void readData0();
   void readData1();
   void resetTuningTimer();
+  void setFontSize();
   void startConnection();
   void udpRead();
   void updateLevel(int);

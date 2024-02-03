@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -89,7 +89,7 @@ void CWManager::loadbuff(QByteArray msg) {
     cwdaemon->loadbuff(msg);
     break;
   case modeSo2rMini:
-    emit(so2rMiniLoadbuff(msg));
+    emit so2rMiniLoadbuff(msg);
     break;
   }
 }

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -32,9 +32,9 @@
 SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  tcpPortLineEdit->setFixedWidth(qRound(sizes.width * 15));
-  udpPortLineEdit->setFixedWidth(qRound(sizes.width * 15));
-  n1mmUdpLineEdit->setFixedWidth(qRound(sizes.width * 15));
+  tcpPortLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
+  udpPortLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
+  n1mmUdpLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
   adjustSize();
   setFixedSize(size());
 
@@ -76,7 +76,17 @@ SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent)
   rtl->hide();
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSDR()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
+  connect(modeComboBox, SIGNAL(currentIndexChanged(int)), this,
+          SLOT(setRfAuto(int)));
   updateFromSettings();
+}
+
+void SDRDialog::setRfAuto(int indx) {
+  if (indx == IF) {
+    rfautoDragCombo->setEnabled(false);
+  } else {
+    rfautoDragCombo->setEnabled(true);
+  }
 }
 
 double SDRDialog::offset(int band) const {
@@ -213,6 +223,21 @@ void SDRDialog::updateFromSettings() {
   }
   modeComboBox->setCurrentIndex(
       settings.value(s_sdr_mode, s_sdr_mode_def).toInt());
+  if (settings.value(s_sdr_mode, s_sdr_mode_def).toInt() == IF) {
+    rfautoDragCombo->setEnabled(false);
+  } else {
+    rfautoDragCombo->setEnabled(true);
+  }
+  fontComboBox->setCurrentFont(
+      settings.value(s_ui_font, s_ui_font_def).value<QFont>());
+  uiFontSpinBox->setValue(
+      settings.value(s_ui_font_size, s_ui_font_size_def).toInt());
+  scaleFontSpinBox->setValue(
+      settings.value(s_scale_font_size, s_scale_font_size_def).toInt());
+  callFontSpinBox->setValue(
+      settings.value(s_call_font_size, s_call_font_size_def).toInt());
+  rfautoDragCombo->setCurrentIndex(
+      settings.value(s_rfauto_drag, s_rfauto_drag_def).toInt());
 }
 
 SDRDialog::~SDRDialog() {
@@ -278,6 +303,13 @@ void SDRDialog::updateSDR() {
         settings.value(s_sdr_swap_rtl, s_sdr_swap_rtl_def).toBool());
     break;
   }
+  QString tmp = fontComboBox->currentFont().family();
+  QStringList tmpList = tmp.split('[');
+  settings.setValue(s_ui_font, tmpList.at(0));
+  settings.setValue(s_ui_font_size, uiFontSpinBox->value());
+  settings.setValue(s_scale_font_size, scaleFontSpinBox->value());
+  settings.setValue(s_call_font_size, callFontSpinBox->value());
+  settings.setValue(s_rfauto_drag, rfautoDragCombo->currentIndex());
   emit update();
 
   // restart sdr if mode or type changed

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -28,12 +28,12 @@
 AfedriSetup::AfedriSetup(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  tcpipaddressLineEdit->setFixedWidth(sizes.width * 15);
-  tcpportLineEdit->setFixedWidth(sizes.width * 15);
-  udpportLineEdit->setFixedWidth(sizes.width * 15);
-  IFFreqLineEdit->setFixedWidth(sizes.width * 15);
-  sampleFreqLineEdit->setFixedWidth(sizes.width * 15);
-  lineEditOffset->setFixedWidth(sizes.width * 15);
+  tcpipaddressLineEdit->setFixedWidth(sizes.uiWidth * 15);
+  tcpportLineEdit->setFixedWidth(sizes.uiWidth * 15);
+  udpportLineEdit->setFixedWidth(sizes.uiWidth * 15);
+  IFFreqLineEdit->setFixedWidth(sizes.uiWidth * 15);
+  sampleFreqLineEdit->setFixedWidth(sizes.uiWidth * 15);
+  lineEditOffset->setFixedWidth(sizes.uiWidth * 15);
   adjustSize();
   setFixedSize(size());
 

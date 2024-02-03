@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -31,7 +31,7 @@
 #include <QtGlobal>
 
 // ///////// version ///////////////
-const QByteArray Version = QByteArrayLiteral("2.6.10");
+const QByteArray Version = QByteArrayLiteral("2.7.0");
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -196,10 +196,12 @@ typedef struct DomMult {
 Q_DECLARE_TYPEINFO(DomMult, Q_PRIMITIVE_TYPE);
 
 typedef struct uiSize {
-  qreal height;
-  qreal width;
-  qreal smallHeight;
-  qreal smallWidth;
+  qreal uiHeight;
+  qreal uiWidth;
+  qreal textHeight;
+  qreal textWidth;
+  qreal entryHeight;
+  qreal entryWidth;
 } uiSize;
 Q_DECLARE_TYPEINFO(uiSize, Q_PRIMITIVE_TYPE);
 
@@ -280,29 +282,9 @@ const int SIG_MIN_FREQ_DIFF = 65;
   */
 const int SIG_MIN_SPOT_DIFF = 200;
 
-/*! minimum time in seconds to keep a signal once detected
- */
-const double SIG_KEEP_TIME = 5.0;
-
-/*! radius of circles marking signals (in pixels)
- */
-const int SIG_SYMBOL_RAD = 4;
-
-/*! pixel location from left edge of field for signal symbols
- */
-const int SIG_SYMBOL_X = 5;
-
 /*!  Default timeout of spotted calls (minutes)
  */
 const int DEFAULT_SPOT_TIMEOUT = 10;
-
-/*! pixel size of font used
- */
-const int BANDMAP_FONT_PIX_SIZE = 10;
-
-/*!  pixel location from left edge of field for calls in bandmap
- */
-const int BANDMAP_CALL_X = 15;
 
 // /////// Misc stuff
 
@@ -424,6 +406,26 @@ const int MAX_CAB_FIELDS = 7;
 
 // s_xxx are used in station config file (so2sdr.ini)
 // c_xxx are used in contest config file
+
+// Font information
+
+const QString s_ui_font = QStringLiteral("uifont/font");
+const QString s_ui_font_def = QStringLiteral("sans");
+
+const QString s_ui_font_size = QStringLiteral("uifont/size");
+const int s_ui_font_size_def = 10;
+
+const QString s_text_font = QStringLiteral("textfont/font");
+const QString s_text_font_def = QStringLiteral("sans");
+
+const QString s_text_font_size = QStringLiteral("textfont/size");
+const int s_text_font_size_def = 10;
+
+const QString s_entry_font = QStringLiteral("entryfont/font");
+const QString s_entry_font_def = QStringLiteral("sans");
+
+const QString s_entry_font_size = QStringLiteral("entryfont/size");
+const int s_entry_font_size_def = 12;
 
 const QString s_twokeyboard_enable = QStringLiteral("twokeyboard/enable");
 const bool s_twokeyboard_enable_def = false;

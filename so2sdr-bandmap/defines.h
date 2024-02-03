@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -25,7 +25,7 @@
 // //////////////// Bandscope defines //////////////////
 
 // ///////// version //////////////
-const QByteArray Version = QByteArrayLiteral("2.6.10");
+const QByteArray Version = QByteArrayLiteral("2.7.0");
 
 typedef enum SdrType {
   soundcard_t = 0,
@@ -35,12 +35,15 @@ typedef enum SdrType {
 } SdrType;
 
 typedef enum mode { IF = 0, RF = 1, RFauto = 2 } mode;
+typedef enum rfautoDragMode { resetOnTune = 0, resetOnDrag = 1 } rfautoDragMode;
 
 typedef struct uiSize {
-  qreal height;
-  qreal width;
-  qreal smallHeight;
-  qreal smallWidth;
+  qreal uiHeight;
+  qreal uiWidth;
+  qreal scaleHeight;
+  qreal scaleWidth;
+  qreal callHeight;
+  qreal callWidth;
   qreal rad;
 } uiSize;
 Q_DECLARE_TYPEINFO(uiSize, Q_PRIMITIVE_TYPE);
@@ -142,10 +145,6 @@ const int SIG_MIN_SPOT_DIFF = 200;
  */
 const double SIG_KEEP_TIME = 5.0;
 
-/*! radius of circles marking signals (in pixels)
- */
-const int SIG_SYMBOL_RAD = 4;
-
 /*! pixel location from left edge of field for signal symbols
  */
 const int SIG_SYMBOL_X = 5;
@@ -153,10 +152,6 @@ const int SIG_SYMBOL_X = 5;
 /*!  Default timeout of spotted calls (minutes)
  */
 const int DEFAULT_SPOT_TIMEOUT = 10;
-
-/*! pixel size of font used
- */
-const int BANDMAP_FONT_POINT_SIZE = 10;
 
 /*!  pixel location from left edge of field for calls in bandmap
  */
@@ -211,6 +206,20 @@ const int nTcpSocket = 2;
 //////// QSettings key names and default values used in so2sdr-bandmap.ini
 //////////
 
+// Font information
+
+const QString s_ui_font = QStringLiteral("uifont/font");
+const QString s_ui_font_def = QStringLiteral("sans");
+
+const QString s_ui_font_size = QStringLiteral("uifont/size");
+const int s_ui_font_size_def = 10;
+
+const QString s_scale_font_size = QStringLiteral("scalefont/size");
+const int s_scale_font_size_def = 10;
+
+const QString s_call_font_size = QStringLiteral("callfont/size");
+const int s_call_font_size_def = 10;
+
 const QString s_sdr_nrig = QStringLiteral("nrig");
 const int s_sdr_nrig_def = 0;
 
@@ -243,6 +252,9 @@ const mode s_sdr_mode_def = IF;
 
 const QString s_sdr_txstop = QStringLiteral("txstop");
 const bool s_sdr_txstop_def = false;
+
+const QString s_rfauto_drag = QStringLiteral("rfauto_drag");
+const int s_rfauto_drag_def = 0;
 
 // sdr-ip SDR
 

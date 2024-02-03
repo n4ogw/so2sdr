@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -69,7 +69,6 @@ private:
   int scale;
   int vfoPos;
   unsigned int samplerate;
-  unsigned char cut;
   unsigned char *dataptr;
   QSettings *settings;
 };

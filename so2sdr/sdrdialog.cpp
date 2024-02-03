@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -29,10 +29,10 @@
 SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  lineEditIP1->setFixedWidth(qRound(sizes.width * 15));
-  lineEditPort1->setFixedWidth(qRound(sizes.width * 15));
-  lineEditIP2->setFixedWidth(qRound(sizes.width * 15));
-  lineEditPort2->setFixedWidth(qRound(sizes.width * 15));
+  lineEditIP1->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditPort1->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditIP2->setFixedWidth(qRound(sizes.uiWidth * 15));
+  lineEditPort2->setFixedWidth(qRound(sizes.uiWidth * 15));
   adjustSize();
   setFixedSize(size());
 

@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -339,6 +339,7 @@ private:
   void sendCalls(int);
   void sendFunc(int i, Qt::KeyboardModifiers mode);
   void setDupeColor(int nr, bool dupe);
+  void setFontSize();
   void setUiSize();
   bool setupContest();
   void showDupesheet(int nr, bool checkboxState);

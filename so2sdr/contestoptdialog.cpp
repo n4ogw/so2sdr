@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -45,8 +45,8 @@ ContestOptionsDialog::ContestOptionsDialog(uiSize sizes, QWidget *parent)
   offMinimumLineEdit->setValidator(offValidator);
 
   for (int i = 0; i < 4; i++) {
-    sent[i]->setFixedWidth(qRound(sizes.width * 6));
-    sentName[i]->setFixedWidth(qRound(sizes.width * 6));
+    sent[i]->setFixedWidth(qRound(sizes.uiWidth * 6));
+    sentName[i]->setFixedWidth(qRound(sizes.uiWidth * 6));
   }
   adjustSize();
   setFixedSize(size());

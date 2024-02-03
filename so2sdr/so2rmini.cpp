@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -67,7 +67,7 @@ void SO2RMini::setSpeed(int s) {
   // save speed in case mini is restarted
   if (s!=0) {
       last_s = s;
-  } else if (s==0 && last_s!=0) {
+  } else if (last_s!=0) {
       s = last_s;
   } else {
       // this normally shouldn't happen

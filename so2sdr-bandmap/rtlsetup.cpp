@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -28,13 +28,13 @@
 RtlSetup::RtlSetup(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  lineEditOffset->setFixedWidth(qRound(sizes.width * 15));
-  tunerGainLineEdit->setFixedWidth(qRound(sizes.width * 15));
-  deviceIndexLineEdit->setFixedWidth(qRound(sizes.width * 15));
-  IFFreqLineEdit->setFixedWidth(qRound(sizes.width * 15));
-  speedComboBox->setFixedWidth(qRound(sizes.width * 15));
-  sampleRateComboBox->setFixedWidth(qRound(sizes.width * 15));
-  bandOffsetPushButton->setFixedWidth(qRound(sizes.width * 15));
+  lineEditOffset->setFixedWidth(qRound(sizes.uiWidth * 15));
+  tunerGainLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
+  deviceIndexLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
+  IFFreqLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
+  speedComboBox->setFixedWidth(qRound(sizes.uiWidth * 15));
+  sampleRateComboBox->setFixedWidth(qRound(sizes.uiWidth * 15));
+  bandOffsetPushButton->setFixedWidth(qRound(sizes.uiWidth * 15));
   sampleRateComboBox->addItem("262144");
   sampleRateComboBox->addItem("100000 (x16 avg)");
   sampleRateComboBox->addItem("128000 (x16 avg)");

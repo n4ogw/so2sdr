@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -50,7 +50,7 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,
   funcEditPtr[10] = cq_f11_edit;
   funcEditPtr[11] = cq_f12_edit;
   for (int i = 0; i < 12; i++) {
-    funcEditPtr[i]->setFixedWidth(sizes.width * 35);
+    funcEditPtr[i]->setFixedWidth(sizes.uiWidth * 35);
   }
 
   ctrlFuncEditPtr[0] = cq_ctrl_f1_edit;
@@ -66,7 +66,7 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,
   ctrlFuncEditPtr[10] = cq_ctrl_f11_edit;
   ctrlFuncEditPtr[11] = cq_ctrl_f12_edit;
   for (int i = 0; i < 12; i++) {
-    ctrlFuncEditPtr[i]->setFixedWidth(sizes.width * 35);
+    ctrlFuncEditPtr[i]->setFixedWidth(sizes.uiWidth * 35);
   }
 
   shiftFuncEditPtr[0] = cq_shift_f1_edit;
@@ -82,7 +82,7 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,
   shiftFuncEditPtr[10] = cq_shift_f11_edit;
   shiftFuncEditPtr[11] = cq_shift_f12_edit;
   for (int i = 0; i < 12; i++) {
-    shiftFuncEditPtr[i]->setFixedWidth(sizes.width * 35);
+    shiftFuncEditPtr[i]->setFixedWidth(sizes.uiWidth * 35);
   }
 
   excFuncEditPtr[0] = exc_f1_edit;
@@ -98,7 +98,7 @@ CWMessageDialog::CWMessageDialog(ModeTypes modetype, uiSize sizes,
   excFuncEditPtr[10] = exc_f11_edit;
   excFuncEditPtr[11] = exc_f12_edit;
   for (int i = 0; i < 12; i++) {
-    excFuncEditPtr[i]->setFixedWidth(sizes.width * 35);
+    excFuncEditPtr[i]->setFixedWidth(sizes.uiWidth * 35);
   }
 
   for (int i = 0; i < N_FUNC; i++) {

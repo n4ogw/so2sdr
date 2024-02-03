@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>465</width>
-    <height>447</height>
+    <height>621</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -58,6 +58,54 @@
       <number>5</number>
      </property>
      <item row="0" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>UI font</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QFontComboBox" name="uiFontComboBox">
+       <property name="toolTip">
+        <string>This sets the font used by most elements of the UI</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="uiFontSpinBox"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Text font</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QFontComboBox" name="textFontComboBox">
+       <property name="toolTip">
+        <string>This sets the font used in the log and lists of callsigns</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="textFontSpinBox"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Entry line font</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QFontComboBox" name="entryFontComboBox">
+       <property name="toolTip">
+        <string>This sets the font used in the call and exchange entry lines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
       <widget class="QCheckBox" name="QSYFocusCheckBox">
        <property name="font">
         <font>
@@ -72,7 +120,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="7" column="0">
       <widget class="QCheckBox" name="FocusIndicatorsCheckBox">
        <property name="font">
         <font>
@@ -87,7 +135,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="8" column="0">
       <widget class="QCheckBox" name="ExchangeLogCheckBox">
        <property name="font">
         <font>
@@ -102,7 +150,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="label_4">
        <property name="font">
         <font>
@@ -114,7 +162,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="9" column="1">
       <widget class="QComboBox" name="AutoSendComboBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -141,7 +189,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="label_3">
        <property name="font">
         <font>
@@ -156,7 +204,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="10" column="1">
       <widget class="QLineEdit" name="AutoSendLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -183,7 +231,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
@@ -195,7 +243,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="11" column="1">
       <widget class="QLineEdit" name="CQRepeatLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -222,7 +270,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
@@ -234,7 +282,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="12" column="1">
       <widget class="QLineEdit" name="DuelingCQLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -261,7 +309,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="14" column="0">
       <widget class="QCheckBox" name="UDPCheckBox1">
        <property name="font">
         <font>
@@ -276,7 +324,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="label_6">
        <property name="font">
         <font>
@@ -288,7 +336,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="15" column="1">
       <widget class="QLineEdit" name="UDPPortLineEdit1">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -318,7 +366,24 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="16" column="0">
+      <widget class="QCheckBox" name="UDPCheckBox2">
+       <property name="text">
+        <string>WSJT-X Radio 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="17" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>UDP port Radio 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="17" column="1">
+      <widget class="QLineEdit" name="UDPPortLineEdit2"/>
+     </item>
+     <item row="18" column="0">
       <widget class="QLabel" name="label_5">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -342,7 +407,7 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
+     <item row="18" column="1">
       <widget class="QLineEdit" name="ctyLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -372,7 +437,7 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="19" column="0">
       <widget class="QCheckBox" name="kbdCheckBox">
        <property name="toolTip">
         <string>In this mode two keyboards are mapped separately to radio1 and radio2. Sprint mode, toggle mode, and alt-D do not coexist with two keyboard mode.</string>
@@ -382,14 +447,14 @@
        </property>
       </widget>
      </item>
-     <item row="14" column="0">
+     <item row="20" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Keyboard 1 device</string>
        </property>
       </widget>
      </item>
-     <item row="14" column="1">
+     <item row="20" column="1">
       <widget class="QLineEdit" name="kbd1LineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -402,14 +467,14 @@
        </property>
       </widget>
      </item>
-     <item row="15" column="0">
+     <item row="21" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Keyboard 2 device</string>
        </property>
       </widget>
      </item>
-     <item row="15" column="1">
+     <item row="21" column="1">
       <widget class="QLineEdit" name="kbd2LineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -422,29 +487,36 @@
        </property>
       </widget>
      </item>
-     <item row="16" column="0">
+     <item row="22" column="0">
       <widget class="QCheckBox" name="queueCheckBox">
        <property name="text">
         <string>Queue Messages</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
-      <widget class="QCheckBox" name="UDPCheckBox2">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_13">
        <property name="text">
-        <string>WSJT-X Radio 2</string>
+        <string>UI font size</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="label_9">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_14">
        <property name="text">
-        <string>UDP port Radio 2</string>
+        <string>Text font size</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
-      <widget class="QLineEdit" name="UDPPortLineEdit2"/>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Entry line font size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="entryFontSpinBox"/>
      </item>
     </layout>
    </item>

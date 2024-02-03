@@ -1,4 +1,4 @@
-/*! Copyright 2010-2023 R. Torsten Clay N4OGW
+/*! Copyright 2010-2024 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -33,10 +33,10 @@ StationDialog::StationDialog(QSettings &s, uiSize sizes, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
 
-  label_2->setFixedWidth(qRound(sizes.width * 4));
-  label_5->setFixedWidth(qRound(sizes.width * 5));
-  label_6->setFixedWidth(qRound(sizes.width * 6));
-  CabrilloAddressEdit->setFixedHeight(qRound(sizes.height * 5));
+  label_2->setFixedWidth(qRound(sizes.uiWidth * 4));
+  label_5->setFixedWidth(qRound(sizes.uiWidth * 5));
+  label_6->setFixedWidth(qRound(sizes.uiWidth * 6));
+  CabrilloAddressEdit->setFixedHeight(qRound(sizes.uiHeight * 5));
   adjustSize();
   setFixedSize(size());
 
