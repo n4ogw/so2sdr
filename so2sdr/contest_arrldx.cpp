@@ -52,6 +52,18 @@ ARRLDX::~ARRLDX() {
   delete[] exchange_type;
 }
 
+QVariant ARRLDX::columnName(int c) const {
+    switch (c) {
+    case SQL_COL_RCV2:
+        if (usVe)
+            return (QVariant("Pwr"));
+        else
+            return (QVariant("St"));
+        break;
+    }
+    return Contest::columnName(c);
+}
+
 /*! width in characters of data fields shown
  * */
 int ARRLDX::fieldWidth(int col) const {

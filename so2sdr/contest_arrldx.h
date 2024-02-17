@@ -27,6 +27,7 @@ public:
   ARRLDX(bool usve, QSettings &cs, QSettings &ss);
   ~ARRLDX() override;
 
+  QVariant columnName(int c) const override;
   void setupContest(QByteArray MultFile[MMAX], const Cty *cty) override;
   bool validateExchange(Qso *qso) override;
   ContestType contestType() const override { return Arrldx_t; }
