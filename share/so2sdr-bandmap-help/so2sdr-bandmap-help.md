@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.7.1
+## So2sdr-bandmap Help Version 2.7.2
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -433,6 +433,10 @@ one choice.
 ---
 
 <a name="changes"></a>
+
+## version 2.7.2 (09/08/2024)
+
+* Show CW text sent by So2rMini on status bar
 
 ## version 2.7.1 (06/10/2024)
 

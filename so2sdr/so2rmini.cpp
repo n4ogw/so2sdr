@@ -34,6 +34,7 @@ SO2RMini::SO2RMini(QSettings &s, QObject *parent)
   stereo = false;
   relayBits = 0;
   buffer.clear();
+  bufferSent.clear();
   txRig = 0;
 }
 
@@ -65,14 +66,14 @@ void SO2RMini::setSpeed(int s) {
   const char cmd = 0x08;
 
   // save speed in case mini is restarted
-  if (s!=0) {
-      last_s = s;
-  } else if (last_s!=0) {
-      s = last_s;
+  if (s != 0) {
+    last_s = s;
+  } else if (last_s != 0) {
+    s = last_s;
   } else {
-      // this normally shouldn't happen
-      s = 32;
-      last_s = 32;
+    // this normally shouldn't happen
+    s = 32;
+    last_s = 32;
   }
   if (s > 1 && s < 100) {
     char ss = s;
@@ -88,10 +89,11 @@ void SO2RMini::loadbuff(QByteArray msg) { buffer.append(msg); }
 
 void SO2RMini::sendcw() {
   if (SO2RMiniPort->isOpen()) {
-
+    QString s = QString::number(txRig + 1) + ":" + buffer;
     buffer = buffer.simplified();
     SO2RMiniPort->write(buffer);
     SO2RMiniPort->flush();
+    bufferSent = buffer;
   }
   buffer.clear();
 }
@@ -118,14 +120,27 @@ void SO2RMini::receive() {
       // 0x01 = radio1 sending; 0x02 = radio2 sending
       if (dat == 0x01) {
         txRig = 0;
-        emit tx(true, 0);
+        if (!sending) {
+          QString s = "1:" + bufferSent;
+          emit(textSent(s, 0));
+          bufferSent.clear();
+          emit tx(true, 0);
+        }
+        sending = true;
       } else if (dat == 0x02) {
         txRig = 1;
-        emit tx(true, 1);
+        if (!sending) {
+          QString s = "2:" + bufferSent;
+          emit(textSent(s, 0));
+          bufferSent.clear();
+          emit tx(true, 1);
+        }
+        sending = true;
       } else if (dat == 0x00) {
         sending = false;
         emit tx(false, txRig);
         QTimer::singleShot(queueDelay, this, SIGNAL(finished()));
+        emit(textSent("", 1000));
       }
     }
   }
@@ -223,12 +238,14 @@ void SO2RMini::openSO2RMini() {
   // if restart, must completely restart serial port, otherwise
   // get error rereading version string. Not sure why
   if (restart) {
-      delete SO2RMiniPort;
-      QSerialPortInfo info(settings.value(s_mini_device, s_mini_device_def).toString());
-      SO2RMiniPort = new QSerialPort(info);
+    delete SO2RMiniPort;
+    QSerialPortInfo info(
+        settings.value(s_mini_device, s_mini_device_def).toString());
+    SO2RMiniPort = new QSerialPort(info);
   }
 
-  SO2RMiniPort->setPortName(settings.value(s_mini_device, s_mini_device_def).toString());
+  SO2RMiniPort->setPortName(
+      settings.value(s_mini_device, s_mini_device_def).toString());
 
   SO2RMiniPort->open(QIODevice::ReadWrite);
 
@@ -238,7 +255,6 @@ void SO2RMini::openSO2RMini() {
 
   SO2RMiniPort->setDataTerminalReady(false);
   SO2RMiniPort->setRequestToSend(false);
-
 
   if (!SO2RMiniPort->isOpen()) {
     SO2RMiniOpen = false;
@@ -267,8 +283,8 @@ void SO2RMini::openSO2RMini() {
   for (int i = 0; i < 5; i++) {
     const char cmd = 0x01;
     if (!SO2RMiniPort->write(&cmd, 1)) {
-        SO2RMiniPort->clearError();
-        continue;
+      SO2RMiniPort->clearError();
+      continue;
     }
     SO2RMiniPort->flush();
     deviceName.clear();
@@ -276,9 +292,10 @@ void SO2RMini::openSO2RMini() {
       deviceName = SO2RMiniPort->readAll().simplified();
     }
     if (SO2RMiniPort->error()) {
-        SO2RMiniPort->clearError();
+      SO2RMiniPort->clearError();
     }
-    if (deviceName.left(2) != "TR") deviceName.clear();
+    if (deviceName.left(2) != "TR")
+      deviceName.clear();
     if (deviceName.size() > 0)
       break;
   }
@@ -288,24 +305,30 @@ void SO2RMini::openSO2RMini() {
   SO2RMiniOpen = true;
 
   // reset speed if restarting
-  if (restart) setSpeed(0);
+  if (restart)
+    setSpeed(0);
 
   char cmd1[2];
   // sidetone freq, set in units of 10 Hz
   cmd1[0] = 0x03;
-  if (settings.value(s_mini_sidetone,s_mini_sidetone_def).toBool()) {
-      cmd1[1] = settings.value(s_mini_sidetone_freq,s_mini_sidetone_freq_def).toInt();
+  if (settings.value(s_mini_sidetone, s_mini_sidetone_def).toBool()) {
+    cmd1[1] =
+        settings.value(s_mini_sidetone_freq, s_mini_sidetone_freq_def).toInt();
   } else {
-      cmd1[1] = 0;
+    cmd1[1] = 0;
   }
   SO2RMiniPort->write(cmd1, 2);
 
   // paddle sidetone freq, set in units of 10 Hz
   cmd1[0] = 0x04;
-  if (settings.value(s_mini_paddle_sidetone,s_mini_paddle_sidetone_def).toBool()) {
-      cmd1[1] = settings.value(s_mini_paddle_sidetone_freq,s_mini_paddle_sidetone_freq_def).toInt();
+  if (settings.value(s_mini_paddle_sidetone, s_mini_paddle_sidetone_def)
+          .toBool()) {
+    cmd1[1] =
+        settings
+            .value(s_mini_paddle_sidetone_freq, s_mini_paddle_sidetone_freq_def)
+            .toInt();
   } else {
-      cmd1[1] = 0;
+    cmd1[1] = 0;
   }
   SO2RMiniPort->write(cmd1, 2);
 }

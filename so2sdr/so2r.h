@@ -57,6 +57,7 @@ signals:
   void So2rDialogRejected();
   void So2rMiniTx(bool, int);
   void So2rMiniFinished();
+  void textSent(const QString &t, int);
 
 public slots:
   void setPtt(int nr, int state);

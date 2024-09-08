@@ -31,7 +31,7 @@
 #include <QtGlobal>
 
 // ///////// version ///////////////
-const QByteArray Version = QByteArrayLiteral("2.7.1");
+const QByteArray Version = QByteArrayLiteral("2.7.2");
 
 // //////// colors ////////////////
 // all of form (R,G,B)
@@ -569,7 +569,8 @@ const int s_mini_sidetone_freq_def = 50;
 const QString s_mini_paddle_sidetone = QStringLiteral("mini/paddle_sidetone");
 const bool s_mini_paddle_sidetone_def = true;
 
-const QString s_mini_paddle_sidetone_freq = QStringLiteral("mini/paddle_sidetone_freq");
+const QString s_mini_paddle_sidetone_freq =
+    QStringLiteral("mini/paddle_sidetone_freq");
 const int s_mini_paddle_sidetone_freq_def = 50;
 
 const QString s_cwdaemon_udp[NRIG] = {QStringLiteral("cwdaemon/udp1"),

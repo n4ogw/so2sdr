@@ -47,6 +47,7 @@ signals:
   void finished();
   void miniError(const QString &);
   void miniName(const QByteArray &);
+  void textSent(const QString &t, int);
   void tx(bool, int);
 
 public slots:
@@ -64,6 +65,7 @@ private:
   QSerialPort *SO2RMiniPort;
   QSettings &settings;
   QByteArray buffer;
+  QByteArray bufferSent;
   QByteArray deviceName;
   void closeSO2RMini();
 };

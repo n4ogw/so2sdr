@@ -90,6 +90,8 @@ So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
   connect(mini, SIGNAL(finished()), this, SIGNAL(So2rMiniFinished()));
   connect(mini, SIGNAL(tx(bool, int)), this, SIGNAL(So2rMiniTx(bool, int)));
   connect(so2rDialog, SIGNAL(setMicroHam()), microham, SLOT(openMicroHam()));
+  connect(mini, SIGNAL(textSent(const QString &, int)), this,
+          SIGNAL(textSent(const QString &, int)));
   if (settings.value(s_radios_pport_enabled, s_radios_pport_enabled_def)
           .toBool()) {
     pport->initialize();

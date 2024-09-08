@@ -357,6 +357,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
           SLOT(setStyleSheet(const QString &)));
   connect(so2r, SIGNAL(setTX2(const QString &)), TX2,
           SLOT(setStyleSheet(const QString &)));
+  connect(so2r, SIGNAL(textSent(const QString &, int)), So2sdrStatusBar,
+          SLOT(showMessage(const QString &, int)));
   connect(ssbMessage, SIGNAL(setPtt(int, int)), so2r, SLOT(setPtt(int, int)));
   readStationSettings();
   WPMLineEdit->setReadOnly(true);
@@ -1083,7 +1085,7 @@ bool So2sdr::setupContest() {
       settings->value(s_wsjtx_enable[1], s_wsjtx_enable_def).toBool());
   wsjtx[0]->replay();
   wsjtx[1]->replay();
- 
+
   // now allow log columns to be resized
   LogTableView->horizontalHeader()->setSectionResizeMode(
       QHeaderView::Interactive);

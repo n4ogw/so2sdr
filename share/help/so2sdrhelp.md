@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.7.1
+## SO2SDR Help file version 2.7.2
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1147,6 +1147,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.7.2 (09/08/2024)
+
+* Show CW text sent by So2rMini on status bar
 
 ## version 2.7.1 (06/10/2024)
 
