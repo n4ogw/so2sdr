@@ -213,8 +213,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   wsjtx[1] = new WsjtxCallDialog(*settings, sizes, 1, this);
   connect(wsjtx[0], SIGNAL(wsjtxQso(Qso *)), this, SLOT(logWsjtx(Qso *)));
   connect(wsjtx[1], SIGNAL(wsjtxQso(Qso *)), this, SLOT(logWsjtx(Qso *)));
-  wsjtx[0]->replay();
-  wsjtx[1]->replay();
   settings->beginGroup("WsjtxWindow1");
   wsjtx[0]->resize(settings->value("size", QSize(900, 400)).toSize());
   wsjtx[0]->move(settings->value("pos", QPoint(400, 400)).toPoint());
@@ -567,6 +565,9 @@ void So2sdr::settingsUpdate() {
       settings->value(s_wsjtx_enable[0], s_wsjtx_enable_def).toBool());
   wsjtx[1]->enable(
       settings->value(s_wsjtx_enable[1], s_wsjtx_enable_def).toBool());
+  wsjtx[0]->replay();
+  wsjtx[1]->replay();
+
   twoKeyboard();
 }
 
@@ -1080,7 +1081,9 @@ bool So2sdr::setupContest() {
       settings->value(s_wsjtx_enable[0], s_wsjtx_enable_def).toBool());
   wsjtx[1]->enable(
       settings->value(s_wsjtx_enable[1], s_wsjtx_enable_def).toBool());
-
+  wsjtx[0]->replay();
+  wsjtx[1]->replay();
+ 
   // now allow log columns to be resized
   LogTableView->horizontalHeader()->setSectionResizeMode(
       QHeaderView::Interactive);
@@ -4039,6 +4042,7 @@ void So2sdr::screenShot() {
 void So2sdr::showWsjtx1(bool state) {
   menuWindows->hide();
   if (state) {
+    wsjtx[0]->replay();
     wsjtx[0]->show();
   } else {
     wsjtx[0]->hide();
@@ -4048,6 +4052,7 @@ void So2sdr::showWsjtx1(bool state) {
 void So2sdr::showWsjtx2(bool state) {
   menuWindows->hide();
   if (state) {
+    wsjtx[1]->replay();
     wsjtx[1]->show();
   } else {
     wsjtx[1]->hide();

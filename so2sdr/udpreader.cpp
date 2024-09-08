@@ -328,8 +328,10 @@ void UDPReader::processDatagram(QNetworkDatagram datagram) {
       QTime time;
       in >> time;
       // if decode is older than max age, ignore it
-      if (time.secsTo(QTime::currentTime()) > decayTime)
-        break;
+      qint64 age = time.secsTo(QDateTime::currentDateTime().toUTC().time());
+      if (age > decayTime) {
+	break;
+      }
       qint32 snr;
       in >> snr;
       double dt;
@@ -430,7 +432,7 @@ void UDPReader::processDatagram(QNetworkDatagram datagram) {
         query.bindValue(":snr", snr);
         query.bindValue(":freq", delta);
         query.bindValue(":rx", rx);
-        query.bindValue(":age", 0);
+        query.bindValue(":age", age);
         query.bindValue(":dupe", qso.dupe);
         query.bindValue(":seq", seq);
         query.bindValue(":mult", qso.isnewmult[0] || qso.isnewmult[1]);
@@ -624,7 +626,7 @@ void UDPReader::highlightCall(const QByteArray &call, QColor bg, QColor fg) {
 /*! sends wsjtx command to resend all decodes in Band Activity window
  */
 void UDPReader::replay() {
-  if (id.isEmpty() || wsjtxPort == 0)
+  if (wsjtxPort == 0)
     return;
   QByteArray data;
   WsjtxMessage out(&data, QIODevice::WriteOnly);

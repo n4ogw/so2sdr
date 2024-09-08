@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.7.0
+## So2sdr-bandmap Help Version 2.7.1
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -433,6 +433,11 @@ one choice.
 ---
 
 <a name="changes"></a>
+
+## version 2.7.1 (06/10/2024)
+
+* Fix bug in wsjtx message window. Did not work correctly unless computer timezone
+set to UTC
 
 ## version 2.7.0 (01/28/2024)
 
