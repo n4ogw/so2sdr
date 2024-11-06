@@ -46,7 +46,10 @@ WPX::~WPX() {
 QVariant WPX::columnName(int c) const {
   switch (c) {
   case SQL_COL_SNT2:
-    return (QVariant("Sent#"));
+    return (QVariant("#S"));
+    break;
+  case SQL_COL_RCV2:
+    return QVariant("#R");
     break;
   }
   return Contest::columnName(c);

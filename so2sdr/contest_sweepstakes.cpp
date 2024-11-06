@@ -45,8 +45,11 @@ Sweepstakes::~Sweepstakes() {
 
 QVariant Sweepstakes::columnName(int c) const {
   switch (c) {
+  case SQL_COL_SNT1:
+    return (QVariant("#S"));
+    break;
   case SQL_COL_RCV1:
-    return (QVariant("#"));
+    return (QVariant("#R"));
     break;
   case SQL_COL_RCV2:
     return (QVariant("Pr"));
