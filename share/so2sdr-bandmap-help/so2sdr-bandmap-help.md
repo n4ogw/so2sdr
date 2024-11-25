@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.7.2
+## So2sdr-bandmap Help Version 2.7.3
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -433,6 +433,14 @@ one choice.
 ---
 
 <a name="changes"></a>
+
+## version 2.7.3 (11/24/2024)
+
+* fix column names in contests with serial numbers
+* correct mode in adif output for ssb
+* make qso/mult displays line up correctly
+* fix cabrillo for overlays in CQWW
+* exchange setup box was cut off in ARRL 10
 
 ## version 2.7.2 (09/08/2024)
 

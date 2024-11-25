@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.7.2
+## SO2SDR Help file version 2.7.3
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1147,6 +1147,14 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.7.3 (11/24/2024)
+
+* fix column names in contests with serial numbers
+* correct mode in adif output for ssb
+* make qso/mult displays line up correctly
+* fix cabrillo for overlays in CQWW
+* exchange setup box was cut off in ARRL 10
 
 ## version 2.7.2 (09/08/2024)
 

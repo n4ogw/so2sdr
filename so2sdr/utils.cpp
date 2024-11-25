@@ -224,8 +224,7 @@ ModeTypes getModeType(rmode_t mode) {
 ModeTypes getAdifModeType(const QByteArray &mode) {
   if (mode == "CW") {
     return CWType;
-  } else if (mode == "SSB" || mode == "USB" || mode == "LSB" || mode == "AM" ||
-             mode == "FM" || mode == "DIGITALVOICE") {
+  } else if (mode == "SSB" || mode == "AM" || mode == "FM" || mode == "DIGITALVOICE") {
     return PhoneType;
   } else {
     return DigiType;
@@ -244,9 +243,9 @@ QByteArray getAdifMode(rmode_t mode) {
   case RIG_MODE_CW:
     return "CW";
   case RIG_MODE_USB:
-    return "USB";
+    return "SSB";
   case RIG_MODE_LSB:
-    return "LSB";
+    return "SSB";
   case RIG_MODE_RTTY:
     return "RTTY";
   case RIG_MODE_FM:
@@ -266,9 +265,9 @@ QByteArray getAdifMode(rmode_t mode) {
   case RIG_MODE_PKTFM:
     return "PKT";
   case RIG_MODE_ECSSUSB:
-    return "USB";
+    return "SSB";
   case RIG_MODE_ECSSLSB:
-    return "USB";
+    return "SSB";
   case RIG_MODE_FAX:
     return "FAX";
   case RIG_MODE_SAM:

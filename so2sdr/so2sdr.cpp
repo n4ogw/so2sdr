@@ -2272,7 +2272,7 @@ void So2sdr::updateWorkedDisplay(int nr, unsigned int worked) {
   if (lineEditCall[nr]->text().isEmpty())
     return;
 
-  QString tmp = "Q :";
+  QString tmp = "<span style=\"font-family: monospace\">Q :";
   for (int j = 0; j < N_BANDS; j++) {
     int i = log->highlightBand(j);
     if (i == BAND_NONE)
@@ -2283,11 +2283,8 @@ void So2sdr::updateWorkedDisplay(int nr, unsigned int worked) {
       tmp = tmp + "<font color=#AAAAAA>" + log->bandLabel(i) + "</font> ";
     }
   }
-  if (nr == 0) {
-    Qso1Label->setText(tmp);
-  } else {
-    Qso2Label->setText(tmp);
-  }
+  tmp = tmp +"</span>";
+  qsoWorkedLabel[nr]->setText(tmp);
 }
 
 /*!
@@ -2310,9 +2307,10 @@ void So2sdr::updateWorkedMult(int nr) {
   unsigned int worked[NRIG] = {0, 0};
   log->workedMults(qso[nr], worked);
   for (int ii = 0; ii < MMAX; ii++) {
-    QString tmp = multNameLabel[ii]->text();
-    if (tmp.isEmpty())
-      continue;
+    if (multNameLabel[ii]->text().isEmpty()) continue;
+    QString tmp = "<span style=\"font-family: monospace\">" + multNameLabel[ii]->text();
+    //if (tmp.isEmpty())
+    //  continue;
 
     if (!csettings->value(c_multsband, c_multsband_def).toBool()) {
       if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
@@ -2340,6 +2338,7 @@ void So2sdr::updateWorkedMult(int nr) {
         }
       }
     }
+    tmp = tmp + "</span>";
     multWorkedLabel[nr][ii]->setText(tmp);
   }
 }
