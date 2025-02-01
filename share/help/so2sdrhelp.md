@@ -1,5 +1,5 @@
 <a name="top"></a>
-## SO2SDR Help file version 2.7.3
+## SO2SDR Help file version 2.7.4
 
 * [Overview](#overview)
 * [Installation](#install)
@@ -1147,6 +1147,10 @@ from so2sdr, do this
 ---
 
 <a name="changes"></a>
+
+## version 2.7.4 (02/01/2025)
+
+* fix display above callsign entry windows
 
 ## version 2.7.3 (11/24/2024)
 

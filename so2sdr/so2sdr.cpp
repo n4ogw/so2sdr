@@ -1,4 +1,4 @@
-/*! Copyright 2010-2024 R. Torsten Clay N4OGW
+/*! Copyright 2010-2025 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -1424,7 +1424,7 @@ void So2sdr::about() {
   aboutOn = true;
   QMessageBox::about(
       this, "SO2SDR",
-      "<p>SO2SDR " + Version + " Copyright 2010-2024 R.T. Clay N4OGW</p>" +
+      "<p>SO2SDR " + Version + " Copyright 2010-2025 R.T. Clay N4OGW</p>" +
           "  Qt library version: " + qVersion() +
           +"<li>hamlib http://www.hamlib.org " + hamlib_version +
           "<li>QtSolutions_Telnet 2.1" +
@@ -2291,9 +2291,9 @@ void So2sdr::updateWorkedDisplay(int nr, unsigned int worked) {
    clear worked Q/M display on radio i
  */
 void So2sdr::clearWorked(int i) {
-  qsoWorkedLabel[i]->setText("Q :");
+  qsoWorkedLabel[i]->setText("<span style=\"font-family: monospace\">Q :</span>");
   for (int j = 0; j < MMAX; j++) {
-    multWorkedLabel[i][j]->setText(multNameLabel[j]->text());
+    multWorkedLabel[i][j]->setText("<span style=\"font-family: monospace\""+multNameLabel[j]->text()+"</span>");
   }
 }
 
@@ -2309,22 +2309,16 @@ void So2sdr::updateWorkedMult(int nr) {
   for (int ii = 0; ii < MMAX; ii++) {
     if (multNameLabel[ii]->text().isEmpty()) continue;
     QString tmp = "<span style=\"font-family: monospace\">" + multNameLabel[ii]->text();
-    //if (tmp.isEmpty())
-    //  continue;
 
     if (!csettings->value(c_multsband, c_multsband_def).toBool()) {
       if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
         // mult already worked
         if (qso[nr]->isamult[ii])
           tmp = tmp + "<font color=#000000>      WORKED      </font>";
-        else
-          tmp.clear();
       } else {
         // needed
         if (qso[nr]->isamult[ii])
           tmp = tmp + "<font color=#CC0000>      NEEDED      </font>";
-        else
-          tmp.clear();
       }
     } else {
       for (int i = 0; i < N_BANDS; i++) {

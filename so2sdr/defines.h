@@ -1,4 +1,4 @@
-/*! Copyright 2010-2024 R. Torsten Clay N4OGW
+/*! Copyright 2010-2025 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -31,7 +31,7 @@
 #include <QtGlobal>
 
 // ///////// version ///////////////
-const QByteArray Version = QByteArrayLiteral("2.7.3");
+const QByteArray Version = QByteArrayLiteral("2.7.4");
 
 // //////// colors ////////////////
 // all of form (R,G,B)

@@ -1,5 +1,5 @@
 <a name="top"></a>
-## So2sdr-bandmap Help Version 2.7.3
+## So2sdr-bandmap Help Version 2.7.4
 
 * [Controls](#controls)
 * [So2sdr-bandmap setup](#bandmap_setup)
@@ -433,6 +433,10 @@ one choice.
 ---
 
 <a name="changes"></a>
+
+## version 2.7.4 (02/01/2025)
+
+* fix display above callsign entry windows
 
 ## version 2.7.3 (11/24/2024)
 
