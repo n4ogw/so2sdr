@@ -1294,7 +1294,7 @@
           <widget class="QLabel" name="label_3">
            <property name="font">
             <font>
-             <family>Liberation Sans</family>
+             <family>Sans</family>
              <pointsize>10</pointsize>
              <weight>75</weight>
              <bold>true</bold>
@@ -1560,7 +1560,7 @@
         <widget class="QLabel" name="label_6">
          <property name="font">
           <font>
-           <family>Liberation Sans</family>
+           <family>Sans</family>
            <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>

@@ -47,6 +47,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QMetaType>
 #include <QSqlError>
 #include <QSqlField>
 #include <QSqlQuery>
@@ -60,7 +61,7 @@
 /*!
    n_exch is number of exchange fields; this can't change during the contest
  */
-Log::Log(QSettings &cs, QSettings &s, uiSize sizes, QObject *parent = nullptr)
+Log::Log(QSettings &cs, QSettings &s, QObject *parent = nullptr)
     : QObject(parent), csettings(cs), settings(s) {
   contest = nullptr;
   detail = nullptr;
@@ -75,7 +76,7 @@ Log::Log(QSettings &cs, QSettings &s, uiSize sizes, QObject *parent = nullptr)
     qsoCnt[i] = 0;
   logSearchFlag = false;
   searchList.clear();
-  detail = new DetailedEdit(sizes);
+  detail = new DetailedEdit();
   connect(detail, SIGNAL(editedRecord(QSqlRecord &)), this,
           SLOT(updateRecord(QSqlRecord &)));
   detail->hide();
@@ -617,7 +618,7 @@ void Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const {
       }
     }
     m.setQuery(query);
-    m.query().exec();
+    //  m.query().exec(query);
     while (m.canFetchMore()) {
       m.fetchMore();
     }
@@ -627,7 +628,7 @@ void Log::isDupe(Qso *qso, bool DupeCheckingEveryBand, bool FillWorked) const {
     if (FillWorked) {
       m.setQuery("SELECT * FROM log WHERE valid=1 and CALL LIKE '" + qso->call +
                  "'");
-      m.query().exec();
+      //  m.query().exec();
       while (m.canFetchMore()) {
         m.fetchMore();
       }
@@ -786,7 +787,8 @@ QString Log::offTime(int minOffTime, QDateTime start, QDateTime end) {
     int d = m.record(i).value(SQL_COL_DATE).toByteArray().mid(2, 2).toInt();
     int hr = m.record(i).value(SQL_COL_TIME).toByteArray().left(2).toInt();
     int min = m.record(i).value(SQL_COL_TIME).toByteArray().right(2).toInt();
-    QDateTime qsoTime = QDateTime(QDate(yr, mon, d), QTime(hr, min), Qt::UTC);
+    QDateTime qsoTime =
+        QDateTime(QDate(yr, mon, d), QTime(hr, min), QTimeZone::UTC);
 
     if (qsoTime < start || qsoTime > end)
       continue; // qso not during contest
@@ -862,29 +864,29 @@ void Log::addQso(Qso *qso) {
     query.bindValue(":snt1", qso->snt_exch[0]);
     query.bindValue(":rcv1", qso->rcv_exch[0]);
   } else {
-    query.bindValue(":snt1", QVariant(QVariant::String));
-    query.bindValue(":rcv1", QVariant(QVariant::String));
+    query.bindValue(":snt1", QVariant(QMetaType::fromType<QString>()));
+    query.bindValue(":rcv1", QVariant(QMetaType::fromType<QString>()));
   }
   if (contest->nExchange() > 1) {
     query.bindValue(":snt2", qso->snt_exch[1]);
     query.bindValue(":rcv2", qso->rcv_exch[1]);
   } else {
-    query.bindValue(":snt2", QVariant(QVariant::String));
-    query.bindValue(":rcv2", QVariant(QVariant::String));
+    query.bindValue(":snt2", QVariant(QMetaType::fromType<QString>()));
+    query.bindValue(":rcv2", QVariant(QMetaType::fromType<QString>()));
   }
   if (contest->nExchange() > 2) {
     query.bindValue(":snt3", qso->snt_exch[2]);
     query.bindValue(":rcv3", qso->rcv_exch[2]);
   } else {
-    query.bindValue(":snt3", QVariant(QVariant::String));
-    query.bindValue(":rcv3", QVariant(QVariant::String));
+    query.bindValue(":snt3", QVariant(QMetaType::fromType<QString>()));
+    query.bindValue(":rcv3", QVariant(QMetaType::fromType<QString>()));
   }
   if (contest->nExchange() > 3) {
     query.bindValue(":snt4", qso->snt_exch[3]);
     query.bindValue(":rcv4", qso->rcv_exch[3]);
   } else {
-    query.bindValue(":snt4", QVariant(QVariant::String));
-    query.bindValue(":rcv4", QVariant(QVariant::String));
+    query.bindValue(":snt4", QVariant(QMetaType::fromType<QString>()));
+    query.bindValue(":rcv4", QVariant(QMetaType::fromType<QString>()));
   }
   query.bindValue(":pts", qso->pts);
   query.bindValue(":valid", qso->valid);
@@ -999,7 +1001,7 @@ void Log::importCabrillo(QString cabFile) {
 
     // Field3 = date
     QDateTime time;
-    time.setTimeSpec(Qt::UTC);
+    time.setTimeZone(QTimeZone::UTC);
     int y = field.at(3).mid(0, 4).toInt();
     int m = field[3].mid(5, 2).toInt();
     int d = field.at(3).mid(8, 2).toInt();
@@ -1417,7 +1419,6 @@ void Log::startDetailedQsoEditRow(QModelIndex index) {
   detail->show();
   detail->callLineEdit->setFocus();
   detail->callLineEdit->deselect();
-  emit ungrab();
 }
 
 bool Log::detailIsVisible() const { return detail->isVisible(); }

@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QFontMetricsF>
 #include <QHostAddress>
 #include <QIcon>
 #include <QMenu>
@@ -45,6 +46,7 @@
 bool So2sdrBandmap::so2sdrBandmapOk() const { return (initialized); }
 So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
     : QMainWindow(parent) {
+
   setupUi(this);
   initPointers();
   initVariables();
@@ -114,6 +116,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
     horizontalLayout->insertWidget(1, FreqLabel);
     horizontalLayout->insertWidget(2, display);
   }
+
   freqPixmap = QPixmap(FreqLabel->width(),
                        settings->value(s_sdr_fft, s_sdr_fft_def).toInt());
   callPixmap = QPixmap(CallLabel->width(),
@@ -186,7 +189,7 @@ So2sdrBandmap::So2sdrBandmap(QStringList args, QWidget *parent)
   connect(actionStop, SIGNAL(triggered()), this, SLOT(stop()));
   connect(actionQuit, SIGNAL(triggered()), this, SLOT(stop()));
   connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
-  sdrSetup = new SDRDialog(*settings, uiSizes, this);
+  sdrSetup = new SDRDialog(*settings, this);
   connect(actionSetup, SIGNAL(triggered()), sdrSetup, SLOT(show()));
   connect(sdrSetup, SIGNAL(setupErrors(QString)), &errorBox,
           SLOT(showMessage(QString)));
@@ -683,13 +686,10 @@ void So2sdrBandmap::makeCall() {
     // uiSizes.height/3 is fudge factor to center callsign
     if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
             .toBool()) {
-      QFontMetrics fontm(font);
-      p.drawText(callPixmap.width() -
-                     qRound(uiSizes.callHeight / 3 - uiSizes.callWidth * 1.5) -
-                     fontm.horizontalAdvance(callList.at(i).call),
+      p.drawText(qRound(uiSizes.callWidth / 2),
                  y + qRound(uiSizes.callWidth / 3), callList.at(i).call);
     } else {
-      p.drawText(qRound(uiSizes.callWidth * 1.5),
+      p.drawText(qRound(uiSizes.callWidth * 1.25),
                  y + qRound(uiSizes.callHeight / 3), callList.at(i).call);
     }
   }
@@ -712,9 +712,8 @@ void So2sdrBandmap::makeCall() {
         }
         if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
                 .toBool()) {
-          p.drawEllipse(callPixmap.width() -
-                            qRound(uiSizes.rad - uiSizes.callWidth / 2),
-                        y, qRound(uiSizes.rad), qRound(uiSizes.rad));
+          p.drawEllipse(callPixmap.width() - qRound(2 * uiSizes.rad), y,
+                        qRound(uiSizes.rad), qRound(uiSizes.rad));
         } else {
           p.drawEllipse(qRound(uiSizes.callWidth / 2), y, qRound(uiSizes.rad),
                         qRound(uiSizes.rad));
@@ -844,8 +843,14 @@ void So2sdrBandmap::makeFreqScaleAbsolute() {
     } else {
       tmp = QString::number(jj);
     }
-    p.drawText(qRound(uiSizes.scaleWidth),
-               i + qRound(uiSizes.scaleHeight * 0.4), tmp);
+    if (settings->value(s_sdr_reverse_scroll, s_sdr_reverse_scroll_def)
+            .toBool()) {
+      p.drawText(qRound(uiSizes.scaleWidth / 2),
+                 i + qRound(uiSizes.scaleHeight * 0.4), tmp);
+    } else {
+      p.drawText(qRound(uiSizes.scaleWidth),
+                 i + qRound(uiSizes.scaleHeight * 0.4), tmp);
+    }
     j++;
     j = j % 1000;
     i = i0 - qRound(k * pix_per_khz) - 2;
@@ -911,7 +916,7 @@ void So2sdrBandmap::mouseMoveEvent(QMouseEvent *event) {
  */
 void So2sdrBandmap::mousePressEvent(QMouseEvent *event) {
   if (CallLabel->underMouse()) {
-    mouse_y = event->y();
+    mouse_y = event->position().y();
     if (event->button() == Qt::RightButton) {
       // right-mouse button; brings up menu
       QMenu menu(this);
@@ -925,8 +930,9 @@ void So2sdrBandmap::mousePressEvent(QMouseEvent *event) {
       menu.addAction(iqShowData);
       menu.exec(event->globalPos());
     } else if (event->button() == Qt::LeftButton &&
-               (event->x() < (FreqLabel->width() + display->width() +
-                              SIG_SYMBOL_X + 4 * qRound(uiSizes.rad)))) {
+               (event->position().x() <
+                (FreqLabel->width() + display->width() + SIG_SYMBOL_X +
+                 4 * qRound(uiSizes.rad)))) {
       // left-mouse: qsy to signal
       qsyToNearest();
     }
@@ -2053,29 +2059,29 @@ void So2sdrBandmap::setUiSize() {
                settings->value(s_ui_font_size, s_ui_font_size_def).toInt());
   QFontMetricsF uiFm(uiFont);
   uiSizes.uiHeight = uiFm.height();
-  uiSizes.uiWidth = uiFm.width("0");
+  uiSizes.uiWidth = uiFm.maxWidth();
 
   uiFont =
       QFont(settings->value(s_ui_font, s_ui_font_def).toString(),
             settings->value(s_scale_font_size, s_scale_font_size_def).toInt());
   uiFm = QFontMetrics(uiFont);
   uiSizes.scaleHeight = uiFm.height();
-  uiSizes.scaleWidth = uiFm.width("0");
+  uiSizes.scaleWidth = uiFm.maxWidth();
 
   uiFont =
       QFont(settings->value(s_ui_font, s_ui_font_def).toString(),
             settings->value(s_call_font_size, s_call_font_size_def).toInt());
   uiFm = QFontMetrics(uiFont);
   uiSizes.callHeight = uiFm.height();
-  uiSizes.callWidth = uiFm.width("0");
-  uiSizes.rad = uiSizes.callWidth / 1.5;
+  uiSizes.callWidth = uiFm.maxWidth();
+  uiSizes.rad = uiSizes.callWidth / 3;
 
   toolBar->setFixedHeight(qRound(uiSizes.uiHeight * 1.5));
   actionRun->setIcon(QIcon(":/icons/player_play.svg"));
   actionStop->setIcon(QIcon(":/icons/player_stop.svg"));
   actionSetup->setIcon(QIcon(":/icons/stock_properties.svg"));
   actionQuit->setIcon(QIcon(":/icons/exit.svg"));
-  FreqLabel->setFixedWidth(qRound(uiSizes.scaleWidth * 6));
+  FreqLabel->setFixedWidth(qRound(uiSizes.scaleWidth * 2.5));
 }
 
 /* Send message to master bandmap to set sdr frequency on channel c to f

@@ -23,15 +23,12 @@
 #include <QString>
 #include <QTableView>
 
-WsjtxCallDialog::WsjtxCallDialog(QSettings &s, uiSize sizes, int nrig,
-                                 QWidget *parent)
+WsjtxCallDialog::WsjtxCallDialog(QSettings &s, int nrig, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
   tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-  tableView->verticalHeader()->setDefaultSectionSize(qRound(sizes.textHeight));
   tableView->setSelectionMode(QAbstractItemView::NoSelection);
   tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-  adjustSize();
   _nrig = nrig;
   setWindowTitle("WSJT-X Radio " + QString::number(_nrig + 1));
   hideDupesCheckBox->setChecked(false);
@@ -62,12 +59,6 @@ WsjtxCallDialog::WsjtxCallDialog(QSettings &s, uiSize sizes, int nrig,
   tableView->setColumnHidden(WSJTX_SQL_COL_DT, true);
   tableView->setColumnHidden(WSJTX_SQL_COL_MODE, true);
   tableView->setColumnHidden(WSJTX_SQL_COL_CONF, true);
-  tableView->setColumnWidth(WSJTX_SQL_COL_RX, qRound(sizes.textWidth * 5));
-  tableView->setColumnWidth(WSJTX_SQL_COL_SEQ, qRound(sizes.textWidth * 6));
-  tableView->setColumnWidth(WSJTX_SQL_COL_AGE, qRound(sizes.textWidth * 5));
-  tableView->setColumnWidth(WSJTX_SQL_COL_SNR, qRound(sizes.textWidth * 6));
-  tableView->setColumnWidth(WSJTX_SQL_COL_GRID, qRound(sizes.textWidth * 8));
-  tableView->setColumnWidth(WSJTX_SQL_COL_FREQ, qRound(sizes.textWidth * 8));
   tableView->setSortingEnabled(true);
   connect(tableView, SIGNAL(doubleClicked(const QModelIndex &)), reader,
           SLOT(callClicked(const QModelIndex &)));

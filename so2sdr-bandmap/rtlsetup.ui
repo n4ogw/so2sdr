@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>324</width>
-    <height>406</height>
+    <width>400</width>
+    <height>800</height>
    </size>
   </property>
   <property name="font">
@@ -43,7 +43,7 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
      </property>
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
@@ -55,7 +55,7 @@
      <item row="2" column="1">
       <widget class="QComboBox" name="speedComboBox">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -87,7 +87,7 @@
      <item row="4" column="1">
       <widget class="QLineEdit" name="lineEditOffset">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -100,7 +100,7 @@
      <item row="7" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -116,7 +116,7 @@
      <item row="8" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -147,6 +147,12 @@
      </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="IFFreqLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>SDR frequency. In IF mode this should be set to the IF frequency of the radio. In RF mode this is the initial frequency set.</string>
        </property>
@@ -154,6 +160,12 @@
      </item>
      <item row="6" column="1">
       <widget class="QCheckBox" name="directCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Enable direct sampling. Needed for HF frequencies but not supported by all rtl-sdr devices.</string>
        </property>
@@ -171,6 +183,12 @@
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="deviceIndexLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>rtl-sdr device index. Zero is default.</string>
        </property>
@@ -178,6 +196,12 @@
      </item>
      <item row="5" column="1">
       <widget class="QLineEdit" name="tunerGainLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>rtl-sdr tuner gain in tenths of a dB (115 means 11.5 dB). Use rtl_test to find possible values.</string>
        </property>
@@ -191,7 +215,14 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="sampleRateComboBox"/>
+      <widget class="QComboBox" name="sampleRateComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_6">
@@ -217,10 +248,10 @@
       </size>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

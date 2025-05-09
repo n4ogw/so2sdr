@@ -67,6 +67,8 @@
     socket().
 */
 #include "qttelnet.h"
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <QtCore/QBuffer>
 #include <QtCore/QList>
 #include <QtCore/QMap>
@@ -95,7 +97,7 @@ class QtTelnetAuth {
 public:
   enum State { AuthIntermediate, AuthSuccess, AuthFailure };
 
-  QtTelnetAuth(char code) : st(AuthIntermediate), cd(code){};
+  QtTelnetAuth(char code) : st(AuthIntermediate), cd(code) {};
   virtual ~QtTelnetAuth() {}
 
   int code() const { return cd; }
@@ -485,7 +487,7 @@ public:
   QtTelnetAuth *curauth;
   bool nullauth;
 
-  QRegExp loginp, passp, promptp;
+  QRegularExpression loginp, passp, promptp;
   QString login, pass;
 
   bool allowOption(int oper, int opt);
@@ -548,7 +550,7 @@ void QtTelnetPrivate::setSocket(QTcpSocket *s) {
     connect(socket, SIGNAL(disconnected()), this,
             SLOT(socketConnectionClosed()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadyRead()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+    connect(socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
             SLOT(socketError(QAbstractSocket::SocketError)));
   }
 }
@@ -641,7 +643,8 @@ void QtTelnetPrivate::parseSubAuth(const QByteArray &data) {
     if (!curauth) {
       curauth = new QtTelnetAuthNull;
       nullauth = true;
-      if (loginp.isEmpty() && passp.isEmpty()) {
+      //      if (loginp.isEmpty() && passp.isEmpty()) {
+      if (loginp.pattern().isEmpty() && passp.pattern().isEmpty()) {
         // emit q->loginRequired();
         nocheckp = true;
       }
@@ -655,7 +658,7 @@ void QtTelnetPrivate::parseSubAuth(const QByteArray &data) {
     if (curauth->state() == QtTelnetAuth::AuthFailure)
       emit q->loginFailed();
     else if (curauth->state() == QtTelnetAuth::AuthSuccess) {
-      if (loginp.isEmpty() && passp.isEmpty())
+      if (loginp.pattern().isEmpty() && passp.pattern().isEmpty())
         emit q->loggedIn();
       if (!nullauth)
         nocheckp = true;
@@ -680,7 +683,7 @@ int QtTelnetPrivate::parseIAC(const QByteArray &data) {
       return 3;
     }
     if (operation == Common::DONT && option == Common::Authentication) {
-      if (loginp.isEmpty() && passp.isEmpty())
+      if (loginp.pattern().isEmpty() && passp.pattern().isEmpty())
         emit q->loggedIn();
       nullauth = true;
     }
@@ -731,37 +734,49 @@ int QtTelnetPrivate::parsePlaintext(const QByteArray &data) {
   QString text = QString::fromLocal8Bit(data.constData(), length);
 
   if (!nocheckp && nullauth) {
-    if (!promptp.isEmpty() && promptp.indexIn(text) != -1) {
-      emit q->loggedIn();
-      nocheckp = true;
+    //    if (!promptp.pattern().isEmpty() && promptp.indexIn(text) != -1) {
+    if (!promptp.pattern().isEmpty()) {
+      QRegularExpressionMatch match = promptp.match(text);
+      if (match.hasMatch()) {
+        emit q->loggedIn();
+        nocheckp = true;
+      }
     }
   }
   if (!nocheckp && nullauth) {
-    if (!loginp.isEmpty() && loginp.indexIn(text) != -1) {
-      if (triedlogin || firsttry) {
-        emit q->message(text); // Display the login prompt
-        text.clear();
-        emit q->loginRequired(); // Get a (new) login
-        firsttry = false;
-      }
-      if (!triedlogin) {
-        q->sendData(login);
-        triedlogin = true;
+    //    if (!loginp.pattern().isEmpty() && loginp.indexIn(text) != -1) {
+    if (!loginp.pattern().isEmpty()) {
+      QRegularExpressionMatch match = loginp.match(text);
+      if (match.hasMatch()) {
+        if (triedlogin || firsttry) {
+          emit q->message(text); // Display the login prompt
+          text.clear();
+          emit q->loginRequired(); // Get a (new) login
+          firsttry = false;
+        }
+        if (!triedlogin) {
+          q->sendData(login);
+          triedlogin = true;
+        }
       }
     }
-    if (!passp.isEmpty() && passp.indexIn(text) != -1) {
-      if (triedpass || firsttry) {
-        emit q->message(text); // Display the password prompt
-        text.clear();
-        emit q->loginRequired(); // Get a (new) pass
-        firsttry = false;
-      }
-      if (!triedpass) {
-        q->sendData(pass);
-        triedpass = true;
-        // We don't have to store the password anymore
-        pass.fill(' ');
-        pass.resize(0);
+    //   if (!passp.pattern().isEmpty() && passp.indexIn(text) != -1) {
+    if (!passp.pattern().isEmpty()) {
+      QRegularExpressionMatch match = passp.match(text);
+      if (match.hasMatch()) {
+        if (triedpass || firsttry) {
+          emit q->message(text); // Display the password prompt
+          text.clear();
+          emit q->loginRequired(); // Get a (new) pass
+          firsttry = false;
+        }
+        if (!triedpass) {
+          q->sendData(pass);
+          triedpass = true;
+          // We don't have to store the password anymore
+          pass.fill(' ');
+          pass.resize(0);
+        }
       }
     }
   }
@@ -1162,7 +1177,7 @@ void QtTelnet::sendSync() {
 
     \sa login(), loggedIn()
 */
-void QtTelnet::setPromptPattern(const QRegExp &pattern) {
+void QtTelnet::setPromptPattern(const QRegularExpression &pattern) {
   d->promptp = pattern;
 }
 
@@ -1183,7 +1198,9 @@ void QtTelnet::setPromptPattern(const QRegExp &pattern) {
 
     \sa login()
 */
-void QtTelnet::setLoginPattern(const QRegExp &pattern) { d->loginp = pattern; }
+void QtTelnet::setLoginPattern(const QRegularExpression &pattern) {
+  d->loginp = pattern;
+}
 
 /*!
     \fn void QtTelnet::setLoginString(const QString &login)
@@ -1202,7 +1219,7 @@ void QtTelnet::setLoginPattern(const QRegExp &pattern) { d->loginp = pattern; }
 
     \sa login()
 */
-void QtTelnet::setPasswordPattern(const QRegExp &pattern) {
+void QtTelnet::setPasswordPattern(const QRegularExpression &pattern) {
   d->passp = pattern;
 }
 

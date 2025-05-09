@@ -41,13 +41,15 @@ BandmapInterface::BandmapInterface(QSettings &s, QObject *parent)
     case 0:
       connect(&bandmapProcess[0], SIGNAL(stateChanged(QProcess::ProcessState)),
               this, SLOT(launchBandmap1State(QProcess::ProcessState)));
-      connect(&bandmapProcess[0], SIGNAL(error(QProcess::ProcessError)), this,
+      connect(&bandmapProcess[0], SIGNAL(errorOccurred(QProcess::ProcessError)),
+              this,
               SLOT(launchShowBandmapProcessError1(QProcess::ProcessError)));
       break;
     case 1:
       connect(&bandmapProcess[1], SIGNAL(stateChanged(QProcess::ProcessState)),
               this, SLOT(launchBandmap2State(QProcess::ProcessState)));
-      connect(&bandmapProcess[1], SIGNAL(error(QProcess::ProcessError)), this,
+      connect(&bandmapProcess[1], SIGNAL(errorOccurred(QProcess::ProcessError)),
+              this,
               SLOT(launchShowBandmapProcessError2(QProcess::ProcessError)));
       break;
     }
@@ -55,9 +57,9 @@ BandmapInterface::BandmapInterface(QSettings &s, QObject *parent)
   socketUdp.bind(settings.value(s_sdr_udp, s_sdr_udp_def).toInt(),
                  QUdpSocket::ShareAddress);
   connect(&socketUdp, SIGNAL(readyRead()), this, SLOT(udpRead()));
-  connect(&socket[0], SIGNAL(error(QAbstractSocket::SocketError)), this,
+  connect(&socket[0], SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
           SLOT(socketError0(QAbstractSocket::SocketError)));
-  connect(&socket[1], SIGNAL(error(QAbstractSocket::SocketError)), this,
+  connect(&socket[1], SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
           SLOT(socketError1(QAbstractSocket::SocketError)));
   connect(&socket[0], SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
           SLOT(launchTcpSocketStateChange1(QAbstractSocket::SocketState)));

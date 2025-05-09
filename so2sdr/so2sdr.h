@@ -31,8 +31,8 @@
 #include <QThread>
 #include <QTime>
 
-#include "hamlib/rig.h"
 #include "bandmapentry.h"
+#include "hamlib/rig.h"
 #include "lineedit.h"
 #include "ui_so2sdr.h"
 
@@ -99,8 +99,8 @@ signals:
   void contestReady();
   void qsyExact1(double);
   void qsyExact2(double);
-  void setRigMode1(rmode_t, pbwidth_t);
-  void setRigMode2(rmode_t, pbwidth_t);
+  void setRigMode1(rmode_t);
+  void setRigMode2(rmode_t);
 
 private slots:
   void about();
@@ -123,7 +123,6 @@ private slots:
   void prefixCheck1(const QString &call);
   void prefixCheck2(const QString &call);
   void quit();
-  void regrab();
   void screenShot();
   void send(QByteArray text, bool stopcw = true);
   void sendCalls1(bool);
@@ -149,7 +148,6 @@ private slots:
   void switchRadios(bool switchcw = true);
   void switchTransmit(int r, int CWspeed = 0);
   void toggleStereo();
-  void ungrab();
   void updateCty();
   void updateHistory();
   void updateOptions();
@@ -269,6 +267,9 @@ private:
   QString fileName;
   QString settingsFile;
   QString autoSendCall;
+  QString textStyleSheet;
+  QString textEntryStyleSheet;
+  QString uiStyleSheet;
   QThread catThread[NRIG];
   QElapsedTimer cqTimer;
   QWidget *grabWidget;
@@ -295,7 +296,7 @@ private:
   bool checkUserDirectory();
   void clearDisplays(int nr);
   void clearLogSearch();
-  void clearWorked(int i);
+  void clearWorked(int nr);
   void clearR2CQ(int nr);
   void controlE();
   void setCqMode(int i);
@@ -340,7 +341,6 @@ private:
   void sendFunc(int i, Qt::KeyboardModifiers mode);
   void setDupeColor(int nr, bool dupe);
   void setFontSize();
-  void setUiSize();
   bool setupContest();
   void showDupesheet(int nr, bool checkboxState);
   void spaceAltD();

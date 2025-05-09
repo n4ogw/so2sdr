@@ -26,9 +26,8 @@
 #include <QStyle>
 #include <QTextStream>
 
-HelpDialog::HelpDialog(uiSize sizes, QString fileName, QWidget *parent)
+HelpDialog::HelpDialog(QString fileName, QWidget *parent)
     : QDialog(parent) {
-  setMinimumWidth(qRound(sizes.uiWidth * 80));
   setupUi(this);
   QCommonStyle style;
   connect(pushButton, SIGNAL(clicked()), this, SLOT(accept()));

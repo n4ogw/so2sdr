@@ -146,9 +146,9 @@ void MultDisplay::updateMults() {
     text.clear();
     for (int i = 0; i < mults.size(); i++) {
       if (neededMults.contains(mults.at(i))) {
-        text = text + "<font color=#AAAAAA>" + mults.at(i) + "&nbsp;";
+	text = text + "<font color=#AAAAAA>" + mults.at(i) + " ";
       } else {
-        text = text + "<font color=#FF0000>" + mults.at(i) + "&nbsp;";
+	text = text + "<font color=#FF0000>" + mults.at(i) + " ";
       }
     }
     setHtml(text);

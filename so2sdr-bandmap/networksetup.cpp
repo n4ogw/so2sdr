@@ -25,18 +25,11 @@
  *     global settings object
  * \param parent
  */
-NetworkSetup::NetworkSetup(QSettings &s, uiSize sizes, QWidget *parent)
+NetworkSetup::NetworkSetup(QSettings &s, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  tcpipaddressLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  tcpportLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  udpportLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditOffset->setFixedWidth(qRound(sizes.uiWidth * 15));
-  sampleRateLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  adjustSize();
-  setFixedSize(size());
 
-  offsetSetup = new BandOffsetSetup(s, network_t, sizes, this);
+  offsetSetup = new BandOffsetSetup(s, network_t, this);
   connect(bandOffsetPushButton, SIGNAL(clicked(bool)), offsetSetup,
           SLOT(exec()));
   updateFromSettings();

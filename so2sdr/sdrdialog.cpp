@@ -26,15 +26,9 @@
 #include <QFileDialog>
 #include <QSettings>
 
-SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent)
+SDRDialog::SDRDialog(QSettings &s, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  lineEditIP1->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditPort1->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditIP2->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditPort2->setFixedWidth(qRound(sizes.uiWidth * 15));
-  adjustSize();
-  setFixedSize(size());
 
   pathLabel[0] = labelExe1;
   pathLabel[1] = labelExe2;

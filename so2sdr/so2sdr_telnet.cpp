@@ -121,10 +121,16 @@ void So2sdr::showTelnet(bool checkboxState)
     }
   } else {
     if (!telnet) {
-      telnet = new Telnet(*settings, sizes);
+      telnet = new Telnet(*settings);
       connect(telnet, SIGNAL(done(bool)), telnetAction, SLOT(setChecked(bool)));
       connect(telnet, SIGNAL(dxSpot(QByteArray, double)), this,
               SLOT(addSpot(QByteArray, double)));
+      if (!uiStyleSheet.isEmpty()) {
+        telnet->setStyleSheet(uiStyleSheet);
+      }
+      if (!textStyleSheet.isEmpty()) {
+        telnet->TelnetTextEdit->setStyleSheet(textStyleSheet);
+      }
     }
     telnet->show();
     telnetOn = true;

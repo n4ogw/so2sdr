@@ -3,14 +3,14 @@
  <class>SettingsDialog</class>
  <widget class="QDialog" name="SettingsDialog">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModality::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>465</width>
-    <height>621</height>
+    <width>534</width>
+    <height>655</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
   <property name="maximumSize">
    <size>
     <width>565</width>
-    <height>700</height>
+    <height>900</height>
    </size>
   </property>
   <property name="font">
@@ -37,7 +37,7 @@
    </font>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::StrongFocus</enum>
+   <enum>Qt::FocusPolicy::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
@@ -49,7 +49,7 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::ExpandingFieldsGrow</enum>
+      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
      </property>
      <property name="horizontalSpacing">
       <number>5</number>
@@ -66,13 +66,26 @@
      </item>
      <item row="0" column="1">
       <widget class="QFontComboBox" name="uiFontComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>This sets the font used by most elements of the UI</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="uiFontSpinBox"/>
+      <widget class="QSpinBox" name="uiFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_11">
@@ -83,13 +96,26 @@
      </item>
      <item row="2" column="1">
       <widget class="QFontComboBox" name="textFontComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>This sets the font used in the log and lists of callsigns</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="textFontSpinBox"/>
+      <widget class="QSpinBox" name="textFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_12">
@@ -100,6 +126,12 @@
      </item>
      <item row="4" column="1">
       <widget class="QFontComboBox" name="entryFontComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>This sets the font used in the call and exchange entry lines</string>
        </property>
@@ -107,6 +139,12 @@
      </item>
      <item row="6" column="0">
       <widget class="QCheckBox" name="QSYFocusCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -122,6 +160,12 @@
      </item>
      <item row="7" column="0">
       <widget class="QCheckBox" name="FocusIndicatorsCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -137,6 +181,12 @@
      </item>
      <item row="8" column="0">
       <widget class="QCheckBox" name="ExchangeLogCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -165,7 +215,7 @@
      <item row="9" column="1">
       <widget class="QComboBox" name="AutoSendComboBox">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -207,7 +257,7 @@
      <item row="10" column="1">
       <widget class="QLineEdit" name="AutoSendLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -246,7 +296,7 @@
      <item row="11" column="1">
       <widget class="QLineEdit" name="CQRepeatLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -285,7 +335,7 @@
      <item row="12" column="1">
       <widget class="QLineEdit" name="DuelingCQLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -311,6 +361,12 @@
      </item>
      <item row="14" column="0">
       <widget class="QCheckBox" name="UDPCheckBox1">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -339,7 +395,7 @@
      <item row="15" column="1">
       <widget class="QLineEdit" name="UDPPortLineEdit1">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -368,6 +424,12 @@
      </item>
      <item row="16" column="0">
       <widget class="QCheckBox" name="UDPCheckBox2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>WSJT-X Radio 2</string>
        </property>
@@ -381,7 +443,14 @@
       </widget>
      </item>
      <item row="17" column="1">
-      <widget class="QLineEdit" name="UDPPortLineEdit2"/>
+      <widget class="QLineEdit" name="UDPPortLineEdit2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="18" column="0">
       <widget class="QLabel" name="label_5">
@@ -410,7 +479,7 @@
      <item row="18" column="1">
       <widget class="QLineEdit" name="ctyLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -439,6 +508,18 @@
      </item>
      <item row="19" column="0">
       <widget class="QCheckBox" name="kbdCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>150</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>In this mode two keyboards are mapped separately to radio1 and radio2. Sprint mode, toggle mode, and alt-D do not coexist with two keyboard mode.</string>
        </property>
@@ -457,13 +538,13 @@
      <item row="20" column="1">
       <widget class="QLineEdit" name="kbd1LineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>/dev/input device for keyboard 1</string>
+        <string>/dev/input device for keyboard 1.</string>
        </property>
       </widget>
      </item>
@@ -477,7 +558,7 @@
      <item row="21" column="1">
       <widget class="QLineEdit" name="kbd2LineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -489,6 +570,12 @@
      </item>
      <item row="22" column="0">
       <widget class="QCheckBox" name="queueCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Queue Messages</string>
        </property>
@@ -516,7 +603,14 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QSpinBox" name="entryFontSpinBox"/>
+      <widget class="QSpinBox" name="entryFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -543,10 +637,10 @@
       </font>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
@@ -583,38 +677,6 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>kbdCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>kbd1LineEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>80</x>
-     <y>270</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>297</x>
-     <y>294</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>kbdCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>kbd2LineEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>80</x>
-     <y>270</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>297</x>
-     <y>319</y>
     </hint>
    </hints>
   </connection>

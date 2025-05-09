@@ -111,6 +111,9 @@ public:
   virtual bool showQsoPtsField() const = 0;
   virtual unsigned int sntFieldShown() const { return 0; }
   bool valid(int row) const;
+  bool validMult(int ii, int j) {
+    return mults[ii].at(j)->isamult;
+  }
   virtual bool validateExchange(Qso *qso) = 0;
   bool vExch() const;
   virtual void workedMults(Qso *qso, unsigned int worked[MMAX]) const;

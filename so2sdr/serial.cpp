@@ -688,12 +688,10 @@ void RigSerial::qsyExact(double f) {
 /*! Set radio mode
  *
  * m = Hamlib mode, no checking is done
- * pb = Passband width in Hz
  */
-void RigSerial::setRigMode(rmode_t m, pbwidth_t pb) {
+void RigSerial::setRigMode(rmode_t m) {
   lock.lockForWrite();
   chgMode = m;
-  passBW = pb;
   lock.unlock();
 }
 

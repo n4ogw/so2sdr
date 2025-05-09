@@ -19,35 +19,37 @@
 #include "menustyle.h"
 #include "so2sdr.h"
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QStringList>
-#include <QCommandLineParser>
 
 int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
-    QApplication::setApplicationName("so2sdr");
-    QApplication::setApplicationVersion(Version);
+  QApplication app(argc, argv);
+  QApplication::setApplicationName("so2sdr");
+  QApplication::setApplicationVersion(Version);
 
-    QCommandLineParser parser;
-    parser.setApplicationDescription("so2sdr: a contest logging program, https://github.com/n4ogw/so2sdr");
-    parser.addHelpOption();
-    parser.addVersionOption();
-    parser.addPositionalArgument("configfile","(optional) configuration file with full path");
-    parser.process(app);
-    const QStringList args = parser.positionalArguments();
+  QCommandLineParser parser;
+  parser.setApplicationDescription(
+      "so2sdr: a contest logging program, https://github.com/n4ogw/so2sdr");
+  parser.addHelpOption();
+  parser.addVersionOption();
+  parser.addPositionalArgument("configfile",
+                               "(optional) configuration file with full path");
+  parser.process(app);
+  const QStringList args = parser.positionalArguments();
 
-    // set style that prevents menubar from grabbing focus when Alt pressed
-    app.setStyle(new MenuStyle());
+  // set style that prevents menubar from grabbing focus when Alt pressed
+  app.setStyle(new MenuStyle());
 
-    So2sdr *main = new So2sdr(args);
-    QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
+  So2sdr *main = new So2sdr(args);
+  QObject::connect(main->actionQuit, SIGNAL(triggered()), &app, SLOT(quit()));
 
-    // calls So2sdr destructor on app exit
-    main->setAttribute(Qt::WA_DeleteOnClose);
+  // calls So2sdr destructor on app exit
+  main->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (main->so2sdrOk()) {
-        return app.exec();
-    } else {
-        return -1;
-    }
+  if (main->so2sdrOk()) {
+    return app.exec();
+  } else {
+    return -1;
+  }
 }

@@ -28,7 +28,7 @@
 class NetworkSetup : public QDialog, public Ui::networkSetup {
   Q_OBJECT
 public:
-  explicit NetworkSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  explicit NetworkSetup(QSettings &s, QWidget *parent = nullptr);
   ~NetworkSetup();
   double offset(int band) const;
   bool invert(int band) const;

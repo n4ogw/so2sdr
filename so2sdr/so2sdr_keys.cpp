@@ -16,7 +16,6 @@
    along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-#include "hamlib/rig.h"
 #include "bandmapinterface.h"
 #include "cabrillodialog.h"
 #include "contestoptdialog.h"
@@ -2107,14 +2106,20 @@ void So2sdr::clearDisplays(int nr) {
 }
 
 /*!
-   Initialize two keyboard mode
+   Initialize keyboard grab or two keyboard mode
    */
 void So2sdr::twoKeyboard() {
   static bool wasGrabbing = false;
 
   if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool()) {
-    So2sdrStatusBar->showMessage("Enabling two keyboard mode", 3000);
+          .toBool() ||
+      grab) {
+    if (!grab) {
+      So2sdrStatusBar->showMessage("Enabling two keyboard mode", 3000);
+      twoKeyboardStatus->setText("<font color=#0000FF>2KB</font>");
+    } else {
+      So2sdrStatusBar->showMessage("Enabling keyboard grab", 3000);
+    }
     QCoreApplication::processEvents();
     // delays to prevent issues when switching to/from two keyboard mode
     // need a way to do this more cleanly
@@ -2154,7 +2159,7 @@ void So2sdr::twoKeyboard() {
       toggleMode = false;
       toggleStatus->clear();
     }
-    twoKeyboardStatus->setText("<font color=#0000FF>2KB</font>");
+
     for (int i = 0; i < NRIG; i++) {
       if (callFocus[i]) {
         lineEditCall[i]->setMyFocus(true);
@@ -2167,15 +2172,22 @@ void So2sdr::twoKeyboard() {
     // clear message queue
     queue.clear();
     rqueue.clear();
-    // disable grabbing
-    grabAction->setEnabled(false);
-    if (grabbing) {
-      wasGrabbing = true;
-      setGrab(false);
-      grabAction->setChecked(false);
+    // disable grabbing if in two keyboard mode
+    if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
+            .toBool()) {
+      grabAction->setEnabled(false);
+      if (grabbing) {
+        wasGrabbing = true;
+        setGrab(false);
+        grabAction->setChecked(false);
+      }
     }
   } else {
-    So2sdrStatusBar->showMessage("Disabling two keyboard mode", 3000);
+    if (!grab) {
+      So2sdrStatusBar->showMessage("Disabling two keyboard mode", 3000);
+    } else {
+      So2sdrStatusBar->showMessage("Disabling keyboard grab", 3000);
+    }
     QCoreApplication::processEvents();
     if (kbdHandler[0] || kbdHandler[1]) {
       stopTwokeyboard();
@@ -2230,7 +2242,7 @@ void So2sdr::handleKeys(int nr, int code, bool shift, bool ctrl, bool alt) {
       mod.setFlag(Qt::AltModifier, true);
     }
     // note that the following is not a memory leak; qApp will
-    // delete the even
+    // delete the event
     QKeyEvent *ev = new QKeyEvent(QEvent::KeyPress, qtkeys[code], mod, key);
 
     if (errorBox->isVisible() || cabrillo->isVisible() ||
@@ -2239,7 +2251,7 @@ void So2sdr::handleKeys(int nr, int code, bool shift, bool ctrl, bool alt) {
         radios->isVisible() || progsettings->isVisible() ||
         station->isVisible() || so2r->isVisible() || aboutOn ||
         help->isVisible()) {
-        qApp->postEvent(QApplication::focusWidget(), ev);
+      qApp->postEvent(QApplication::focusWidget(), ev);
       return;
     }
     if (FileMenu->isVisible()) {
@@ -2268,7 +2280,7 @@ void So2sdr::handleKeys(int nr, int code, bool shift, bool ctrl, bool alt) {
     }
     if (log) {
       if (log->isEditing() && log->currentEditor()) {
-        log->postEditorEvent( ev);
+        log->postEditorEvent(ev);
         return;
       }
       if (log->detailIsVisible()) {
@@ -2284,10 +2296,18 @@ void So2sdr::handleKeys(int nr, int code, bool shift, bool ctrl, bool alt) {
         qApp->postEvent(w, ev);
       }
     } else {
-      if (callFocus[nr]) {
-        qApp->postEvent(lineEditCall[nr], ev);
+      if (!grab) {
+        if (callFocus[nr]) {
+          qApp->postEvent(lineEditCall[nr], ev);
+        } else {
+          qApp->postEvent(lineEditExchange[nr], ev);
+        }
       } else {
-        qApp->postEvent(lineEditExchange[nr], ev);
+        if (callFocus[nr]) {
+          qApp->postEvent(lineEditCall[activeRadio], ev);
+        } else {
+          qApp->postEvent(lineEditExchange[activeRadio], ev);
+        }
       }
     }
   }

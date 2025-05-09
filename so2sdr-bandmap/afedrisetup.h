@@ -28,7 +28,7 @@
 class AfedriSetup : public QDialog, public Ui::afedriSetup {
   Q_OBJECT
 public:
-  explicit AfedriSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  explicit AfedriSetup(QSettings &s, QWidget *parent = nullptr);
   double offset(int band) const;
   bool invert(int band) const;
 
@@ -37,7 +37,9 @@ signals:
 
 public slots:
   void setFreq(unsigned int f) { clockFreqLabel->setText(QString::number(f)); }
-  void setActualSampleRate(unsigned int f) { realSampleRateLabel->setText(QString::number(f)); }
+  void setActualSampleRate(unsigned int f) {
+    realSampleRateLabel->setText(QString::number(f));
+  }
 
 private slots:
   void updateAfedri();

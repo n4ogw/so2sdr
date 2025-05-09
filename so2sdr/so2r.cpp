@@ -55,15 +55,14 @@ void So2r::setPtt(int nr, int state) {
   close(fd);
 }
 
-So2r::So2r(QSettings &s, const uiSize &sz, QObject *parent,
-           QWidget *widgetParent)
-    : QObject(parent), settings(s), sizes(sz) {
+So2r::So2r(QSettings &s, QObject *parent, QWidget *widgetParent)
+    : QObject(parent), settings(s) {
   microham = new MicroHam(settings, this);
   otrsp[0] = new OTRSP(settings, 0, this);
   otrsp[1] = new OTRSP(settings, 1, this);
   pport = new ParallelPort(settings);
   mini = new SO2RMini(settings);
-  so2rDialog = new So2rDialog(settings, sizes, widgetParent);
+  so2rDialog = new So2rDialog(settings, widgetParent);
   so2rDialog->hide();
   connect(so2rDialog, SIGNAL(accepted()), this, SIGNAL(So2rDialogAccepted()));
   connect(so2rDialog, SIGNAL(rejected()), this, SIGNAL(So2rDialogRejected()));

@@ -29,14 +29,9 @@
  *   Global QSettings object
  * \param parent
  */
-SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent)
+SDRDialog::SDRDialog(QSettings &s, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  tcpPortLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  udpPortLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  n1mmUdpLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  adjustSize();
-  setFixedSize(size());
 
   n1mmUdpLineEdit->setEnabled(false);
   comboBoxSdrType->addItem("Soundcard");
@@ -59,19 +54,19 @@ SDRDialog::SDRDialog(QSettings &s, uiSize sizes, QWidget *parent)
   modeComboBox->setToolTip("Panadapter mode of operation");
 
   connect(configureButton, SIGNAL(clicked()), this, SLOT(launchConfigure()));
-  soundcard = new SoundCardSetup(settings, sizes, this);
+  soundcard = new SoundCardSetup(settings, this);
   connect(soundcard, SIGNAL(PortAudioError(QString)), this,
           SIGNAL(setupErrors(QString)));
   soundcard->hide();
-  afedri = new AfedriSetup(settings, sizes, this);
+  afedri = new AfedriSetup(settings, this);
   connect(afedri, SIGNAL(afedriError(QString)), this,
           SIGNAL(setupErrors(QString)));
   afedri->hide();
-  network = new NetworkSetup(settings, sizes, this);
+  network = new NetworkSetup(settings, this);
   connect(network, SIGNAL(networkError(QString)), this,
           SIGNAL(setupErrors(QString)));
   network->hide();
-  rtl = new RtlSetup(settings, sizes, this);
+  rtl = new RtlSetup(settings, this);
   connect(rtl, SIGNAL(rtlError(QString)), this, SIGNAL(setupErrors(QString)));
   rtl->hide();
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(updateSDR()));

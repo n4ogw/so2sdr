@@ -25,24 +25,15 @@
  *     global settings object
  * \param parent
  */
-RtlSetup::RtlSetup(QSettings &s, uiSize sizes, QWidget *parent)
+RtlSetup::RtlSetup(QSettings &s, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  lineEditOffset->setFixedWidth(qRound(sizes.uiWidth * 15));
-  tunerGainLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  deviceIndexLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  IFFreqLineEdit->setFixedWidth(qRound(sizes.uiWidth * 15));
-  speedComboBox->setFixedWidth(qRound(sizes.uiWidth * 15));
-  sampleRateComboBox->setFixedWidth(qRound(sizes.uiWidth * 15));
-  bandOffsetPushButton->setFixedWidth(qRound(sizes.uiWidth * 15));
+
   sampleRateComboBox->addItem("262144");
   sampleRateComboBox->addItem("100000 (x16 avg)");
   sampleRateComboBox->addItem("128000 (x16 avg)");
 
-  adjustSize();
-  setFixedSize(size());
-
-  offsetSetup = new BandOffsetSetup(s, network_t, sizes, this);
+  offsetSetup = new BandOffsetSetup(s, network_t, this);
   connect(bandOffsetPushButton, SIGNAL(clicked(bool)), offsetSetup,
           SLOT(exec()));
   updateFromSettings();

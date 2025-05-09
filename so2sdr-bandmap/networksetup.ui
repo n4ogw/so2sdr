@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>512</width>
-    <height>500</height>
+    <width>600</width>
+    <height>800</height>
    </size>
   </property>
   <property name="font">
@@ -43,7 +43,7 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -55,10 +55,16 @@
      <item row="0" column="1">
       <widget class="QLineEdit" name="tcpipaddressLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="toolTip">
         <string>IP address of SDR</string>
@@ -75,10 +81,16 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="tcpportLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="toolTip">
         <string>TCP port number</string>
@@ -95,10 +107,16 @@
      <item row="2" column="1">
       <widget class="QLineEdit" name="udpportLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="toolTip">
         <string>UDP port number</string>
@@ -115,10 +133,16 @@
      <item row="3" column="1">
       <widget class="QComboBox" name="speedComboBox">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
        </property>
        <item>
         <property name="text">
@@ -147,10 +171,16 @@
      <item row="6" column="1">
       <widget class="QLineEdit" name="lineEditOffset">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="toolTip">
         <string>IF offset: difference in Hz from SDR center frequency and center of display.</string>
@@ -160,10 +190,16 @@
      <item row="7" column="1">
       <widget class="QCheckBox" name="checkBoxSwap">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
        </property>
        <property name="toolTip">
         <string>Invert I/Q channels. Use if spectrum is inverted.</string>
@@ -176,21 +212,21 @@
      <item row="8" column="1">
       <widget class="QPushButton" name="bandOffsetPushButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>125</width>
+         <width>150</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>250</width>
-         <height>16777215</height>
+         <width>300</width>
+         <height>100</height>
         </size>
        </property>
        <property name="text">
@@ -200,6 +236,18 @@
      </item>
      <item row="4" column="1">
       <widget class="QLineEdit" name="sampleRateLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>SDR frequency. In IF mode this should be set to the IF frequency of the radio. In RF mode this is the initial frequency set.</string>
        </property>
@@ -223,23 +271,42 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QLineEdit" name="IFFreqLineEdit"/>
+      <widget class="QLineEdit" name="IFFreqLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>300</width>
+       <height>100</height>
+      </size>
+     </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

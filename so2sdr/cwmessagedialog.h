@@ -36,7 +36,7 @@ class CWMessageDialog : public QDialog, public Ui::CWMessageDialog {
   Q_OBJECT
 
 public:
-  CWMessageDialog(ModeTypes modetype, uiSize sizes, QWidget *parent = nullptr);
+  CWMessageDialog(ModeTypes modetype, QWidget *parent = nullptr);
   ~CWMessageDialog();
   void initialize(QSettings *s);
   friend class So2sdr;

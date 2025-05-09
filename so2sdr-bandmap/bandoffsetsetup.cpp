@@ -26,13 +26,9 @@
 #include <QStandardItem>
 #include <QString>
 
-BandOffsetSetup::BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes,
-                                 QWidget *parent)
+BandOffsetSetup::BandOffsetSetup(QSettings &s, SdrType stype, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
-  tableView->setFixedWidth(qRound(sizes.uiWidth * 45));
-  adjustSize();
-  setFixedSize(size());
   sdr = stype;
   model = new QStandardItemModel(0, 3, this);
   model->setHorizontalHeaderItem(0, new QStandardItem(QString("Band")));

@@ -155,10 +155,23 @@ void Winkey::receiveInit() {
 void Winkey::loadbuff(QByteArray msg) {
   if (winkeyOpen) {
     sendBuff.append(msg);
-    sent = QString::fromLatin1(sendBuff);
+    //sent = QString::fromLatin1(sendBuff);
+    sent = sendBuff;
 
-    sent.remove('|');         // remove half spaces
-    sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel
+    //  sent.remove('|');         // remove half spaces
+    // remove |  : half spaces
+    //             0x1e : cancels buffered speed changes
+    for (int i=0;i > sent.size(); ++i) {
+      if (sent[i] == '|') {
+	sent.remove(i, 1);
+	--i;
+      }
+      if (sent[i] == 0x1e) {
+	sent.remove(0x1e, 1);
+	--i;
+      }
+    }
+    //    sent.remove(QChar(0x1e)); // this was added in So2sdr::expandMacro to cancel
                               // buffered speed change
     nchar = sent.length();
     txPtr = 0;

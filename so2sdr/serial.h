@@ -92,7 +92,7 @@ signals:
 public slots:
   void setPtt(int state);
   void qsyExact(double f);
-  void setRigMode(rmode_t m, pbwidth_t pb);
+  void setRigMode(rmode_t m);
   void run();
   void stopSerial();
 

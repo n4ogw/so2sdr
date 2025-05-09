@@ -235,7 +235,7 @@ void Afedri::set_multichannel_mode(int channel) {
   char block[size];
 
   block[0] = 9;
-  block[1] = TCP_HID_PACKET << 5; // 0xE0 TCP header
+  block[1] = (char)(TCP_HID_PACKET << 5); // 0xE0 TCP header
   block[2] = HID_GENERIC_REPORT;
   block[3] = HID_GENERIC_SET_MULTICHANNEL_COMMAND;
   switch (channel) {
@@ -314,7 +314,7 @@ void Afedri::set_broadcast_flag(bool b) {
   char block[size];
 
   block[0] = 9;
-  block[1] = TCP_HID_PACKET << 5;
+  block[1] = (char)(TCP_HID_PACKET << 5);
   block[2] = HID_GENERIC_REPORT;
   block[3] = HID_GENERIC_BROADCAST_COMMAND;
   if (b) {

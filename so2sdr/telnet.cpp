@@ -23,12 +23,8 @@
 #include "qttelnet.h"
 #include "telnet.h"
 
-Telnet::Telnet(QSettings &s, uiSize sizes, QWidget *parent)
-    : QWidget(parent), settings(s) {
-  setMinimumWidth(qRound(sizes.uiWidth * 60));
+Telnet::Telnet(QSettings &s, QWidget *parent) : QWidget(parent), settings(s) {
   setupUi(this);
-  TelnetDisconnectButton->setFixedWidth(sizes.uiWidth * 12);
-  adjustSize();
   telnet = nullptr;
   telnet = new QtTelnet();
   connect(TelnetConnectButton, SIGNAL(clicked()), this, SLOT(connectTelnet()));
@@ -67,7 +63,6 @@ Telnet::~Telnet() {
 
 void Telnet::closeEvent(QCloseEvent *event) {
   Q_UNUSED(event)
-  // disconnect
   disconnectTelnet();
 
   // update saved address list
@@ -150,8 +145,15 @@ void Telnet::showText(QString txt) {
       emit dxSpot(call.toLatin1(), f);
     }
   }
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
   txt.remove(QRegExp(
       "[^a-zA-Z/.\\d\\s]")); // remove all except letters, numbers, ., and /
+#else
+  // remove all except letters, numbers, ., and /
+  static QRegularExpression re("[^a-zA-Z/.\\d\\s]");
+  // txt.remove(QRegularExpression("[^a-zA-Z/.\\d\\s]"));
+  txt.remove(re);
+#endif
   buffer = buffer + txt;
   if (buffer.size() > MAX_TELNET_CHARS) {
     // remove text from top of buffer

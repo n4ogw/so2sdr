@@ -3,14 +3,14 @@
  <class>afedriSetup</class>
  <widget class="QDialog" name="afedriSetup">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::WindowModality::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>368</width>
-    <height>646</height>
+    <width>439</width>
+    <height>702</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,8 +27,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>370</width>
-    <height>730</height>
+    <width>500</width>
+    <height>1000</height>
    </size>
   </property>
   <property name="font">
@@ -46,7 +46,7 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
      </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -422,10 +422,10 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

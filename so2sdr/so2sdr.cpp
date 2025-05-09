@@ -80,8 +80,6 @@
 
 So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   setupUi(this);
-  setWindowFlags(Qt::Window | Qt::CustomizeWindowHint |
-                 Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
   initPointers();
   initVariables();
 
@@ -103,8 +101,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   errorBox->setModal(true);
   errorBox->setFont(QFont("Sans", 10));
 
-  setFontSize();
-  setUiSize();
+  setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
   setFocusPolicy(Qt::StrongFocus);
 
   if (!iconValid.load(dataDirectory() + "/check.png")) {
@@ -156,40 +153,28 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   // is filled out
   cat[0] = new RigSerial(0, settingsFile);
 
-  options = new ContestOptionsDialog(sizes, this);
-  connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
+  options = new ContestOptionsDialog(this);
   connect(options, SIGNAL(rescore()), this, SLOT(rescore()));
   connect(options, SIGNAL(updateOffTime()), this, SLOT(updateOffTime()));
   options->hide();
   cabrillo = new CabrilloDialog(this);
   cabrillo->hide();
-  station = new StationDialog(*settings, sizes, this);
-  connect(station, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(station, SIGNAL(rejected()), this, SLOT(regrab()));
+  station = new StationDialog(*settings, this);
   connect(station, SIGNAL(stationUpdate()), this, SLOT(stationUpdate()));
   station->hide();
-  progsettings = new SettingsDialog(*settings, sizes, this);
-  connect(progsettings, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(progsettings, SIGNAL(rejected()), this, SLOT(regrab()));
+  progsettings = new SettingsDialog(*settings, this);
   connect(progsettings, SIGNAL(settingsUpdate()), this, SLOT(settingsUpdate()));
   progsettings->hide();
-  cwMessage = new CWMessageDialog(CWType, sizes, this);
-  connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
+  cwMessage = new CWMessageDialog(CWType, this);
   cwMessage->hide();
-  ssbMessage = new SSBMessageDialog(sizes, this);
-  connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
+  ssbMessage = new SSBMessageDialog(this);
   connect(ssbMessage, SIGNAL(finished()), this, SLOT(messageFinished()));
   connect(ssbMessage, SIGNAL(sendMsg(QByteArray, bool)), this,
           SLOT(expandMacro(QByteArray, bool)));
   connect(ssbMessage, SIGNAL(recordingStatus(bool)), this,
           SLOT(showRecordingStatus(bool)));
   ssbMessage->hide();
-  radios = new RadioDialog(*settings, *cat[0], sizes, this);
-  connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
+  radios = new RadioDialog(*settings, *cat[0], this);
   radios->hide();
 
   // move radio 1 to its thread and connect signals
@@ -198,8 +183,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   connect(cat[0], SIGNAL(radioError(const QString &)), errorBox,
           SLOT(showMessage(const QString &)));
   connect(this, SIGNAL(qsyExact1(double)), cat[0], SLOT(qsyExact(double)));
-  connect(this, SIGNAL(setRigMode1(rmode_t, pbwidth_t)), cat[0],
-          SLOT(setRigMode(rmode_t, pbwidth_t)));
+  connect(this, SIGNAL(setRigMode1(rmode_t)), cat[0],
+          SLOT(setRigMode(rmode_t)));
   // start radio 2
   cat[1] = new RigSerial(1, settingsFile);
   cat[1]->moveToThread(&catThread[1]);
@@ -207,10 +192,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   connect(cat[1], SIGNAL(radioError(const QString &)), errorBox,
           SLOT(showMessage(const QString &)));
   connect(this, SIGNAL(qsyExact2(double)), cat[1], SLOT(qsyExact(double)));
-  connect(this, SIGNAL(setRigMode2(rmode_t, pbwidth_t)), cat[1],
-          SLOT(setRigMode(rmode_t, pbwidth_t)));
-  wsjtx[0] = new WsjtxCallDialog(*settings, sizes, 0, this);
-  wsjtx[1] = new WsjtxCallDialog(*settings, sizes, 1, this);
+  connect(this, SIGNAL(setRigMode2(rmode_t)), cat[1],
+          SLOT(setRigMode(rmode_t)));
+  wsjtx[0] = new WsjtxCallDialog(*settings, 0, this);
+  wsjtx[1] = new WsjtxCallDialog(*settings, 1, this);
   connect(wsjtx[0], SIGNAL(wsjtxQso(Qso *)), this, SLOT(logWsjtx(Qso *)));
   connect(wsjtx[1], SIGNAL(wsjtxQso(Qso *)), this, SLOT(logWsjtx(Qso *)));
   settings->beginGroup("WsjtxWindow1");
@@ -222,13 +207,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   wsjtx[1]->move(settings->value("pos", QPoint(400, 400)).toPoint());
   settings->endGroup();
   cwDialog = new CWDialog(*settings, this);
-  connect(cwDialog, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(cwDialog, SIGNAL(rejected()), this, SLOT(regrab()));
   cwDialog->hide();
   QDir::setCurrent(dataDirectory());
-  sdr = new SDRDialog(*settings, sizes, this);
-  connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
+  sdr = new SDRDialog(*settings, this);
   sdr->hide();
   bandmap = new BandmapInterface(*settings, this);
   connect(bandmap, SIGNAL(removeCall(double, int)), this,
@@ -237,12 +218,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   connect(bandmap, SIGNAL(qsy2(double)), cat[1], SLOT(qsyExact(double)));
   connect(bandmap, SIGNAL(sendMsg(QString)), So2sdrStatusBar,
           SLOT(showMessage(QString)));
-  notes = new NoteDialog(sizes, this);
-  connect(notes, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(notes, SIGNAL(rejected()), this, SLOT(regrab()));
+  notes = new NoteDialog(this);
   newContest = new NewDialog(this);
-  connect(newContest, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(newContest, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(newContest, SIGNAL(newContestError(QString)), errorBox,
           SLOT(showMessage(QString)));
   newContest->readContestList(dataDirectory() + "contest_list.dat");
@@ -257,32 +234,13 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   connect(actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
   connect(actionNewContest, SIGNAL(triggered()), newContest, SLOT(show()));
   connect(actionWinkey, SIGNAL(triggered()), cwDialog, SLOT(show()));
-  connect(actionWinkey, SIGNAL(triggered()), this, SLOT(ungrab()));
-  connect(cwDialog, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(cwDialog, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionStation, SIGNAL(triggered()), station, SLOT(show()));
-  connect(actionStation, SIGNAL(triggered()), this, SLOT(ungrab()));
-  connect(station, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(station, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionSettings, SIGNAL(triggered()), progsettings, SLOT(show()));
-  connect(actionSettings, SIGNAL(triggered()), this, SLOT(ungrab()));
-  connect(progsettings, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(progsettings, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionRadios, SIGNAL(triggered()), radios, SLOT(show()));
-  connect(actionRadios, SIGNAL(triggered()), this, SLOT(ungrab()));
-  connect(radios, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(radios, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionContestOptions, SIGNAL(triggered()), options, SLOT(show()));
-  connect(actionContestOptions, SIGNAL(triggered()), this, SLOT(ungrab()));
-  connect(options, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(options, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionSDR, SIGNAL(triggered()), sdr, SLOT(show()));
-  connect(actionSDR, SIGNAL(triggered()), this, SLOT(ungrab()));
   connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-  connect(sdr, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(sdr, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionHelp, SIGNAL(triggered()), this, SLOT(showHelp()));
-  connect(actionHelp, SIGNAL(triggered()), this, SLOT(ungrab()));
   connect(lineEditCall1, SIGNAL(textEdited(const QString &)), this,
           SLOT(prefixCheck1(const QString &)));
   connect(lineEditCall2, SIGNAL(textEdited(const QString &)), this,
@@ -293,13 +251,7 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
           SLOT(exchCheck2(const QString &)));
   connect(options, SIGNAL(accepted()), this, SLOT(updateOptions()));
   connect(actionCW_Messages, SIGNAL(triggered()), cwMessage, SLOT(show()));
-  connect(actionCW_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
-  connect(cwMessage, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(cwMessage, SIGNAL(rejected()), this, SLOT(regrab()));
-  connect(ssbMessage, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(ssbMessage, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionSSB_Messages, SIGNAL(triggered()), ssbMessage, SLOT(show()));
-  connect(actionSSB_Messages, SIGNAL(triggered()), this, SLOT(ungrab()));
   initDupeSheet();
   connect(bandmap, SIGNAL(bandmap1state(bool)), this, SLOT(sendCalls1(bool)));
   connect(bandmap, SIGNAL(bandmap2state(bool)), this, SLOT(sendCalls2(bool)));
@@ -318,16 +270,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
           SLOT(setChecked(bool)));
   connect(wsjtx[1], SIGNAL(wsjtxDialog(bool)), wsjtxAction2,
           SLOT(setChecked(bool)));
-
-  // ungrab keyboard when menubar menus are open
-  connect(SetupMenu, SIGNAL(aboutToShow()), this, SLOT(ungrab()));
-  connect(SetupMenu, SIGNAL(aboutToHide()), this, SLOT(regrab()));
-  connect(FileMenu, SIGNAL(aboutToShow()), this, SLOT(ungrab()));
-  connect(FileMenu, SIGNAL(aboutToHide()), this, SLOT(regrab()));
-  connect(menuWindows, SIGNAL(aboutToShow()), this, SLOT(ungrab()));
-  connect(menuWindows, SIGNAL(aboutToHide()), this, SLOT(regrab()));
-  connect(HelpMenu, SIGNAL(aboutToShow()), this, SLOT(ungrab()));
-  connect(HelpMenu, SIGNAL(aboutToHide()), this, SLOT(regrab()));
   connect(telnetAction, SIGNAL(triggered(bool)), this, SLOT(showTelnet(bool)));
 
   lineEditCall[0]->installEventFilter(this);
@@ -343,12 +285,10 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   removeEventFilter(wpmLineEditPtr[1]);
 
   contestDirectory = QDir::homePath();
-  so2r = new So2r(*settings, sizes, this, this);
+  so2r = new So2r(*settings, this, this);
   connect(so2r, SIGNAL(error(QString)), errorBox,
           SLOT(showMessage(const QString &)));
   connect(actionSo2r, SIGNAL(triggered()), so2r, SLOT(showDialog()));
-  connect(so2r, SIGNAL(So2rDialogAccepted()), this, SLOT(regrab()));
-  connect(so2r, SIGNAL(So2rDialogRejected()), this, SLOT(regrab()));
   connect(so2r, SIGNAL(setRX1(const QString &)), RX1,
           SLOT(setStyleSheet(const QString &)));
   connect(so2r, SIGNAL(setRX2(const QString &)), RX2,
@@ -371,9 +311,9 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   }
   // help dialog
   QDir::setCurrent(dataDirectory() + "/help");
-  help = new HelpDialog(sizes, "so2sdrhelp.html", this);
-  connect(help, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(help, SIGNAL(rejected()), this, SLOT(regrab()));
+  help = new HelpDialog("so2sdrhelp.html", this);
+
+  setFontSize();
 
   // start CW manager
   cw = new CWManager(*settings, this);
@@ -533,7 +473,6 @@ void So2sdr::stationUpdate() {
  */
 void So2sdr::settingsUpdate() {
   setFontSize();
-  setUiSize();
 
   switchAudio(activeRadio);
   switchTransmit(activeRadio);
@@ -590,41 +529,21 @@ void So2sdr::startCw() {
   cw->switchTransmit(activeRadio);
 }
 
-/*! regrab keyboard to last widget to have grab
- */
-void So2sdr::regrab() {
-  if (grab) {
-    grabLabel->show();
-    grabWidget->setFocus();
-    grabWidget->activateWindow();
-    grabWidget->grabKeyboard();
-    grabbing = true;
-  }
-}
-
 /*! change grab status
  */
 void So2sdr::setGrab(bool s) {
   if (s) {
     grab = true;
     grabLabel->show();
-    grabWidget->grabKeyboard();
+    twoKeyboard();
     grabbing = true;
     grabWidget->setFocus();
     grabWidget->activateWindow();
   } else {
     grab = false;
-    grabWidget->releaseKeyboard();
+    stopTwokeyboard();
     grabbing = false;
     grabLabel->hide();
-  }
-}
-
-void So2sdr::ungrab() {
-  if (grab) {
-    grabWidget->releaseKeyboard();
-    grabLabel->hide();
-    grabbing = false;
   }
 }
 
@@ -704,7 +623,6 @@ void So2sdr::openRadios() {
    Enter a log note
  */
 void So2sdr::writeNote() {
-  ungrab();
   notes->enterNote(fileName, contestDirectory, TimeDisplay->text(), grab);
 }
 
@@ -942,14 +860,12 @@ bool So2sdr::setupContest() {
   }
   cwMessage->initialize(csettings);
   ssbMessage->initialize(csettings, settings);
-  log = new Log(*csettings, *settings, sizes, this);
+  log = new Log(*csettings, *settings, this);
   log->setLatLon(station->lat(), station->lon());
   log->selectContest();
   qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
   connect(log, SIGNAL(logEditDone(QSqlRecord, QSqlRecord)), this,
           SLOT(updateSpotlistEdit(QSqlRecord, QSqlRecord)));
-  connect(log, SIGNAL(startLogEdit()), this, SLOT(ungrab()));
-  connect(log, SIGNAL(ungrab()), this, SLOT(ungrab()));
   connect(log, SIGNAL(startLogEdit()), this, SLOT(startLogEdit()));
   connect(log, SIGNAL(errorMessage(QString)), errorBox,
           SLOT(showMessage(QString)));
@@ -1059,12 +975,9 @@ bool So2sdr::setupContest() {
   qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
   connect(actionADIF, SIGNAL(triggered()), this, SLOT(exportADIF()));
   connect(actionCabrillo, SIGNAL(triggered()), this, SLOT(showCabrillo()));
-  connect(actionCabrillo, SIGNAL(triggered()), this, SLOT(ungrab()));
   connect(cabrillo, SIGNAL(accepted()), this, SLOT(exportCabrillo()));
   connect(actionImport_Cabrillo, SIGNAL(triggered()), this,
           SLOT(importCabrillo()));
-  connect(cabrillo, SIGNAL(accepted()), this, SLOT(regrab()));
-  connect(cabrillo, SIGNAL(rejected()), this, SLOT(regrab()));
   connect(actionHistory, SIGNAL(triggered()), this, SLOT(updateHistory()));
   nrSent = log->rowCount() + 1;
   updateNrDisplay();
@@ -1290,7 +1203,6 @@ void So2sdr::updateSpotlistEdit(QSqlRecord origRecord, QSqlRecord r) {
       }
     }
   }
-  regrab();
   if (!grab) {
     lineEditCall[activeRadio]->setFocus();
   }
@@ -1420,7 +1332,6 @@ void So2sdr::initLogView() {
 }
 
 void So2sdr::about() {
-  ungrab();
   aboutOn = true;
   QMessageBox::about(
       this, "SO2SDR",
@@ -1436,7 +1347,6 @@ void So2sdr::about() {
           "the License, or any later version, "
           "http://www.gnu.org/licenses/</p>");
   aboutOn = false;
-  regrab();
 }
 
 /*! update rate display.
@@ -2283,17 +2193,19 @@ void So2sdr::updateWorkedDisplay(int nr, unsigned int worked) {
       tmp = tmp + "<font color=#AAAAAA>" + log->bandLabel(i) + "</font> ";
     }
   }
-  tmp = tmp +"</span>";
+  tmp = tmp + "</span>";
   qsoWorkedLabel[nr]->setText(tmp);
 }
 
 /*!
-   clear worked Q/M display on radio i
+   clear worked Q/M display on radio nr
  */
 void So2sdr::clearWorked(int i) {
-  qsoWorkedLabel[i]->setText("<span style=\"font-family: monospace\">Q :</span>");
+  qsoWorkedLabel[i]->setText(
+      "<span style=\"font-family: monospace\">Q :</span>");
   for (int j = 0; j < MMAX; j++) {
-    multWorkedLabel[i][j]->setText("<span style=\"font-family: monospace\""+multNameLabel[j]->text()+"</span>");
+    multWorkedLabel[i][j]->setText("<span style=\"font-family: monospace\"" +
+                                   multNameLabel[j]->text() + "</span>");
   }
 }
 
@@ -2307,8 +2219,10 @@ void So2sdr::updateWorkedMult(int nr) {
   unsigned int worked[NRIG] = {0, 0};
   log->workedMults(qso[nr], worked);
   for (int ii = 0; ii < MMAX; ii++) {
-    if (multNameLabel[ii]->text().isEmpty()) continue;
-    QString tmp = "<span style=\"font-family: monospace\">" + multNameLabel[ii]->text();
+    if (multNameLabel[ii]->text().isEmpty())
+      continue;
+    QString tmp =
+        "<span style=\"font-family: monospace\">" + multNameLabel[ii]->text();
 
     if (!csettings->value(c_multsband, c_multsband_def).toBool()) {
       if (worked[ii] == (1 + 2 + 4 + 8 + 16 + 32)) {
@@ -2353,7 +2267,7 @@ bool So2sdr::enterFreqOrMode() {
   // Entered mode command string is optionally followed by a
   // passband width integer in Hz. e.g. "USB" or "USB1800".
   // String must start at the beginning (index 0) of the string.
-  QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?$");
+  // QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?$");
 
   // Allow the UI to receive values in kHz down to the Hz
   // i.e. "14250.340" will become 14250340 Hz
@@ -2382,61 +2296,63 @@ bool So2sdr::enterFreqOrMode() {
       bandmap->bandmapSetFreq(f, nr);
       bandmap->setAddOffset(cat[nr]->ifFreq(), nr);
     }
-  } else if (rx.indexIn(qso[activeRadio]->call) == 0) {
-    pbwidth_t pb = RIG_PASSBAND_NORMAL;
-    QString pass = rx.cap(2);
+  } else {
+    /*else if (rx.indexIn(qso[activeRadio]->call) == 0) {
+      pbwidth_t pb = RIG_PASSBAND_NORMAL;
+      QString pass = rx.cap(2);
 
-    if (pass.length() > 1) {
-      pb = pass.toLong();
-    }
+      if (pass.length() > 1) {
+        pb = pass.toLong();
+      }
 
-    // 0 Hz not valid!  Hamlib backends should deal with negative values
-    if (!pb)
-      pb = RIG_PASSBAND_NORMAL;
-
+      // 0 Hz not valid!  Hamlib backends should deal with negative values
+      if (!pb)
+        pb = RIG_PASSBAND_NORMAL;
+    */
     /*! @todo RTC: this will have to handle digital modes eventually as well
      */
-    if (rx.cap(1) == "CWR") {
+    if (qso[activeRadio]->call == "CWR") {
       modeTypeShown = CWType;
       if (nr == 0)
-        emit setRigMode1(RIG_MODE_CWR, pb);
+        emit setRigMode1(RIG_MODE_CWR);
       else
-        emit setRigMode2(RIG_MODE_CWR, pb);
-    } else if (rx.cap(1) == "CW") {
+        emit setRigMode2(RIG_MODE_CWR);
+    } else if (qso[activeRadio]->call == "CW") {
       modeTypeShown = CWType;
       if (nr == 0)
-        emit setRigMode1(RIG_MODE_CW, pb);
+        emit setRigMode1(RIG_MODE_CW);
       else
-        emit setRigMode2(RIG_MODE_CW, pb);
-    } else if (rx.cap(1) == "LSB") {
+        emit setRigMode2(RIG_MODE_CW);
+    } else if (qso[activeRadio]->call == "LSB") {
       modeTypeShown = PhoneType;
       if (nr == 0)
-        emit setRigMode1(RIG_MODE_LSB, pb);
+        emit setRigMode1(RIG_MODE_LSB);
       else
-        emit setRigMode2(RIG_MODE_LSB, pb);
-    } else if (rx.cap(1) == "USB") {
+        emit setRigMode2(RIG_MODE_LSB);
+    } else if (qso[activeRadio]->call == "USB") {
       modeTypeShown = PhoneType;
       if (nr == 0)
-        emit setRigMode1(RIG_MODE_USB, pb);
+        emit setRigMode1(RIG_MODE_USB);
       else
-        emit setRigMode2(RIG_MODE_USB, pb);
-    } else if (rx.cap(1) == "FM") {
+        emit setRigMode2(RIG_MODE_USB);
+    } else if (qso[activeRadio]->call == "FM") {
       modeTypeShown = PhoneType;
       if (nr == 0)
-        emit setRigMode1(RIG_MODE_FM, pb);
+        emit setRigMode1(RIG_MODE_FM);
       else
-        emit setRigMode2(RIG_MODE_FM, pb);
-    } else if (rx.cap(1) == "AM") {
+        emit setRigMode2(RIG_MODE_FM);
+    } else if (qso[activeRadio]->call == "AM") {
       modeTypeShown = PhoneType;
       if (nr == 0)
-        emit setRigMode1(RIG_MODE_AM, pb);
+        emit setRigMode1(RIG_MODE_AM);
       else
-        emit setRigMode2(RIG_MODE_AM, pb);
+        emit setRigMode2(RIG_MODE_AM);
     }
-  } else {
+  }
+  /*else {
     // Incomplete frequency or mode entered
     return false;
-  }
+    }*/
   if (modeTypeShown == PhoneType)
     ssbMessage->switchRadio(nr);
 
@@ -2520,6 +2436,10 @@ void So2sdr::updateMults(int ir, int bandOverride) {
   mults.clear();
   neededMults.clear();
   for (int i = 0; i < log->nMults(multMode); i++) {
+    // don't show invalid mults in window
+    if (!log->validMult(multMode, i))
+      continue;
+
     bool needed_band, needed;
     QByteArray mult;
     if (csettings->value(c_multsmode, c_multsmode_def).toBool()) {
@@ -2534,20 +2454,11 @@ void So2sdr::updateMults(int ir, int bandOverride) {
     mults.append(mult);
     if (csettings->value(c_multsband, c_multsband_def).toBool()) {
       if (needed_band) {
-        //  tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; //
-        //  red=needed
         neededMults.append(mult);
-      } else {
-        // tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; //
-        // grey=worked
       }
     } else {
       if (needed) {
-        // tmp = tmp + "<font color=#FF0000>" + mult + "</font> "; // red=needed
         neededMults.append(mult);
-      } else {
-        // tmp = tmp + "<font color=#AAAAAA>" + mult + "</font> "; //
-        // grey=worked
       }
     }
   }
@@ -3447,7 +3358,6 @@ void So2sdr::openFile() {
             .toBool()) {
       twoKeyboard();
     }
-    regrab();
   }
 }
 
@@ -3998,6 +3908,9 @@ void So2sdr::initVariables() {
   enterCW[1] = false;
   queue.clear();
   rqueue.clear();
+  uiStyleSheet.clear();
+  textStyleSheet.clear();
+  textEntryStyleSheet.clear();
 }
 
 /*!
@@ -4251,121 +4164,52 @@ void So2sdr::logWsjtx(Qso *qso) {
  */
 void So2sdr::setFontSize() {
   // set default UI font size
-  QString styleSheet =
+  uiStyleSheet =
       "font-family: " + settings->value(s_ui_font, s_ui_font_def).toString() +
       ";font-size: " +
       QString::number(
           settings->value(s_ui_font_size, s_ui_font_size_def).toInt()) +
       "px;";
-  setStyleSheet(styleSheet);
+  setStyleSheet(uiStyleSheet);
+  progsettings->setStyleSheet(uiStyleSheet);
+  station->setStyleSheet(uiStyleSheet);
+  radios->setStyleSheet(uiStyleSheet);
+  sdr->setStyleSheet(uiStyleSheet);
+  cwMessage->setStyleSheet(uiStyleSheet);
+  ssbMessage->setStyleSheet(uiStyleSheet);
+  wsjtx[0]->setStyleSheet(uiStyleSheet);
+  wsjtx[1]->setStyleSheet(uiStyleSheet);
+  if (telnet)
+    telnet->setStyleSheet(uiStyleSheet);
+
   // some widgets need transparent background
-  WPMLineEdit->setStyleSheet(styleSheet + " background: transparent;");
-  WPMLineEdit2->setStyleSheet(styleSheet + " background: transparent;");
+  WPMLineEdit->setStyleSheet(uiStyleSheet + " background: transparent;");
+  WPMLineEdit2->setStyleSheet(uiStyleSheet + " background: transparent;");
 
   // size of text in mult box, call box, log
-  styleSheet =
+  textStyleSheet =
       "font-family: " +
       settings->value(s_text_font, s_text_font_def).toString() +
       ";font-size: " +
       QString::number(
           settings->value(s_text_font_size, s_text_font_size_def).toInt()) +
       "px;";
-  MasterTextEdit->setStyleSheet(styleSheet);
-  MultTextEdit->setStyleSheet(styleSheet);
-  LogTableView->setStyleSheet(styleSheet);
+  MasterTextEdit->setStyleSheet(textStyleSheet);
+  MultTextEdit->setStyleSheet(textStyleSheet);
+  LogTableView->setStyleSheet(textStyleSheet);
+  if (telnet)
+    telnet->TelnetTextEdit->setStyleSheet(textStyleSheet);
 
   // size of text in entry windows
-  styleSheet =
+  textEntryStyleSheet =
       "font-family: " +
       settings->value(s_entry_font, s_entry_font_def).toString() +
       ";font-size: " +
       QString::number(
           settings->value(s_entry_font_size, s_entry_font_size_def).toInt()) +
       "px;";
-  lineEditCall1->setStyleSheet(styleSheet);
-  lineEditCall2->setStyleSheet(styleSheet);
-  lineEditExchange1->setStyleSheet(styleSheet);
-  lineEditExchange2->setStyleSheet(styleSheet);
-}
-
-/*! resize UI elements based on actual font size
- */
-void So2sdr::setUiSize() {
-  setWindowIcon(QIcon(dataDirectory() + "/icon48x48.png"));
-
-  QFont uiFont(settings->value(s_ui_font, s_ui_font_def).toString(),
-               settings->value(s_ui_font_size, s_ui_font_size_def).toInt());
-  QFontMetricsF uiFm(uiFont);
-  sizes.uiHeight = uiFm.height();
-  sizes.uiWidth = uiFm.width("0");
-
-  label_160->setFixedHeight(qRound(sizes.uiHeight));
-  label_80->setFixedHeight(qRound(sizes.uiHeight));
-  label_40->setFixedHeight(qRound(sizes.uiHeight));
-  label_20->setFixedHeight(qRound(sizes.uiHeight));
-  label_15->setFixedHeight(qRound(sizes.uiHeight));
-  label_10->setFixedHeight(qRound(sizes.uiHeight));
-  label_13->setFixedHeight(qRound(sizes.uiHeight));
-  ModeDisplay->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  ModeDisplay2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  FreqDisplay->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  FreqDisplay2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  SpeedDisplay->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  SpeedDisplay2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  WPMLineEdit->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  WPMLineEdit2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  NumLabel->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  NumLabel2->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  Sun1Label->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  Sun2Label->setFixedHeight(qRound(sizes.uiHeight * 1.25));
-  labelBearing1->setFixedWidth(qRound(sizes.uiWidth * 5));
-  labelBearing2->setFixedWidth(qRound(sizes.uiWidth * 5));
-  labelLPBearing1->setFixedWidth(qRound(sizes.uiWidth * 5));
-  labelLPBearing2->setFixedWidth(qRound(sizes.uiWidth * 5));
-
-  for (int i = 0; i < 6; i++) {
-    qsoLabel[i]->setFixedSize(
-        QSize(qRound(sizes.uiWidth * 4), qRound(sizes.uiHeight)));
-  }
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 6; j++) {
-      multLabel[i][j]->setFixedSize(
-          QSize(qRound(sizes.uiWidth * 4), qRound(sizes.uiHeight)));
-    }
-    for (int j = 0; j < 2; j++) {
-      multWorkedLabel[i][j]->setFixedSize(
-          QSize(qRound(sizes.uiWidth * 25), qRound(sizes.uiHeight)));
-    }
-    qsoWorkedLabel[i]->setFixedSize(
-        QSize(qRound(sizes.uiWidth * 25), qRound(sizes.uiHeight)));
-  }
-  TotalQsoLabel->setFixedSize(
-      QSize(qRound(sizes.uiWidth * 5), qRound(sizes.uiHeight)));
-  TotalMultLabel->setFixedSize(
-      QSize(qRound(sizes.uiWidth * 5), qRound(sizes.uiHeight)));
-  TotalMultLabel2->setFixedSize(
-      QSize(qRound(sizes.uiWidth * 5), qRound(sizes.uiHeight)));
-
-  QFont textFont(
-      settings->value(s_text_font, s_text_font_def).toString(),
-      settings->value(s_text_font_size, s_text_font_size_def).toInt());
-  QFontMetricsF textFm(textFont);
-  sizes.textHeight = textFm.height();
-  sizes.textWidth = textFm.width("0");
-
-  LogTableView->setFixedHeight(qRound(sizes.textHeight * 6));
-
-  groupBox->setFixedHeight(qRound(sizes.textHeight * 6));
-
-  QFont entryFont(
-      settings->value(s_entry_font, s_entry_font_def).toString(),
-      settings->value(s_entry_font_size, s_entry_font_size_def).toInt());
-  QFontMetricsF entryFm(entryFont);
-  sizes.entryHeight = entryFm.height();
-  sizes.entryWidth = entryFm.width("0");
-
-  for (int i = 0; i < NRIG; i++) {
-    lineEditCall[i]->setFixedHeight(qRound(sizes.entryHeight * 1.25));
-    lineEditExchange[i]->setFixedHeight(qRound(sizes.entryHeight * 1.25));
-  }
+  lineEditCall1->setStyleSheet(textEntryStyleSheet);
+  lineEditCall2->setStyleSheet(textEntryStyleSheet);
+  lineEditExchange1->setStyleSheet(textEntryStyleSheet);
+  lineEditExchange2->setStyleSheet(textEntryStyleSheet);
 }

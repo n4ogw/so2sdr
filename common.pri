@@ -1,1 +1,1 @@
-SO2SDR_INSTALL_DIR= /usr/local
+SO2SDR_INSTALL_DIR= "/usr/local"

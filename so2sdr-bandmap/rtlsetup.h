@@ -28,7 +28,7 @@
 class RtlSetup : public QDialog, public Ui::rtlSetup {
   Q_OBJECT
 public:
-  explicit RtlSetup(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  explicit RtlSetup(QSettings &s, QWidget *parent = nullptr);
   ~RtlSetup();
   double offset(int band) const;
   bool invert(int band) const;

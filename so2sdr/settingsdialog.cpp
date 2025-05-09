@@ -22,21 +22,12 @@
 #include <QMessageBox>
 #include <QSettings>
 
-SettingsDialog::SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent)
+SettingsDialog::SettingsDialog(QSettings &s, QWidget *parent)
     : QDialog(parent), settings(s) {
   setupUi(this);
 
-  AutoSendComboBox->setFixedWidth(qRound(sizes.uiWidth * 8));
-  AutoSendLineEdit->setFixedWidth(qRound(sizes.uiWidth * 5));
-  UDPPortLineEdit1->setFixedWidth(qRound(sizes.uiWidth * 5));
-  UDPPortLineEdit2->setFixedWidth(qRound(sizes.uiWidth * 5));
-  CQRepeatLineEdit->setFixedWidth(qRound(sizes.uiWidth * 5));
-  DuelingCQLineEdit->setFixedWidth(qRound(sizes.uiWidth * 5));
-  label_5->setFixedWidth(qRound(sizes.uiWidth * 8));
   AutoSendComboBox->insertItem(0, "Semi");
   AutoSendComboBox->insertItem(1, "Auto");
-  adjustSize();
-  setFixedSize(size());
   connect(settings_dialog_buttons, SIGNAL(rejected()), this,
           SLOT(rejectChanges()));
   connect(settings_dialog_buttons, SIGNAL(accepted()), this,
@@ -83,20 +74,22 @@ void SettingsDialog::loadSettings() {
   kbd2LineEdit->setText(
       settings.value(s_twokeyboard_device[1], s_twokeyboard_device_def[1])
           .toString());
-  kbd1LineEdit->setEnabled(
-      settings.value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool());
-  kbd2LineEdit->setEnabled(
-      settings.value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool());
   kbdCheckBox->setChecked(
       settings.value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool());
   queueCheckBox->setChecked(
       settings.value(s_queuemessages, s_queuemessages_def).toBool());
-  uiFontComboBox->setCurrentFont(settings.value(s_ui_font,s_ui_font_def).value<QFont>());
-  uiFontSpinBox->setValue(settings.value(s_ui_font_size,s_ui_font_size_def).toInt());
-  textFontComboBox->setCurrentFont(settings.value(s_text_font,s_text_font_def).value<QFont>());
-  textFontSpinBox->setValue(settings.value(s_text_font_size,s_text_font_size_def).toInt());
-  entryFontComboBox->setCurrentFont(settings.value(s_entry_font,s_entry_font_def).value<QFont>());
-  entryFontSpinBox->setValue(settings.value(s_entry_font_size,s_entry_font_size_def).toInt());
+  uiFontComboBox->setCurrentFont(
+      settings.value(s_ui_font, s_ui_font_def).value<QFont>());
+  uiFontSpinBox->setValue(
+      settings.value(s_ui_font_size, s_ui_font_size_def).toInt());
+  textFontComboBox->setCurrentFont(
+      settings.value(s_text_font, s_text_font_def).value<QFont>());
+  textFontSpinBox->setValue(
+      settings.value(s_text_font_size, s_text_font_size_def).toInt());
+  entryFontComboBox->setCurrentFont(
+      settings.value(s_entry_font, s_entry_font_def).value<QFont>());
+  entryFontSpinBox->setValue(
+      settings.value(s_entry_font_size, s_entry_font_size_def).toInt());
 }
 
 void SettingsDialog::updateSettings() {
@@ -123,15 +116,15 @@ void SettingsDialog::updateSettings() {
   QString tmp = uiFontComboBox->currentFont().family();
   QStringList tmpList = tmp.split('[');
   settings.setValue(s_ui_font, tmpList.at(0));
-  settings.setValue(s_ui_font_size,uiFontSpinBox->value());
+  settings.setValue(s_ui_font_size, uiFontSpinBox->value());
   tmp = textFontComboBox->currentFont().family();
   tmpList = tmp.split('[');
-  settings.setValue(s_text_font,tmpList.at(0));
-  settings.setValue(s_text_font_size,textFontSpinBox->value());
+  settings.setValue(s_text_font, tmpList.at(0));
+  settings.setValue(s_text_font_size, textFontSpinBox->value());
   tmp = entryFontComboBox->currentFont().family();
   tmpList = tmp.split('[');
-  settings.setValue(s_entry_font,tmpList.at(0));
-  settings.setValue(s_entry_font_size,entryFontSpinBox->value());
+  settings.setValue(s_entry_font, tmpList.at(0));
+  settings.setValue(s_entry_font_size, entryFontSpinBox->value());
   settings.sync();
   emit settingsUpdate();
   accept();

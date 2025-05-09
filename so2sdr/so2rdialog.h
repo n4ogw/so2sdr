@@ -35,7 +35,7 @@ class So2rDialog : public QDialog, public Ui::So2rDialog {
   Q_OBJECT
 
 public:
-  So2rDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  So2rDialog(QSettings &s, QWidget *parent = nullptr);
   ~So2rDialog();
 
 signals:

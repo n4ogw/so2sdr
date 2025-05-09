@@ -32,7 +32,7 @@ class StationDialog : public QDialog, public Ui::StationDialog {
   Q_OBJECT
 
 public:
-  StationDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  StationDialog(QSettings &s, QWidget *parent = nullptr);
   ~StationDialog();
   friend class So2sdr;
 

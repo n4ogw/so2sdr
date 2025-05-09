@@ -32,7 +32,7 @@ class Telnet : public QWidget, public Ui::TelnetDialog {
   Q_OBJECT
 
 public:
-  Telnet(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  Telnet(QSettings &s, QWidget *parent = nullptr);
   ~Telnet();
 
 signals:

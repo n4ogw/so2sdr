@@ -26,16 +26,9 @@
 #include <QSettings>
 #include <QString>
 
-RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, uiSize sizes,
-                         QWidget *parent)
+RadioDialog::RadioDialog(QSettings &s, RigSerial &cat, QWidget *parent)
     : QDialog(parent), settings(s), catptr(cat) {
   setupUi(this);
-  lineEditIp1->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditPort1->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditIp2->setFixedWidth(qRound(sizes.uiWidth * 15));
-  lineEditPort2->setFixedWidth(qRound(sizes.uiWidth * 15));
-  adjustSize();
-  setFixedSize(size());
 
   hamlibVersionLabel->setText(QString(hamlib_version));
   radioBaudComboBox[0] = Radio1BaudComboBox;

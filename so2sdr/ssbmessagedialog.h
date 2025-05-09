@@ -40,7 +40,7 @@ class SSBMessageDialog : public QDialog, public Ui::SSBMessageDialog {
   Q_OBJECT
 
 public:
-  explicit SSBMessageDialog(uiSize sizes, QWidget *parent = nullptr);
+  explicit SSBMessageDialog(QWidget *parent = nullptr);
   ~SSBMessageDialog();
   void initialize(QSettings *cs, QSettings *s);
   bool isPlaying() const { return playing; }

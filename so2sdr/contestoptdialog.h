@@ -32,7 +32,7 @@ class ContestOptionsDialog : public QDialog, public Ui::ContestOptDialog {
 
 public:
   friend class So2sdr;
-  explicit ContestOptionsDialog(uiSize sizes, QWidget *parent = nullptr);
+  explicit ContestOptionsDialog(QWidget *parent = nullptr);
   ~ContestOptionsDialog();
   void initialize(QSettings *s);
 

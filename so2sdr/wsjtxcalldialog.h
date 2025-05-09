@@ -36,8 +36,7 @@ class WsjtxCallDialog : public QDialog, public Ui::WsjtxCalls {
   Q_OBJECT
 
 public:
-  WsjtxCallDialog(QSettings &s, uiSize sizes, int nrig,
-                  QWidget *parent = nullptr);
+  WsjtxCallDialog(QSettings &s, int nrig, QWidget *parent = nullptr);
   ~WsjtxCallDialog();
   void decayCalls() {
     if (reader->isEnabled())

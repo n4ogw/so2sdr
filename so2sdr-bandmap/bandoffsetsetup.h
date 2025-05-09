@@ -50,8 +50,7 @@ class BandOffsetSetup : public QDialog, public Ui::bandOffsetSetup {
   Q_OBJECT
 
 public:
-  BandOffsetSetup(QSettings &s, SdrType stype, uiSize sizes,
-                  QWidget *parent = nullptr);
+  BandOffsetSetup(QSettings &s, SdrType stype, QWidget *parent = nullptr);
   ~BandOffsetSetup();
   bool hasOffset(int band) const;
   bool invert(int band) const;

@@ -27,7 +27,7 @@
 /*!
 Detailed qso editing dialog
 */
-DetailedEdit::DetailedEdit(uiSize sizes, QWidget *parent) : QDialog(parent) {
+DetailedEdit::DetailedEdit(QWidget *parent) : QDialog(parent) {
   setupUi(this);
   connect(this, SIGNAL(accepted()), this, SLOT(updateRecord()));
   modeComboBox->insertItem(modeComboBox->count(), "NONE", RIG_MODE_NONE);
@@ -63,9 +63,6 @@ DetailedEdit::DetailedEdit(uiSize sizes, QWidget *parent) : QDialog(parent) {
   rcvExch4LineEdit->setValidator(new UpperValidator(rcvExch4LineEdit));
   freqLineEdit->setValidator(new QIntValidator(freqLineEdit));
   callLineEdit->setFocus();
-  callLineEdit->setFixedWidth(qRound(sizes.uiWidth * 12));
-  adjustSize();
-  setFixedSize(size());
 }
 
 /*!
@@ -83,7 +80,7 @@ void DetailedEdit::loadRecord(const QSqlRecord &r, int nexchange) {
       modeComboBox->findData(QVariant(rec.value(SQL_COL_MODE))));
   adifLineEdit->setText(rec.value(SQL_COL_ADIF_MODE).toString());
   dateTimeEdit->setDateTime(QDateTime(date, time));
-  dateTimeEdit->setTimeSpec(Qt::UTC);
+  dateTimeEdit->setTimeZone(QTimeZone::UTC);
   callLineEdit->setText(rec.value(SQL_COL_CALL).toString());
   callLineEdit->deselect();
   sentExch1LineEdit->setText(rec.value(SQL_COL_SNT1).toString());

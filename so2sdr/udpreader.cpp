@@ -37,7 +37,7 @@
 UDPReader::UDPReader(int rig, QSettings &cs, QObject *parent)
     : QObject(parent), settings(cs) {
   qRegisterMetaType<QAbstractSocket::SocketError>("socketerror");
-  connect(&usocket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+  connect(&usocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this,
           SLOT(tcpError(QAbstractSocket::SocketError)));
   isOpen = false;
   maxSchema = 2;
@@ -163,7 +163,7 @@ void UDPReader::clearCalls() {
 void UDPReader::decayCalls() {
   QSqlQuery query(QSqlDatabase::database(dbName));
   query.exec("SELECT * FROM wsjtxcalls");
-  qint64 currentTime = QDateTime::currentDateTimeUtc().toSecsSinceEpoch();
+  qint64 currentTime = QDateTime::currentSecsSinceEpoch();
   QStringList updates;
   updates.clear();
   while (query.next()) {
@@ -328,7 +328,7 @@ void UDPReader::processDatagram(QNetworkDatagram datagram) {
       QTime time;
       in >> time;
       // if decode is older than max age, ignore it
-      qint64 age = time.secsTo(QDateTime::currentDateTime().toUTC().time());
+      qint64 age = time.secsTo(QDateTime::currentDateTimeUtc().time());
       if (age > decayTime) {
 	break;
       }
@@ -443,8 +443,7 @@ void UDPReader::processDatagram(QNetworkDatagram datagram) {
         query.bindValue(":conf", conf);
         // use current time rather than time from wsjtx; prevents problems when
         // day changes
-        query.bindValue(":last",
-                        QDateTime::currentDateTimeUtc().toSecsSinceEpoch());
+        query.bindValue(":last", QDateTime::currentSecsSinceEpoch());
         query.exec();
         model->select();
         while (model->canFetchMore()) {

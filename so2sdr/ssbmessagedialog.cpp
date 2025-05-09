@@ -25,7 +25,7 @@
 #include <QSettings>
 #include <QTextDocument>
 
-SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
+SSBMessageDialog::SSBMessageDialog(QWidget *parent)
     : QDialog(parent) {
   setupUi(this);
   upperValidate = new UpperValidator(this);
@@ -51,9 +51,6 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   funcEditPtr[9] = cq_f10_edit;
   funcEditPtr[10] = cq_f11_edit;
   funcEditPtr[11] = cq_f12_edit;
-  for (int i = 0; i < 12; i++) {
-    funcEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
-  }
 
   funcRecEditPtr[0] = cq_f1_rec_edit;
   funcRecEditPtr[1] = cq_f2_rec_edit;
@@ -67,9 +64,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   funcRecEditPtr[9] = cq_f10_rec_edit;
   funcRecEditPtr[10] = cq_f11_rec_edit;
   funcRecEditPtr[11] = cq_f12_rec_edit;
-  for (int i = 0; i < 12; i++) {
-    funcRecEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
-  }
+
   funcRecPtr[0] = recF1;
   funcRecPtr[1] = recF2;
   funcRecPtr[2] = recF3;
@@ -114,9 +109,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   excFuncEditPtr[9] = exc_f10_edit;
   excFuncEditPtr[10] = exc_f11_edit;
   excFuncEditPtr[11] = exc_f12_edit;
-  for (int i = 0; i < 12; i++) {
-    excFuncEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
-  }
+
   excFuncRecEditPtr[0] = exc_f1_rec_edit;
   excFuncRecEditPtr[1] = exc_f2_rec_edit;
   excFuncRecEditPtr[2] = exc_f3_rec_edit;
@@ -129,9 +122,7 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   excFuncRecEditPtr[9] = exc_f10_rec_edit;
   excFuncRecEditPtr[10] = exc_f11_rec_edit;
   excFuncRecEditPtr[11] = exc_f12_rec_edit;
-  for (int i = 0; i < 12; i++) {
-    excFuncRecEditPtr[i]->setFixedWidth(qRound(sizes.uiWidth * 16));
-  }
+
   excFuncRecPtr[0] = recExcF1;
   excFuncRecPtr[1] = recExcF2;
   excFuncRecPtr[2] = recExcF3;
@@ -192,16 +183,12 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   otherRecGroup.addButton(recCall, 6);
   otherPlayGroup.addButton(playCall, 6);
 
-  connect(&recGroup, SIGNAL(buttonClicked(int)), this, SLOT(recButtons(int)));
-  connect(&excRecGroup, SIGNAL(buttonClicked(int)), this,
-          SLOT(excRecButtons(int)));
-  connect(&playGroup, SIGNAL(buttonClicked(int)), this, SLOT(playButtons(int)));
-  connect(&excPlayGroup, SIGNAL(buttonClicked(int)), this,
-          SLOT(playExcButtons(int)));
-  connect(&otherRecGroup, SIGNAL(buttonClicked(int)), this,
-          SLOT(otherRecButtons(int)));
-  connect(&otherPlayGroup, SIGNAL(buttonClicked(int)), this,
-          SLOT(otherPlayButtons(int)));
+  connect(&recGroup, SIGNAL(idClicked(int)), this, SLOT(recButtons(int)));
+  connect(&excRecGroup, SIGNAL(idClicked(int)), this,SLOT(excRecButtons(int)));
+  connect(&playGroup, SIGNAL(idClicked(int)), this, SLOT(playButtons(int)));
+  connect(&excPlayGroup, SIGNAL(idClicked(int)), this, SLOT(playExcButtons(int)));
+  connect(&otherRecGroup, SIGNAL(idClicked(int)), this, SLOT(otherRecButtons(int)));
+  connect(&otherPlayGroup, SIGNAL(idClicked(int)), this, SLOT(otherPlayButtons(int)));
 
   for (int i = 0; i < N_FUNC; i++) {
     funcEditPtr[i]->setValidator(upperValidate);
@@ -237,8 +224,6 @@ SSBMessageDialog::SSBMessageDialog(uiSize sizes, QWidget *parent)
   if (!scriptProcess)
     scriptProcess = new QProcess();
   scriptProcess->setWorkingDirectory(userDirectory() + "/wav");
-  adjustSize();
-  setFixedSize(size());
 }
 
 void SSBMessageDialog::playButtons(int id) {

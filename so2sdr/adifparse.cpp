@@ -69,7 +69,7 @@ bool ADIFParse::parse(QByteArray data, Qso *qso) {
   QList<QByteArray> elements = data.split('<');
 
   QDateTime time;
-  time.setTimeSpec(Qt::UTC);
+  time.setTimeZone(QTimeZone::UTC);
   QByteArray key, val;
   for (int i = 0; i < elements.size(); i++) {
     parseBit(elements.at(i), key, val);

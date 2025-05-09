@@ -70,7 +70,7 @@ private:
   int winkeySpeedPot;
   int winkeyVersion;
   QByteArray sendBuff;
-  QString sent;
+  QByteArray sent;
   QSettings &settings;
   void closeWinkey();
   void openWinkey2();

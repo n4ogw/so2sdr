@@ -25,7 +25,7 @@
   <property name="maximumSize">
    <size>
     <width>1000</width>
-    <height>700</height>
+    <height>800</height>
    </size>
   </property>
   <property name="font">
@@ -60,10 +60,10 @@
         </size>
        </property>
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Shape::StyledPanel</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+        <enum>QFrame::Shadow::Raised</enum>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
@@ -140,10 +140,10 @@
         </size>
        </property>
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Shape::StyledPanel</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+        <enum>QFrame::Shadow::Raised</enum>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -202,15 +202,15 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="sizeConstraint">
-        <enum>QLayout::SetMinimumSize</enum>
+        <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
        </property>
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
+          <enum>QSizePolicy::Policy::MinimumExpanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>

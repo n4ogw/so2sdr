@@ -19,7 +19,7 @@
 #include "lineedit.h"
 #include <QCoreApplication>
 
-LineEdit::LineEdit(QWidget *parent = nullptr) : QLineEdit(parent) {
+LineEdit::LineEdit(QWidget *parent) : QLineEdit(parent) {
   myFocus = false;
   installEventFilter(this);
 }

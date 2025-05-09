@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>518</height>
+    <width>457</width>
+    <height>614</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="maximumSize">
    <size>
     <width>600</width>
-    <height>661</height>
+    <height>1000</height>
    </size>
   </property>
   <property name="font">
@@ -43,7 +43,7 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
      </property>
      <item row="4" column="0">
       <widget class="QLabel" name="label_3">
@@ -55,7 +55,7 @@
      <item row="4" column="1">
       <widget class="QComboBox" name="comboBoxIDNumber">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -91,7 +91,7 @@
      <item row="5" column="1">
       <widget class="QLineEdit" name="tcpPortLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -111,7 +111,7 @@
      <item row="6" column="1">
       <widget class="QLineEdit" name="udpPortLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -130,6 +130,12 @@
      </item>
      <item row="7" column="1">
       <widget class="QCheckBox" name="n1mmUdpCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>listen for udp broadcasts from N1MM (experimental)</string>
        </property>
@@ -145,7 +151,7 @@
      <item row="8" column="1">
       <widget class="QLineEdit" name="n1mmUdpLineEdit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -165,7 +171,7 @@
      <item row="11" column="1">
       <widget class="QComboBox" name="comboBoxSdrType">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -175,7 +181,7 @@
      <item row="12" column="1">
       <widget class="QPushButton" name="configureButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -195,7 +201,7 @@
      <item row="13" column="1">
       <widget class="QLineEdit" name="lineEditIntegTime">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -208,7 +214,7 @@
      <item row="14" column="1">
       <widget class="QCheckBox" name="cqFinderCallsCheckbox">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -231,7 +237,7 @@
      <item row="15" column="1">
       <widget class="QCheckBox" name="reverseScrollCheckBox">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -256,7 +262,14 @@
       </widget>
      </item>
      <item row="9" column="1">
-      <widget class="QComboBox" name="modeComboBox"/>
+      <widget class="QComboBox" name="modeComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="16" column="0">
       <widget class="QLabel" name="label_10">
@@ -267,6 +280,12 @@
      </item>
      <item row="16" column="1">
       <widget class="QCheckBox" name="txStopCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="toolTip">
         <string>Stop bandmap during transmit</string>
        </property>
@@ -304,19 +323,53 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QFontComboBox" name="fontComboBox"/>
+      <widget class="QFontComboBox" name="fontComboBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="uiFontSpinBox"/>
+      <widget class="QSpinBox" name="uiFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="scaleFontSpinBox"/>
+      <widget class="QSpinBox" name="scaleFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="callFontSpinBox"/>
+      <widget class="QSpinBox" name="callFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item row="10" column="1">
       <widget class="QComboBox" name="rfautoDragCombo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <item>
         <property name="text">
          <string>recenter on radio tune</string>
@@ -341,16 +394,16 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

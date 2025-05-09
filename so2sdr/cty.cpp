@@ -173,7 +173,7 @@ int Cty::idPfx(Qso *qso, bool &qsy) const {
   // Check for mode strings with mode names e.g. "USB"
   // This will optionally be followed by an integer for
   // passband width in Hz of 2-5 digits.
-  QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?(;)?$");
+  //  QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?(;)?$");
 
   // is this a qsy frequency?
   bool ok = false;
@@ -182,8 +182,8 @@ int Cty::idPfx(Qso *qso, bool &qsy) const {
   int n = qRound(1000 * qso->call.toDouble(&ok));
 
   // semicolon indicates 2nd-radio qsy
-  if (n || ok == true || qso->call.contains(";") ||
-      (rx.indexIn(qso->call) == 0)) {
+  if (n || ok == true || qso->call.contains(";")) { // ||
+    //      (rx.indexIn(qso->call) == 0)) {
     qso->country = -1;
     qso->country_name.clear();
     qso->PfxName.clear();

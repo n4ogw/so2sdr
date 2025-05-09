@@ -19,11 +19,9 @@
 #include "keyboardhandler.h"
 #include <QDebug>
 #include <dirent.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
 #include <poll.h>
-#include <signal.h>
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -39,6 +37,9 @@ KeyboardHandler::KeyboardHandler(const QString &deviceName, QObject *parent)
 void KeyboardHandler::setDevice(const QString &d) { device = d; }
 
 void KeyboardHandler::run() {
+  static bool shift = false;
+  static bool alt = false;
+  static bool ctrl = false;
   struct input_event ev;
   int size = sizeof(struct input_event);
   struct pollfd pfd[1];
@@ -63,43 +64,44 @@ void KeyboardHandler::run() {
           if (rd != size)
             break;
           // value 1 catches single keypresses; value 2 catches autorepeat
-          bool shift = false;
-          bool alt = false;
-          bool ctrl = false;
-          if (ev.type == EV_KEY && ((ev.value == 1) || ev.value == 2)) {
-            switch (ev.code) {
-            case KEY_LEFTSHIFT:
-            case KEY_RIGHTSHIFT:
-              shift = true;
-              break;
-            case KEY_LEFTALT:
-            case KEY_RIGHTALT:
-              alt = true;
-              break;
-            case KEY_LEFTCTRL:
-            case KEY_RIGHTCTRL:
-              ctrl = true;
-              break;
-            default:
-              emit readKey(ev.code, shift, ctrl, alt);
-              break;
-            }
-          } else if (ev.type == EV_KEY && ev.value == 0) {
-            switch (ev.code) {
-            case KEY_LEFTSHIFT:
-            case KEY_RIGHTSHIFT:
-              shift = false;
-              break;
-            case KEY_LEFTALT:
-            case KEY_RIGHTALT:
-              alt = false;
-              break;
-            case KEY_LEFTCTRL:
-            case KEY_RIGHTCTRL:
-              ctrl = false;
-              break;
-            default:
-              break;
+
+          if (ev.type == EV_KEY) {
+            if ((ev.value == 1) || (ev.value == 2)) {
+              switch (ev.code) {
+              case KEY_LEFTSHIFT:
+              case KEY_RIGHTSHIFT:
+                shift = true;
+                break;
+              case KEY_LEFTALT:
+              case KEY_RIGHTALT:
+                alt = true;
+                break;
+              case KEY_LEFTCTRL:
+              case KEY_RIGHTCTRL:
+                ctrl = true;
+                break;
+              default:
+                emit readKey(ev.code, shift, ctrl, alt);
+                break;
+              }
+              // value = 0 is a key release
+            } else if (ev.value == 0) {
+              switch (ev.code) {
+              case KEY_LEFTSHIFT:
+              case KEY_RIGHTSHIFT:
+                shift = false;
+                break;
+              case KEY_LEFTALT:
+              case KEY_RIGHTALT:
+                alt = false;
+                break;
+              case KEY_LEFTCTRL:
+              case KEY_RIGHTCTRL:
+                ctrl = false;
+                break;
+              default:
+                break;
+              }
             }
           }
         }

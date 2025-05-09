@@ -39,7 +39,7 @@ class Log : public QObject {
   Q_OBJECT
 
 public:
-  Log(QSettings &cs, QSettings &s, uiSize sizes, QObject *parent);
+  Log(QSettings &cs, QSettings &s, QObject *parent);
   ~Log();
 
   void addQso(Qso *qso);
@@ -108,6 +108,13 @@ public:
   void startDetailedEdit();
   void updateHistory();
   bool validateExchange(Qso *qso);
+  bool validMult(int ii, int j) {
+    if (contest) {
+      return contest->validMult(ii, j);
+    } else
+      return false;
+  }
+
   void workedMults(Qso *qso, unsigned int worked[MMAX]) const;
   void zeroScore();
   int zoneType() const;
@@ -117,7 +124,6 @@ signals:
   void clearDupe();
   void dataChanged(QModelIndex, QModelIndex);
   void errorMessage(QString);
-  void grab();
   void logEditDone(QSqlRecord, QSqlRecord);
   void multByBandEnabled(bool);
   void progressCnt(int);
@@ -127,7 +133,6 @@ signals:
   void setExch3(const QString &);
   void setExch4(const QString &);
   void startLogEdit();
-  void ungrab();
   void update();
 
 public slots:

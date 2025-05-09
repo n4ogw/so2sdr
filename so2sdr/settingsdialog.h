@@ -30,7 +30,7 @@ class SettingsDialog : public QDialog, public Ui::SettingsDialog {
   Q_OBJECT
 
 public:
-  SettingsDialog(QSettings &s, uiSize sizes, QWidget *parent = nullptr);
+  SettingsDialog(QSettings &s, QWidget *parent = nullptr);
   ~SettingsDialog();
   friend class So2sdr;
 
