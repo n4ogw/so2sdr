@@ -18,7 +18,6 @@
 */
 #ifndef LINEEDIT_H
 #define LINEEDIT_H
-#include "defines.h"
 #include <QEvent>
 #include <QLineEdit>
 #include <QObject>

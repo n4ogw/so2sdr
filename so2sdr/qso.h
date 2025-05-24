@@ -18,8 +18,8 @@
  */
 #ifndef QSO_H
 #define QSO_H
-#include "hamlib/rig.h"
 #include "defines.h"
+#include "hamlib/rig.h"
 #include <QByteArray>
 #include <QDateTime>
 
@@ -39,9 +39,11 @@ public:
   bool isMobile;
   bool isRover;
   bool valid;
+  bool secondRadioQsy;
   int band;
   int bandColumn;
   double freq;
+  double qsyFreq;
   int mult[MMAX];
   int newmult[MMAX];
   bool isnewmult[MMAX];
@@ -53,6 +55,7 @@ public:
   QByteArray *snt_exch;
   QDateTime time;
   rmode_t mode;
+  rmode_t qsyMode;
   ModeTypes modeType;
 
   bool isamult[MMAX];

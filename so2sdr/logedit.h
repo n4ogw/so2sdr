@@ -19,8 +19,6 @@
 #ifndef LOGEDIT_H
 #define LOGEDIT_H
 
-#include "contest.h"
-#include "defines.h"
 #include "utils.h"
 #include <QApplication>
 #include <QEvent>

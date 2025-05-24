@@ -21,7 +21,6 @@
 
 #include "cwmanager.h"
 #include "ui_cwdialog.h"
-#include "winkey.h"
 #include <QSettings>
 
 class QString;

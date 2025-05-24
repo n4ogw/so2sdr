@@ -58,8 +58,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
   } else {
     kbdNr = 0;
   }
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool()) {
+  if (twokeyboard) {
     activeRadioNr = kbdNr;
   } else {
     activeRadioNr = activeRadio;
@@ -69,7 +68,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
     return QObject::eventFilter(o, e);
   }
   // out-of-focus event: refocus line edits
-  if (grabbing && e->type() == QEvent::FocusOut) {
+  if ((grab || twokeyboard) && e->type() == QEvent::FocusOut) {
     QFocusEvent *ev = static_cast<QFocusEvent *>(e);
     if (ev->reason() == Qt::MouseFocusReason ||
         ev->reason() == Qt::ActiveWindowFocusReason) {
@@ -94,7 +93,8 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
         setEntryFocus(activeRadio);
         return true;
       }
-      if (lineEditExchange[i]->underMouse()) {
+      if (lineEditExchange[i]->underMouse() &&
+          lineEditExchange[i]->isEnabled()) {
         if (activeRadio != i) {
           switchRadios(false);
         }
@@ -194,9 +194,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
       break;
     case Qt::Key_D: // alt-D
       // alt-D not allowed in two keyboard mode
-      if (mod == Qt::AltModifier &&
-          !settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-               .toBool()) {
+      if (mod == Qt::AltModifier && twokeyboard) {
         altd();
         r = true;
       }
@@ -244,9 +242,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
       break;
     case Qt::Key_Q: // alt-Q : auto-repeating cq
       // this is incompatible with two keyboard mode
-      if (mod == Qt::AltModifier &&
-          !settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-               .toBool()) {
+      if (mod == Qt::AltModifier && !twokeyboard) {
         autoCQActivate(autoCQMode ^ 1);
         r = true;
       }
@@ -266,9 +262,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
       // if radio switched during alt-D process, clear altD unless
       // an alt-d qso is in progress (altDActive==3)
       if (mod == Qt::AltModifier || mod == Qt::ControlModifier) {
-        if (!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-                 .toBool() &&
-            (altDActive == 1 || altDActive == 2)) {
+        if (!twokeyboard && (altDActive == 1 || altDActive == 2)) {
           QPalette palette(lineEditCall[altDActiveRadio]->palette());
           palette.setColor(QPalette::Base, CQ_COLOR);
           lineEditCall[altDActiveRadio]->setPalette(palette);
@@ -523,9 +517,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
       r = true;
       break;
     case Qt::Key_Minus:
-      if (mod == Qt::ControlModifier &&
-          !settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-               .toBool()) {
+      if (mod == Qt::ControlModifier && !twokeyboard) {
         duelingCQActivate(duelingCQMode ^ 1);
       } else if (mod == Qt::AltModifier) {
         autoSendActivate(autoSend ^ 1);
@@ -597,7 +589,7 @@ void So2sdr::altd() {
     return;
 
   // not available in two keyboard mode
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool())
+  if (twokeyboard)
     return;
 
   // wipe alt-d if already active (toggle off)
@@ -676,8 +668,7 @@ void So2sdr::keyCtrlUp(int nr) {
     bandmap->nextFreq(nr, true);
   }
   // in two keyboard mode, restore focus so cursor appears
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool()) {
+  if (twokeyboard) {
     lineEditExchange[nr]->setMyFocus(false);
     lineEditCall[nr]->setMyFocus(true);
   }
@@ -692,7 +683,7 @@ void So2sdr::down(int nr) {
     // method to get to exch w/o CW
     if (!lineEditCall[nr]->text().simplified().isEmpty()) {
       excMode[nr] = true;
-      lineEditExchange[nr]->show();
+      lineEditExchange[nr]->setEnabled(true);
       prefillExch(nr);
     } else {
       return;
@@ -717,8 +708,7 @@ void So2sdr::keyCtrlDn(int nr) {
     bandmap->nextFreq(nr, false);
   }
   // in two keyboard mode, restore focus so cursor appears
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool()) {
+  if (twokeyboard) {
     lineEditExchange[nr]->setMyFocus(false);
     lineEditCall[nr]->setMyFocus(true);
   }
@@ -770,8 +760,7 @@ void So2sdr::backSlash(int kbdNr) {
   // 4) exchange has been sent
 
   // two keyboard mode: set focus based on keyboard number
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool()) {
+  if (twokeyboard) {
     activeRadio = kbdNr;
   }
 
@@ -867,7 +856,7 @@ void So2sdr::backSlash(int kbdNr) {
     // exit echange mode
     excMode[activeRadio] = false;
     if (cqMode[activeRadio]) {
-      lineEditExchange[activeRadio]->hide();
+      lineEditExchange[activeRadio]->setEnabled(false);
     }
 
     // check for new call entered in exchange line
@@ -1001,7 +990,7 @@ void So2sdr::spaceSP(int nr) {
    this is not compatible with two keyboard mode
  */
 void So2sdr::spaceAltD() {
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool())
+  if (twokeyboard)
     return;
   if (autoCQMode) {
     autoCQModePause = true;
@@ -1039,7 +1028,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
    switchRadios()
  */
 {
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool())
+  if (twokeyboard)
     return;
 
   switch (level) {
@@ -1153,8 +1142,7 @@ void So2sdr::altDEnter(int level, Qt::KeyboardModifiers mod)
  */
 void So2sdr::enter(Qt::KeyboardModifiers mod, int kbdNr) {
   // two keyboard mode: set focus based on keyboard number
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool()) {
+  if (twokeyboard) {
     activeRadio = kbdNr;
   } else if (mod == Qt::AltModifier && !duelingCQMode) {
     // enable/disable if alt-Enter, unless dueling CQ (dependent on toggle)
@@ -1172,9 +1160,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod, int kbdNr) {
       return;
     }
   }
-  if (!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-           .toBool() &&
-      toggleMode) {
+  if (!twokeyboard && toggleMode) {
     switchTransmit(activeRadio);
   }
   int i1;
@@ -1392,7 +1378,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod, int kbdNr) {
   // set exc mode
   if (enterState[i1][i2][i3][i4] & 1024) {
     excMode[activeRadio] = true;
-    lineEditExchange[activeRadio]->show();
+    lineEditExchange[activeRadio]->setEnabled(true);
   }
 
   // focus exchange
@@ -1593,7 +1579,7 @@ void So2sdr::enter(Qt::KeyboardModifiers mod, int kbdNr) {
   if (enterState[i1][i2][i3][i4] & 2048) {
     excMode[activeRadio] = false;
     if (cqMode[activeRadio]) {
-      lineEditExchange[activeRadio]->hide();
+      lineEditExchange[activeRadio]->setEnabled(false);
     }
     editingExchange[activeRadio] = false;
   }
@@ -1678,7 +1664,7 @@ void So2sdr::prefillExch(int nr) {
    <li> return focus to exch field      4=16
    <li> exit Exc mode                   5=32
    <li> set ExchangeSent false          6=64
-   <li> reset cwDialog output port        7=128
+   <li> reset cwDialog output port      7=128
    <li> clear alt-D calls               8=256
    <li> clear radio2 cq status          9=512
    <li> reset alt-D without deleting call 10=1024
@@ -1698,8 +1684,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod, int kbdNr) {
 
   ModeTypes mode;
   // two keyboard mode: only apply to 1 radio, determined by kbdNr
-  if (!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-           .toBool()) {
+  if (!twokeyboard) {
     mode = cat[activeTxRadio]->modeType();
     activeRadioNr = activeRadio;
   } else {
@@ -1735,12 +1720,8 @@ void So2sdr::esc(Qt::KeyboardModifiers mod, int kbdNr) {
   if (mod != Qt::AltModifier) {
     switch (mode) {
     case CWType: {
-      if ((!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-                .toBool() &&
-           cw->isSending()) ||
-          (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-               .toBool() &&
-           cw->isSending() && activeRadio == activeRadioNr)) {
+      if ((!twokeyboard && cw->isSending()) ||
+          (twokeyboard && cw->isSending() && activeRadio == activeRadioNr)) {
         cw->cancelcw();
         // de-activate dueling-CQ
         if (duelingCQMode)
@@ -1762,12 +1743,9 @@ void So2sdr::esc(Qt::KeyboardModifiers mod, int kbdNr) {
       break;
     }
     case PhoneType: {
-      if ((!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-                .toBool() &&
-           ssbMessage->isPlaying()) ||
-          (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-               .toBool() &&
-           ssbMessage->isPlaying() && activeRadio == activeRadioNr)) {
+      if ((!twokeyboard && ssbMessage->isPlaying()) ||
+          (twokeyboard && ssbMessage->isPlaying() &&
+           activeRadio == activeRadioNr)) {
         ssbMessage->cancelMessage();
       } else {
         expandMacro(
@@ -1807,7 +1785,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod, int kbdNr) {
       altDActive = 2;
 
       // hide exchange line
-      lineEditExchange[activeRadio]->hide();
+      lineEditExchange[activeRadio]->setEnabled(false);
       validLabel[activeRadio]->clear();
       editingExchange[activeRadio] = false;
 
@@ -1898,7 +1876,7 @@ void So2sdr::esc(Qt::KeyboardModifiers mod, int kbdNr) {
   // exit exchange mode
   if (x & 32) {
     excMode[activeRadioNr] = false;
-    lineEditExchange[activeRadioNr]->hide();
+    lineEditExchange[activeRadioNr]->setEnabled(false);
     cqQsoInProgress[activeRadioNr] = false;
     editingExchange[activeRadioNr] = false;
   }
@@ -2106,26 +2084,60 @@ void So2sdr::clearDisplays(int nr) {
 }
 
 /*!
-   Initialize keyboard grab or two keyboard mode
+   Initialize or disable keyboard grab or two keyboard mode
    */
 void So2sdr::twoKeyboard() {
   static bool wasGrabbing = false;
+  static bool wasTwokeyboard = false;
 
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-          .toBool() ||
-      grab) {
-    if (!grab) {
-      So2sdrStatusBar->showMessage("Enabling two keyboard mode", 3000);
-      twoKeyboardStatus->setText("<font color=#0000FF>2KB</font>");
-    } else {
-      So2sdrStatusBar->showMessage("Enabling keyboard grab", 3000);
-    }
+  // no change from current settings, do nothing
+  if ((grab == wasGrabbing) && (wasTwokeyboard == twokeyboard)) {
+    return;
+  }
+
+  // grab turned off
+  if (wasGrabbing && !grab) {
+    So2sdrStatusBar->showMessage("Disabling keyboard grab", 3000);
     QCoreApplication::processEvents();
-    // delays to prevent issues when switching to/from two keyboard mode
-    // need a way to do this more cleanly
-    usleep(700000);
+    stopKeyboardHandler();
+    wasGrabbing = false;
+    grab = false;
+    grabLabel->hide();
+    grabAction->setChecked(false);
+    // hack to restore correct alt key behavior for menubar
+    menubar->grabKeyboard();
+    menubar->releaseKeyboard();
+  }
+  // two keyboard turned off
+  if (wasTwokeyboard && !twokeyboard) {
+    So2sdrStatusBar->showMessage("Disabling two keyboard mode", 3000);
+    QCoreApplication::processEvents();
+    stopKeyboardHandler();
+    twoKeyboardStatus->clear();
+    wasTwokeyboard = false;
+    twokeyboardAction->setChecked(false);
+    // hack to restore correct alt key behavior for menubar
+    menubar->grabKeyboard();
+    menubar->releaseKeyboard();
+  }
+  // grab turned on
+  if (!wasGrabbing && grab) {
+    wasGrabbing = true;
+    grabLabel->show();
+    So2sdrStatusBar->showMessage("Enabling keyboard grab", 3000);
+  }
+  // two keyboard turned on
+  if (!wasTwokeyboard && twokeyboard) {
+    wasTwokeyboard = true;
+    twoKeyboardStatus->setText("<font color=#0000FF>2KB</font>");
+    So2sdrStatusBar->showMessage("Enabling two keyboard mode", 3000);
+  }
+  if (grab || twokeyboard) {
+    QCoreApplication::processEvents();
+    usleep(500000);
+    // stop and reset devices
     if (kbdHandler[0] && kbdHandler[1]) {
-      stopTwokeyboard();
+      stopKeyboardHandler();
       kbdHandler[0]->setDevice(
           settings->value(s_twokeyboard_device[0], s_twokeyboard_device_def[0])
               .toString());
@@ -2153,13 +2165,11 @@ void So2sdr::twoKeyboard() {
     for (int i = 0; i < NRIG; i++) {
       kbdThread[i].start();
     }
-    usleep(700000);
-
+    usleep(50000);
     if (toggleMode) {
       toggleMode = false;
       toggleStatus->clear();
     }
-
     for (int i = 0; i < NRIG; i++) {
       if (callFocus[i]) {
         lineEditCall[i]->setMyFocus(true);
@@ -2172,38 +2182,12 @@ void So2sdr::twoKeyboard() {
     // clear message queue
     queue.clear();
     rqueue.clear();
-    // disable grabbing if in two keyboard mode
-    if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-            .toBool()) {
-      grabAction->setEnabled(false);
-      if (grabbing) {
-        wasGrabbing = true;
-        setGrab(false);
-        grabAction->setChecked(false);
-      }
-    }
-  } else {
-    if (!grab) {
-      So2sdrStatusBar->showMessage("Disabling two keyboard mode", 3000);
-    } else {
-      So2sdrStatusBar->showMessage("Disabling keyboard grab", 3000);
-    }
-    QCoreApplication::processEvents();
-    if (kbdHandler[0] || kbdHandler[1]) {
-      stopTwokeyboard();
-    }
-    twoKeyboardStatus->clear();
-    if (wasGrabbing) {
-      setGrab(true);
-      grabAction->setChecked(true);
-    }
-    grabAction->setEnabled(true);
   }
 }
 
 /*!
  * \brief So2sdr::slot connected to KeyboardHandler for keyboard 1
- *   used in two keyboard mode
+ *   used in two keyboard or grab mode
  * \param code : keycode
  * \param shift, ctrl, alt : indicate presence of key modifiers
  */
@@ -2213,7 +2197,7 @@ void So2sdr::kbd1(int code, bool shift, bool ctrl, bool alt) {
 
 /*!
  * \brief So2sdr::slot connected to KeyboardHandler for keyboard 2
- *   used in two keyboard mode
+ *   used in two keyboard or grab mode
  * \param code : keycode
  * \param shift, ctrl, alt : indicate presence of key modifiers
  */
@@ -2313,9 +2297,9 @@ void So2sdr::handleKeys(int nr, int code, bool shift, bool ctrl, bool alt) {
   }
 }
 
-/*! Disable two keyboard mode
+/*! Disable keyboard handlers used for grab/twokeyboard
  */
-void So2sdr::stopTwokeyboard() {
+void So2sdr::stopKeyboardHandler() {
   for (int i = 0; i < NRIG; i++) {
     if (kbdHandler[i]) {
       kbdHandler[i]->quitHandler();

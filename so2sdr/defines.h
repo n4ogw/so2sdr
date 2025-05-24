@@ -427,9 +427,6 @@ const QString s_entry_font_def = QStringLiteral("sans");
 const QString s_entry_font_size = QStringLiteral("entryfont/size");
 const int s_entry_font_size_def = 12;
 
-const QString s_twokeyboard_enable = QStringLiteral("twokeyboard/enable");
-const bool s_twokeyboard_enable_def = false;
-
 const QString s_twokeyboard_device[NRIG] = {
     QStringLiteral("twokeyboard/device1"),
     QStringLiteral("twokeyboard/device2")};

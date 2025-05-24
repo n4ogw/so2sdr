@@ -32,6 +32,7 @@
 #include <QTime>
 
 #include "bandmapentry.h"
+#include "defines.h"
 #include "hamlib/rig.h"
 #include "lineedit.h"
 #include "ui_so2sdr.h"
@@ -148,6 +149,7 @@ private slots:
   void switchRadios(bool switchcw = true);
   void switchTransmit(int r, int CWspeed = 0);
   void toggleStereo();
+  void setTwokeyboard(bool);
   void updateCty();
   void updateHistory();
   void updateOptions();
@@ -179,7 +181,6 @@ private:
   bool exchangeSent[NRIG];
   bool excMode[NRIG];
   bool grab;
-  bool grabbing;
   bool aboutOn;
   bool initialized;
   bool logSearchFlag;
@@ -189,6 +190,7 @@ private:
   bool statusBarDupe;
   bool telnetOn;
   bool toggleMode;
+  bool twokeyboard;
   bool uiEnabled;
   CabrilloDialog *cabrillo;
   ContestOptionsDialog *options;
@@ -351,7 +353,7 @@ private:
   void sprintMode();
   void startTimers();
   void stopTimers();
-  void stopTwokeyboard();
+  void stopKeyboardHandler();
   void superPartial(QByteArray partial);
   void swapRadios();
   void tab(int nr);

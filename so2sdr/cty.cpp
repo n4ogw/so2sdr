@@ -161,7 +161,6 @@ int Cty::findPfx(const QByteArray &prefix, int &zone, Cont &continent,
 /*! prefix identification, to be called from main program
  */
 int Cty::idPfx(Qso *qso, bool &qsy) const {
-  qsy = false;
   const int sz = qso->call.size();
   if (sz == 0)
     return (-1);
@@ -170,26 +169,51 @@ int Cty::idPfx(Qso *qso, bool &qsy) const {
   if (qso->call == "*DUPE*")
     return (-1);
 
+  // check for ; at end indicating freq/mode will apply to second radio
+  if (!qso->call.isEmpty() && (qso->call[qso->call.size() - 1] == ';')) {
+    qso->call.chop(1);
+    qso->secondRadioQsy = true;
+  } else {
+    qso->secondRadioQsy = false;
+  }
+
   // Check for mode strings with mode names e.g. "USB"
-  // This will optionally be followed by an integer for
-  // passband width in Hz of 2-5 digits.
-  //  QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?(;)?$");
+  bool match = true;
+  if (qso->call == "CW") {
+    qso->qsyMode = RIG_MODE_CW;
+  } else if (qso->call == "CWR") {
+    qso->qsyMode = RIG_MODE_CWR;
+  } else if (qso->call == "USB") {
+    qso->qsyMode = RIG_MODE_USB;
+  } else if (qso->call == "LSB") {
+    qso->qsyMode = RIG_MODE_LSB;
+  } else if (qso->call == "FM") {
+    qso->qsyMode = RIG_MODE_FM;
+  } else if (qso->call == "AM") {
+    qso->qsyMode = RIG_MODE_AM;
+  } else {
+    qso->qsyMode = RIG_MODE_NONE;
+    match = false;
+  }
 
   // is this a qsy frequency?
   bool ok = false;
-  // Allow the UI to receive values in kHz down to the Hz i.e. "14250.340"
-  // will become 14250340 Hz.  Tested with K3 and Dummy rig models.
-  int n = qRound(1000 * qso->call.toDouble(&ok));
+  double n = qRound(1000 * qso->call.toDouble(&ok));
+  if (n > 0 && ok) {
+    qso->qsyFreq = n;
+    qsy = true;
+  } else {
+    qsy = false;
+    qso->qsyFreq = 0;
+  }
 
-  // semicolon indicates 2nd-radio qsy
-  if (n || ok == true || qso->call.contains(";")) { // ||
-    //      (rx.indexIn(qso->call) == 0)) {
+  // we have a qsy freq or a mode change, skip country match
+  if (n > 0 || match) {
     qso->country = -1;
     qso->country_name.clear();
     qso->PfxName.clear();
     qso->mult[0] = -1;
     qso->mult[1] = -1;
-    qsy = true;
     return (-1);
   }
 

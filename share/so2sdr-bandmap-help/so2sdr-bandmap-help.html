@@ -1,13 +1,12 @@
 <p><a name="top"></a></p>
 
-<h2>So2sdr-bandmap Help Version 2.7.4</h2>
+<h2>So2sdr-bandmap Help Version 2.8.0</h2>
 
 <ul>
 <li><a href="#controls">Controls</a></li>
 <li><a href="#bandmap_setup">So2sdr-bandmap setup</a></li>
 <li><a href="#tcp">TCP interface details</a></li>
 <li><a href="#issues">Issues</a></li>
-<li><a href="#resolution">Screen resolution issues</a></li>
 <li><a href="#changes">Changes</a></li>
 </ul>
 
@@ -413,54 +412,17 @@ from so2sdr, do this</p>
 
 <hr />
 
-<p><a name="resolution"></a></p>
-
-<h3>Screen resolution issues</h3>
-
-<p>The amount of spectrum you will be able to see on the bandmap is directly
-connected to the vertical resolution of your monitor. To see the largest slice of
-the band you will want a monitor with the largest possible vertical resolution.
-There are a  few different ways to achieve this:</p>
-
-<ul>
-<li>use a second monitor for the bandmap(s), physically turned in "portrait" mode. Using
-display settings, rotate the image on this display by 90 degrees.</li>
-<li>use a high resolution monitor. 4k resolution works well.</li>
-</ul>
-
-<p>There are some issues with the second option (known as a high-DPI
-monitor). As of 2024, many Linux desktops do not support high DPI monitors very well.
-Most graphical apps are written according to pixel dimensions, and when put on a
-high-DPI screen they may be too small to see easily. Some desktops have options to
-scale apps and fonts, but this often does not work well. For example, in Gnome version
-3, fonts can be scaled by a fractional amount. But apps can only be scaled by an
-integer amount (x1, x2, ...), which will not match a fractional font scaling.</p>
-
-<p>So2sdr and so2sdr-bandmap do try to adjust the size of UI elements according
-to the actual size of the font chosen. As of version 2.7.0, you can also set the size
-of the fonts used in both programs. Here is how I set up the programs
-on a 4k monitor:</p>
-
-<ul>
-<li><p>set the scaling factor for Qt apps:</p>
-
-<p>export QT<em>SCALE</em>FACTOR=1.4</p></li>
-<li>use slightly larger fonts. I use UI and text font sizes of 12,  and an entry line font size
-of 14.</li>
-</ul>
-
-<p>QT<em>SCALE</em>FACTOR enlarges both the fonts and other elements of so2sdr. So2sdr-bandmap
-however will by default ignore this setting, as using rescaling on the bandmap is usually
-what you don't want to do. If you really want to use this to rescale so2sdr-bandmap, there
-is a command-line option (-s) that will enable this.</p>
-
-<p>When selecting fonts for the text and entry fonts, it
-also helps to use a font that has a slashed or dotted zero. Bitstream Vera Mono is
-one choice.</p>
-
-<hr />
-
 <p><a name="changes"></a></p>
+
+<h2>version 2.8.0 (05/10/2025)</h2>
+
+<ul>
+<li><p>updated code to use Qt version 6. This required many small changes. One important change
+was made to the way keyboard grabbing works. In Qt6 the method previously used in Qt5 to grab the
+keyboard no longer works. Now for keyboard grabbing to work, the /dev/input device for the
+keyboard must be provided in the General Settings dialog.</p></li>
+<li><p>fix DX cluster telnet list not being saved</p></li>
+</ul>
 
 <h2>version 2.7.4 (02/01/2025)</h2>
 

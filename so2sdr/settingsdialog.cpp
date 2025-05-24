@@ -74,8 +74,6 @@ void SettingsDialog::loadSettings() {
   kbd2LineEdit->setText(
       settings.value(s_twokeyboard_device[1], s_twokeyboard_device_def[1])
           .toString());
-  kbdCheckBox->setChecked(
-      settings.value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool());
   queueCheckBox->setChecked(
       settings.value(s_queuemessages, s_queuemessages_def).toBool());
   uiFontComboBox->setCurrentFont(
@@ -109,7 +107,6 @@ void SettingsDialog::updateSettings() {
   settings.setValue(s_wsjtx_udp[0], UDPPortLineEdit1->text().toInt());
   settings.setValue(s_wsjtx_enable[1], UDPCheckBox2->isChecked());
   settings.setValue(s_wsjtx_udp[1], UDPPortLineEdit2->text().toInt());
-  settings.setValue(s_twokeyboard_enable, kbdCheckBox->isChecked());
   settings.setValue(s_twokeyboard_device[0], kbd1LineEdit->text());
   settings.setValue(s_twokeyboard_device[1], kbd2LineEdit->text());
   settings.setValue(s_queuemessages, queueCheckBox->isChecked());

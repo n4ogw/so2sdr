@@ -42,11 +42,13 @@ Qso::Qso(int n) {
     isnewmult[ii] = false;
   }
   mode = RIG_MODE_CW;
+  qsyMode = RIG_MODE_NONE;
   modeType = CWType;
   adifMode = "CW";
   band = 0;
   bandColumn = 0;
   freq = 0.0;
+  qsyFreq = 0;
   zone = 0;
   distance = -1;
   nr = 0;
@@ -68,6 +70,7 @@ Qso::Qso(int n) {
   continent = NA;
   bearing = 0;
   country = 0;
+  secondRadioQsy = false;
 }
 
 Qso::~Qso() {

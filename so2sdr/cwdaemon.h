@@ -19,12 +19,11 @@
 #ifndef CWDAEMON_H
 #define CWDAEMON_H
 
+#include "defines.h"
 #include <QByteArray>
 #include <QSettings>
 #include <QString>
 #include <QUdpSocket>
-
-#include "defines.h"
 
 /*!
    cwdaemon support class

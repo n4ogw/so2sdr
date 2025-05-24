@@ -18,7 +18,6 @@
  */
 #ifndef HELPDIALOG_H
 #define HELPDIALOG_H
-#include "defines.h"
 #include "ui_helpdialog.h"
 
 /*!

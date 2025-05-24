@@ -18,7 +18,6 @@
  */
 #ifndef OTRSP_H
 #define OTRSP_H
-#include "defines.h"
 #include <QByteArray>
 #include <QSerialPort>
 #include <QSettings>

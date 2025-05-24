@@ -1,13 +1,12 @@
 <p><a name="top"></a></p>
 
-<h2>SO2SDR Help file version 2.7.4</h2>
+<h2>SO2SDR Help file version 2.8.0</h2>
 
 <ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#install">Installation</a></li>
 <li><a href="#so2sdr_setup">Setup: so2sdr</a></li>
 <li><a href="#bandmap_setup">Setup: So2sdr-bandmap setup</a></li>
-<li><a href="#resolution">Screen resolution issues</a></li>
 <li><a href="#keyref">Key Reference</a></li>
 <li><a href="#macros">Message macros</a></li>
 <li><a href="#ssb">Voice keyer setup</a></li>
@@ -62,7 +61,7 @@ copies of so2sdr-bandmap.ini (see below).</p>
 
 <h4>Linux</h4>
 
-<p>You will need the following development libraries installed: Qt (version 5), FFTW, Hamlib, and PortAudio. 
+<p>You will need the following development libraries installed: Qt (version 6), FFTW, Hamlib, and PortAudio. 
 Other various development packages include g++, Git, and pkg-config. </p>
 
 <ol>
@@ -720,64 +719,6 @@ bandmap (square "stop" button) and then restart it again.</p></li>
 
 <hr />
 
-<p><a name="resolution"></a></p>
-
-<h3>Screen resolution issues</h3>
-
-<p>The amount of spectrum you will be able to see on the bandmap is directly
-connected to the vertical resolution of your monitor. To see the largest slice of
-the band you will want a monitor with the largest possible vertical resolution.
-There are a  few different ways to achieve this:</p>
-
-<ul>
-<li>use a second monitor for the bandmap(s), physically turned in "portrait" mode. Using
-display settings, rotate the image on this display by 90 degrees.</li>
-<li>use a high resolution monitor. 4k resolution works well.</li>
-</ul>
-
-<p>There are some issues with the second option (known as a high-DPI
-monitor). As of 2024, many Linux desktops do not support high DPI monitors very well.
-Most graphical apps are written according to pixel dimensions, and when put on a
-high-DPI screen they may be too small to see easily. Some desktops have options to
-scale apps and fonts, but this often does not work well. For example, in Gnome version
-3, fonts can be scaled by a fractional amount. But apps can only be scaled by an
-integer amount (x1, x2, ...), which will not match a fractional font scaling.</p>
-
-<p>So2sdr and so2sdr-bandmap do try to adjust the size of UI elements according
-to the actual size of the font chosen. As of version 2.7.0, you can also set the size
-of the fonts used in both programs. Here is how I set up the programs
-on a 4k monitor:</p>
-
-<p>1) Set the scaling factor for Qt apps:</p>
-
-<pre><code>export QT_SCALE_FACTOR=1.4
-</code></pre>
-
-<p>If you want to make this only apply to so2sdr, then you can start so2sdr via a
-bash script. For example:</p>
-
-<pre><code>#!/bin/bash
-export QT_SCALE_FACTOR=1.4
-so2sdr
-</code></pre>
-
-<p>Save this as e.g. runso2sdr, and then make it executable with</p>
-
-<pre><code>chmod +x runso2dr
-</code></pre>
-
-<p>2) Use slightly larger fonts. I use UI and text font sizes of 12,  and an entry line font size
-of 14.</p>
-
-<p>QT_SCALE_FACTOR enlarges both the fonts and other elements of so2sdr. So2sdr-bandmap
-however will by default ignore this setting, as using rescaling on the bandmap is usually
-what you don't want to do. If you really want to use this to rescale so2sdr-bandmap, there
-is a command-line option (-s) that will enable this.</p>
-
-<p>When selecting fonts for the text and entry fonts, it
-also helps to use a font that has a slashed or dotted zero. Bitstream Vera Mono is
-one choice.</p>
-
 <p><a name="keyref"></a></p>
 
 <h3>Key reference</h3>
@@ -1193,6 +1134,16 @@ from so2sdr, do this</p>
 <hr />
 
 <p><a name="changes"></a></p>
+
+<h2>version 2.8.0 (05/10/2025)</h2>
+
+<ul>
+<li><p>updated code to use Qt version 6. This required many small changes. One important change
+was made to the way keyboard grabbing works. In Qt6 the method previously used in Qt5 to grab the
+keyboard no longer works. Now for keyboard grabbing to work, the /dev/input device for the
+keyboard must be provided in the General Settings dialog.</p></li>
+<li><p>fix DX cluster telnet list not being saved</p></li>
+</ul>
 
 <h2>version 2.7.4 (02/01/2025)</h2>
 

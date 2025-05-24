@@ -17,6 +17,7 @@
 
  */
 #include "so2rdialog.h"
+#include "defines.h"
 #include <QByteArray>
 #include <QComboBox>
 #include <QDir>
@@ -174,24 +175,27 @@ void So2rDialog::updateSo2r() {
     miniUpdate = true;
   }
   if (settings.value(s_mini_sidetone_freq, s_mini_sidetone_freq_def).toInt() !=
-          spinBoxSidetone->value()/10) {
-      settings.setValue(s_mini_sidetone_freq,spinBoxSidetone->value()/10);
-      miniUpdate = true;
+      spinBoxSidetone->value() / 10) {
+    settings.setValue(s_mini_sidetone_freq, spinBoxSidetone->value() / 10);
+    miniUpdate = true;
   }
-  if (settings.value(s_mini_paddle_sidetone_freq, s_mini_paddle_sidetone_freq_def).toInt() !=
-          spinBoxPaddleSidetone->value()/10) {
-      settings.setValue(s_mini_paddle_sidetone_freq,spinBoxPaddleSidetone->value()/10);
-      miniUpdate = true;
+  if (settings
+          .value(s_mini_paddle_sidetone_freq, s_mini_paddle_sidetone_freq_def)
+          .toInt() != spinBoxPaddleSidetone->value() / 10) {
+    settings.setValue(s_mini_paddle_sidetone_freq,
+                      spinBoxPaddleSidetone->value() / 10);
+    miniUpdate = true;
   }
-  if (settings.value(s_mini_sidetone,s_mini_sidetone_def).toBool() !=
-          checkBoxSidetone->isChecked()) {
-      settings.setValue(s_mini_sidetone,checkBoxSidetone->isChecked());
-      miniUpdate = true;
+  if (settings.value(s_mini_sidetone, s_mini_sidetone_def).toBool() !=
+      checkBoxSidetone->isChecked()) {
+    settings.setValue(s_mini_sidetone, checkBoxSidetone->isChecked());
+    miniUpdate = true;
   }
-  if (settings.value(s_mini_paddle_sidetone,s_mini_paddle_sidetone_def).toBool() !=
-          checkBoxPaddleSidetone->isChecked()) {
-      settings.setValue(s_mini_paddle_sidetone,checkBoxPaddleSidetone->isChecked());
-      miniUpdate = true;
+  if (settings.value(s_mini_paddle_sidetone, s_mini_paddle_sidetone_def)
+          .toBool() != checkBoxPaddleSidetone->isChecked()) {
+    settings.setValue(s_mini_paddle_sidetone,
+                      checkBoxPaddleSidetone->isChecked());
+    miniUpdate = true;
   }
   settings.sync();
   // in case parallel port is changed
@@ -258,13 +262,18 @@ void So2rDialog::updateFromSettings() {
   lineEditMiniPort->setText(
       settings.value(s_mini_device, s_mini_device_def).toString());
   checkBoxSidetone->setChecked(
-              settings.value(s_mini_sidetone,s_mini_sidetone_def).toBool());
+      settings.value(s_mini_sidetone, s_mini_sidetone_def).toBool());
   checkBoxPaddleSidetone->setChecked(
-              settings.value(s_mini_paddle_sidetone,s_mini_paddle_sidetone_def).toBool());
+      settings.value(s_mini_paddle_sidetone, s_mini_paddle_sidetone_def)
+          .toBool());
   spinBoxSidetone->setValue(
-              settings.value(s_mini_sidetone_freq,s_mini_sidetone_freq_def).toInt()*10);
+      settings.value(s_mini_sidetone_freq, s_mini_sidetone_freq_def).toInt() *
+      10);
   spinBoxPaddleSidetone->setValue(
-              settings.value(s_mini_paddle_sidetone_freq,s_mini_paddle_sidetone_freq_def).toInt()*10);
+      settings
+          .value(s_mini_paddle_sidetone_freq, s_mini_paddle_sidetone_freq_def)
+          .toInt() *
+      10);
 }
 
 /*! called if dialog rejected */

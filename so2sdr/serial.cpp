@@ -692,6 +692,18 @@ void RigSerial::qsyExact(double f) {
 void RigSerial::setRigMode(rmode_t m) {
   lock.lockForWrite();
   chgMode = m;
+  // set passband width
+  switch (chgMode) {
+  case RIG_MODE_CW:
+  case RIG_MODE_CWR:
+    passBW = 500;
+    break;
+  case RIG_MODE_FM:
+    passBW = 10000;
+    break;
+  default:
+    passBW = 2700;
+  }
   lock.unlock();
 }
 

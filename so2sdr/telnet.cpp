@@ -145,15 +145,11 @@ void Telnet::showText(QString txt) {
       emit dxSpot(call.toLatin1(), f);
     }
   }
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-  txt.remove(QRegExp(
-      "[^a-zA-Z/.\\d\\s]")); // remove all except letters, numbers, ., and /
-#else
+
   // remove all except letters, numbers, ., and /
   static QRegularExpression re("[^a-zA-Z/.\\d\\s]");
-  // txt.remove(QRegularExpression("[^a-zA-Z/.\\d\\s]"));
   txt.remove(re);
-#endif
+
   buffer = buffer + txt;
   if (buffer.size() > MAX_TELNET_CHARS) {
     // remove text from top of buffer

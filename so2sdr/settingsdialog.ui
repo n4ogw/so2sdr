@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>534</width>
-    <height>655</height>
+    <width>565</width>
+    <height>808</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -51,6 +51,9 @@
      <property name="fieldGrowthPolicy">
       <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
      </property>
+     <property name="labelAlignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
      <property name="horizontalSpacing">
       <number>5</number>
      </property>
@@ -74,6 +77,13 @@
        </property>
        <property name="toolTip">
         <string>This sets the font used by most elements of the UI</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>UI font size</string>
        </property>
       </widget>
      </item>
@@ -107,6 +117,13 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Text font size</string>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="1">
       <widget class="QSpinBox" name="textFontSpinBox">
        <property name="sizePolicy">
@@ -134,6 +151,23 @@
        </property>
        <property name="toolTip">
         <string>This sets the font used in the call and exchange entry lines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Entry line font size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="entryFontSpinBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
       </widget>
      </item>
@@ -506,28 +540,6 @@
        </property>
       </widget>
      </item>
-     <item row="19" column="0">
-      <widget class="QCheckBox" name="kbdCheckBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>150</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>In this mode two keyboards are mapped separately to radio1 and radio2. Sprint mode, toggle mode, and alt-D do not coexist with two keyboard mode.</string>
-       </property>
-       <property name="text">
-        <string>Two keyboard mode</string>
-       </property>
-      </widget>
-     </item>
      <item row="20" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
@@ -578,37 +590,6 @@
        </property>
        <property name="text">
         <string>Queue Messages</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_13">
-       <property name="text">
-        <string>UI font size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_14">
-       <property name="text">
-        <string>Text font size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_15">
-       <property name="text">
-        <string>Entry line font size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSpinBox" name="entryFontSpinBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
        </property>
       </widget>
      </item>

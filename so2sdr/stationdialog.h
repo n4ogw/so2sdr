@@ -19,7 +19,6 @@
 #ifndef STATIONDIALOG_H
 #define STATIONDIALOG_H
 
-#include "defines.h"
 #include "ui_stationdialog.h"
 #include <QCloseEvent>
 #include <QDialog>

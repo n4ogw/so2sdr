@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>664</height>
+    <width>885</width>
+    <height>836</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -263,10 +263,13 @@
         <property name="spacing">
          <number>1</number>
         </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+        </property>
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -274,13 +277,13 @@
           <property name="minimumSize">
            <size>
             <width>310</width>
-            <height>150</height>
+            <height>175</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>600</width>
-            <height>200</height>
+            <height>175</height>
            </size>
           </property>
           <property name="font">
@@ -419,16 +422,22 @@
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="multName">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>20</width>
-                 <height>17</height>
+                 <height>28</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>50</width>
-                 <height>30</height>
+                 <height>28</height>
                 </size>
                </property>
                <property name="font">
@@ -698,16 +707,22 @@
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label_7">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>20</width>
-                 <height>17</height>
+                 <height>28</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>50</width>
-                 <height>30</height>
+                 <height>28</height>
                 </size>
                </property>
                <property name="font">
@@ -983,16 +998,22 @@
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="multName2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="minimumSize">
                 <size>
                  <width>20</width>
-                 <height>17</height>
+                 <height>28</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>50</width>
-                 <height>30</height>
+                 <height>28</height>
                 </size>
                </property>
                <property name="font">
@@ -1369,7 +1390,7 @@
       <item>
        <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0">
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
+         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
         </property>
         <property name="leftMargin">
          <number>1</number>
@@ -1462,7 +1483,7 @@
         <item row="4" column="1">
          <widget class="LineEdit" name="lineEditExchange1" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1470,7 +1491,7 @@
           <property name="minimumSize">
            <size>
             <width>130</width>
-            <height>30</height>
+            <height>45</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1496,7 +1517,7 @@
         <item row="2" column="5">
          <widget class="QLabel" name="Mult2Label2">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1504,13 +1525,13 @@
           <property name="minimumSize">
            <size>
             <width>230</width>
-            <height>22</height>
+            <height>27</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>230</width>
-            <height>30</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -1529,7 +1550,7 @@
           <item>
            <widget class="QLabel" name="FreqDisplay2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1543,7 +1564,7 @@
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>30</height>
+              <height>45</height>
              </size>
             </property>
             <property name="font">
@@ -1560,7 +1581,7 @@
           <item>
            <widget class="QLabel" name="ModeDisplay2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1574,7 +1595,7 @@
             <property name="maximumSize">
              <size>
               <width>50</width>
-              <height>30</height>
+              <height>45</height>
              </size>
             </property>
             <property name="font">
@@ -1592,7 +1613,7 @@
         <item row="2" column="1">
          <widget class="QLabel" name="Mult1Label2">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1600,13 +1621,13 @@
           <property name="minimumSize">
            <size>
             <width>230</width>
-            <height>22</height>
+            <height>27</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>230</width>
-            <height>30</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -1623,7 +1644,7 @@
         <item row="6" column="0">
          <widget class="QLabel" name="TimeDisplay">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1631,13 +1652,13 @@
           <property name="minimumSize">
            <size>
             <width>170</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>170</width>
-            <height>24</height>
+            <height>25</height>
            </size>
           </property>
           <property name="font">
@@ -1654,7 +1675,7 @@
         <item row="5" column="3">
          <widget class="QLabel" name="labelBearing1">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1662,7 +1683,7 @@
           <property name="minimumSize">
            <size>
             <width>35</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1684,15 +1705,21 @@
         <item row="0" column="0">
          <widget class="QLabel" name="ScoreLabel">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>27</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>25</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -1738,7 +1765,7 @@
         <item row="1" column="5">
          <widget class="QLabel" name="Mult2Label">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1746,13 +1773,13 @@
           <property name="minimumSize">
            <size>
             <width>230</width>
-            <height>22</height>
+            <height>27</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>230</width>
-            <height>30</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -1769,7 +1796,7 @@
         <item row="5" column="1">
          <widget class="QLabel" name="labelCountry1">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1777,7 +1804,7 @@
           <property name="minimumSize">
            <size>
             <width>140</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1799,7 +1826,7 @@
         <item row="3" column="5">
          <widget class="LineEdit" name="lineEditCall2" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1807,7 +1834,7 @@
           <property name="minimumSize">
            <size>
             <width>130</width>
-            <height>30</height>
+            <height>45</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1832,7 +1859,7 @@
           <item>
            <widget class="QLabel" name="FreqDisplay">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1846,7 +1873,7 @@
             <property name="maximumSize">
              <size>
               <width>100</width>
-              <height>30</height>
+              <height>45</height>
              </size>
             </property>
             <property name="font">
@@ -1863,7 +1890,7 @@
           <item>
            <widget class="QLabel" name="ModeDisplay">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1877,7 +1904,7 @@
             <property name="maximumSize">
              <size>
               <width>50</width>
-              <height>30</height>
+              <height>45</height>
              </size>
             </property>
             <property name="font">
@@ -1895,7 +1922,7 @@
         <item row="5" column="7">
          <widget class="QLabel" name="labelBearing2">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1903,7 +1930,7 @@
           <property name="minimumSize">
            <size>
             <width>35</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1925,7 +1952,7 @@
         <item row="6" column="7">
          <widget class="QLabel" name="labelLPBearing2">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1933,7 +1960,7 @@
           <property name="minimumSize">
            <size>
             <width>35</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1955,7 +1982,7 @@
         <item row="5" column="5">
          <widget class="QLabel" name="labelCountry2">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1963,7 +1990,7 @@
           <property name="minimumSize">
            <size>
             <width>140</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1985,7 +2012,7 @@
         <item row="0" column="5">
          <widget class="QLabel" name="Qso2Label">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1993,13 +2020,13 @@
           <property name="minimumSize">
            <size>
             <width>230</width>
-            <height>22</height>
+            <height>27</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>230</width>
-            <height>30</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -2016,7 +2043,7 @@
         <item row="0" column="1">
          <widget class="QLabel" name="Qso1Label">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -2024,13 +2051,13 @@
           <property name="minimumSize">
            <size>
             <width>230</width>
-            <height>22</height>
+            <height>27</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>230</width>
-            <height>30</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -2072,7 +2099,7 @@
         <item row="6" column="3">
          <widget class="QLabel" name="labelLPBearing1">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -2080,7 +2107,7 @@
           <property name="minimumSize">
            <size>
             <width>35</width>
-            <height>20</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -2102,7 +2129,7 @@
         <item row="4" column="5">
          <widget class="LineEdit" name="lineEditExchange2" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -2110,7 +2137,7 @@
           <property name="minimumSize">
            <size>
             <width>130</width>
-            <height>30</height>
+            <height>45</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -2215,10 +2242,16 @@
           <item>
            <widget class="QLabel" name="RateLabel">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
             </property>
             <property name="maximumSize">
              <size>
@@ -2256,10 +2289,16 @@
           <item>
            <widget class="QLabel" name="HourRateLabel">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
             </property>
             <property name="maximumSize">
              <size>
@@ -2291,7 +2330,7 @@
           <item>
            <widget class="QLineEdit" name="WPMLineEdit">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2331,7 +2370,7 @@
           <item>
            <widget class="QLabel" name="SpeedDisplay">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2374,7 +2413,7 @@
           <item>
            <widget class="QLabel" name="NumLabel">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2475,7 +2514,7 @@
           <item>
            <widget class="QLineEdit" name="WPMLineEdit2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2509,7 +2548,7 @@
           <item>
            <widget class="QLabel" name="SpeedDisplay2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2552,7 +2591,7 @@
           <item>
            <widget class="QLabel" name="NumLabel2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2588,7 +2627,7 @@
         <item row="1" column="1">
          <widget class="QLabel" name="Mult1Label">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -2596,13 +2635,13 @@
           <property name="minimumSize">
            <size>
             <width>230</width>
-            <height>22</height>
+            <height>27</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>230</width>
-            <height>30</height>
+            <height>27</height>
            </size>
           </property>
           <property name="font">
@@ -2619,7 +2658,7 @@
         <item row="3" column="1">
          <widget class="LineEdit" name="lineEditCall1" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -2627,7 +2666,7 @@
           <property name="minimumSize">
            <size>
             <width>130</width>
-            <height>30</height>
+            <height>45</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -2680,7 +2719,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>820</width>
+     <width>885</width>
      <height>25</height>
     </rect>
    </property>
@@ -2769,6 +2808,7 @@
     <addaction name="wsjtxAction2"/>
     <addaction name="separator"/>
     <addaction name="grabAction"/>
+    <addaction name="twokeyboardAction"/>
    </widget>
    <addaction name="FileMenu"/>
    <addaction name="SetupMenu"/>
@@ -3130,6 +3170,20 @@
    </property>
    <property name="text">
     <string>Grab keyboard</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Sans</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="twokeyboardAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Two keyboard mode</string>
    </property>
    <property name="font">
     <font>

@@ -19,7 +19,6 @@
 #ifndef WSJTXCALLDIALOG_H
 #define WSJTXCALLDIALOG_H
 
-#include "defines.h"
 #include "qso.h"
 #include "udpreader.h"
 #include "ui_wsjtxcalldialog.h"

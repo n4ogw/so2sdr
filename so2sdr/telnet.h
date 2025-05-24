@@ -19,7 +19,6 @@
 #ifndef TELNET_H
 #define TELNET_H
 
-#include "defines.h"
 #include "ui_telnet.h"
 #include <QSettings>
 

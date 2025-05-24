@@ -3,14 +3,14 @@
  <class>So2rDialog</class>
  <widget class="QDialog" name="So2rDialog">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModality::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>334</height>
+    <width>504</width>
+    <height>332</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,7 @@
    </font>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::StrongFocus</enum>
+   <enum>Qt::FocusPolicy::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>SO2R devices</string>
@@ -70,7 +70,7 @@
        <item>
         <layout class="QFormLayout" name="formLayout_4">
          <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
          </property>
          <item row="1" column="0">
           <widget class="QCheckBox" name="checkBoxOTRSPEvent1">
@@ -173,7 +173,7 @@
        <item>
         <layout class="QFormLayout" name="formLayout_46">
          <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
          </property>
          <item row="0" column="0">
           <widget class="QCheckBox" name="checkBoxOTRSP2">
@@ -269,7 +269,7 @@
        <item>
         <layout class="QFormLayout" name="formLayout_2">
          <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
          </property>
          <item row="0" column="0">
           <widget class="QCheckBox" name="checkBoxParallelPort">
@@ -323,7 +323,7 @@
          <item row="5" column="0" colspan="2">
           <widget class="Line" name="line">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -359,7 +359,7 @@
          <item row="8" column="0" colspan="2">
           <widget class="Line" name="line_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -385,7 +385,7 @@
          <item row="2" column="0" colspan="2">
           <widget class="Line" name="line_3">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -532,10 +532,10 @@
    <item>
     <widget class="QDialogButtonBox" name="so2rdialog_buttons">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

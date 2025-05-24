@@ -37,7 +37,6 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPalette>
-#include <QQueue>
 #include <QScreen>
 #include <QScrollBar>
 #include <QSettings>
@@ -264,6 +263,8 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   connect(bandmapAction2, SIGNAL(triggered(bool)), this,
           SLOT(showBandmap2(bool)));
   connect(grabAction, SIGNAL(triggered(bool)), this, SLOT(setGrab(bool)));
+  connect(twokeyboardAction, SIGNAL(triggered(bool)), this,
+          SLOT(setTwokeyboard(bool)));
   connect(wsjtxAction1, SIGNAL(triggered(bool)), this, SLOT(showWsjtx1(bool)));
   connect(wsjtxAction2, SIGNAL(triggered(bool)), this, SLOT(showWsjtx2(bool)));
   connect(wsjtx[0], SIGNAL(wsjtxDialog(bool)), wsjtxAction1,
@@ -349,7 +350,6 @@ So2sdr::So2sdr(QStringList args, QWidget *parent) : QMainWindow(parent) {
   callFocus[activeRadio] = true;
   setEntryFocus(activeRadio);
   for (int i = 0; i < NRIG; i++) {
-    lineEditExchange[i]->hide();
     lineEditCall[i]->setEnabled(false);
     lineEditExchange[i]->setEnabled(false);
   }
@@ -384,7 +384,7 @@ So2sdr::~So2sdr() {
   }
   cat[0]->deleteLater();
   cat[1]->deleteLater();
-  stopTwokeyboard();
+  stopKeyboardHandler();
   if (kbdHandler[0])
     kbdHandler[0]->deleteLater();
   if (kbdHandler[1])
@@ -469,7 +469,7 @@ void So2sdr::stationUpdate() {
 }
 
 /*!
-    Update labels for General Settings changes
+    Update after General Settings changes
  */
 void So2sdr::settingsUpdate() {
   setFontSize();
@@ -508,8 +508,6 @@ void So2sdr::settingsUpdate() {
       settings->value(s_wsjtx_enable[1], s_wsjtx_enable_def).toBool());
   wsjtx[0]->replay();
   wsjtx[1]->replay();
-
-  twoKeyboard();
 }
 
 /*! this will have clean-up code
@@ -533,18 +531,35 @@ void So2sdr::startCw() {
  */
 void So2sdr::setGrab(bool s) {
   if (s) {
+    // disable two keyboard if grab enabled
+    twokeyboard = false;
     grab = true;
-    grabLabel->show();
     twoKeyboard();
-    grabbing = true;
     grabWidget->setFocus();
     grabWidget->activateWindow();
   } else {
     grab = false;
-    stopTwokeyboard();
-    grabbing = false;
-    grabLabel->hide();
+    twoKeyboard();
   }
+}
+
+/*! change two keyboard status
+ */
+void So2sdr::setTwokeyboard(bool s) {
+  twokeyboard = s;
+  if (s) {
+    // needed to hold window focus
+    grabWidget->setFocus();
+    grabWidget->activateWindow();
+  } else {
+    lineEditCall[0]->setStyleSheet("");
+    lineEditCall[1]->setStyleSheet("");
+  }
+  // disable grabbing if two keyboard enabled
+  if (s && grab) {
+    grab = false;
+  }
+  twoKeyboard();
 }
 
 /*!
@@ -555,28 +570,24 @@ void So2sdr::setEntryFocus(int nr) {
   if (callFocus[nr]) {
     lineEditCall[nr]->setFocus();
     lineEditCall[nr]->deselect();
-    if (grabbing) {
-      lineEditCall[nr]->grabKeyboard();
+    if (grab || twokeyboard) {
       lineEditCall[nr]->activateWindow();
       raise();
     }
     grabWidget = lineEditCall[nr];
-    if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-            .toBool()) {
+    if (twokeyboard) {
       lineEditCall[nr]->setMyFocus(true);
       lineEditExchange[nr]->setMyFocus(false);
     }
   } else {
     lineEditExchange[nr]->setFocus();
     lineEditExchange[nr]->deselect();
-    if (grabbing) {
-      lineEditExchange[nr]->grabKeyboard();
+    if (grab || twokeyboard) {
       lineEditExchange[nr]->activateWindow();
       raise();
     }
     grabWidget = lineEditExchange[nr];
-    if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-            .toBool()) {
+    if (twokeyboard) {
       lineEditCall[nr]->setMyFocus(false);
       lineEditExchange[nr]->setMyFocus(true);
     }
@@ -647,6 +658,7 @@ void So2sdr::disableUI() {
   actionHistory->setEnabled(false);
   actionHistory->setText("Update history from log");
   grabAction->setEnabled(false);
+  twokeyboardAction->setEnabled(false);
   actionImport_Cabrillo->setEnabled(false);
   dupesheetAction1->setEnabled(false);
   dupesheetAction2->setEnabled(false);
@@ -664,7 +676,7 @@ void So2sdr::disableUI() {
 void So2sdr::enableUI() {
   for (int i = 0; i < NRIG; i++) {
     lineEditCall[i]->setEnabled(true);
-    lineEditExchange[i]->setEnabled(true);
+    lineEditExchange[i]->setEnabled(false);
   }
   bandmapAction1->setEnabled(true);
   dupesheetAction1->setEnabled(true);
@@ -680,6 +692,7 @@ void So2sdr::enableUI() {
   actionADIF->setEnabled(true);
   actionCabrillo->setEnabled(true);
   grabAction->setEnabled(true);
+  twokeyboardAction->setEnabled(true);
   actionImport_Cabrillo->setEnabled(true);
   telnetAction->setEnabled(true);
   wsjtxAction1->setEnabled(true);
@@ -964,7 +977,7 @@ bool So2sdr::setupContest() {
   readExcludeMults();
   for (int i = 0; i < NRIG; i++) {
     lineEditCall[i]->setEnabled(true);
-    lineEditExchange[i]->setEnabled(true);
+    lineEditExchange[i]->setEnabled(false);
   }
   callFocus[activeRadio] = true;
   setEntryFocus(activeRadio);
@@ -1498,7 +1511,7 @@ void So2sdr::autoSendActivate(bool state) {
 void So2sdr::duelingCQActivate(bool state) {
   if (csettings->value(c_sprintmode, c_sprintmode_def).toBool())
     return; // disabled in Sprint mode
-  if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def).toBool())
+  if (twokeyboard)
     return; // disabled in two keyboard mode
 
   if (cat[0]->band() != BAND_NONE && cat[1]->band() != BAND_NONE) {
@@ -1659,13 +1672,13 @@ void So2sdr::autoSendExch_exch() {
     updateNrDisplay();
     cqQsoInProgress[activeTxRadio] = true;
     excMode[activeTxRadio] = true;
-    lineEditExchange[activeTxRadio]->show();
+    lineEditExchange[activeTxRadio]->setEnabled(true);
     prefillExch(activeTxRadio);
     if (activeRadio == activeTxRadio) {
       lineEditExchange[activeTxRadio]->setFocus();
       lineEditExchange[activeTxRadio]->deselect();
       if (grab) {
-        lineEditExchange[activeTxRadio]->grabKeyboard();
+        // lineEditExchange[activeTxRadio]->grabKeyboard();
         lineEditExchange[activeTxRadio]->activateWindow();
       }
       grabWidget = lineEditExchange[activeTxRadio];
@@ -2251,129 +2264,77 @@ void So2sdr::updateWorkedMult(int nr) {
   }
 }
 /*!
-   take entered number and qsy rig
+   take entered number and qsy rig, or change mode. These are
+parsed in Cty::idPfx
 
-   if ; follows the entered freq, 2nd radio is qsyed
+   if ; follows the entered freq or mode 2nd radio is changed
  */
 bool So2sdr::enterFreqOrMode() {
-  // check for 2nd radio flag ";"
-  int s = qso[activeRadio]->call.size();
+  bool retval = false;
+
+  // nr holds the radio the change will apply to, which is 2nd radio if ;
+  // present and secondRadioQsy is set
   int nr = activeRadio;
-  if (s > 1 && qso[activeRadio]->call.at(s - 1) == ';') {
+  if (qso[activeRadio]->secondRadioQsy)
     nr = nr ^ 1;
-    qso[activeRadio]->call.chop(1);
+
+  // check for mode change
+  if (qso[activeRadio]->qsyMode != RIG_MODE_NONE) {
+    if (nr == 0)
+      emit setRigMode1(qso[activeRadio]->qsyMode);
+    else
+      emit setRigMode2(qso[activeRadio]->qsyMode);
+    qso[activeRadio]->qsyFreq = 0;
+    if (qso[activeRadio]->qsyMode == RIG_MODE_USB ||
+        qso[activeRadio]->qsyMode == RIG_MODE_LSB ||
+        qso[activeRadio]->qsyMode == RIG_MODE_FM ||
+        qso[activeRadio]->qsyMode == RIG_MODE_AM)
+      ssbMessage->switchRadio(nr);
+    qso[activeRadio]->qsyMode = RIG_MODE_NONE;
+    retval = true;
   }
 
-  // Entered mode command string is optionally followed by a
-  // passband width integer in Hz. e.g. "USB" or "USB1800".
-  // String must start at the beginning (index 0) of the string.
-  // QRegExp rx("^(CWR|CW|LSB|USB|FM|AM)(\\d{2,5})?$");
-
-  // Allow the UI to receive values in kHz down to the Hz
-  // i.e. "14250.340" will become 14250340 Hz
-  bool ok = false;
-  double f = 1000.0 * qso[activeRadio]->call.toDouble(&ok);
-
-  // validate we have a positive frequency
-  if (f > 0.0 && ok) {
+  // check for frequency change
+  if (qso[activeRadio]->qsyFreq > 0) {
     // qsy returns "corrected" rigFreq in event there is no radio CAT connection
     if (cat[nr]) {
-      qsy(nr, f, true);
-    }
+      qsy(nr, qso[activeRadio]->qsyFreq, true);
 
-    int b;
-    if ((b = getBand(f)) != BAND_NONE) {
-      // if band change, update bandmap calls
-      if (cat[nr]->band() != BAND_NONE && b != cat[nr]->band() &&
-          bandmap->bandmapon(nr)) {
-        bandmap->syncCalls(nr, spotList[b]);
+      int b;
+      if ((b = getBand(qso[activeRadio]->qsyFreq)) != BAND_NONE) {
+        // if band change, update bandmap calls
+        if (cat[nr]->band() != BAND_NONE && b != cat[nr]->band() &&
+            bandmap->bandmapon(nr)) {
+          bandmap->syncCalls(nr, spotList[b]);
+        }
+        // clear wsjtx calls
+        if (wsjtx[nr]->isEnabled())
+          wsjtx[nr]->clear();
       }
-      // clear wsjtx calls
-      if (wsjtx[nr]->isEnabled())
-        wsjtx[nr]->clear();
-    }
-    if (bandmap->bandmapon(nr)) {
-      bandmap->bandmapSetFreq(f, nr);
-      bandmap->setAddOffset(cat[nr]->ifFreq(), nr);
-    }
-  } else {
-    /*else if (rx.indexIn(qso[activeRadio]->call) == 0) {
-      pbwidth_t pb = RIG_PASSBAND_NORMAL;
-      QString pass = rx.cap(2);
-
-      if (pass.length() > 1) {
-        pb = pass.toLong();
+      if (bandmap->bandmapon(nr)) {
+        bandmap->bandmapSetFreq(qso[activeRadio]->qsyFreq, nr);
+        bandmap->setAddOffset(cat[nr]->ifFreq(), nr);
       }
-
-      // 0 Hz not valid!  Hamlib backends should deal with negative values
-      if (!pb)
-        pb = RIG_PASSBAND_NORMAL;
-    */
-    /*! @todo RTC: this will have to handle digital modes eventually as well
-     */
-    if (qso[activeRadio]->call == "CWR") {
-      modeTypeShown = CWType;
-      if (nr == 0)
-        emit setRigMode1(RIG_MODE_CWR);
-      else
-        emit setRigMode2(RIG_MODE_CWR);
-    } else if (qso[activeRadio]->call == "CW") {
-      modeTypeShown = CWType;
-      if (nr == 0)
-        emit setRigMode1(RIG_MODE_CW);
-      else
-        emit setRigMode2(RIG_MODE_CW);
-    } else if (qso[activeRadio]->call == "LSB") {
-      modeTypeShown = PhoneType;
-      if (nr == 0)
-        emit setRigMode1(RIG_MODE_LSB);
-      else
-        emit setRigMode2(RIG_MODE_LSB);
-    } else if (qso[activeRadio]->call == "USB") {
-      modeTypeShown = PhoneType;
-      if (nr == 0)
-        emit setRigMode1(RIG_MODE_USB);
-      else
-        emit setRigMode2(RIG_MODE_USB);
-    } else if (qso[activeRadio]->call == "FM") {
-      modeTypeShown = PhoneType;
-      if (nr == 0)
-        emit setRigMode1(RIG_MODE_FM);
-      else
-        emit setRigMode2(RIG_MODE_FM);
-    } else if (qso[activeRadio]->call == "AM") {
-      modeTypeShown = PhoneType;
-      if (nr == 0)
-        emit setRigMode1(RIG_MODE_AM);
-      else
-        emit setRigMode2(RIG_MODE_AM);
+      updateBreakdown();
+      if (getBand(qso[activeRadio]->qsyFreq) != BAND_NONE) {
+        updateMults(nr, getBand(qso[activeRadio]->qsyFreq));
+      }
+      clearWorked(nr);
+      clearDisplays(nr);
+      retval = true;
+      qso[activeRadio]->qsyFreq = 0;
     }
   }
-  /*else {
-    // Incomplete frequency or mode entered
-    return false;
-    }*/
-  if (modeTypeShown == PhoneType)
-    ssbMessage->switchRadio(nr);
-
   qso[activeRadio]->call.clear();
   lineEditCall[activeRadio]->clear();
   lineEditCall[activeRadio]->setFocus();
-
   if (grab) {
-    lineEditCall[activeRadio]->grabKeyboard();
     lineEditCall[activeRadio]->activateWindow();
   }
-
   grabWidget = lineEditCall[activeRadio];
   lineEditCall[activeRadio]->setModified(false);
-  updateBreakdown();
-  if (getBand(f) != BAND_NONE) {
-    updateMults(activeRadio, getBand(f));
-  }
-  clearWorked(activeRadio);
-  clearDisplays(activeRadio);
-  return true;
+
+  return retval;
 }
 
 /*!
@@ -2518,6 +2479,11 @@ void So2sdr::updateRadioFreq() {
         wsjtx[i]->clear();
         wsjtx[i]->clearWsjtx();
       }
+      if (i == activeRadio) {
+        updateMults(i, cat[i]->band());
+        clearWorked(i);
+        clearDisplays(i);
+      }
       previousBand[i] = cat[i]->band();
     }
     double f = rigFreq[i] / 1000.0;
@@ -2634,9 +2600,9 @@ void So2sdr::launch_WPMDialog(int nr) {
   }
   wpmLineEditPtr[nr]->setReadOnly(false);
   wpmLineEditPtr[nr]->setFocus();
-  if (grab) {
-    wpmLineEditPtr[nr]->grabKeyboard();
-  }
+  // if (grab) {
+  //    wpmLineEditPtr[nr]->grabKeyboard();
+  // }
   grabWidget = wpmLineEditPtr[nr];
   wpmLineEditPtr[nr]->selectAll();
 }
@@ -2645,8 +2611,7 @@ void So2sdr::launch_WPMDialog(int nr) {
    slot called when cw speed edited, radio 0
  */
 void So2sdr::launch_enterCWSpeed0(const QString &text) {
-  if (!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-           .toBool()) {
+  if (twokeyboard) {
     enterCWSpeed(activeRadio, text);
   } else {
     if (enterCW[0])
@@ -2658,8 +2623,7 @@ void So2sdr::launch_enterCWSpeed0(const QString &text) {
    slot called when cw speed edited, radio 1
  */
 void So2sdr::launch_enterCWSpeed1(const QString &text) {
-  if (!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-           .toBool()) {
+  if (twokeyboard) {
     enterCWSpeed(activeRadio, text);
   } else {
     if (enterCW[1])
@@ -2692,14 +2656,13 @@ void So2sdr::enterCWSpeed(int nrig, const QString &text) {
   enterCW[nrig] = false;
 
   // reset focus
-  if (!settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-           .toBool()) {
+  if (twokeyboard) {
     wpmLineEditPtr[nrig]->setReadOnly(true);
     if (callFocus[nrig]) {
       lineEditCall[nrig]->setFocus();
       lineEditCall[nrig]->deselect();
       if (grab) {
-        lineEditCall[activeRadio]->grabKeyboard();
+        //   lineEditCall[activeRadio]->grabKeyboard();
         lineEditCall[activeRadio]->activateWindow();
       }
       grabWidget = lineEditCall[activeRadio];
@@ -2707,7 +2670,7 @@ void So2sdr::enterCWSpeed(int nrig, const QString &text) {
       lineEditExchange[nrig]->setFocus();
       lineEditExchange[nrig]->deselect();
       if (grab) {
-        lineEditExchange[activeRadio]->grabKeyboard();
+        //  lineEditExchange[activeRadio]->grabKeyboard();
         lineEditExchange[activeRadio]->activateWindow();
       }
       grabWidget = lineEditExchange[activeRadio];
@@ -2746,7 +2709,7 @@ void So2sdr::spMode(int i) {
     lineEditExchange[i]->setPalette(palette);
   }
   if (altDActive != 1 || i != altDActiveRadio) {
-    lineEditExchange[i]->show();
+    lineEditExchange[i]->setEnabled(true);
   }
 }
 
@@ -2758,7 +2721,7 @@ void So2sdr::setCqMode(int i) {
   excMode[i] = false;
   exchangeSent[i] = false;
   lineEditExchange[i]->clear();
-  lineEditExchange[i]->hide();
+  lineEditExchange[i]->setEnabled(false);
   cqMode[i] = true;
   nrReserved[i] = 0;
   QPalette palette(lineEditCall[i]->palette());
@@ -3242,14 +3205,9 @@ void So2sdr::expandMacro2(QByteArray msg, bool stopcw, bool instant) {
             ssbMessage->recMessage(command);
             break;
           case 45: // 2KBD
-            settings->setValue(
-                s_twokeyboard_enable,
-                !settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-                     .toBool());
+            twokeyboard = !twokeyboard;
             twoKeyboard();
-            progsettings->kbdCheckBox->setChecked(
-                settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-                    .toBool());
+            twokeyboardAction->setChecked(twokeyboard);
             return;
           case 46:
           case 47: // /SCRIPT, /SCRIPTNR
@@ -3352,10 +3310,9 @@ void So2sdr::openFile() {
   if (setupContest()) {
     actionOpen->setEnabled(false);
     actionNewContest->setEnabled(false);
-    // enable two keyboard mode. It is not enabled before because otherwise file
-    // dialog cannot get keyboard input
-    if (settings->value(s_twokeyboard_enable, s_twokeyboard_enable_def)
-            .toBool()) {
+    // enable two keyboard mode. It is not enabled before because otherwise
+    // file dialog cannot get keyboard input
+    if (twokeyboard) {
       twoKeyboard();
     }
   }
@@ -3372,8 +3329,8 @@ void So2sdr::rescore() {
 }
 
 /*!
-   fill in sent exchange fields. Two fields are auto-filled: qso # and RST. All
-   others are taken from values entered in contest options dialog.
+   fill in sent exchange fields. Two fields are auto-filled: qso # and RST.
+   All others are taken from values entered in contest options dialog.
 */
 void So2sdr::fillSentExch(Qso *qso, int nr) {
   for (int i = 0; i < log->nExch(); i++) {
@@ -3547,8 +3504,8 @@ void So2sdr::qsy(int nrig, double &freq, bool exact) {
 /*!
   logSearch : triggered with ctrl-F
 
-  do callsign-partial search on contents of call entry window, display matching
-  calls in log window for editing
+  do callsign-partial search on contents of call entry window, display
+  matching calls in log window for editing
   */
 void So2sdr::logSearch(int nr) {
   QByteArray searchFrag = lineEditCall[nr]->text().toLatin1();
@@ -3887,7 +3844,7 @@ void So2sdr::initVariables() {
   cqQsoInProgress[0] = false;
   cqQsoInProgress[1] = false;
   grab = false;
-  grabbing = false;
+  twokeyboard = false;
   editingExchange[0] = false;
   editingExchange[1] = false;
 
@@ -4098,8 +4055,8 @@ void So2sdr::checkCtyVersion() {
         }
         save.write(newCty);
         save.close();
-        // save new NCCC Sprint CTY file with some countries changed from SA to
-        // NA
+        // save new NCCC Sprint CTY file with some countries changed from SA
+        // to NA
         newCty.replace("Trinidad & Tobago:        09:  11:  SA",
                        "Trinidad & Tobago:        09:  11:  NA");
         newCty.replace("Aruba:                    09:  11:  SA",
@@ -4181,6 +4138,35 @@ void So2sdr::setFontSize() {
   wsjtx[1]->setStyleSheet(uiStyleSheet);
   if (telnet)
     telnet->setStyleSheet(uiStyleSheet);
+  menubar->setStyleSheet(uiStyleSheet);
+  QFont font = this->font();
+  actionOpen->setFont(font);
+  actionADIF->setFont(font);
+  actionCabrillo->setFont(font);
+  actionHistory->setFont(font);
+  actionImport_Cabrillo->setFont(font);
+  actionNewContest->setFont(font);
+  actionQuit->setFont(font);
+  actionCW_Messages->setFont(font);
+  actionContestOptions->setFont(font);
+  actionRadios->setFont(font);
+  actionSDR->setFont(font);
+  actionSSB_Messages->setFont(font);
+  actionSettings->setFont(font);
+  actionSo2r->setFont(font);
+  actionStation->setFont(font);
+  actionWinkey->setFont(font);
+  bandmapAction1->setFont(font);
+  bandmapAction2->setFont(font);
+  dupesheetAction1->setFont(font);
+  dupesheetAction2->setFont(font);
+  grabAction->setFont(font);
+  telnetAction->setFont(font);
+  twokeyboardAction->setFont(font);
+  wsjtxAction1->setFont(font);
+  wsjtxAction2->setFont(font);
+  actionAbout->setFont(font);
+  actionHelp->setFont(font);
 
   // some widgets need transparent background
   WPMLineEdit->setStyleSheet(uiStyleSheet + " background: transparent;");
