@@ -9,6 +9,7 @@ can be used separately from so2sdr.
 Copyright 2010-2025 R. Torsten Clay N4OGW
 
 # News
+* 05/24/2025 version 2.8.0; project has moved to Qt version 6. This required many changes. The grab keyboard function changed: now the keyboard device in settings must be given for keyboard grabbing.
 * 08/12/2022 version 2.5.15; improvements to scripts called from message macros
 * 01/10/2022 version 2.5.14; add CWDaemon support
 * 09/14/2019 new feature in version 2.5.0: two keyboard support (experimental)
@@ -23,7 +24,7 @@ Copyright 2010-2025 R. Torsten Clay N4OGW
 
 ## Install instructions
 
-You will need the following development libraries installed: Qt (version 5), FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
+You will need the following development libraries installed: Qt (version 6), FFTW, Hamlib, and PortAudio. Other various development packages include g++, Git, and pkg-config. 
 
 1. Clone the git repository to your local machine:
 ```
@@ -31,7 +32,7 @@ You will need the following development libraries installed: Qt (version 5), FFT
 ```
 or download one of the source code distributions and extract it:
 ````
-    tar xzvof so2sdr-2.5.0.tgz
+    tar xzvof so2sdr-2.8.0.tgz
 ````
 
 2. By default, so2sdr will be installed in /usr/local/bin, and associated
