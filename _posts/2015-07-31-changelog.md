@@ -6,6 +6,178 @@ date: 2015-07-31 08:53:50
 order: 1
 ---
 
+## version 2.8.0 (05/10/2025)
+
+* updated code to use Qt version 6. This required many small changes. One important change
+was made to the way keyboard grabbing works. In Qt6 the method previously used in Qt5 to grab the
+keyboard no longer works. Now for keyboard grabbing to work, the /dev/input device for the
+keyboard must be provided in the General Settings dialog.
+
+* fix DX cluster telnet list not being saved
+
+## version 2.7.4 (02/01/2025)
+
+* fix display above callsign entry windows
+
+## version 2.7.3 (11/24/2024)
+
+* fix column names in contests with serial numbers
+* correct mode in adif output for ssb
+* make qso/mult displays line up correctly
+* fix cabrillo for overlays in CQWW
+* exchange setup box was cut off in ARRL 10
+
+## version 2.7.2 (09/08/2024)
+
+* Show CW text sent by So2rMini on status bar
+
+## version 2.7.1 (06/10/2024)
+
+* Fix bug in wsjtx message window. Did not work correctly unless computer timezone
+set to UTC
+
+## version 2.7.0 (01/28/2024)
+
+* so2sdr-bandmap: add setting to control behavior when dragging the frequency
+scale. There are now two possible behaviors: (a) the bandmap is 
+recentered when the mouse is released, and (b) the bandmap is recentered
+when the radio is tune (the frequency sent to so2sdr-bandmap changes).
+
+* add settings to set the font and font size in so2sdr and so2sdr-bandmap.
+
+* add information in help on setup and display resolution.
+
+## version 2.6.10 (12/06/2023)
+
+* add Labrador as mult in ARRL 10m contest
+
+## version 2.6.9 (10/03/2023)
+
+* add option to control sidetone frequency on so2rMini
+
+## version 2.6.8 (10/01/2023)
+
+* Support for So2rMini with N6TR firmware. This is available from
+https://github.com/trlinux/trlinux (see src directory).
+
+## version 2.6.7 (03/12/2023)
+
+* Fix bug with deleting calls with right mouse click. Wrong call
+was being sent.
+
+## version 2.6.6 (01/20/2023)
+
+* Afedri: wait for acknowledgement after each tcp command. This should
+help prevent commands being sent too fast to the sdr.
+
+## version 2.6.5 (01/17/2023)
+
+* Add indicator showing number of tcp clients connected (two maximum)
+* New method of tuning SDR in RF/RFauto modes for Afedri dual receiver
+sdr. One bandmap is set up as master and controls the sdr parameters.
+The other bandmap is set up as slave. The slave
+now connects to the tcp server of the master bandmap and passes frequency
+changes to the master bandmap.
+* Do not retune SDR in RFauto mode when dragging frequency scale with mouse
+* Fix bug where bandmap would only start on second click
+
+## version 2.6.4 (01/10/2023)
+
+* Add option to stop bandmap during transmit
+* Improve recentering of display in RFauto mode
+* Fix dual channel Afedri in RF/RFauto modes
+
+## version 2.6.3 (01/01/2023)
+
+* fix signal highlighting in RF/autocenter mode
+
+## version 2.6.2 (12/25/2022)
+
+* add options for IF versus RF panadapters
+* reformat .h and .cpp files with clang-format
+
+## version 2.6.1
+
+* various bug fixes. Fix ARRL 10m contest indication of which band the radio is on
+
+## version 2.6.0 (12/03/2022)
+
+* initial support for RTL-sdr sdr's. librtl-sdr is now needed to compile so2sdr-bandmap.
+To be used for HF, the device (and librtl-sdr) needs to support "direct sampling." Not
+all rtl-sdr devices are capable of this. Two modes are available: direct (x1) and
+x16 oversampled. The x16 improves the SNR slightly.
+
+## version 2.5.17 (11/17/2022)
+
+* remove dependency on qtx11extras
+* so2sdr-bandmap bug fix: when running without standalone (without so2sdr attached), swap iq and offset were ignored because band wasn't being set.
+
+## version 2.5.16 (11/13/2022)
+
+* fix bug preventing rigctld from working
+
+## version 2.5.15 (08/12/2022)
+
+* improvements to script capability in message macros (see Help)
+
+## version 2.5.14 (01/10/2022)
+
+* add support for CWDdaemon
+
+## version 2.5.13 (10/30/2021)
+
+* fix voice recording/playback
+
+## version 2.5.12 (08/06/2021)
+
+* updates for depreciated Qt features
+* changes to code that reads radio IF offset; now should read from any
+radio that hamlib can read IF offset
+
+## version 2.5.10 (01/04/2021)
+
+* Fix bug with saving bandmap settings
+
+## version 2.5.9 (11/23/2020)
+
+* Fix bug in call/exchange entry in Sweepstakes; if call edited after exchange accepted, qso would not log
+* Code changes for depreciated Qt features
+* macro SCRIPT now reads script from user directory (/home/username/.so2sdr/scripts)
+
+## version 2.5.8 (11/06/2020)
+
+* Add PE as mult in ARRL Sweepstakes and other ARRL contests
+
+## version 2.5.7 (08/29/2020)
+
+* Add WW Digi contest
+
+## version 2.5.6 (08/08/2020)
+
+* Make cursor visible in two keyboard mode
+* Correct Sprint behavior in two keyboard mode
+* Fix behavior of 2KBD macro. Required adding a slight delay when this macro is triggered
+* add status bar message when starting/stopping two keyboard mode
+* Starting two keyboard mode now disables Grab mode- the two keyboard handler automatically grabs the keyboard
+
+## version 2.5.5 (07/31/2020)
+
+* change how entry of zones is handled in RST+zone contests. Now can update zone by simply typing a space and the new zone. In some cases (SSB mode) this will no longer recognize a non-standard RST/RS. Non-standard signal reports can be entered in this case after logging the qso using the edit function.
+
+* fix bug with bandmap dupe marking ("*" call and -/= keys). All dupe marks were being  deleted at once.
+
+## version 2.5.4 (06/20/2020)
+
+* fix bugs with WSJTX interface; add dislay of sequence information. Double clicking on a call now sets the correct sequence
+* fix dupe status of rovers in June VHF contest logged from WSJTX
+
+## version 2.5.3 (06/11/2020)
+
+* change in log file format. Logs from older version cannot be opened, must be imported from Cabrillo
+* add new WSJTX window showing decoded calls and dupe/mult status. This is only fully functional for ARRL June VHF contest
+* many code cleanups and small bug fixes
+
+
 ## version 2.5.4 (06/20/2020)
 
 * fix bugs with WSJTX interface; add dislay of sequence information. Double clicking on a call now sets the correct sequence
