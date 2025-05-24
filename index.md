@@ -13,6 +13,8 @@ The program is  developed in Linux.
 
 ### News
 
+* 05/24/2025 so2sdr now requires Qt version 6
+  
 * 09/14/2019 new feature version 2.5.0: two keyboard support (experimental)
 
 * 06/08/2018 support ARRL June VHF contest
@@ -35,13 +37,13 @@ USB devices. Support for using two keyboards.
 
 * Uses [hamlib](http://sourceforge.net/projects/hamlib/)  to control radios via serial port.
 
-* Supports soundcard based I/Q SDRs and some ethernet interface SDRs.
+* Supports soundcard based I/Q SDRs and some other SDRs.
 This include the [Softrock](http://fivedash.com/) series,
-[LP-PAN](http://www.telepostinc.com/LP-PAN.html), and
+[LP-PAN](http://www.telepostinc.com/LP-PAN.html), 
 the [Afedri](http://www.afedri-sdr.com/) SDR, including the dual-receiver Afedri
-AFE822x SDR-Net.
+AFE822x SDR-Net, and RTL-sdr SDRs.
 
-* Uses [Winkey](http://k1el.tripod.com/WhatisWK.html) for CW generation.
+* Uses [Winkey](http://k1el.tripod.com/WhatisWK.html) or [N6TR's So2rmini](https://github.com/n4ogw/so2rmini-n6tr) for CW generation.
 
 * Interfaces with WSJT-X UDP server.
 
