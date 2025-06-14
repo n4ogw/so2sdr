@@ -233,6 +233,7 @@ Contest::~Contest() {
   also checks to see if this is a new mult
   */
 void Contest::multIndx(Qso *qso) const {
+  bool ok = false;
   for (int ii = 0; ii < settings.value(c_nmulttypes, c_nmulttypes_def).toInt();
        ii++) {
     // unique callsigns, special mults. Check to see if this is
@@ -248,9 +249,11 @@ void Contest::multIndx(Qso *qso) const {
         tmp = qso->mult_name;
       }
 
-      if (tmp.isEmpty())
+      if (tmp.isEmpty()) {
         continue;
-
+      } else {
+        ok = true;
+      }
       // search for the mult
       bool newmult = true;
       int j;
@@ -269,17 +272,22 @@ void Contest::multIndx(Qso *qso) const {
       }
     }
   }
+  if (!ok)
+    return; // nothing to do
+
   /* recheck newmult status for contests where mults count per-band
      if mults do not count per-mode, store them all in the CW slot */
   if (settings.value(c_multsband, c_multsband_def).toBool()) {
     for (int ii = 0;
          ii < settings.value(c_nmulttypes, c_nmulttypes_def).toInt(); ii++) {
-      if (qso->isnewmult[ii])
+      if (qso->isnewmult[ii]) {
         continue;
+      }
 
       mode_t mode = CWType;
       if (settings.value(c_multsmode, c_multsmode_def).toBool())
         mode = qso->modeType;
+
       qso->isnewmult[ii] = !multWorked[ii][mode][qso->band][qso->mult[ii]];
     }
   }

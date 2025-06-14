@@ -962,7 +962,6 @@ bool So2sdr::setupContest() {
   QDir::setCurrent(contestDirectory);
   log->openLogFile(fileName);
   qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
-
   QString name =
       csettings->value(c_contestname, c_contestname_def).toString().toUpper();
   int indx = fileName.lastIndexOf("/");

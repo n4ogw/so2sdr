@@ -570,6 +570,16 @@ const QString s_mini_paddle_sidetone_freq =
     QStringLiteral("mini/paddle_sidetone_freq");
 const int s_mini_paddle_sidetone_freq_def = 50;
 
+const QString s_mini_ptt_delay = QStringLiteral("mini/ptt_delay");
+const int s_mini_ptt_delay_def = 5;
+
+const QString s_mini_ptt_tail_delay = QStringLiteral("mini/ptt_tail_delay");
+const int s_mini_ptt_tail_delay_def = 5;
+
+const QString s_mini_ptt_paddle_tail_delay =
+    QStringLiteral("mini/ptt_paddle_tail_delay");
+const int s_mini_ptt_paddle_tail_delay_def = 10;
+
 const QString s_cwdaemon_udp[NRIG] = {QStringLiteral("cwdaemon/udp1"),
                                       QStringLiteral("cwdaemon/udp2")};
 const int s_cwdaemon_udp_def[NRIG] = {6789, 6790};

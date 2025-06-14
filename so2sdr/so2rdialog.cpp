@@ -91,6 +91,12 @@ So2rDialog::So2rDialog(QSettings &s, QWidget *parent)
   ParallelPortComboBox->setToolTip(
       "Parallel port access requires the PPDEV kernel module and being in the "
       "correct group (usually lp).");
+  pttDelaySpinbox->setMinimum(0);
+  pttDelaySpinbox->setMaximum(100);
+  pttTailDelaySpinbox->setMinimum(0);
+  pttTailDelaySpinbox->setMaximum(100);
+  pttPaddleTailDelaySpinbox->setMinimum(0);
+  pttPaddleTailDelaySpinbox->setMaximum(100);
   connect(so2rdialog_buttons, SIGNAL(rejected()), this, SLOT(rejectChanges()));
   connect(so2rdialog_buttons, SIGNAL(accepted()), this, SLOT(updateSo2r()));
   updateFromSettings();
@@ -186,6 +192,23 @@ void So2rDialog::updateSo2r() {
                       spinBoxPaddleSidetone->value() / 10);
     miniUpdate = true;
   }
+  if (settings.value(s_mini_ptt_delay, s_mini_ptt_delay_def).toInt() !=
+      pttDelaySpinbox->value()) {
+    settings.setValue(s_mini_ptt_delay, pttDelaySpinbox->value());
+    miniUpdate = true;
+  }
+  if (settings.value(s_mini_ptt_tail_delay, s_mini_ptt_tail_delay_def)
+          .toInt() != pttTailDelaySpinbox->value()) {
+    settings.setValue(s_mini_ptt_tail_delay, pttTailDelaySpinbox->value());
+    miniUpdate = true;
+  }
+  if (settings
+          .value(s_mini_ptt_paddle_tail_delay, s_mini_ptt_paddle_tail_delay_def)
+          .toInt() != pttPaddleTailDelaySpinbox->value()) {
+    settings.setValue(s_mini_ptt_paddle_tail_delay,
+                      pttPaddleTailDelaySpinbox->value());
+    miniUpdate = true;
+  }
   if (settings.value(s_mini_sidetone, s_mini_sidetone_def).toBool() !=
       checkBoxSidetone->isChecked()) {
     settings.setValue(s_mini_sidetone, checkBoxSidetone->isChecked());
@@ -274,6 +297,14 @@ void So2rDialog::updateFromSettings() {
           .value(s_mini_paddle_sidetone_freq, s_mini_paddle_sidetone_freq_def)
           .toInt() *
       10);
+  pttDelaySpinbox->setValue(
+      settings.value(s_mini_ptt_delay, s_mini_ptt_delay_def).toInt());
+  pttPaddleTailDelaySpinbox->setValue(
+      settings
+          .value(s_mini_ptt_paddle_tail_delay, s_mini_ptt_paddle_tail_delay_def)
+          .toInt());
+  pttTailDelaySpinbox->setValue(
+      settings.value(s_mini_ptt_tail_delay, s_mini_ptt_tail_delay_def).toInt());
 }
 
 /*! called if dialog rejected */

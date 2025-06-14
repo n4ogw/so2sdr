@@ -279,35 +279,31 @@ void SO2RMini::openSO2RMini() {
   if (!SO2RMiniPort->setDataTerminalReady(false))
     qDebug() << SO2RMiniPort->errorString();
 
-  // try a few times to get the device version
-  for (int i = 0; i < 5; i++) {
-    const char cmd = 0x01;
-    if (!SO2RMiniPort->write(&cmd, 1)) {
-      SO2RMiniPort->clearError();
-      continue;
-    }
-    SO2RMiniPort->flush();
-    deviceName.clear();
-    while (SO2RMiniPort->waitForReadyRead(500)) {
-      deviceName = SO2RMiniPort->readAll().simplified();
-    }
-    if (SO2RMiniPort->error()) {
-      SO2RMiniPort->clearError();
-    }
-    if (deviceName.left(2) != "TR")
-      deviceName.clear();
-    if (deviceName.size() > 0)
-      break;
+  // get the device version
+  const char cmd = 0x01;
+  SO2RMiniPort->write(&cmd, 1);
+  while (SO2RMiniPort->waitForReadyRead(500)) {
+    deviceName = SO2RMiniPort->readAll().simplified();
   }
-
+  if (SO2RMiniPort->error()) {
+    SO2RMiniPort->clearError();
+  }
+  if (deviceName.left(2) != "TR") {
+    deviceName.clear();
+    emit miniName(deviceName);
+    SO2RMiniOpen = false;
+    return;
+  }
   emit miniName(deviceName);
   connect(SO2RMiniPort, SIGNAL(readyRead()), this, SLOT(receive()));
   SO2RMiniOpen = true;
+  QThread::usleep(20000);
 
   // reset speed if restarting
   if (restart)
     setSpeed(0);
 
+  QThread::usleep(20000);
   char cmd1[2];
   // sidetone freq, set in units of 10 Hz
   cmd1[0] = 0x03;
@@ -318,6 +314,7 @@ void SO2RMini::openSO2RMini() {
     cmd1[1] = 0;
   }
   SO2RMiniPort->write(cmd1, 2);
+  QThread::usleep(20000);
 
   // paddle sidetone freq, set in units of 10 Hz
   cmd1[0] = 0x04;
@@ -331,6 +328,28 @@ void SO2RMini::openSO2RMini() {
     cmd1[1] = 0;
   }
   SO2RMiniPort->write(cmd1, 2);
+  QThread::usleep(20000);
+
+  // ptt delay in ms
+  cmd1[0] = 0x0E;
+  cmd1[1] = settings.value(s_mini_ptt_delay, s_mini_ptt_delay_def).toInt();
+  SO2RMiniPort->write(cmd1, 2);
+  QThread::usleep(20000);
+
+  /*
+  // ptt tail delay in ms
+  cmd1[0] = 0x0F;
+  cmd1[1] =
+      settings.value(s_mini_ptt_tail_delay, s_mini_ptt_tail_delay_def).toInt();
+  SO2RMiniPort->write(cmd1, 2);
+
+  // ptt paddle tail delay in ms
+  cmd1[0] = 0x10;
+  cmd1[1] =
+      settings
+          .value(s_mini_ptt_paddle_tail_delay, s_mini_ptt_paddle_tail_delay_def)
+          .toInt();
+  SO2RMiniPort->write(cmd1, 2);*/
 }
 
 void SO2RMini::closeSO2RMini() {

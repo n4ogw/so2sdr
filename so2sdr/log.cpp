@@ -1609,6 +1609,7 @@ void Log::selectContest() {
     }
     csettings.endArray();
     contest->setContestName(name);
+
     logdel = new logDelegate(this, *contest, &logSearchFlag, &searchList);
     connect(logdel, SIGNAL(setOrigRecord(QModelIndex)), this,
             SLOT(setOrigRecord(QModelIndex)));
@@ -1625,9 +1626,11 @@ void Log::selectContest() {
     connect(contest, SIGNAL(clearDupe()), this, SIGNAL(clearDupe()));
     cty->initialize(lat, lon, contest->zoneType());
     contest->initialize(cty);
+
     Qso tmp(2);
     tmp.call = settings.value(s_call, s_call_def).toString().toLatin1();
     bool b;
+
     contest->setCountry(idPfx(&tmp, b));
     contest->setContinent(tmp.continent);
   }
