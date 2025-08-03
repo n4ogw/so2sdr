@@ -2589,6 +2589,7 @@ void So2sdr::speedDn(int nrig) {
  */
 void So2sdr::launch_WPMDialog(int nr) {
   enterCW[nr] = true;
+
   // save where keyboard focus was
   if (lineEditCall[nr]->hasFocus()) {
     callFocus[nr] = true;
@@ -2597,9 +2598,6 @@ void So2sdr::launch_WPMDialog(int nr) {
   }
   wpmLineEditPtr[nr]->setReadOnly(false);
   wpmLineEditPtr[nr]->setFocus();
-  // if (grab) {
-  //    wpmLineEditPtr[nr]->grabKeyboard();
-  // }
   grabWidget = wpmLineEditPtr[nr];
   wpmLineEditPtr[nr]->selectAll();
 }
@@ -2608,24 +2606,14 @@ void So2sdr::launch_WPMDialog(int nr) {
    slot called when cw speed edited, radio 0
  */
 void So2sdr::launch_enterCWSpeed0(const QString &text) {
-  if (twokeyboard) {
-    enterCWSpeed(activeRadio, text);
-  } else {
-    if (enterCW[0])
-      enterCWSpeed(0, text);
-  }
+    if (enterCW[0]) enterCWSpeed(0, text);
 }
 
 /*!
    slot called when cw speed edited, radio 1
  */
 void So2sdr::launch_enterCWSpeed1(const QString &text) {
-  if (twokeyboard) {
-    enterCWSpeed(activeRadio, text);
-  } else {
-    if (enterCW[1])
-      enterCWSpeed(1, text);
-  }
+    if (enterCW[1]) enterCWSpeed(1, text);
 }
 
 /*!
@@ -2653,26 +2641,18 @@ void So2sdr::enterCWSpeed(int nrig, const QString &text) {
   enterCW[nrig] = false;
 
   // reset focus
-  if (twokeyboard) {
     wpmLineEditPtr[nrig]->setReadOnly(true);
     if (callFocus[nrig]) {
       lineEditCall[nrig]->setFocus();
       lineEditCall[nrig]->deselect();
-      if (grab) {
-        //   lineEditCall[activeRadio]->grabKeyboard();
-        lineEditCall[activeRadio]->activateWindow();
-      }
+      lineEditCall[activeRadio]->activateWindow();
       grabWidget = lineEditCall[activeRadio];
     } else {
       lineEditExchange[nrig]->setFocus();
       lineEditExchange[nrig]->deselect();
-      if (grab) {
-        //  lineEditExchange[activeRadio]->grabKeyboard();
-        lineEditExchange[activeRadio]->activateWindow();
-      }
+      lineEditExchange[activeRadio]->activateWindow();
       grabWidget = lineEditExchange[activeRadio];
     }
-  }
 
   // revert to previous number in case of bad input
   if (!ok) {

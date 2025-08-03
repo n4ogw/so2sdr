@@ -53,7 +53,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
   int kbdNr;
   int activeRadioNr;
 
-  if (o == lineEditCall[1] || o == lineEditExchange[1]) {
+  if (o == lineEditCall[1] || o == lineEditExchange[1] || o == wpmLineEditPtr[1]) {
     kbdNr = 1;
   } else {
     kbdNr = 0;
