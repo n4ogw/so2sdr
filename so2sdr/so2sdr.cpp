@@ -569,27 +569,25 @@ void So2sdr::setTwokeyboard(bool s) {
 void So2sdr::setEntryFocus(int nr) {
   if (callFocus[nr]) {
     lineEditCall[nr]->setFocus();
-    lineEditCall[nr]->deselect();
     if (grab || twokeyboard) {
       lineEditCall[nr]->activateWindow();
       raise();
     }
     grabWidget = lineEditCall[nr];
-    if (twokeyboard) {
+    if (grab || twokeyboard) {
       lineEditCall[nr]->setMyFocus(true);
       lineEditExchange[nr]->setMyFocus(false);
     }
   } else {
     lineEditExchange[nr]->setFocus();
-    lineEditExchange[nr]->deselect();
     if (grab || twokeyboard) {
       lineEditExchange[nr]->activateWindow();
       raise();
     }
     grabWidget = lineEditExchange[nr];
-    if (twokeyboard) {
-      lineEditCall[nr]->setMyFocus(false);
+    if (grab || twokeyboard) {
       lineEditExchange[nr]->setMyFocus(true);
+      lineEditCall[nr]->setMyFocus(false);
     }
   }
 }

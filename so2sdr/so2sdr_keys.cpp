@@ -109,6 +109,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
   case QEvent::KeyPress: {
     QKeyEvent *kev = static_cast<QKeyEvent *>(e);
     Qt::KeyboardModifiers mod = kev->modifiers();
+
     switch (kev->key()) {
     case Qt::Key_Escape:
       // notes window is active, prevent main window from getting esc
@@ -194,7 +195,7 @@ bool So2sdr::eventFilter(QObject *o, QEvent *e) {
       break;
     case Qt::Key_D: // alt-D
       // alt-D not allowed in two keyboard mode
-      if (mod == Qt::AltModifier && twokeyboard) {
+      if (mod == Qt::AltModifier && !twokeyboard) {
         altd();
         r = true;
       }
@@ -587,11 +588,9 @@ void So2sdr::altd() {
   // not available with sprint so2r
   if (csettings->value(c_sprintmode, c_sprintmode_def).toBool())
     return;
-
   // not available in two keyboard mode
   if (twokeyboard)
     return;
-
   // wipe alt-d if already active (toggle off)
   // nothing if dueling CQ or Toggle Modes active
   if (altDActive) {
@@ -2212,6 +2211,10 @@ void So2sdr::kbd2(int code, bool shift, bool ctrl, bool alt) {
  */
 void So2sdr::handleKeys(int nr, int code, bool shift, bool ctrl, bool alt) {
   if (code < NKEYS) {
+    if (grab) {
+        // grab mode: keyboard needs to switch between radios
+        nr = activeRadio;
+    }
     QString key = keys[code];
     QFlags<Qt::KeyboardModifier> mod;
     mod.setFlag(Qt::NoModifier, true);
