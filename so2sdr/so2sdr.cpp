@@ -4097,6 +4097,25 @@ void So2sdr::logWsjtx(Qso *qso) {
  *
  */
 void So2sdr::setFontSize() {
+  // get font size information
+  QFont uiFont(settings->value(s_ui_font, s_ui_font_def).toString(),
+                 settings->value(s_ui_font_size, s_ui_font_size_def).toInt());
+  QFontMetricsF uiFm(uiFont);
+  sizes.uiHeight = uiFm.height();
+  sizes.uiWidth = uiFm.maxWidth();
+
+  QFont textFont(settings->value(s_text_font, s_text_font_def).toString(),
+                 settings->value(s_text_font_size, s_text_font_size_def).toInt());
+  QFontMetricsF textFm(textFont);
+  sizes.textHeight = textFm.height();
+  sizes.textWidth = textFm.maxWidth();
+
+  QFont entryFont(settings->value(s_entry_font, s_entry_font_def).toString(),
+                 settings->value(s_entry_font_size, s_entry_font_size_def).toInt());
+  QFontMetricsF entryFm(entryFont);
+  sizes.entryHeight = entryFm.height();
+  sizes.entryWidth = entryFm.maxWidth();
+
   // set default UI font size
   uiStyleSheet =
       "font-family: " + settings->value(s_ui_font, s_ui_font_def).toString() +

@@ -100,7 +100,7 @@ BandmapDisplay::~BandmapDisplay() {
  */
 void BandmapDisplay::mousePressEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
-    int y = event->y();
+    int y = event->position().y();
 
     // compute QSY as change in frequency
     int delta_f = static_cast<int>(

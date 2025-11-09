@@ -916,7 +916,7 @@ void So2sdrBandmap::mouseMoveEvent(QMouseEvent *event) {
  */
 void So2sdrBandmap::mousePressEvent(QMouseEvent *event) {
   if (CallLabel->underMouse()) {
-    mouse_y = event->position().y();
+    mouse_y = event->pos().y();
     if (event->button() == Qt::RightButton) {
       // right-mouse button; brings up menu
       QMenu menu(this);
@@ -930,7 +930,7 @@ void So2sdrBandmap::mousePressEvent(QMouseEvent *event) {
       menu.addAction(iqShowData);
       menu.exec(event->globalPos());
     } else if (event->button() == Qt::LeftButton &&
-               (event->position().x() <
+               (event->pos().x() <
                 (FreqLabel->width() + display->width() + SIG_SYMBOL_X +
                  4 * qRound(uiSizes.rad)))) {
       // left-mouse: qsy to signal
