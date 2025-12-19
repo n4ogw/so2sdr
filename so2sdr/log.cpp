@@ -1252,8 +1252,18 @@ void Log::updateHistory() {
   }
   for (int row = 0; row < log.rowCount(); row++) {
     tmpqso.call = log.record(row).value("Call").toString().toLatin1();
+    tmpqso.exch.clear();
     for (int i = 0; i < contest->nExchange(); i++) {
       tmpqso.rcv_exch[i] = log.record(row).value(i + 1).toString().toLatin1();
+      tmpqso.exch += tmpqso.rcv_exch[i] + " ";
+    }
+    // validate exchange needed for some contests where exchange type is
+    // different for different calls (for example US/VE vs DX in ARRL10)
+    // this is so validateExchange can set exchange_type[]
+    if (contest->vExch()) {
+        bool qsy;
+        idPfx(&tmpqso,qsy);
+        contest->validateExchange(&tmpqso);
     }
     emit addQsoHistory(&tmpqso);
     emit progressCnt(row);

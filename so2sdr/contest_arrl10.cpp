@@ -33,6 +33,7 @@ ARRL10::ARRL10(QSettings &cs, QSettings &ss) : Contest(cs, ss) {
   exchange_type = new FieldTypes[nExch];
   exchange_type[0] = RST;               // class
   exchange_type[1] = State;             // state
+  _vExch = true;                        // has variable exchanges; DX uses serial #
   multFieldHighlight[0] = SQL_COL_RCV2; // state
   multFieldHighlight[1] = SQL_COL_CALL; // highlight call for DX
 }
@@ -218,6 +219,8 @@ bool ARRL10::validateExchange(Qso *qso) {
   // not using validator in contest.cpp since here R1/R2/R3 are
   // multipliers
   if (qso->isMM) {
+    qso->exchange_type[0] = RST;
+    qso->exchange_type[1] = State;
     for (int i = exchElement.size() - 1; i >= 0; i--) {
       int r = 0;
       if (exchElement[i] == "R1")
@@ -237,9 +240,13 @@ bool ARRL10::validateExchange(Qso *qso) {
   }
   if (qso->isamult[0]) {
     // Domestic call: (RST) state
+    qso->exchange_type[0] = RST;
+    qso->exchange_type[1] = State;
     ok = valExch_rst_state(0, qso->mult[0], qso);
   } else if (qso->isamult[1]) {
     // DX: (RST) #
+    qso->exchange_type[0] = RST;
+    qso->exchange_type[1] = QsoNumber;
     // two things entered; assume first is rst
     int inr = 0;
     if (exchElement.size() == 2) {

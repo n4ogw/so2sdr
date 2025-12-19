@@ -45,9 +45,9 @@ History::~History() { QSqlDatabase::removeDatabase("HISTORY"); }
 void History::addQso(const Qso *qso) {
   QString query;
   query.append("INSERT OR REPLACE INTO history "
-               "(Call,General,DMult,Name,State,ARRLSection,Grid,Number,Zone) ");
+               "(Call,General,DMult,Name,State,ARRLSection,Grid,Zone) ");
   query.append("SELECT new.Call, old.General, old.DMult, old.Name, old.State, "
-               "old.ARRLSection, old.Grid, old.Number, old.Zone ");
+               "old.ARRLSection, old.Grid, old.Zone ");
   query.append("FROM ( SELECT '" + QVariant(qso->call).toString() +
                "' AS Call");
   for (int i = 0; i < qso->n_exchange; i++) {
@@ -80,11 +80,6 @@ void History::addQso(const Qso *qso) {
       query.replace(QString("old.Grid"), QString("new.Grid"));
       query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Grid");
       break;
-    case Number:
-      query.replace(QString("old.Number"), QString("new.Number"));
-      query.append(", '" + QVariant(qso->rcv_exch[i]).toString() +
-                   "' AS Number");
-      break;
     case Zone:
       query.replace(QString("old.Zone"), QString("new.Zone"));
       query.append(", '" + QVariant(qso->rcv_exch[i]).toString() + "' AS Zone");
@@ -94,7 +89,7 @@ void History::addQso(const Qso *qso) {
     }
   }
   query.append(") AS new LEFT JOIN ( SELECT "
-               "Call,General,DMult,Name,State,ARRLSection,Grid,Number,Zone "
+               "Call,General,DMult,Name,State,ARRLSection,Grid,Zone "
                "FROM history ) AS old ON new.Call = old.Call");
   QSqlQuery h(QSqlDatabase::database("HISTORY"));
   h.exec(query);
@@ -129,9 +124,6 @@ void History::fillExchange(Qso *qso, const QByteArray &part) {
       break;
     case Grid:
       query.append(",Grid");
-      break;
-    case Number:
-      query.append(",Number");
       break;
     case Zone:
       query.append(",Zone");
@@ -188,7 +180,7 @@ void History::startHistory() {
       query.append(
           "CREATE TABLE IF NOT EXISTS history (`Call` TEXT PRIMARY KEY, "
           "`General` TEXT, `DMult` TEXT, `Name` TEXT, `State` TEXT, "
-          "`ARRLSection` TEXT, `Grid` TEXT, `Number` TEXT, `Zone` TEXT)");
+          "`ARRLSection` TEXT, `Grid` TEXT, `Zone` TEXT)");
       h.exec(query);
       query.clear();
       query.append("CREATE UNIQUE INDEX `call_idx` ON history (`Call`)");
