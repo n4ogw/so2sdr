@@ -1,4 +1,4 @@
-/*! Copyright 2010-2025 R. Torsten Clay N4OGW
+/*! Copyright 2010-2026 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -1345,7 +1345,7 @@ void So2sdr::about() {
   aboutOn = true;
   QMessageBox::about(
       this, "SO2SDR",
-      "<p>SO2SDR " + Version + " Copyright 2010-2025 R.T. Clay N4OGW</p>" +
+      "<p>SO2SDR " + Version + " Copyright 2010-2026 R.T. Clay N4OGW</p>" +
           "  Qt library version: " + qVersion() +
           +"<li>hamlib http://www.hamlib.org " + hamlib_version +
           "<li>QtSolutions_Telnet 2.1" +

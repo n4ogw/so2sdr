@@ -6,7 +6,7 @@ radio (SDR) spectral displays. In runs on Linux. Version
 and 2) so2sdr-bandmap, the SDR spectral display. So2sdr-bandmap
 can be used separately from so2sdr.
 
-Copyright 2010-2025 R. Torsten Clay N4OGW
+Copyright 2010-2026 R. Torsten Clay N4OGW
 
 # News
 * 05/24/2025 version 2.8.0; project has moved to Qt version 6. This required many changes. The grab keyboard function changed: now the keyboard device in settings must be given for keyboard grabbing.

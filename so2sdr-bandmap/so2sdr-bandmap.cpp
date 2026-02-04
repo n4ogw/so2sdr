@@ -1,4 +1,4 @@
-/*! Copyright 2010-2025 R. Torsten Clay N4OGW
+/*! Copyright 2010-2026 R. Torsten Clay N4OGW
 
    This file is part of so2sdr.
 
@@ -928,7 +928,7 @@ void So2sdrBandmap::mousePressEvent(QMouseEvent *event) {
       menu.addAction(deleteAct);
       menu.addSeparator();
       menu.addAction(iqShowData);
-      menu.exec(event->globalPos());
+      menu.exec(event->globalPosition().toPoint());
     } else if (event->button() == Qt::LeftButton &&
                (event->pos().x() <
                 (FreqLabel->width() + display->width() + SIG_SYMBOL_X +
