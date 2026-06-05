@@ -15,6 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with so2sdr.  If not, see <http://www.gnu.org/licenses/>.
 
+    TEST
+
   */
 #include "menustyle.h"
 #include "so2sdr.h"
